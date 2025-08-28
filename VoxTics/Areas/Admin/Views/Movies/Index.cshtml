@@ -1,0 +1,210 @@
+﻿@model VoxTics.Areas.Admin.ViewModels.MovieVMs.MovieIndexVm
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var vm = Model;
+}
+
+<h3>Movies</h3>
+
+<form id="filtersForm" class="row g-2 mb-3" onsubmit="return false;">
+    <div class="col-md-4">
+        <input id="searchInput" name="search" value="@vm.Search" class="form-control" placeholder="Search title or description..." />
+    </div>
+
+    <div class="col-md-2">
+        <select id="categorySelect" name="categoryId" class="form-select">
+            <option value="">All categories</option>
+            @foreach (var c in vm.Categories ?? Enumerable.Empty<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>())
+            {
+                <option value="@c.Value" @(vm.CategoryId.HasValue && vm.CategoryId.Value.ToString() == c.Value ? "selected" : "")>@c.Text</option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-2">
+        <select id="sortSelect" name="sort" class="form-select">
+            <option value="title_asc" @(vm.Sort == "title_asc" ? "selected" : "")>Title ↑</option>
+            <option value="title_desc" @(vm.Sort == "title_desc" ? "selected" : "")>Title ↓</option>
+            <option value="date_desc" @(vm.Sort == "date_desc" ? "selected" : "")>Start Date ↓</option>
+            <option value="date_asc" @(vm.Sort == "date_asc" ? "selected" : "")>Start Date ↑</option>
+            <option value="price_asc" @(vm.Sort == "price_asc" ? "selected" : "")>Price ↑</option>
+            <option value="price_desc" @(vm.Sort == "price_desc" ? "selected" : "")>Price ↓</option>
+        </select>
+    </div>
+
+    <div class="col-md-1">
+        <select id="pageSizeSelect" name="pageSize" class="form-select">
+            @foreach (var p in vm.PageSizeOptions ?? Enumerable.Empty<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>())
+            {
+                <option value="@p.Value" @(p.Value == vm.PageSize.ToString() ? "selected" : "")>@p.Text</option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-3 d-flex">
+        <button id="applyBtn" class="btn btn-primary me-2">Apply</button>
+        <a id="resetBtn" class="btn btn-secondary" href="@Url.Action("Index", new { area = "Admin" })">Reset</a>
+        <a class="btn btn-success ms-auto" href="@Url.Action("Create", "Movies", new { area = "Admin" })">Add Movie</a>
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Start</th>
+            <th>Price</th>
+            <th>Cinema</th>
+            <th>Category</th>
+            <th>Images</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="moviesTbody">
+        @* Server-render the first page initially so the page is usable without JS *@
+        @await Html.PartialAsync("_MovieList", Model.PagedMovies.Items)
+    </tbody>
+</table>
+
+<div id="loading" class="text-center my-3" style="display:none;">
+    <div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>
+</div>
+
+<script>
+    // ---------- Helper: debounce ----------
+    function debounce(fn, delay) {
+        let timer = null;
+        return function () {
+            const args = arguments;
+            clearTimeout(timer);
+            timer = setTimeout(() => fn.apply(this, args), delay);
+        };
+    }
+
+    // ---------- State ----------
+    let currentPage = @Model.PagedMovies.Page;
+    const pageSize = parseInt(document.getElementById('pageSizeSelect').value || '@Model.PageSize');
+    let totalPages = @Model.PagedMovies.TotalPages;
+    let isLoading = false;
+    let lastQuery = {
+        search: document.getElementById('searchInput').value || '',
+        categoryId: document.getElementById('categorySelect').value || '',
+        sort: document.getElementById('sortSelect').value || '',
+        pageSize: pageSize
+    };
+
+    // ---------- Build query string ----------
+    function buildQuery(q) {
+        const params = new URLSearchParams();
+        if (q.search) params.set('search', q.search);
+        if (q.categoryId) params.set('categoryId', q.categoryId);
+        if (q.sort) params.set('sort', q.sort);
+        if (q.page) params.set('page', q.page);
+        if (q.pageSize) params.set('pageSize', q.pageSize);
+        return params.toString();
+    }
+
+    // ---------- Fetch and replace (for search / filter) ----------
+    async function fetchAndReplace(page = 1) {
+        if (isLoading) return;
+        isLoading = true;
+        document.getElementById('loading').style.display = 'block';
+
+        lastQuery.page = page;
+        const qs = buildQuery(lastQuery);
+        const url = `@Url.Action("List", "Movies", new { area = "Admin" })?${qs}`;
+
+        try {
+            const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+            if (!res.ok) throw new Error('Network error');
+            const html = await res.text();
+
+            // Replace tbody with returned rows
+            document.getElementById('moviesTbody').innerHTML = html;
+
+            // Update page / total from response headers if you set them,
+            // otherwise use server initial values or re-query via hidden endpoint.
+            // We'll try reading header "X-Total-Pages" if controller sets it:
+            const totalPagesHeader = res.headers.get('X-Total-Pages');
+            if (totalPagesHeader) totalPages = parseInt(totalPagesHeader);
+
+            currentPage = page;
+            isLoading = false;
+            document.getElementById('loading').style.display = 'none';
+        } catch (err) {
+            console.error(err);
+            isLoading = false;
+            document.getElementById('loading').style.display = 'none';
+        }
+    }
+
+    // ---------- Fetch and append (for infinite scroll) ----------
+    async function fetchAndAppend(page) {
+        if (isLoading) return;
+        if (page > totalPages) return;
+        isLoading = true;
+        document.getElementById('loading').style.display = 'block';
+
+        lastQuery.page = page;
+        const qs = buildQuery(lastQuery);
+        const url = `@Url.Action("List", "Movies", new { area = "Admin" })?${qs}`;
+
+        try {
+            const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+            if (!res.ok) throw new Error('Network error');
+            const html = await res.text();
+
+            // Append rows
+            const container = document.createElement('tbody');
+            container.innerHTML = html;
+            // Move children to real tbody
+            const rows = container.querySelectorAll('tr');
+            rows.forEach(r => document.getElementById('moviesTbody').appendChild(r));
+
+            const totalPagesHeader = res.headers.get('X-Total-Pages');
+            if (totalPagesHeader) totalPages = parseInt(totalPagesHeader);
+
+            currentPage = page;
+            isLoading = false;
+            document.getElementById('loading').style.display = 'none';
+        } catch (err) {
+            console.error(err);
+            isLoading = false;
+            document.getElementById('loading').style.display = 'none';
+        }
+    }
+
+    // ---------- Handlers ----------
+    const debouncedSearch = debounce(function () {
+        lastQuery.search = document.getElementById('searchInput').value.trim();
+        lastQuery.categoryId = document.getElementById('categorySelect').value;
+        lastQuery.sort = document.getElementById('sortSelect').value;
+        lastQuery.pageSize = parseInt(document.getElementById('pageSizeSelect').value);
+        currentPage = 1;
+        fetchAndReplace(1);
+    }, 350);
+
+    document.getElementById('searchInput').addEventListener('input', debouncedSearch);
+    document.getElementById('categorySelect').addEventListener('change', function () {
+        debouncedSearch();
+    });
+    document.getElementById('sortSelect').addEventListener('change', function () {
+        debouncedSearch();
+    });
+    document.getElementById('pageSizeSelect').addEventListener('change', function () {
+        debouncedSearch();
+    });
+    document.getElementById('applyBtn').addEventListener('click', function () { debouncedSearch(); });
+
+    // Infinite scroll: when near bottom load next page
+    window.addEventListener('scroll', function () {
+        if (isLoading) return;
+        const nearBottom = (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 200);
+        if (nearBottom && currentPage < totalPages) {
+            fetchAndAppend(currentPage + 1);
+        }
+    });
+
+    // Optionally: initial totalPages from server model
+    totalPages = @Model.PagedMovies.TotalPages;
+</script>

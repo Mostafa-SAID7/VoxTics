@@ -1,0 +1,41 @@
+﻿@model IEnumerable<VoxTics.Models.Movie>
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h3>Movies</h3>
+<a class="btn btn-success mb-3" href="@Url.Action("Create")">Add Movie</a>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Cinema</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Images</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var movie in Model)
+        {
+            <tr>
+                <td>@movie.Title</td>
+                <td>@movie.Cinema?.Name</td>
+                <td>@movie.Category?.Name</td>
+                <td>@movie.MovieStatus</td>
+                <td>
+                    @foreach (var img in movie.MovieImgs)
+                    {
+                        <img src="@img.ImgUrl" width="50" height="50" class="me-1" />
+                    }
+                </td>
+                <td>
+                    <a class="btn btn-primary btn-sm" href="@Url.Action("Edit", new { id = movie.Id })">Edit</a>
+                    <a class="btn btn-danger btn-sm" href="@Url.Action("Delete", new { id = movie.Id })">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

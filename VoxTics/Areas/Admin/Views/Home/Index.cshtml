@@ -1,0 +1,31 @@
+﻿@model VoxTics.Areas.Admin.ViewModels.DashboardViewModel
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card p-3 mb-3 bg-primary text-white">
+            <h5>Total Movies</h5>
+            <p>@Model.TotalMovies</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 mb-3 bg-success text-white">
+            <h5>Total Actors</h5>
+            <p>@Model.TotalActors</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 mb-3 bg-warning text-white">
+            <h5>Total Cinemas</h5>
+            <p>@Model.TotalCinemas</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 mb-3 bg-danger text-white">
+            <h5>Total Categories</h5>
+            <p>@Model.TotalCategories</p>
+        </div>
+    </div>
+</div>

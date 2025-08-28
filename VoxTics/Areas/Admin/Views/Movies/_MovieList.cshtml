@@ -1,0 +1,19 @@
+﻿@model IEnumerable<VoxTics.Areas.Admin.ViewModels.MovieVMs.MovieListItemVm>
+
+@* ViewData["Page"] and ["TotalPages"] are set by controller *@
+
+@foreach (var item in Model)
+{
+    <tr>
+        <td>@item.Title</td>
+        <td>@item.StartDate.ToString("yyyy-MM-dd")</td>
+        <td>@item.Price.ToString("C")</td>
+        <td>@item.CinemaName</td>
+        <td>@item.CategoryName</td>
+        <td>@item.ImagesCount</td>
+        <td>
+            <a class="btn btn-sm btn-primary" href="@Url.Action("Edit", "Movies", new { area = "Admin", id = item.Id })">Edit</a>
+            <a class="btn btn-sm btn-danger" href="@Url.Action("Delete", "Movies", new { area = "Admin", id = item.Id })">Delete</a>
+        </td>
+    </tr>
+}

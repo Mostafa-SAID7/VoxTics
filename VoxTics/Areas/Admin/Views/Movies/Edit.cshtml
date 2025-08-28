@@ -1,0 +1,56 @@
+﻿@model VoxTics.Models.Movie
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    bool isEdit = Model?.Id > 0;
+}
+
+<h3>@(isEdit ? "Edit Movie" : "Create Movie")</h3>
+
+<form asp-action="@(isEdit ? "Edit" : "Create")" method="post">
+    @if(isEdit)
+    {
+        <input type="hidden" asp-for="Id" />
+    }
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Price" class="form-label"></label>
+        <input asp-for="Price" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="CinemaId" class="form-label">Cinema</label>
+        <select asp-for="CinemaId" class="form-select" asp-items="@(new SelectList(ViewBag.Cinemas, "Id", "Name"))"></select>
+    </div>
+    <div class="mb-3">
+        <label asp-for="CategoryId" class="form-label">Category</label>
+        <select asp-for="CategoryId" class="form-select" asp-items="@(new SelectList(ViewBag.Categories, "Id", "Name"))"></select>
+    </div>
+    <div class="mb-3">
+        <label asp-for="MovieStatus" class="form-label"></label>
+        <select asp-for="MovieStatus" class="form-select">
+            <option value="Available">Available</option>
+            <option value="ComingSoon">ComingSoon</option>
+            <option value="Expired">Expired</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label>Main Image URL</label>
+        <input asp-for="ImgUrl" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>Trailer URL</label>
+        <input asp-for="TrailerUrl" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>Additional Images (comma separated URLs)</label>
+        <input type="text" name="ImgUrls" class="form-control" value="@string.Join(',', Model?.MovieImgs?.Select(i => i.ImgUrl) ?? new List<string>())" />
+        <small class="form-text text-muted">Separate multiple URLs with a comma.</small>
+    </div>
+    <button type="submit" class="btn btn-success">@ (isEdit ? "Update" : "Create")</button>
+</form>

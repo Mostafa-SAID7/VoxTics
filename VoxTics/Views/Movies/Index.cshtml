@@ -1,0 +1,35 @@
+﻿@model IEnumerable<VoxTics.Models.Movie>
+
+<h2>Movies</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Cinema</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Actors</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var movie in Model)
+        {
+            <tr>
+                <td>@movie.Title</td>
+                <td>@movie.Cinema?.Name</td>
+                <td>@movie.Category?.Name</td>
+                <td>$@movie.Price</td>
+                <td>@movie.MovieStatus</td>
+                <td>
+                    @string.Join(", ", movie.MovieActors.Select(ma => ma.Actor.FirstName + " " + ma.Actor.LastName))
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@movie.Id">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
