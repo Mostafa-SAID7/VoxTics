@@ -15,7 +15,7 @@ namespace VoxTics.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Cinema> Cinemas { get; set; }
 
-        public ICollection<MovieImg> MovieImgs { get; set; }
+        public DbSet<MovieImg> MovieImgs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

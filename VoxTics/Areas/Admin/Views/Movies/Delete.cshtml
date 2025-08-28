@@ -1,26 +1,34 @@
-﻿@model VoxTics.Models.Movie
+﻿@model VoxTics.Areas.Admin.ViewModels.MovieVMs.MovieDeleteVm
 @{
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    bool isEdit = Model?.Id > 0;
+}
+@{
+    ViewData["Title"] = "Delete Movie";
 }
 
-<h3>Delete Movie</h3>
+<h2>Delete Movie</h2>
 
-<div class="alert alert-danger">
-    <h4>Are you sure you want to delete this movie?</h4>
-    <p><strong>Title:</strong> @Model.Title</p>
-    <p><strong>Cinema:</strong> @Model.Cinema?.Name</p>
-    <p><strong>Category:</strong> @Model.Category?.Name</p>
-    <p><strong>Status:</strong> @Model.MovieStatus</p>
-    <p><strong>Images:</strong></p>
-    @foreach (var img in Model.MovieImgs)
-    {
-        <img src="@img.ImgUrl" width="80" height="80" class="me-1" />
-    }
+<h4>Are you sure you want to delete this?</h4>
+<div>
+    <strong>@Model.Title</strong>
+    <p>Cinema: @Model.CinemaName</p>
+    <p>Category: @Model.CategoryName</p>
 </div>
 
-<form asp-action="Delete" method="post">
+@if (Model.Images != null && Model.Images.Any())
+{
+    <div>
+        <p>Images:</p>
+        @foreach (var img in Model.Images)
+        {
+            <img src="@img.ImgUrl" width="120" class="me-2 mb-2" />
+        }
+    </div>
+}
+
+<form asp-action="DeleteConfirmed" method="post">
     <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+    <button type="submit" class="btn btn-danger">Delete</button>
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 </form>
-
