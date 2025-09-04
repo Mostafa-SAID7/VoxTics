@@ -7,30 +7,42 @@ namespace VoxTics.Repositories.Implementations
 {
     public class MovieRepository : BaseRepository<Movie>, IMovieRepository
     {
-        private readonly MovieDbContext _movieDb;
-
         public MovieRepository(MovieDbContext context) : base(context)
         {
-            _movieDb = context;
         }
 
-        public async Task<IEnumerable<Movie>> GetAllWithIncludesAsync()
+        public IQueryable<Movie> Query(string includeProperties = "")
         {
-            return await _movieDb.Movies
+            IQueryable<Movie> query = _dbSet.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(includeProperties))
+            {
+                foreach (var includeProperty in includeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProperty.Trim());
+                }
+            }
+
+            return query;
+        }
+
+        public async Task<List<Movie>> GetAllWithIncludesAsync()
+        {
+            // include common navigation properties
+            return await _dbSet
+                .Include(m => m.Images)
                 .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
                 .Include(m => m.MovieActors).ThenInclude(ma => ma.Actor)
-                .Include(m => m.Images)
                 .Include(m => m.Showtimes)
-                .AsNoTracking()
                 .ToListAsync();
         }
 
         public async Task<Movie?> GetByIdWithIncludesAsync(int id)
         {
-            return await _movieDb.Movies
+            return await _dbSet
+                .Include(m => m.Images)
                 .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
                 .Include(m => m.MovieActors).ThenInclude(ma => ma.Actor)
-                .Include(m => m.Images)
                 .Include(m => m.Showtimes)
                 .FirstOrDefaultAsync(m => m.Id == id);
         }

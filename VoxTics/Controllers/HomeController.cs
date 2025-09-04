@@ -26,12 +26,12 @@ namespace VoxTics.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            var model = new ErrorViewModel
+            Console.WriteLine("Error() action executed!");
+            return View(new ErrorViewModel
             {
                 RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
-            };
-
-            return View(model); // ? model is never null
+            });
         }
+
     }
 }

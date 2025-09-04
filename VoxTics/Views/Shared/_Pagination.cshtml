@@ -1,18 +1,42 @@
-﻿@model VoxTics.Helpers.PaginatedList<VoxTics.Models.Entities.Movie>
+﻿@using VoxTics.Helpers
+@using Microsoft.AspNetCore.WebUtilities
+@model PaginatedList<VoxTics.Models.Entities.Movie>
 
-<nav>
-    <ul class="pagination">
-        <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
-            <a class="page-link" asp-route-page="@(Model.PageIndex - 1)">Previous</a>
-        </li>
-        @for (var i = 1; i <= Model.TotalPages; i++)
-        {
-            <li class="page-item @(i == Model.PageIndex ? "active" : "")">
-                <a class="page-link" asp-route-page="@i">@i</a>
+@{
+    // Helper to build current query string with replaced page param
+    var currentQuery = Context.Request.Query.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToString());
+}
+
+@if (Model.TotalPages > 1)
+{
+    <nav>
+        <ul class="pagination justify-content-center">
+            <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                @{
+                    var prevPage = Model.PageIndex - 1;
+                    currentQuery["page"] = prevPage.ToString();
+                    var prevUrl = Url.Action("Index", "Movies", currentQuery);
+                }
+                <a class="page-link" href="@prevUrl">Previous</a>
             </li>
-        }
-        <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
-            <a class="page-link" asp-route-page="@(Model.PageIndex + 1)">Next</a>
-        </li>
-    </ul>
-</nav>
+
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                currentQuery["page"] = i.ToString();
+                var pageUrl = Url.Action("Index", "Movies", currentQuery);
+                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                    <a class="page-link" href="@pageUrl">@i</a>
+                </li>
+            }
+
+            <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                @{
+                    var nextPage = Model.PageIndex + 1;
+                    currentQuery["page"] = nextPage.ToString();
+                    var nextUrl = Url.Action("Index", "Movies", currentQuery);
+                }
+                <a class="page-link" href="@nextUrl">Next</a>
+            </li>
+        </ul>
+    </nav>
+}

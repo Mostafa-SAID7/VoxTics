@@ -17,7 +17,7 @@ namespace VoxTics.Models.ViewModels
             }
         }
 
-        public string Description { get; set; } = string.Empty;
+        public string? Description { get; set; } = string.Empty;
 
         public DateTime ReleaseDate { get; set; }
 
@@ -25,12 +25,12 @@ namespace VoxTics.Models.ViewModels
 
         public decimal Price { get; set; }
 
-        public int Duration { get; set; }
+        public int? Duration { get; set; }
 
         public string? ImageUrl { get; set; }
 
         public List<CategoryItemVM> Categories { get; set; } = new();
 
-        public IEnumerable<string>? Actors { get; set; }
+        public List<string> Actors { get; set; } = new();
     }
 }

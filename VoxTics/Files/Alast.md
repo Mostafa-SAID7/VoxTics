@@ -83,6 +83,8 @@ MovieTickets/
 		add scripts lib+ styles lib like animation.css +sweetalert2 +toastr +bootstrap +jquery +bt icons+ jquery validation +ajax 
 │     └─ _Layout.cshtml
 		_Pagination.cshtml
+		_Header
+		_Footer
 		_ValidationScriptsPartial
 		Error
 	_ViewImports.cshtml

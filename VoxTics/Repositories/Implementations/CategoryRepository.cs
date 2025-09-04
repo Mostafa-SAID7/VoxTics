@@ -7,23 +7,20 @@ namespace VoxTics.Repositories.Implementations
 {
     public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
     {
-        private readonly MovieDbContext _context;
-
         public CategoryRepository(MovieDbContext context) : base(context)
         {
-            _context = context;
         }
 
         public async Task<Category?> GetByIdWithMoviesAsync(int id)
         {
-            return await _context.Categories
+            return await _dbSet
                 .Include(c => c.MovieCategories)
                     .ThenInclude(mc => mc.Movie)
-                        .ThenInclude(m => m.Images) // include poster
+                        .ThenInclude(m => m.Images)
                 .Include(c => c.MovieCategories)
                     .ThenInclude(mc => mc.Movie)
                         .ThenInclude(m => m.MovieCategories)
-                            .ThenInclude(mc => mc.Category) // categories of each movie
+                            .ThenInclude(mc => mc.Category)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
     }

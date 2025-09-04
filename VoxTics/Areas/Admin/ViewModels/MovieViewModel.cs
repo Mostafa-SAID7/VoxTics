@@ -30,7 +30,6 @@ namespace VoxTics.Areas.Admin.ViewModels
         public DateTime ReleaseDate { get; set; } = DateTime.Today;
 
         [Required(ErrorMessage = "Status is required")]
-        public MovieStatus Status { get; set; } = MovieStatus.Upcoming;
 
         [Display(Name = "Poster")]
         public IFormFile? ImageFile { get; set; }
@@ -44,5 +43,7 @@ namespace VoxTics.Areas.Admin.ViewModels
 
         // helper for populating dropdown / checkbox list in view
         public List<SelectListItem> AvailableCategories { get; set; } = new List<SelectListItem>();
+        public VoxTics.Models.Enums.MovieStatus Status { get; set; } = VoxTics.Models.Enums.MovieStatus.Upcoming;
+
     }
 }

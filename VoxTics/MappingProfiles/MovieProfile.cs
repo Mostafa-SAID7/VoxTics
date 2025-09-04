@@ -12,18 +12,16 @@ namespace VoxTics.MappingProfiles
         {
             // Entity -> Public VM (Frontend)
             CreateMap<Movie, MovieVM>()
-                .ForMember(dest => dest.Categories, opt =>
-                    opt.MapFrom(src => src.MovieCategories != null
-                        ? src.MovieCategories.Select(mc => mc.Category.Name)
-                        : new List<string>()))
-                .ForMember(dest => dest.Actors, opt =>
-                    opt.MapFrom(src => src.MovieActors != null
-                        ? src.MovieActors.Select(ma => ma.Actor.FullName)
-                        : new List<string>()))
-                .ForMember(dest => dest.ImageUrl, opt =>
-                    opt.MapFrom(src => src.Images != null && src.Images.Any()
-                        ? src.Images.First().ImageUrl
-                        : null));
+             .ForMember(dest => dest.ImageUrl,
+                 opt => opt.MapFrom(src => src.Images != null && src.Images.Any() ? src.Images.First().ImageUrl : null))
+             .ForMember(dest => dest.Categories,
+                 opt => opt.MapFrom(src => src.MovieCategories != null
+                     ? src.MovieCategories.Select(mc => new CategoryItemVM { Id = mc.CategoryId, Name = mc.Category != null ? mc.Category.Name : string.Empty }).ToList()
+                     : new List<CategoryItemVM>()))
+             .ForMember(dest => dest.Actors,
+                 opt => opt.MapFrom(src => src.MovieActors != null
+                     ? src.MovieActors.Select(ma => ma.Actor != null ? ma.Actor.FullName : string.Empty).ToList()
+                     : new List<string>()));
 
             // Entity -> Admin VM
             CreateMap<Movie, MovieViewModel>()
