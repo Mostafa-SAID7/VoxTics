@@ -29,7 +29,7 @@ namespace VoxTics.Models.ViewModels
 
         public string? ImageUrl { get; set; }
 
-        public IEnumerable<string>? Categories { get; set; }
+        public List<CategoryItemVM> Categories { get; set; } = new();
 
         public IEnumerable<string>? Actors { get; set; }
     }

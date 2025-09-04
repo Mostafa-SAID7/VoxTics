@@ -4,10 +4,21 @@ MovieTickets/
 │  └─ Admin/
 │     ├─ Controllers/
 │     │  └─ MoviesController.cs
+	  │  └─ CategoriesController.cs
+			HomeController.cs
 │     └─ ViewModels/
 			add validation attribute
 │        └─ MovieViewModel.cs
+│        └─ CategoryViewModel.cs
 		views/
+			Categories/
+				  ├─ _CategoryForm.cshtml
+				  ├─ _CategoriesTable.cshtml
+				  ├─ Index.cshtml
+				  ├─ Create.cshtml
+				  ├─ Edit.cshtml
+				  └─ Delete.cshtml
+
 			Movies (include in scripts + styles css in the same file page)
 				_MovieForm
 				_MoviesTable

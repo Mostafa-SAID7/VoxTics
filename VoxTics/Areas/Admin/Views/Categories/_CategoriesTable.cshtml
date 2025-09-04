@@ -1,0 +1,28 @@
+﻿@model IEnumerable<VoxTics.Areas.Admin.ViewModels.CategoryViewModel>
+
+<table class="table table-bordered align-middle">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th style="width: 150px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var cat in Model)
+        {
+            <tr>
+                <td>@cat.Name</td>
+                <td>@cat.Description</td>
+                <td class="table-actions">
+                    <button class="btn btn-sm btn-warning btn-edit-category" data-id="@cat.Id">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger btn-delete-category" data-id="@cat.Id">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

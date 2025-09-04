@@ -1,195 +1,40 @@
-﻿@using VoxTics.Models.ViewModels
-@model IEnumerable<MovieVM>
+﻿@model IEnumerable<VoxTics.Models.ViewModels.MovieVM>
+@using VoxTics.Helpers
+@using VoxTics.Models.ViewModels
 
 @{
     ViewData["Title"] = "Movies";
-    // paginated metadata passed via controller in ViewData["Paginated"]
-    var paginated = ViewData["Paginated"] as dynamic; // safe dynamic access to page metadata
-    var currentSearch = ViewData["Search"] as string;
-    var currentCategoryId = ViewData["CategoryId"] as int?;
+    var paginated = ViewData["Paginated"] as PaginatedList<VoxTics.Models.Entities.Movie>;
+    var search = ViewData["Search"] as string;
+    var categoryId = ViewData["CategoryId"] as int?;
 }
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <title>@ViewData["Title"] - VoxTics</title>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Movies</h2>
+    <form id="searchForm" class="d-flex" method="get" asp-action="Index" asp-controller="Movies">
+        <input type="search" name="search" value="@search" class="form-control me-2" placeholder="Search movies..." />
+        <button type="submit" class="btn btn-outline-primary">Search</button>
+    </form>
+</div>
 
-    <!-- Page-local styles (you can move to site.css if you prefer) -->
-    <style>
-        .movies-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
-        .movie-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); overflow: hidden; display: flex; flex-direction: column; }
-        .movie-card .poster { height: 260px; background: #f0f0f0; display:flex; align-items:center; justify-content:center; overflow:hidden; }
-        .movie-card .poster img { width:100%; height:100%; object-fit:cover; }
-        .movie-card .body { padding: .75rem; flex: 1 1 auto; display:flex; flex-direction:column; }
-        .movie-card .title { font-weight:600; margin-bottom: .35rem; }
-        .movie-card .meta { color:#6b7280; font-size:.9rem; margin-top:auto; display:flex; justify-content:space-between; align-items:center; }
-        .loader-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.7); z-index: 2000; display:flex; align-items:center; justify-content:center; }
-        .d-none { display:none !important; }
-        .pagination-list { display:flex; gap: .25rem; list-style:none; padding:0; margin:0; }
-        .pagination-list li a { display:inline-block; padding:.35rem .6rem; border-radius:4px; border:1px solid #e5e7eb; color:#111827; text-decoration:none; }
-        .pagination-list li a.active { background:#0d6efd; color:#fff; border-color:#0d6efd; }
-    </style>
-</head>
-<body>
-    <div class="container py-4">
+<div id="moviesContainer">
+    @Html.Partial("_MovieCards", Model)
+</div>
 
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h1 class="h3">Movies</h1>
-            <div class="d-flex gap-2">
-                <input id="searchInput" class="form-control" placeholder="Search movies..." value="@currentSearch" />
-                <button id="btnSearch" class="btn btn-outline-primary">Search</button>
-            </div>
-        </div>
+@if (paginated != null && paginated.TotalPages > 1)
+{
+    <partial name="~/Views/Shared/_Pagination.cshtml" model="paginated" />
+}
 
-        <div id="movieCardsContainer">
-            @await Html.PartialAsync("_MovieCards", Model)
-        </div>
-
-        @{
-            // Safely obtain paginated metadata from ViewData (controller sets ViewData["Paginated"])
-            var paginatedObj = ViewData["Paginated"];
-            int pageIndex = 1;
-            int totalPages = 1;
-
-            if (paginatedObj != null)
-            {
-                // use dynamic to read properties, then convert to ints (null-safe)
-                try
-                {
-                    dynamic p = paginatedObj;
-                    pageIndex = Convert.ToInt32(p.PageIndex);
-                    totalPages = Convert.ToInt32(p.TotalPages);
-                }
-                catch
-                {
-                    pageIndex = 1;
-                    totalPages = 1;
-                }
-            }
-
-            int start = Math.Max(1, pageIndex - 3);
-            int end = Math.Min(totalPages, pageIndex + 3);
-        }
-
-        @if (totalPages > 1)
-        {
-            <nav aria-label="Page navigation">
-                <ul class="pagination-list">
-                    @if (pageIndex > 1)
-                    {
-                        <li><a href="#" class="page-link" data-page="@(pageIndex - 1)">Prev</a></li>
-                    }
-
-                    @for (int i = start; i <= end; i++)
-                    {
-                        var activeClass = i == pageIndex ? "active" : "";
-                        <li>
-                            <a href="#" class="page-link @activeClass" data-page="@i">@i</a>
-                        </li>
-                    }
-
-                    @if (pageIndex < totalPages)
-                    {
-                        <li><a href="#" class="page-link" data-page="@(pageIndex + 1)">Next</a></li>
-                    }
-                </ul>
-            </nav>
-        }
-
-    </div>
-
-    <!-- Details modal -->
-    <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content"></div>
-      </div>
-    </div>
-
-    <!-- Loader -->
-    <div id="globalLoader" class="loader-overlay d-none">
-        <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
-    </div>
-
-    <!-- scripts (assumes jQuery & bootstrap are loaded globally; include them if not) -->
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
+@section Scripts {
     <script>
-        (function($) {
-            const baseUrl = '/Movies';
-
-            function showLoader() { $('#globalLoader').removeClass('d-none'); }
-            function hideLoader() { $('#globalLoader').addClass('d-none'); }
-
-            async function loadCards(query) {
-                try {
-                    showLoader();
-                    const url = baseUrl + (query ? ('?' + query) : '');
-                    // We expect the controller to return Partial if AJAX; but Index returns full view for standard
-                    const html = await $.get(url, function(){});
-                    // If response contains container, extract partial
-                    const newHtml = $(html).find('#movieCardsContainer').html() || html;
-                    $('#movieCardsContainer').html(newHtml);
-                    // update pagination area similarly
-                    const newPagination = $(html).find('#paginationContainer').html();
-                    if (newPagination) $('#paginationContainer').html(newPagination);
-                } catch (err) {
-                    console.error(err);
-                    alert('Failed to load movies.');
-                } finally {
-                    hideLoader();
-                }
-            }
-
-            // click on card details button
-            $(document).on('click', '.btn-show-details', async function(e) {
-                e.preventDefault();
-                var id = $(this).data('id');
-                if (!id) return;
-                try {
-                    showLoader();
-                    const html = await $.get(baseUrl + '/Details/' + id);
-                    $('#detailsModal .modal-content').html(html);
-                    var modal = new bootstrap.Modal(document.getElementById('detailsModal'));
-                    modal.show();
-                } catch (err) {
-                    console.error(err);
-                    alert('Could not load details.');
-                } finally {
-                    hideLoader();
-                }
+        // Ajax search
+        $("#searchForm").on("submit", function (e) {
+            e.preventDefault();
+            const query = $(this).serialize();
+            $.get("@Url.Action("Index", "Movies")", query, function (html) {
+                $("#moviesContainer").html($(html).find("#moviesContainer").html());
             });
-
-            // pagination clicks (delegated)
-            $(document).on('click', '.page-link', function(e) {
-                e.preventDefault();
-                const page = $(this).data('page');
-                const q = $('#searchInput').val() || '';
-                const params = new URLSearchParams();
-                if (q) params.set('search', q);
-                if (page) params.set('page', page);
-                loadCards(params.toString());
-                // scroll to top of container
-                $('html,body').animate({ scrollTop: $('#movieCardsContainer').offset().top - 80 }, 300);
-            });
-
-            // search
-            $('#btnSearch').on('click', function() {
-                const q = $('#searchInput').val() || '';
-                const params = new URLSearchParams();
-                if (q) params.set('search', q);
-                loadCards(params.toString());
-            });
-
-            // press enter in search
-            $('#searchInput').on('keypress', function(e) {
-                if (e.which === 13) {
-                    $('#btnSearch').click();
-                }
-            });
-
-        })(jQuery);
+        });
     </script>
-</body>
-</html>
+}

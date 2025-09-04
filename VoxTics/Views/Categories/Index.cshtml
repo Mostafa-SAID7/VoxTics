@@ -1,0 +1,17 @@
+﻿@model IEnumerable<VoxTics.Models.Entities.Category>
+
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<h2>Categories</h2>
+<div class="row">
+    @foreach (var cat in Model)
+    {
+        <div class="col-md-3 mb-3">
+            <a asp-controller="Categories" asp-action="Details" asp-route-id="@cat.Id" class="btn btn-outline-primary w-100">
+                @cat.Name
+            </a>
+        </div>
+    }
+</div>

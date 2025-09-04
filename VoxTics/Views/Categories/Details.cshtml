@@ -1,0 +1,24 @@
+﻿@model VoxTics.Models.ViewModels.CategoryMoviesVM
+
+@{
+    ViewData["Title"] = $"Movies in {Model.Name}";
+}
+
+<h2>@Model.Name</h2>
+
+<div class="row">
+    @foreach (var movie in Model.Movies)
+    {
+        <div class="col-md-3 mb-4">
+            <div class="card h-100">
+                <img src="@movie.ImageUrl" class="card-img-top" style="object-fit:cover; height:220px;" />
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a asp-controller="Movies" asp-action="Details" asp-route-id="@movie.Id">@movie.Title</a>
+                    </h5>
+                    <p class="card-text text-muted">@movie.Duration min</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>

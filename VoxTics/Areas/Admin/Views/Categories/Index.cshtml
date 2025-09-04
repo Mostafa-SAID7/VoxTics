@@ -1,0 +1,79 @@
+﻿@model IEnumerable<VoxTics.Areas.Admin.ViewModels.CategoryViewModel>
+
+@{
+    ViewData["Title"] = "Manage Categories";
+}
+
+<div class="d-flex justify-content-between mb-3">
+    <h2>Categories</h2>
+    <button id="btnCreateCategory" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> Add Category
+    </button>
+</div>
+
+<div id="categoriesTableContainer">
+    @Html.Partial("_CategoriesTable", Model)
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="crudModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function($){
+            const base = '/Admin/Categories';
+
+            async function openModal(url){
+                const html = await $.get(url);
+                $("#crudModal .modal-content").html(html);
+                var modal = new bootstrap.Modal(document.getElementById('crudModal'));
+                modal.show();
+                if ($.validator) $.validator.unobtrusive.parse($("#crudModal"));
+            }
+
+            async function reloadTable(){
+                const html = await $.get(base);
+                const newTable = $(html).find('#categoriesTableContainer').html();
+                $('#categoriesTableContainer').html(newTable);
+            }
+
+            $(document).on('click', '#btnCreateCategory', e => {
+                e.preventDefault(); openModal(base + '/Create');
+            });
+
+            $(document).on('click', '.btn-edit-category', function(){
+                openModal(base + '/Edit/' + $(this).data('id'));
+            });
+
+            $(document).on('click', '.btn-delete-category', function(){
+                openModal(base + '/Delete/' + $(this).data('id'));
+            });
+
+            $(document).on('submit', '#crudModal form', function(e){
+                e.preventDefault();
+                const $form = $(this);
+
+                $.ajax({
+                    url: $form.attr('action'),
+                    method: $form.attr('method'),
+                    data: $form.serialize(),
+                    success: function(res){
+                        if(res.success){
+                            bootstrap.Modal.getInstance(document.getElementById('crudModal')).hide();
+                            toastr.success(res.message);
+                            reloadTable();
+                        } else {
+                            $("#crudModal .modal-content").html(res);
+                            if ($.validator) $.validator.unobtrusive.parse($("#crudModal"));
+                        }
+                    },
+                    error: () => toastr.error("Error processing request")
+                });
+            });
+        })(jQuery);
+    </script>
+}

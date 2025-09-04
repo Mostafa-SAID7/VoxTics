@@ -1,28 +1,28 @@
-﻿@using VoxTics.Models.ViewModels
-@model IEnumerable<MovieVM>
+﻿@model IEnumerable<VoxTics.Models.ViewModels.MovieVM>
 
-<div class="movies-grid">
-    @foreach (var m in Model)
+<div class="row">
+    @foreach (var movie in Model)
     {
-        <div class="movie-card">
-            <div class="poster">
-                @if (!string.IsNullOrEmpty(m.ImageUrl))
-                {
-                    <img src="@m.ImageUrl" alt="@m.Title" />
-                }
-                else
-                {
-                    <div style="padding:16px;color:#6b7280;">No image</div>
-                }
-            </div>
-            <div class="body">
-                <div class="title">@m.Title</div>
-                <div class="text-muted small">@m.ShortDescription</div>
-                <div class="meta">
-                    <span>@m.ReleaseDate.ToString("yyyy")</span>
-                    <span>
-                        <button class="btn btn-sm btn-outline-primary btn-show-details" data-id="@m.Id">Details</button>
-                    </span>
+        <div class="col-md-3 mb-4">
+            <div class="card h-100 shadow-sm">
+                <img src="@movie.ImageUrl" class="card-img-top" style="object-fit:cover; height:220px;" />
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a asp-action="Details" asp-route-id="@movie.Id">@movie.Title</a>
+                    </h5>
+                    <p class="card-text small text-muted">@movie.Duration min</p>
+
+                    <div class="mt-2">
+                        @if (movie.Categories != null && movie.Categories.Any())
+                        {
+                            foreach (var cat in movie.Categories)
+                            {
+                                <a asp-controller="Categories" asp-action="Details" asp-route-id="@cat.Id" class="badge bg-secondary me-1">
+                                    @cat.Name
+                                </a>
+                            }
+                        }
+                    </div>
                 </div>
             </div>
         </div>

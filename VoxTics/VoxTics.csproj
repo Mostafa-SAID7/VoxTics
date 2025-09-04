@@ -17,4 +17,10 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\animate.css\" />
+    <Folder Include="wwwroot\lib\sweetalert2\" />
+    <Folder Include="wwwroot\lib\toastr\" />
+  </ItemGroup>
+
 </Project>
