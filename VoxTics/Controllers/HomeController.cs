@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using VoxTics.Models;
+using VoxTics.Models.ViewModels;
 
 namespace VoxTics.Controllers
 {

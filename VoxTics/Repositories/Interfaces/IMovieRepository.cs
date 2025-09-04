@@ -4,6 +4,7 @@ namespace VoxTics.Repositories.Interfaces
 {
     public interface IMovieRepository : IBaseRepository<Movie>
     {
-        // add movie-specific methods here if you need (e.g. Task<IEnumerable<Movie>> GetNowShowingAsync();)
+        Task<IEnumerable<Movie>> GetAllWithIncludesAsync();
+        Task<Movie?> GetByIdWithIncludesAsync(int id);
     }
 }

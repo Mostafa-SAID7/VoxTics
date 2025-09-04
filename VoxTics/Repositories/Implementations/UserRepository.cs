@@ -13,7 +13,11 @@ namespace VoxTics.Repositories.Implementations
         public async Task<User?> GetByEmailAsync(string email)
         {
             if (string.IsNullOrWhiteSpace(email)) return null;
-            return await _db.Set<User>().AsNoTracking().FirstOrDefaultAsync(u => u.Email == email);
+
+            // Use _dbSet (from BaseRepository<T>)
+            return await _dbSet
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Email == email);
         }
     }
 }

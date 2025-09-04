@@ -1,0 +1,30 @@
+﻿@using VoxTics.Models.ViewModels
+@model IEnumerable<MovieVM>
+
+<div class="movies-grid">
+    @foreach (var m in Model)
+    {
+        <div class="movie-card">
+            <div class="poster">
+                @if (!string.IsNullOrEmpty(m.ImageUrl))
+                {
+                    <img src="@m.ImageUrl" alt="@m.Title" />
+                }
+                else
+                {
+                    <div style="padding:16px;color:#6b7280;">No image</div>
+                }
+            </div>
+            <div class="body">
+                <div class="title">@m.Title</div>
+                <div class="text-muted small">@m.ShortDescription</div>
+                <div class="meta">
+                    <span>@m.ReleaseDate.ToString("yyyy")</span>
+                    <span>
+                        <button class="btn btn-sm btn-outline-primary btn-show-details" data-id="@m.Id">Details</button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    }
+</div>

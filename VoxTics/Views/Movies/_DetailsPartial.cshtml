@@ -1,0 +1,37 @@
+﻿@model VoxTics.Models.ViewModels.MovieVM
+
+<div class="modal-header">
+    <h5 class="modal-title">@Model.Title</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+    <div class="row g-3">
+        <div class="col-md-5">
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <img src="@Model.ImageUrl" class="img-fluid rounded" alt="@Model.Title" />
+            }
+        </div>
+        <div class="col-md-7">
+            <p><strong>Release:</strong> @Model.ReleaseDate.ToString("yyyy-MM-dd")</p>
+            <p><strong>Duration:</strong> @Model.Duration minutes</p>
+            <p><strong>Price:</strong> @Model.Price.ToString("C")</p>
+            <p><strong>Status:</strong> @Model.Status</p>
+            <hr />
+            <p>@Model.Description</p>
+
+            @if (Model.Categories?.Any() == true)
+            {
+                <p><strong>Categories:</strong> @string.Join(", ", Model.Categories)</p>
+            }
+            @if (Model.Actors?.Any() == true)
+            {
+                <p><strong>Actors:</strong> @string.Join(", ", Model.Actors)</p>
+            }
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    <a class="btn btn-primary" asp-controller="Booking" asp-action="Create" asp-route-movieId="@Model.Id">Book Tickets</a>
+</div>

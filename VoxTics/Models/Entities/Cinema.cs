@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace VoxTics.Models.Entities
 {
@@ -9,7 +10,10 @@ namespace VoxTics.Models.Entities
         [Required, StringLength(120)]
         public string Name { get; set; } = string.Empty;
 
-        public string? Address { get; set; }
+        public string? Phone { get; set; }
+        public string? Address { get; set; } = string.Empty;
+
+        public ICollection<Hall> Halls { get; set; } = new List<Hall>();
 
         public ICollection<Showtime> Showtimes { get; set; } = new List<Showtime>();
     }

@@ -10,18 +10,21 @@ namespace VoxTics.Models.Entities
         public int ShowtimeId { get; set; }
         public Showtime Showtime { get; set; } = null!;
 
-        // optional user reference; if you have a User entity, replace string with UserId type
-        public string? UserId { get; set; }
+        [Required]
+        public int UserId { get; set; }
+        public User User { get; set; } = null!;
 
-        [Required, StringLength(120)]
-        public string CustomerName { get; set; } = string.Empty;
+        [StringLength(120)]
+        public string? UserName { get; set; }   
 
-        [Required, EmailAddress]
-        public string CustomerEmail { get; set; } = string.Empty;
+        [EmailAddress]
+        public string? UserEmail { get; set; }  
 
         [Range(1, 20)]
         public int SeatsBooked { get; set; } = 1;
 
+        public int Quantity { get; set; }
+        public decimal TotalPrice { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

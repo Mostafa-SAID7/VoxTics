@@ -1,11 +1,13 @@
-﻿namespace VoxTics.Models.Entities
+﻿using System.ComponentModel.DataAnnotations;
+namespace VoxTics.Models.Entities
 {
     public class MovieImg
     {
         public int Id { get; set; }
 
         [Required]
-        public string Url { get; set; } = string.Empty; // relative URL, e.g. /uploads/movies/xxx.jpg
+        public string ImageUrl { get; set; } = string.Empty;
+        public bool IsPrimary { get; set; } = false;
 
         public string? AltText { get; set; }
 

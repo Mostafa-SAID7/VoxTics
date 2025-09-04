@@ -60,6 +60,7 @@ MovieTickets/
 │     ├─ CategoryRepository.cs
 │     └─ UserRepository.cs
 		BaseRepository.cs
+	ServiceCollectionExtensions.cs
 ├── Utility
 │   └── SD.cs                # Static details (constants, roles, etc.)
 ├─ Views/(include in scripts + styles css in the same file page)
