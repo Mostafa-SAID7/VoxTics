@@ -33,7 +33,7 @@ namespace VoxTics.Controllers
                             .OrderBy(s => s.StartTime)
                             .Take(6); // next 6 showtimes
 
-            var vm = new HomeLandingVM
+            var vm = new HomeVM
             {
                 Movies = movies.Select(m => _mapper.Map<MovieVM>(m)).ToList(),
                 Cinemas = cinemas.Select(c => _mapper.Map<CinemaVM>(c)).ToList(),

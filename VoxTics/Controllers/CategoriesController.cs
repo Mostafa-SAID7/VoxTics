@@ -33,7 +33,7 @@ namespace VoxTics.Controllers
             var category = await _categoryRepo.GetByIdWithMoviesAsync(id);
             if (category == null) return NotFound();
 
-            var vm = new CategoryMoviesVM
+            var vm = new CategoryVM
             {
                 Id = category.Id,
                 Name = category.Name,

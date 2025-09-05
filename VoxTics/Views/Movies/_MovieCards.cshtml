@@ -1,5 +1,4 @@
-﻿@using VoxTics.Models.ViewModels
-@model IEnumerable<MovieVM>
+﻿@model VoxTics.Helpers.PaginatedList<VoxTics.Models.ViewModels.MovieVM>
 
 <div class="row g-3">
     @if (Model == null || !Model.Any())

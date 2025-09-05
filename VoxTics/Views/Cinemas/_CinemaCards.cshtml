@@ -1,15 +1,24 @@
-﻿@model IEnumerable<VoxTics.Models.ViewModels.CinemaVM>
+﻿@model VoxTics.Helpers.PaginatedList<VoxTics.Models.ViewModels.CinemaVM>
 
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="row g-4">
     @foreach (var cinema in Model)
     {
-        <div class="bg-white shadow-md rounded-2xl overflow-hidden">
-            <img src="@cinema.ImageUrl" alt="@cinema.Name" class="w-full h-40 object-cover" />
-            <div class="p-3">
-                <h3 class="text-lg font-bold">@cinema.Name</h3>
-                <p class="text-sm text-gray-500">@cinema.Address</p>
-                <a asp-controller="Cinemas" asp-action="Details" asp-route-id="@cinema.Id"
-                   class="text-indigo-600 text-sm mt-2 inline-block">Details</a>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <img src="@(cinema.ImageUrl ?? "/images/no-cinema.png")"
+                     class="card-img-top" alt="@cinema.Name" />
+
+                <div class="card-body">
+                    <h5 class="card-title">@cinema.Name</h5>
+                    <p class="card-text text-muted small">@cinema.Address</p>
+                </div>
+
+                <div class="card-footer text-center">
+                    <a asp-controller="Cinemas" asp-action="Details" asp-route-id="@cinema.Id"
+                       class="btn btn-sm btn-primary">
+                        Details
+                    </a>
+                </div>
             </div>
         </div>
     }
