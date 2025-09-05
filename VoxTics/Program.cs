@@ -18,17 +18,8 @@ builder.Services.AddControllersWithViews();
 // Repositories (extension method you created in VoxTics.Repositories)
 builder.Services.AddVoxTicsRepositories();
 
-// AutoMapper profiles
-builder.Services.AddAutoMapper(cfg =>
-{
-    cfg.AddProfile<MovieProfile>();
-    cfg.AddProfile<CategoryProfile>();
-    cfg.AddProfile<CinemaProfile>();
-    cfg.AddProfile<ShowtimeProfile>();
-    cfg.AddProfile<BookingProfile>();
-    cfg.AddProfile<UserProfile>();
-
-});
+// Register AutoMapper profiles
+builder.Services.AddMappingProfiles();
 
 // Useful for services/controllers that need HttpContext
 builder.Services.AddHttpContextAccessor();
