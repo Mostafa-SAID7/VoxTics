@@ -11,6 +11,7 @@
         public string PasswordHash { get; set; } = string.Empty;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public string? ImageUrl { get; set; }
 
         //  Navigation property
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();

@@ -14,6 +14,8 @@ namespace VoxTics.Repositories
             services.AddScoped<ICinemaRepository, CinemaRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IShowtimeRepository, ShowtimeRepository>();
+            services.AddScoped<IBookingRepository, BookingRepository>();
+
             return services;
         }
     }
