@@ -23,6 +23,9 @@ builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddProfile<MovieProfile>();
     cfg.AddProfile<CategoryProfile>();
+    cfg.AddProfile<CinemaProfile>();
+    cfg.AddProfile<ShowtimeProfile>();
+
 });
 
 // Useful for services/controllers that need HttpContext

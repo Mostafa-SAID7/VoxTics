@@ -1,0 +1,16 @@
+﻿@model IEnumerable<VoxTics.Models.ViewModels.CinemaVM>
+<div class="row">
+    @foreach (var c in Model)
+    {
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <img src="@c.ImageUrl ?? " /images/placeholder.png"" class="card-img-top" />
+                <div class="card-body">
+                    <h5 class="card-title">@c.Name</h5>
+                    <p class="card-text">@c.Address</p>
+                    <a href="@Url.Action("Details", "Cinemas", new { id = c.Id })" class="btn btn-primary btn-sm">View</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

@@ -13,6 +13,7 @@ namespace VoxTics.Repositories
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ICinemaRepository, CinemaRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IShowtimeRepository, ShowtimeRepository>();
             return services;
         }
     }

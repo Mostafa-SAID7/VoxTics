@@ -1,0 +1,17 @@
+﻿@model IEnumerable<VoxTics.Models.Entities.Cinema>
+<table class="table">
+    <thead><tr><th>Name</th><th>Address</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var c in Model)
+        {
+            <tr>
+                <td>@c.Name</td>
+                <td>@c.Address</td>
+                <td>
+                    <button class="btn btn-sm btn-info btn-edit" data-id="@c.Id">Edit</button>
+                    <button class="btn btn-sm btn-danger btn-delete" data-id="@c.Id">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
