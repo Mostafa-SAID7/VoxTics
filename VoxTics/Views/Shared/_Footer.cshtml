@@ -1,5 +1,47 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@* Views/Shared/_Footer.cshtml *@
+<footer class="bg-dark text-white pt-5 pb-3 mt-5 border-top border-secondary">
+    <div class="container">
+        <div class="row">
+            <!-- About -->
+            <div class="col-md-4 mb-3">
+                <h5 class="fw-bold">MovieTickets</h5>
+                <p class="small">
+                    🎬 Your ultimate movie ticket booking platform. Browse movies, check showtimes, and book instantly.
+                </p>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="col-md-4 mb-3">
+                <h5 class="fw-bold">Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li><a class="text-white text-decoration-none" asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li><a class="text-white text-decoration-none" asp-area="" asp-controller="Movies" asp-action="Index">Movies</a></li>
+                    <li><a class="text-white text-decoration-none" asp-area="" asp-controller="Cinemas" asp-action="Index">Cinemas</a></li>
+                    <li><a class="text-white text-decoration-none" asp-area="" asp-controller="Showtimes" asp-action="Index">Showtimes</a></li>
+                    <li><a class="text-white text-decoration-none" asp-area="Admin" asp-controller="Home" asp-action="Index">Admin Area</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact / Social -->
+            <div class="col-md-4 mb-3">
+                <h5 class="fw-bold">Contact Us</h5>
+                <ul class="list-unstyled small">
+                    <li>Email: <a class="text-white text-decoration-none" href="mailto:support@movietickets.com">support@movietickets.com</a></li>
+                    <li>Phone: <a class="text-white text-decoration-none" href="tel:+1234567890">+1 (234) 567-890</a></li>
+                    <li class="mt-2">
+                        <a class="text-white me-2" href="#"><i class="bi bi-facebook"></i></a>
+                        <a class="text-white me-2" href="#"><i class="bi bi-twitter"></i></a>
+                        <a class="text-white me-2" href="#"><i class="bi bi-instagram"></i></a>
+                        <a class="text-white" href="#"><i class="bi bi-youtube"></i></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Bottom -->
+        <div class="text-center mt-3 small border-top border-secondary pt-3">
+            &copy; @DateTime.Now.Year - MovieTickets. All rights reserved. |
+            <a class="text-white text-decoration-none" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy Policy</a>
+        </div>
+    </div>
+</footer>

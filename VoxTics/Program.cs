@@ -26,6 +26,7 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.AddProfile<CinemaProfile>();
     cfg.AddProfile<ShowtimeProfile>();
     cfg.AddProfile<BookingProfile>();
+    cfg.AddProfile<UserProfile>();
 
 });
 

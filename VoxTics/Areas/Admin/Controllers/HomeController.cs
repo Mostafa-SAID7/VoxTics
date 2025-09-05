@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using VoxTics.Areas.Admin.ViewModels;
 using VoxTics.Repositories.Interfaces;
 
 namespace VoxTics.Areas.Admin.Controllers

@@ -15,7 +15,7 @@ namespace VoxTics.Helpers
         public bool HasPreviousPage => PageIndex > 1;
         public bool HasNextPage => PageIndex < TotalPages;
 
-        private PaginatedList(List<T> items, int count, int pageIndex, int pageSize)
+        public PaginatedList(List<T> items, int count, int pageIndex, int pageSize)
         {
             TotalCount = count;
             PageSize = pageSize;

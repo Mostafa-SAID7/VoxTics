@@ -1,21 +1,26 @@
-﻿@model VoxTics.Helpers.PaginatedList<VoxTics.Models.ViewModels.CinemaVM>
+﻿@model VoxTics.Helpers.PaginatedList<VoxTics.Models.ViewModels.ShowtimeVM>
 
 <div class="space-y-6">
-    <!-- Search -->
-    <form id="cinemaFilterForm" method="get" class="flex gap-2">
+    <!-- Filters -->
+    <form id="showtimeFilterForm" method="get" class="flex flex-wrap gap-2 items-center">
         <input type="text" name="search"
                value="@ViewContext.HttpContext.Request.Query["search"]"
                placeholder="Search cinemas..."
                class="border p-2 rounded w-full" />
 
+        <input type="date" name="date"
+               value="@ViewContext.HttpContext.Request.Query["date"]"
+               class="border p-2 rounded" />
+
+
         <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded">
-            Search
+            Filter
         </button>
     </form>
 
-    <!-- Cinema cards (AJAX updates here) -->
-    <div id="cinemasContainer">
-        @await Html.PartialAsync("_CinemaCards", Model)
+    <!-- Showtimes list (AJAX updated) -->
+    <div id="showtimesContainer">
+        @await Html.PartialAsync("_ShowtimeCards", Model)
     </div>
 
     <!-- Pagination -->
@@ -26,10 +31,10 @@
 
 @section Scripts {
     <script>
-        $(document).on("submit", "#cinemaFilterForm", function (e) {
+        $(document).on("submit", "#showtimeFilterForm", function (e) {
             e.preventDefault();
             $.get('@Url.Action("Index")', $(this).serialize(), function (data) {
-                $("#cinemasContainer").html($(data).find("#cinemasContainer").html());
+                $("#showtimesContainer").html($(data).find("#showtimesContainer").html());
             });
         });
     </script>

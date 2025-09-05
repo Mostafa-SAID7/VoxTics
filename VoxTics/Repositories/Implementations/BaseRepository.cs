@@ -18,19 +18,40 @@ namespace VoxTics.Repositories.Implementations
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _dbSet = _context.Set<T>();
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+            _context.Database.SetCommandTimeout(180);
+
+            _context.ChangeTracker.LazyLoadingEnabled = false;
         }
 
         public IQueryable<T> Query(string? includeProperties = null, bool asNoTracking = true)
         {
             IQueryable<T> query = _dbSet;
             if (asNoTracking) query = query.AsNoTracking();
+
             if (!string.IsNullOrWhiteSpace(includeProperties))
             {
                 foreach (var include in includeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries))
-                    query = query.Include(include.Trim());
+                {
+                    var propName = include.Trim();
+                    var prop = typeof(T).GetProperty(propName);
+
+                    if (prop != null) // property exists on the entity
+                    {
+                        query = query.Include(propName);
+                    }
+                    else
+                    {
+                        // optional: log warning instead of throwing
+                        Console.WriteLine($"⚠️ Warning: '{propName}' is not a navigation property of {typeof(T).Name}");
+                    }
+                }
             }
+
             return query;
         }
+
 
         public async Task<IEnumerable<T>> GetAllAsync(string? includeProperties = null)
             => await Query(includeProperties).ToListAsync();

@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using VoxTics.Areas.Admin.ViewModels;
+using VoxTics.Helpers;
 using VoxTics.Models.Entities;
+using VoxTics.Models.ViewModels;
 using VoxTics.Repositories.Interfaces;
 
 namespace VoxTics.Areas.Admin.Controllers
@@ -11,107 +12,60 @@ namespace VoxTics.Areas.Admin.Controllers
     {
         private readonly IUserRepository _userRepo;
         private readonly IMapper _mapper;
-        private readonly IWebHostEnvironment _env;
 
-        public UsersController(IUserRepository userRepo, IMapper mapper, IWebHostEnvironment env)
+        public UsersController(IUserRepository userRepo, IMapper mapper)
         {
             _userRepo = userRepo;
             _mapper = mapper;
-            _env = env;
         }
 
-        public async Task<IActionResult> Index()
+        // GET: Admin/Users
+        public async Task<IActionResult> Index(string? search, int pageIndex = 1, int pageSize = 10)
         {
-            var users = await _userRepo.GetAllAsync();
-            var vm = users.Select(u => _mapper.Map<UserViewModel>(u));
+            var query = _userRepo.Query();
+            if (!string.IsNullOrEmpty(search))
+                query = query.Where(u => u.FullName.Contains(search) || u.Email.Contains(search));
+
+            var paged = await PaginatedList<User>.CreateAsync(query, pageIndex, pageSize);
+            var mapped = paged.Select(u => _mapper.Map<UserAdminVM>(u)).ToList();
+            var vm = new PaginatedList<UserAdminVM>(mapped, paged.TotalCount, paged.PageIndex, paged.PageSize);
+
             return View(vm);
         }
 
-        public IActionResult Create()
-        {
-            return PartialView("_UserForm", new UserViewModel());
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(UserViewModel vm)
-        {
-            if (!ModelState.IsValid) return PartialView("_UserForm", vm);
-
-            var entity = _mapper.Map<User>(vm);
-
-            if (vm.ImageFile != null)
-            {
-                var fileName = await SaveImageAsync(vm.ImageFile);
-                entity.ImageUrl = $"/uploads/users/{fileName}";
-            }
-
-            await _userRepo.AddAsync(entity);
-            TempData["Success"] = "User created successfully.";
-            return Json(new { success = true });
-        }
-
+        // GET: Admin/Users/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            var entity = await _userRepo.GetByIdAsync(id);
-            if (entity == null) return NotFound();
+            var user = await _userRepo.GetByIdAsync(id);
+            if (user == null) return NotFound();
 
-            var vm = _mapper.Map<UserViewModel>(entity);
-            return PartialView("_UserForm", vm);
+            var vm = _mapper.Map<UserAdminVM>(user);
+            return View(vm);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, UserViewModel vm)
+        // POST: Admin/Users/Edit/5
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(UserAdminVM vm)
         {
-            if (!ModelState.IsValid) return PartialView("_UserForm", vm);
+            if (!ModelState.IsValid) return View(vm);
 
-            var entity = await _userRepo.GetByIdAsync(id);
-            if (entity == null) return NotFound();
+            var user = await _userRepo.GetByIdAsync(vm.Id);
+            if (user == null) return NotFound();
 
-            _mapper.Map(vm, entity);
+            _mapper.Map(vm, user);
+            await _userRepo.UpdateAsync(user);
 
-            if (vm.ImageFile != null)
-            {
-                if (!string.IsNullOrEmpty(entity.ImageUrl))
-                {
-                    var oldPath = Path.Combine(_env.WebRootPath, entity.ImageUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
-                    if (System.IO.File.Exists(oldPath)) System.IO.File.Delete(oldPath);
-                }
-
-                var fileName = await SaveImageAsync(vm.ImageFile);
-                entity.ImageUrl = $"/uploads/users/{fileName}";
-            }
-
-            await _userRepo.UpdateAsync(entity);
-            TempData["Success"] = "User updated successfully.";
-            return Json(new { success = true });
+            TempData["Success"] = "User updated.";
+            return RedirectToAction("Index");
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        // POST: Admin/Users/Delete/5
+        [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
             await _userRepo.DeleteAsync(id);
             TempData["Success"] = "User deleted.";
-            return Json(new { success = true });
-        }
-
-        private async Task<string> SaveImageAsync(IFormFile file)
-        {
-            var uploads = Path.Combine(_env.WebRootPath, "uploads", "users");
-            if (!Directory.Exists(uploads)) Directory.CreateDirectory(uploads);
-
-            var ext = Path.GetExtension(file.FileName);
-            var filename = $"{Guid.NewGuid()}{ext}";
-            var filePath = Path.Combine(uploads, filename);
-
-            using (var fs = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(fs);
-            }
-
-            return filename;
+            return RedirectToAction("Index");
         }
     }
 }

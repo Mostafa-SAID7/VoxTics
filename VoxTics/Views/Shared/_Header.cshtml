@@ -1,5 +1,75 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container-fluid">
+        <!-- Brand -->
+        <a class="navbar-brand animate__animated animate__fadeInDown" asp-area="" asp-controller="Home" asp-action="Index">
+            🎬 MovieTickets
+        </a>
+
+        <!-- Toggler for mobile -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar links -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-area="" asp-controller="Movies" asp-action="Index">Movies</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-area="" asp-controller="Cinemas" asp-action="Index">Cinemas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-area="" asp-controller="Showtimes" asp-action="Index">Showtimes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-warning" asp-area="Admin" asp-controller="Home" asp-action="Index">Admin Area</a>
+                </li>
+            </ul>
+
+            <!-- Search bar -->
+            <form class="d-flex me-3" method="get" asp-controller="Movies" asp-action="Index">
+                <input class="form-control me-2" type="search" name="search" placeholder="Search movies..."
+                       value="@Context.Request.Query["search"]" aria-label="Search">
+                <button class="btn btn-outline-light" type="submit">Search</button>
+            </form>
+
+            <!-- User / Auth Links -->
+            <ul class="navbar-nav mb-2 mb-lg-0">
+           
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Profile">Profile</a></li>
+                            <li><a class="dropdown-item" asp-area="" asp-controller="Booking" asp-action="MyBookings">My Bookings</a></li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li>
+                                <form method="post" asp-area="" asp-controller="Users" asp-action="Logout" class="d-inline">
+                                    <button type="submit" class="dropdown-item text-danger">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Register</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</nav>
+

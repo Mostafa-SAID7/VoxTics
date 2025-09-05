@@ -1,0 +1,17 @@
+﻿@model IEnumerable<VoxTics.Models.ViewModels.ShowtimeVM>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    @foreach (var showtime in Model)
+    {
+        <div class="bg-white shadow-md rounded-2xl p-4 flex flex-col">
+            <h4 class="text-lg font-semibold">@showtime.MovieTitle</h4>
+            <p class="text-sm text-gray-600">@showtime.CinemaName</p>
+            <p class="text-sm text-gray-500">@showtime.StartTime.ToString("f")</p>
+
+            <a asp-controller="Bookings" asp-action="Create" asp-route-id="@showtime.Id"
+               class="mt-auto bg-indigo-600 text-white text-sm px-3 py-1 rounded-lg hover:bg-indigo-700">
+                Book Now
+            </a>
+        </div>
+    }
+</div>

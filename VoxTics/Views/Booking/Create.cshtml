@@ -1,0 +1,43 @@
+﻿@model VoxTics.Models.ViewModels.BookingVM
+
+<div class="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6">
+    <h2 class="text-xl font-bold mb-4">Book Tickets</h2>
+
+    <form asp-action="Create" method="post">
+        <input type="hidden" asp-for="ShowtimeId" />
+
+        <div class="mb-3">
+            <label class="block text-sm font-medium">Movie</label>
+            <p class="p-2 border rounded bg-gray-50">@Model.MovieTitle</p>
+        </div>
+
+        <div class="mb-3">
+            <label class="block text-sm font-medium">Cinema</label>
+            <p class="p-2 border rounded bg-gray-50">@Model.CinemaName</p>
+        </div>
+
+        <div class="mb-3">
+            <label class="block text-sm font-medium">Showtime</label>
+            <p class="p-2 border rounded bg-gray-50">@Model.Showtime.ToString("f")</p>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="SeatsBooked" class="block text-sm font-medium"></label>
+            <input asp-for="SeatsBooked" class="border p-2 rounded w-full" type="number" min="1" />
+            <span asp-validation-for="SeatsBooked" class="text-red-500 text-sm"></span>
+        </div>
+
+        <div class="mt-4 flex justify-between">
+            <a asp-controller="Showtimes" asp-action="Index"
+               class="text-gray-600 hover:underline">Back to Showtimes</a>
+
+            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
+                Confirm Booking
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

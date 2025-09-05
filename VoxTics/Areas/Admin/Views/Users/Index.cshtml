@@ -1,0 +1,31 @@
+﻿@model VoxTics.Helpers.PaginatedList<VoxTics.Models.ViewModels.UserAdminVM>
+
+<h2>Users</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m[0].FullName)</th>
+            <th>@Html.DisplayNameFor(m => m[0].Email)</th>
+            <th>@Html.DisplayNameFor(m => m[0].Role)</th>
+            <th>@Html.DisplayNameFor(m => m[0].CreatedAt)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.FullName</td>
+                <td>@user.Email</td>
+                <td>@user.Role</td>
+                <td>@user.CreatedAt.ToShortDateString()</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <form asp-action="Delete" asp-route-id="@user.Id" method="post" style="display:inline">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
