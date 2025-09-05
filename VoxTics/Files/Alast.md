@@ -3,9 +3,13 @@ MovieTickets/
 ├─ Areas/
 │  └─ Admin/
 │     ├─ Controllers/
+			BookingController
+			CinemasController
 │     │  └─ MoviesController.cs
 	  │  └─ CategoriesController.cs
 			HomeController.cs
+			UsersController
+			ShowtimesController
 │     └─ ViewModels/
 			add validation attribute
 │        └─ MovieViewModel.cs
@@ -35,12 +39,23 @@ MovieTickets/
 			_ViewStart
 ├─ Controllers/
 │  └─ MoviesController.cs           # Public-facing controller
+	  BookingController
+	  CinemasController
+	  CategoriesController.cs
+	  HomeController.cs
+	  UsersController
+	  ShowtimesController
 ├─ Data/
 │  └─ MovieDbContext.cs
 ├─ Helpers/
 │  └─ PaginatedList.cs
 ├─ MappingProfiles/
 │  └─ MovieProfile.cs               # AutoMapper profile
+	  CategoryProfile
+	  BookingProfile
+	  CinemaProfile
+	  UserProfile
+
 
 ├─ Models/
 │  ├─ Entities/
