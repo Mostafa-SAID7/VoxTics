@@ -1,16 +1,20 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Logging;
 using VoxTics.Areas.Admin.ViewModels;
-using VoxTics.Helpers;
 using VoxTics.Models.Entities;
-using VoxTics.Models.Enums;
 using VoxTics.Models.ViewModels;
 using VoxTics.Repositories.Interfaces;
-using VoxTics.Utility;
 
-namespace MovieTickets.Areas.Admin.Controllers
+namespace VoxTics.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class MoviesController : Controller
@@ -35,93 +39,86 @@ namespace MovieTickets.Areas.Admin.Controllers
             _logger = logger;
         }
 
-        // inside MoviesController
-        public async Task<IActionResult> Index(string? searchTerm = "", int categoryId = 0,
-            MovieStatus? status = null, int page = 1, int pageSize = 10)
+        // GET: Admin/Movies
+        public async Task<IActionResult> Index(string? searchTerm = null, int categoryId = 0,
+            int page = 1, int pageSize = 10, string? sortBy = "createdat", SortOrder sortOrder = SortOrder.Desc)
         {
             try
             {
-                // Build filter for repository
-                var filter = new MovieFilterVM
+                var filter = new BasePaginatedFilterVM
                 {
-                    SearchTerm = string.IsNullOrWhiteSpace(searchTerm) ? null : searchTerm,
-                    CategoryId = categoryId == 0 ? null : categoryId,
-                    Status = status,
-                    PageNumber = page <= 0 ? 1 : page,
-                    PageSize = pageSize <= 0 ? 10 : pageSize,
-                    SortBy = "CreatedAt",
-                    SortOrder = SortOrder.Desc
+                    PageNumber = page,
+                    PageSize = pageSize,
+                    SearchTerm = searchTerm,
+                    SortBy = sortBy,
+                    SortOrder = sortOrder
                 };
 
-                var (movies, totalCount) = await _movieRepository.GetPagedFilteredMoviesAsync(filter);
+                // Use the admin paging helper from repository
+                var (movies, totalCount) = await _movieRepository.GetPagedMoviesForAdminAsync(filter);
 
-                var categories = await _categoryRepository.GetAllAsync();
+                // Map results
+                var mapped = movies.Select(m => _mapper.Map<MovieViewModel>(m)).ToList();
+                var paged = new PaginatedList<MovieViewModel>(mapped, totalCount, page, pageSize);
 
-                var viewModel = new MoviesIndexVM
+                // categories for filters
+                var categories = await _categoryRepository.GetAllAsync(null);
+                var categoryVms = _mapper.Map<List<CategoryViewModel>>(categories);
+
+                var vm = new MovieViewModel
                 {
-                    Movies = _mapper.Map<List<MovieViewModel>>(movies),
-                    Categories = _mapper.Map<List<CategoryViewModel>>(categories),
+                    Movies = paged,
+                    Categories = categoryVms,
                     SearchTerm = searchTerm,
                     SelectedCategoryId = categoryId,
-                    SelectedStatus = status,
                     CurrentPage = page,
                     PageSize = pageSize,
-                    TotalCount = totalCount
+                    SortBy = sortBy ?? "createdat",
+                    SortDescending = sortOrder == SortOrder.Desc
                 };
+
+                // Populate AvailableCategories for drop-down (used in Create/Edit forms if needed)
+                vm.AvailableCategories = categoryVms.Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Name,
+                    Selected = c.Id == categoryId
+                }).ToList();
 
                 if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
                 {
-                    return PartialView("_MoviesTable", viewModel);
+                    return PartialView("_MoviesTable", vm);
                 }
 
-                return View(viewModel);
+                return View(vm);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while loading movies index page");
-
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = false, message = "Error loading movies data" });
-                }
-
                 TempData["Error"] = "Error loading movies data";
-                return View(new MoviesIndexVM());
+                return View(new MovieViewModel());
             }
         }
+
         // GET: Admin/Movies/Details/5
         public async Task<IActionResult> Details(int id)
         {
             try
             {
-                var movie = await _movieRepository.GetByIdAsync(id);
-                if (movie == null)
-                {
-                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                    {
-                        return Json(new { success = false, message = "Movie not found" });
-                    }
-                    return NotFound();
-                }
+                var movie = await _movieRepository.GetMovieWithDetailsAsync(id);
+                if (movie == null) return NotFound();
 
-                var viewModel = _mapper.Map<MovieViewModel>(movie);
+                var vm = _mapper.Map<MovieViewModel>(movie);
 
                 if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return PartialView("_DetailsPartial", viewModel);
-                }
+                    return PartialView("_DetailsPartial", vm);
 
-                return View(viewModel);
+                return View(vm);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while loading movie details for ID: {MovieId}", id);
-
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = false, message = "Error loading movie details" });
-                }
-
+                _logger.LogError(ex, "Error loading movie details for ID {MovieId}", id);
+                TempData["Error"] = "Error loading movie details";
                 return RedirectToAction(nameof(Index));
             }
         }
@@ -129,35 +126,18 @@ namespace MovieTickets.Areas.Admin.Controllers
         // GET: Admin/Movies/Create
         public async Task<IActionResult> Create()
         {
-            try
+            var vm = new MovieViewModel
             {
-                var categories = await _categoryRepository.GetAllAsync();
-                var viewModel = new MovieViewModel
-                {
-                    Categories = _mapper.Map<List<CategoryViewModel>>(categories),
-                    ReleaseDate = DateTime.Now.Date,
-                    Status = MovieStatus.Upcoming
-                };
+                ReleaseDate = DateTime.Today,
+                Status = VoxTics.Models.Enums.MovieStatus.Upcoming
+            };
 
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return PartialView("_Create", viewModel);
-                }
+            await PopulateCategoriesAsync(vm);
 
-                return View(viewModel);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while loading create movie form");
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                return PartialView("_Create", vm);
 
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = false, message = "Error loading create form" });
-                }
-
-                TempData["Error"] = "Error loading create form";
-                return RedirectToAction(nameof(Index));
-            }
+            return View(vm);
         }
 
         // POST: Admin/Movies/Create
@@ -167,114 +147,89 @@ namespace MovieTickets.Areas.Admin.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
-                    // Use repo method that exists
-                    var isUnique = await _movieRepository.IsMovieTitleUniqueAsync(viewModel.Title);
-                    if (!isUnique)
-                    {
-                        ModelState.AddModelError("Title", "A movie with this title already exists");
-                    }
-                    else
-                    {
-                        var movie = _mapper.Map<Movie>(viewModel);
-
-                        // Handle poster upload
-                        if (viewModel.PosterImageFile != null)
-                        {
-                            var imagePath = await SaveImageAsync(viewModel.PosterImageFile, "movies");
-                            movie.ImageUrl = imagePath;
-                        }
-
-                        // Handle trailer image upload (store separately)
-                        if (viewModel.TrailerImageFile != null)
-                        {
-                            var trailerImagePath = await SaveImageAsync(viewModel.TrailerImageFile, "movies");
-                            movie.TrailerImageUrl = trailerImagePath; // ensure Movie has TrailerImageUrl
-                        }
-
-                        movie.CreatedAt = DateTime.UtcNow;
-                        movie.UpdatedAt = DateTime.UtcNow;
-
-                        var result = await _movieRepository.AddAsync(movie);
-
-                        if (result != null)
-                        {
-                            _logger.LogInformation("Movie created successfully with ID: {MovieId}", result.Id);
-
-                            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                            {
-                                return Json(new
-                                {
-                                    success = true,
-                                    message = "Movie created successfully!",
-                                    movieId = result.Id
-                                });
-                            }
-
-                            TempData["Success"] = "Movie created successfully!";
-                            return RedirectToAction(nameof(Index));
-                        }
-                    }
+                    await PopulateCategoriesAsync(viewModel);
+                    return View(viewModel);
                 }
 
-                // Redisplay form on error: refill categories
-                var categories = await _categoryRepository.GetAllAsync();
-                viewModel.Categories = _mapper.Map<List<CategoryViewModel>>(categories);
+                // title unique check (use repository method that exists)
+                var ok = await _movieRepository.IsMovieTitleUniqueAsync(viewModel.Title, null);
+                if (!ok)
+                {
+                    ModelState.AddModelError(nameof(viewModel.Title), "A movie with this title already exists.");
+                    await PopulateCategoriesAsync(viewModel);
+                    return View(viewModel);
+                }
 
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                    return PartialView("_Create", viewModel);
+                var movie = _mapper.Map<Movie>(viewModel);
 
-                return View(viewModel);
+                // copy/ensure duration mapping if property names differ (safe fallback)
+                // e.g. if entity has DurationMinutes but VM has DurationInMinutes
+                var durProp = movie.GetType().GetProperty("DurationMinutes");
+                if (durProp != null)
+                {
+                    durProp.SetValue(movie, viewModel.DurationInMinutes);
+                }
+
+                // handle poster upload
+                if (viewModel.PosterImageFile != null)
+                {
+                    var imagePath = await SaveImageAsync(viewModel.PosterImageFile, "movies");
+                    movie.ImageUrl = imagePath;
+                }
+
+                movie.CreatedAt = DateTime.UtcNow;
+                movie.UpdatedAt = DateTime.UtcNow;
+
+                var added = await _movieRepository.AddAsync(movie);
+                await _movieRepository.SaveChangesAsync();
+
+                // update categories (repo methods handle persistence)
+                await UpdateMovieCategoriesAsync(added.Id, viewModel.SelectedCategoryIds);
+
+                _logger.LogInformation("Movie created with id {MovieId}", added.Id);
+                TempData["Success"] = "Movie created successfully";
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while creating movie");
-
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                    return Json(new { success = false, message = "Error creating movie" });
-
-                TempData["Error"] = "Error creating movie";
-                return RedirectToAction(nameof(Index));
+                _logger.LogError(ex, "Error creating movie");
+                ModelState.AddModelError("", "Error creating movie");
+                await PopulateCategoriesAsync(viewModel);
+                return View(viewModel);
             }
         }
-
 
         // GET: Admin/Movies/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
             try
             {
-                var movie = await _movieRepository.GetByIdAsync(id);
-                if (movie == null)
-                {
-                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                    {
-                        return Json(new { success = false, message = "Movie not found" });
-                    }
-                    return NotFound();
-                }
+                var movie = await _movieRepository.GetMovieWithDetailsAsync(id) ?? await _movieRepository.GetByIdAsync(id);
+                if (movie == null) return NotFound();
 
-                var categories = await _categoryRepository.GetAllAsync();
-                var viewModel = _mapper.Map<MovieViewModel>(movie);
-                viewModel.Categories = _mapper.Map<List<CategoryViewModel>>(categories);
+                var vm = _mapper.Map<MovieViewModel>(movie);
+
+                // ensure duration field on vm is set (if mapping didn't)
+                vm.DurationInMinutes = vm.DurationInMinutes == 0
+                    ? (int?)movie.GetType().GetProperty("DurationMinutes")?.GetValue(movie) ?? vm.DurationInMinutes
+                    : vm.DurationInMinutes;
+
+                // selected categories from relation
+                var categories = await _movieRepository.GetMovieCategoriesAsync(id);
+                vm.SelectedCategoryIds = categories.Select(c => c.Id).ToList();
+
+                await PopulateCategoriesAsync(vm);
 
                 if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return PartialView("_Edit", viewModel);
-                }
+                    return PartialView("_Edit", vm);
 
-                return View(viewModel);
+                return View(vm);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while loading edit movie form for ID: {MovieId}", id);
-
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = false, message = "Error loading edit form" });
-                }
-
+                _logger.LogError(ex, "Error loading edit form for movie id {MovieId}", id);
                 TempData["Error"] = "Error loading edit form";
                 return RedirectToAction(nameof(Index));
             }
@@ -285,136 +240,82 @@ namespace MovieTickets.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, MovieViewModel viewModel)
         {
-            if (id != viewModel.Id)
-            {
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                    return Json(new { success = false, message = "Invalid movie ID" });
-                return BadRequest();
-            }
+            if (id != viewModel.Id) return BadRequest();
 
             try
             {
-                if (ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
-                    var existingMovie = await _movieRepository.GetByIdAsync(id);
-                    if (existingMovie == null)
+                    await PopulateCategoriesAsync(viewModel);
+                    return View(viewModel);
+                }
+
+                var existing = await _movieRepository.GetByIdAsync(id);
+                if (existing == null) return NotFound();
+
+                // title uniqueness excluding current movie
+                var unique = await _movieRepository.IsMovieTitleUniqueAsync(viewModel.Title, id);
+                if (!unique)
+                {
+                    ModelState.AddModelError(nameof(viewModel.Title), "A movie with this title already exists.");
+                    await PopulateCategoriesAsync(viewModel);
+                    return View(viewModel);
+                }
+
+                // preserve old image path
+                var oldImage = existing.ImageUrl;
+
+                // map fields from VM to entity
+                _mapper.Map(viewModel, existing);
+
+                // ensure duration mapping if properties differ
+                var durProp = existing.GetType().GetProperty("DurationMinutes");
+                if (durProp != null)
+                {
+                    durProp.SetValue(existing, viewModel.DurationInMinutes);
+                }
+
+                // handle new poster
+                if (viewModel.PosterImageFile != null)
+                {
+                    var newPath = await SaveImageAsync(viewModel.PosterImageFile, "movies");
+                    existing.ImageUrl = newPath;
+
+                    if (!string.IsNullOrWhiteSpace(oldImage))
                     {
-                        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                            return Json(new { success = false, message = "Movie not found" });
-                        return NotFound();
-                    }
-
-                    // Check uniqueness (exclude current id)
-                    var isUnique = await _movieRepository.IsMovieTitleUniqueAsync(viewModel.Title, id);
-                    if (!isUnique)
-                    {
-                        ModelState.AddModelError("Title", "A movie with this title already exists");
-                    }
-                    else
-                    {
-                        // Store old image paths for cleanup
-                        var oldPosterPath = existingMovie.ImageUrl;
-                        var oldTrailerPath = existingMovie.TrailerImageUrl;
-
-                        // Map updated values into existing entity
-                        _mapper.Map(viewModel, existingMovie);
-
-                        // New poster upload
-                        if (viewModel.PosterImageFile != null)
-                        {
-                            var imagePath = await SaveImageAsync(viewModel.PosterImageFile, "movies");
-                            existingMovie.ImageUrl = imagePath;
-
-                            if (!string.IsNullOrEmpty(oldPosterPath))
-                                DeleteImage(oldPosterPath);
-                        }
-
-                        // New trailer image upload
-                        if (viewModel.TrailerImageFile != null)
-                        {
-                            var trailerPath = await SaveImageAsync(viewModel.TrailerImageFile, "movies");
-                            existingMovie.TrailerImageUrl = trailerPath;
-
-                            if (!string.IsNullOrEmpty(oldTrailerPath))
-                                DeleteImage(oldTrailerPath);
-                        }
-
-                        existingMovie.UpdatedAt = DateTime.UtcNow;
-
-                        var result = await _movieRepository.UpdateAsync(existingMovie);
-
-                        if (result)
-                        {
-                            _logger.LogInformation("Movie updated successfully with ID: {MovieId}", id);
-
-                            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                            {
-                                return Json(new { success = true, message = "Movie updated successfully!" });
-                            }
-
-                            TempData["Success"] = "Movie updated successfully!";
-                            return RedirectToAction(nameof(Index));
-                        }
+                        DeleteImage(oldImage);
                     }
                 }
 
-                // If we got this far, redisplay
-                var categories = await _categoryRepository.GetAllAsync();
-                viewModel.Categories = _mapper.Map<List<CategoryViewModel>>(categories);
+                existing.UpdatedAt = DateTime.UtcNow;
 
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                    return PartialView("_Edit", viewModel);
+                await _movieRepository.UpdateAsync(existing);
+                await _movieRepository.SaveChangesAsync();
 
-                return View(viewModel);
+                // update categories
+                await UpdateMovieCategoriesAsync(id, viewModel.SelectedCategoryIds);
+
+                _logger.LogInformation("Movie updated id {MovieId}", id);
+                TempData["Success"] = "Movie updated successfully";
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while updating movie with ID: {MovieId}", id);
-
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                    return Json(new { success = false, message = "Error updating movie" });
-
-                TempData["Error"] = "Error updating movie";
-                return RedirectToAction(nameof(Index));
+                _logger.LogError(ex, "Error updating movie id {MovieId}", id);
+                ModelState.AddModelError("", "Error updating movie");
+                await PopulateCategoriesAsync(viewModel);
+                return View(viewModel);
             }
         }
 
         // GET: Admin/Movies/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            try
-            {
-                var movie = await _movieRepository.GetByIdAsync(id);
-                if (movie == null)
-                {
-                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                    {
-                        return Json(new { success = false, message = "Movie not found" });
-                    }
-                    return NotFound();
-                }
+            var movie = await _movieRepository.GetByIdAsync(id);
+            if (movie == null) return NotFound();
 
-                var viewModel = _mapper.Map<MovieViewModel>(movie);
-
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return PartialView("_Delete", viewModel);
-                }
-
-                return View(viewModel);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while loading delete movie form for ID: {MovieId}", id);
-
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = false, message = "Error loading delete form" });
-                }
-
-                TempData["Error"] = "Error loading delete form";
-                return RedirectToAction(nameof(Index));
-            }
+            var vm = _mapper.Map<MovieViewModel>(movie);
+            return View(vm);
         }
 
         // POST: Admin/Movies/Delete/5
@@ -425,87 +326,40 @@ namespace MovieTickets.Areas.Admin.Controllers
             try
             {
                 var movie = await _movieRepository.GetByIdAsync(id);
-                if (movie == null)
-                {
-                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                    {
-                        return Json(new { success = false, message = "Movie not found" });
-                    }
-                    return NotFound();
-                }
+                if (movie == null) return NotFound();
 
-                // Check if movie has related data (showtimes, bookings)
-                var hasRelatedData = await _movieRepository.HasRelatedDataAsync(id);
-                if (hasRelatedData)
+                var hasRelated = await _movieRepository.HasRelatedDataAsync(id);
+                if (hasRelated)
                 {
-                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                    {
-                        return Json(new
-                        {
-                            success = false,
-                            message = "Cannot delete movie. It has associated showtimes or bookings."
-                        });
-                    }
-
-                    TempData["Error"] = "Cannot delete movie. It has associated showtimes or bookings.";
+                    TempData["Error"] = "Cannot delete movie. It has associated data (showtimes/bookings/etc).";
                     return RedirectToAction(nameof(Index));
                 }
 
-                // Store image paths for cleanup
                 var imagePath = movie.ImageUrl;
-                var trailerImagePath = movie.TrailerImageUrl;
 
-                var result = await _movieRepository.DeleteAsync( );
+                await _movieRepository.DeleteAsync(movie);
+                await _movie_repository_SaveChanges();
 
-                if (result)
+                if (!string.IsNullOrWhiteSpace(imagePath))
                 {
-                    // Delete associated images
-                    if (!string.IsNullOrEmpty(imagePath))
-                    {
-                        DeleteImage(imagePath);
-                    }
-
-                    if (!string.IsNullOrEmpty(trailerImagePath))
-                    {
-                        DeleteImage(trailerImagePath);
-                    }
-
-                    _logger.LogInformation("Movie deleted successfully with ID: {MovieId}", id);
-
-                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                    {
-                        return Json(new
-                        {
-                            success = true,
-                            message = "Movie deleted successfully!"
-                        });
-                    }
-
-                    TempData["Success"] = "Movie deleted successfully!";
-                }
-                else
-                {
-                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                    {
-                        return Json(new { success = false, message = "Error deleting movie" });
-                    }
-
-                    TempData["Error"] = "Error deleting movie";
+                    DeleteImage(imagePath);
                 }
 
+                _logger.LogInformation("Movie deleted id {MovieId}", id);
+                TempData["Success"] = "Movie deleted successfully";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while deleting movie with ID: {MovieId}", id);
-
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = false, message = "Error deleting movie" });
-                }
-
+                _logger.LogError(ex, "Error deleting movie id {MovieId}", id);
                 TempData["Error"] = "Error deleting movie";
                 return RedirectToAction(nameof(Index));
+            }
+
+            // local helper to avoid duplicate await lines (keeps code DRY)
+            async Task _movie_repository_SaveChanges()
+            {
+                await _movieRepository.SaveChangesAsync();
             }
         }
 
@@ -517,42 +371,28 @@ namespace MovieTickets.Areas.Admin.Controllers
             try
             {
                 var movie = await _movieRepository.GetByIdAsync(id);
-                if (movie == null)
-                {
-                    return Json(new { success = false, message = "Movie not found" });
-                }
+                if (movie == null) return Json(new { success = false, message = "Movie not found" });
 
-                // Toggle status logic
                 movie.Status = movie.Status switch
                 {
-                    MovieStatus.Upcoming => MovieStatus.NowShowing,
-                    MovieStatus.NowShowing => MovieStatus.Upcoming,
-                    _ => MovieStatus.Upcoming
+                    VoxTics.Models.Enums.MovieStatus.Upcoming => VoxTics.Models.Enums.MovieStatus.NowShowing,
+                    VoxTics.Models.Enums.MovieStatus.NowShowing => VoxTics.Models.Enums.MovieStatus.EndedShowing,
+                    VoxTics.Models.Enums.MovieStatus.EndedShowing => VoxTics.Models.Enums.MovieStatus.Upcoming,
+                    _ => VoxTics.Models.Enums.MovieStatus.Upcoming
                 };
 
                 movie.UpdatedAt = DateTime.UtcNow;
 
-                var result = await _movieRepository.UpdateAsync(movie);
+                await _movieRepository.UpdateAsync(movie);
+                await _movieRepository.SaveChangesAsync();
 
-                if (result)
-                {
-                    _logger.LogInformation("Movie status toggled successfully for ID: {MovieId} to {Status}",
-                        id, movie.Status);
-
-                    return Json(new
-                    {
-                        success = true,
-                        message = $"Movie status changed to {movie.Status}",
-                        newStatus = movie.Status.ToString()
-                    });
-                }
-
-                return Json(new { success = false, message = "Error updating movie status" });
+                _logger.LogInformation("Movie status toggled id {MovieId} -> {Status}", id, movie.Status);
+                return Json(new { success = true, newStatus = movie.Status.ToString() });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while toggling movie status for ID: {MovieId}", id);
-                return Json(new { success = false, message = "Error updating movie status" });
+                _logger.LogError(ex, "Error toggling status for movie {MovieId}", id);
+                return Json(new { success = false, message = "Error updating status" });
             }
         }
 
@@ -561,142 +401,115 @@ namespace MovieTickets.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> BulkDelete(List<int> movieIds)
         {
-            try
+            if (movieIds == null || !movieIds.Any())
+                return Json(new { success = false, message = "No movies selected" });
+
+            var deleted = 0;
+            var errors = new List<string>();
+
+            foreach (var id in movieIds)
             {
-                if (movieIds == null || !movieIds.Any())
+                try
                 {
-                    return Json(new { success = false, message = "No movies selected" });
-                }
+                    var movie = await _movieRepository.GetByIdAsync(id);
+                    if (movie == null) continue;
 
-                var deletedCount = 0;
-                var errors = new List<string>();
-
-                foreach (var id in movieIds)
-                {
-                    try
+                    if (await _movieRepository.HasRelatedDataAsync(id))
                     {
-                        var movie = await _movieRepository.GetByIdAsync(id);
-                        if (movie != null)
-                        {
-                            var hasRelatedData = await _movieRepository.HasRelatedDataAsync(id);
-                            if (!hasRelatedData)
-                            {
-                                var imagePath = movie.ImageUrl;
-                                var trailerImagePath = movie.TrailerImageUrl;
-
-                                var result = await _movieRepository.DeleteAsync(int );
-                                if (result)
-                                {
-                                    // Delete associated images
-                                    if (!string.IsNullOrEmpty(imagePath))
-                                    {
-                                        DeleteImage(imagePath);
-                                    }
-
-                                    if (!string.IsNullOrEmpty(trailerImagePath))
-                                    {
-                                        DeleteImage(trailerImagePath);
-                                    }
-
-                                    deletedCount++;
-                                }
-                            }
-                            else
-                            {
-                                errors.Add($"Movie '{movie.Title}' has associated data and cannot be deleted");
-                            }
-                        }
+                        errors.Add($"'{movie.Title}' has related data and cannot be deleted");
+                        continue;
                     }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Error deleting movie with ID: {MovieId}", id);
-                        errors.Add($"Error deleting movie with ID: {id}");
-                    }
+
+                    var imagePath = movie.ImageUrl;
+                    await _movieRepository.DeleteAsync(movie);
+                    await _movieRepository.SaveChangesAsync();
+
+                    if (!string.IsNullOrWhiteSpace(imagePath))
+                        DeleteImage(imagePath);
+
+                    deleted++;
                 }
-
-                var message = $"{deletedCount} movie(s) deleted successfully.";
-                if (errors.Any())
+                catch (Exception ex)
                 {
-                    message += $" {errors.Count} movie(s) could not be deleted: {string.Join(", ", errors)}";
+                    _logger.LogError(ex, "Error deleting movie id {Id}", id);
+                    errors.Add($"Error deleting movie id {id}");
                 }
-
-                _logger.LogInformation("Bulk delete completed: {DeletedCount} movies deleted, {ErrorCount} errors",
-                    deletedCount, errors.Count);
-
-                return Json(new
-                {
-                    success = true,
-                    message = message,
-                    deletedCount = deletedCount,
-                    errorCount = errors.Count
-                });
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred during bulk delete operation");
-                return Json(new { success = false, message = "Error during bulk delete operation" });
-            }
+
+            var message = $"{deleted} movie(s) deleted.";
+            if (errors.Any()) message += $" {errors.Count} failed.";
+
+            return Json(new { success = true, message, deletedCount = deleted, errors });
         }
 
-        #region Private Helper Methods
+        #region Private Helpers
 
         private async Task<string> SaveImageAsync(IFormFile file, string folder)
         {
-            try
+            if (file == null || file.Length == 0) return string.Empty;
+
+            var allowed = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (!allowed.Contains(ext)) throw new InvalidOperationException("Invalid image type.");
+
+            if (file.Length > 5 * 1024 * 1024) throw new InvalidOperationException("Image too large (max 5MB).");
+
+            var filename = $"{Guid.NewGuid()}{ext}";
+            var uploads = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", folder);
+            if (!Directory.Exists(uploads)) Directory.CreateDirectory(uploads);
+
+            var full = Path.Combine(uploads, filename);
+            using (var fs = new FileStream(full, FileMode.Create))
             {
-                if (file == null || file.Length == 0)
-                    return string.Empty;
-
-                // Validate file type
-                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
-                var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-
-                if (!allowedExtensions.Contains(extension))
-                    throw new InvalidOperationException("Invalid file type. Only image files are allowed.");
-
-                // Generate unique filename
-                var fileName = $"{Guid.NewGuid()}{extension}";
-                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", folder);
-
-                // Create directory if it doesn't exist
-                if (!Directory.Exists(uploadsFolder))
-                    Directory.CreateDirectory(uploadsFolder);
-
-                var filePath = Path.Combine(uploadsFolder, fileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(fileStream);
-                }
-
-                return $"/uploads/{folder}/{fileName}";
+                await file.CopyToAsync(fs);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error saving image file");
-                throw;
-            }
+
+            return $"/uploads/{folder}/{filename}";
         }
 
         private void DeleteImage(string imagePath)
         {
+            if (string.IsNullOrWhiteSpace(imagePath)) return;
+
+            var full = Path.Combine(_webHostEnvironment.WebRootPath, imagePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
             try
             {
-                if (string.IsNullOrEmpty(imagePath))
-                    return;
-
-                var fullPath = Path.Combine(_webHostEnvironment.WebRootPath, imagePath.TrimStart('/'));
-
-                if (System.IO.File.Exists(fullPath))
-                {
-                    System.IO.File.Delete(fullPath);
-                    _logger.LogInformation("Image deleted: {ImagePath}", imagePath);
-                }
+                if (System.IO.File.Exists(full)) System.IO.File.Delete(full);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error deleting image: {ImagePath}", imagePath);
-                // Don't throw - image deletion failure shouldn't break the main operation
+                _logger.LogError(ex, "Error deleting image {ImagePath}", imagePath);
+            }
+        }
+
+        private async Task PopulateCategoriesAsync(MovieViewModel vm)
+        {
+            var categories = await _categoryRepository.GetAllAsync(null);
+            vm.AvailableCategories = categories.Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name,
+                Selected = vm.SelectedCategoryIds.Contains(c.Id)
+            }).ToList();
+        }
+
+        private async Task UpdateMovieCategoriesAsync(int movieId, List<int> categoryIds)
+        {
+            // Get current categories
+            var current = (await _movieRepository.GetMovieCategoriesAsync(movieId)).Select(c => c.Id).ToList();
+
+            // Remove ones that are no longer selected
+            var toRemove = current.Except(categoryIds ?? new List<int>()).ToList();
+            foreach (var catId in toRemove)
+            {
+                await _movieRepository.RemoveMovieCategoryAsync(movieId, catId);
+            }
+
+            // Add new ones
+            var toAdd = (categoryIds ?? new List<int>()).Except(current).ToList();
+            foreach (var catId in toAdd)
+            {
+                await _movieRepository.AddMovieCategoryAsync(movieId, catId);
             }
         }
 
