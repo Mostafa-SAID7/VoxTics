@@ -1,6 +1,9 @@
-﻿namespace VoxTics
-{
-    public class GlobalUsings
-    {
-    }
-}
+﻿global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.EntityFrameworkCore;
+global using VoxTics.Data;
+global using VoxTics.Models.Entities;
+global using VoxTics.Models.Enums;
+global using VoxTics.Models.ViewModels;
+global using VoxTics.Utility;
+global using VoxTics.Helpers;
+global using System.ComponentModel.DataAnnotations;

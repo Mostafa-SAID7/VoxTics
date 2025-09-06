@@ -1,10 +1,8 @@
-// Controllers/MoviesController.cs
 using System.Diagnostics;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;      // IWebHostEnvironment
 using VoxTics.Helpers;
-using VoxTics.Models.Entities;
 using VoxTics.Models.ViewModels;
 using VoxTics.Repositories.Interfaces;
 
@@ -17,7 +15,11 @@ namespace VoxTics.Controllers
         private readonly ILogger<MoviesController> _logger;
         private readonly IWebHostEnvironment _env;
 
-        public MoviesController(IMovieRepository movieRepo, IMapper mapper, ILogger<MoviesController> logger, IWebHostEnvironment env)
+        public MoviesController(
+            IMovieRepository movieRepo,
+            IMapper mapper,
+            ILogger<MoviesController> logger,
+            IWebHostEnvironment env)
         {
             _movieRepo = movieRepo;
             _mapper = mapper;
@@ -25,50 +27,37 @@ namespace VoxTics.Controllers
             _env = env;
         }
 
-        public async Task<IActionResult> Index(string? search, int? categoryId, int page = 1, int pageSize = 8)
+        // GET: /Movies
+        public async Task<IActionResult> Index(string? search, int? categoryId, int pageIndex = 1, int pageSize = 8)
         {
-            try
+            var query = _movieRepo.Query(includeProperties: "MovieCategories.Category,MovieActors.Actor,Images,Showtimes");
+
+            if (!string.IsNullOrWhiteSpace(search))
+                query = query.Where(m => m.Title.Contains(search) || m.Description.Contains(search));
+
+            if (categoryId.HasValue)
+                query = query.Where(m => m.MovieCategories.Any(mc => mc.CategoryId == categoryId.Value));
+
+            var projected = query.OrderBy(m => m.Title).ProjectTo<MovieVM>(_mapper.ConfigurationProvider);
+
+            var paged = await PaginatedList<MovieVM>.CreateAsync(projected, pageIndex, pageSize);
+
+            paged.RouteValues = new Dictionary<string, object>
             {
-                var query = _movieRepo.Query("MovieCategories.Category,MovieActors.Actor,Images,Showtimes");
-                if (query == null) throw new InvalidOperationException("MovieRepository.Query returned null");
+                ["search"] = search ?? string.Empty,
+                ["categoryId"] = categoryId ?? 0
+            };
 
-                if (!string.IsNullOrWhiteSpace(search))
-                    query = query.Where(m => m.Title.Contains(search) || m.Description.Contains(search));
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                return PartialView("_MovieCards", paged);
 
-                if (categoryId.HasValue)
-                    query = query.Where(m => m.MovieCategories.Any(mc => mc.CategoryId == categoryId.Value));
-
-                var paginated = await PaginatedList<Movie>.CreateAsync(query.OrderBy(m => m.Title), page, pageSize);
-                var vmList = paginated.Select(m => _mapper.Map<MovieVM>(m)).ToList();
-
-                ViewData["Search"] = search;
-                ViewData["CategoryId"] = categoryId;
-                ViewData["Paginated"] = paginated;
-
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                    return PartialView("~/Views/Movies/_MovieCards.cshtml", vmList);
-
-                return View(vmList);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Movies.Index error");
-                // TEMPORARY: show full exception in browser while debugging
-                if (_env.IsDevelopment())
-                {
-                    return Content($"Exception: {ex}\n\nStackTrace:\n{ex.StackTrace}", "text/plain");
-                }
-
-                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-            }
+            return View(paged);
         }
-
         // GET: /Movies/Details/5
         public async Task<IActionResult> Details(int id)
         {
             try
             {
-                // Ensure your repo GetByIdAsync includes related data
                 var movie = await _movieRepo.GetByIdAsync(id, "MovieCategories.Category,MovieActors.Actor,Images,Showtimes");
                 if (movie == null) return NotFound();
 

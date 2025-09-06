@@ -89,34 +89,52 @@ MovieTickets/
 │  └─ MovieProfile.cs               # AutoMapper profile
 	  ShowtimeProfile
 	  UserProfile
+	  ServiceCollectionExtensions
 
 
-├─ Models/
-│  ├─ Entities/
-│  │  ├─ Actor.cs
-│  │  ├─ Booking.cs
-│  │  ├─ Category.cs
-│  │  ├─ Cinema.cs
-		 Hall
-│  │  ├─ Movie.cs
-│  │  ├─ MovieActor.cs
-│  │  ├─ MovieCategory.cs
-│  │  ├─ MovieImg.cs
-│  │  ├─ User.cs	
-		 Seat
-│  │  └─ Showtime.cs
-│  └─ Enums/
-│     └─ MovieStatus.cs
-	ViewModels/
-		simple for public index/details
-		BookingVM
-		CategoryVM
-		CinemaVM
-		HomeVM
-│     └─ MovieVM.cs                 # For public index/details
-		ShowtimeVM
-		UserVM
-├─ Repositories/
+Models/
+ ├─ Entities/
+ │  ├─ Actor.cs
+ │  ├─ Booking.cs
+ │  ├─ BookingSeat.cs
+ │  ├─ Category.cs
+ │  ├─ Cinema.cs
+ │  ├─ Hall.cs
+ │  ├─ Movie.cs
+ │  ├─ MovieActor.cs
+ │  ├─ MovieCategory.cs
+ │  ├─ MovieImg.cs
+ │  ├─ Seat.cs
+ │  ├─ Showtime.cs
+ │  └─ User.cs
+ └─ Enums/
+    ├─ MovieStatus.cs
+    ├─ BookingStatus.cs
+    ├─ NotificationType.cs
+    ├─ PaymentStatus.cs
+    ├─ SeatType.cs
+    ├─ ShowtimeStatus.cs
+    ├─ MovieSortBy.cs
+    ├─ SortOrder.cs
+    ├─ BookingSortBy.cs
+    ├─ TimeRange.cs
+    └─ UserRole.cs
+ViewModels/
+ ├─ ActorVM.cs
+ ├─ BookingVM.cs
+ ├─ CategoryVM.cs
+ ├─ CinemaVM.cs
+ ├─ ErrorViewModel.cs
+ ├─ HomeVM.cs
+ ├─ MovieVM.cs
+ ├─ MovieDetailVM.cs
+ ├─ MovieImageVM.cs
+ ├─ MovieListVM.cs
+ ├─ SearchResultVM.cs
+ ├─ ShowtimeVM.cs
+ └─ UserVM.cs
+
+├─ Repositories or Services/
 │  ├─ Interfaces/
 		IBaseRepository.cs
 		IBookingRepository
@@ -133,7 +151,20 @@ MovieTickets/
 │     ├─ MovieRepository.cs
 		ShowtimeRepository
 │     └─ UserRepository.cs
-	  ServiceCollectionExtensions.cs
+		ServiceCollectionExtensions.cs
+	  
+Infrastructure/
+ ├─ Logging/
+ │   └─ Logger.cs
+ ├─ Notifications/
+ │   └─ NotificationService.cs
+ └─ Email/
+     └─ EmailService.cs
+Common/
+ ├─ Constants.cs
+ ├─ EnumsExtensions.cs   # reusable methods for enums
+ └─ Validators/          # FluentValidation or custom attributes		
+
 ├── Utility
 │   └── SD.cs                # Static details (constants, roles, etc.)
 ├─ Views/(include in scripts + styles css in the same file page)

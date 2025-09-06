@@ -8,16 +8,19 @@ namespace VoxTics.MappingProfiles
     {
         public CategoryProfile()
         {
-            // Entity -> Admin VM
-            CreateMap<Category, CategoryViewModel>();
+            // Entity to ViewModel mappings
+            CreateMap<Category, CategoryVM>()
+                .ForMember(dest => dest.MovieCount, opt => opt.MapFrom(src => src.MovieCategories.Count));
 
-            // Admin VM -> Entity
+            CreateMap<Category, CategoryViewModel>()
+                .ForMember(dest => dest.MovieCount, opt => opt.MapFrom(src => src.MovieCategories.Count));
+
+            // ViewModel to Entity mappings
             CreateMap<CategoryViewModel, Category>()
-                // conditional mapping: only overwrite if value present
-                .ForMember(dest => dest.Name, opt =>
-                    opt.Condition(src => !string.IsNullOrWhiteSpace(src.Name)))
-                .ForMember(dest => dest.Description, opt =>
-                    opt.Condition(src => string.IsNullOrWhiteSpace(src.Description) == false));
+                .ForMember(dest => dest.MovieCategories, opt => opt.Ignore());
+
+            CreateMap<CategoryVM, Category>()
+                .ForMember(dest => dest.MovieCategories, opt => opt.Ignore());
         }
     }
 }

@@ -6,12 +6,13 @@ namespace VoxTics.Models.ViewModels
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
+        public string? Description { get; set; }
+        public string? Image { get; set; }  // optional
+        public int MovieCount { get; set; }
+        public List<MovieVM> Movies { get; set; } = new List<MovieVM>();
 
-        public List<MovieVM> Movies { get; set; } = new();
-    }
-    public class CategoryItemVM
-    {
-        public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
+        public string ShortDescription => string.IsNullOrEmpty(Description)
+            ? ""
+            : Description.Length > 100 ? Description[..100] + "..." : Description;
     }
 }

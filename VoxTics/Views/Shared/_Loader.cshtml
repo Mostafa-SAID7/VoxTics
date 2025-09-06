@@ -1,217 +1,180 @@
 ﻿@* Views/Shared/_Loader.cshtml *@
-<div id="global-loader-overlay" class="d-none" aria-hidden="true" role="status" aria-live="polite">
-    <div class="global-loader-inner" id="global-loader-inner">
-        <div class="spinner-border" role="status" aria-hidden="true">
-            <span class="visually-hidden">Loading...</span>
+<div id="global-loader" aria-hidden="true" class="global-loader d-none">
+    <div class="global-loader-overlay"></div>
+    <div class="global-loader-content" role="status" aria-live="polite">
+        <div class="spinner">
+            <div class="double-bounce1"></div>
+            <div class="double-bounce2"></div>
         </div>
-        <div class="loader-text">Loading...</div>
+        <div class="loader-message">Loading…</div>
     </div>
 </div>
 
 
 @section Styles {
     <style>
-        /* ---------- Global loader ---------- */
-        #global-loader-overlay {
-            position: fixed;
-            inset: 0; /* top/right/bottom/left 0 */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255,255,255,0.78);
-            z-index: 99999;
-            -webkit-backdrop-filter: blur(4px);
-            backdrop-filter: blur(4px);
-            pointer-events: auto;
-        }
+/* wwwroot/css/loader.css */
+.global-loader {
+  position: fixed;
+  inset: 0; /* top:0; right:0; bottom:0; left:0; */
+  z-index: 20000; /* high so it's above modals */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; /* allow clicks through when hidden; JS toggles visibility */
+}
 
-            #global-loader-overlay.d-none {
-                display: none !important;
-                pointer-events: none;
-            }
+.global-loader:not(.d-none) {
+  pointer-events: auto;
+}
 
-        .global-loader-inner {
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            padding: 0.9rem 1.1rem;
-            border-radius: 10px;
-            box-shadow: 0 8px 28px rgba(0,0,0,0.08);
-            background: rgba(255,255,255,0.85);
-            min-width: 160px;
-            text-align: center;
-        }
+/* translucent overlay */
+.global-loader-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(1px);
+}
 
-        .loader-text {
-            font-size: 0.95rem;
-            color: #333;
-            margin-top: 0.35rem;
-        }
+/* content card */
+.global-loader-content {
+  position: relative;
+  z-index: 20001;
+  background: rgba(255,255,255,0.98);
+  padding: 18px 22px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 160px;
+  max-width: 90%;
+}
 
-        /* small screens — make it slightly smaller */
-    @@media (max-width: 420px) {
-            .global-loader-inner
+/* spinner (simple CSS double bounce) */
+.spinner {
+  width: 40px;
+  height: 40px;
+  position: relative;
+}
+.double-bounce1, .double-bounce2 {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  opacity: 0.75;
+  position: absolute;
+  top: 0;
+  left: 0;
+  -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
+          animation: sk-bounce 2.0s infinite ease-in-out;
+  background: linear-gradient(135deg, #007bff 0%, #00a3ff 100%);
+}
+.double-bounce2 {
+  -webkit-animation-delay: -1.0s;
+          animation-delay: -1.0s;
+}
 
-        {
-            min-width: 120px;
-            padding: 0.6rem 0.75rem;
-        }
+@@-webkit-keyframes sk-bounce {
+  0%, 100% { -webkit-transform: scale(0.0) }
+  50% { -webkit-transform: scale(1.0) }
+}
+@@keyframes sk-bounce {
+  0%, 100% { transform: scale(0.0); -webkit-transform: scale(0.0) }
+  50% { transform: scale(1.0); -webkit-transform: scale(1.0) }
+}
 
-        .loader-text {
-            font-size: 0.85rem;
-        }
+.loader-message {
+  font-size: 0.95rem;
+  color: #1f2937; /* dark gray */
+}
 
-        }
+/* small screens tweak */
+@@media (max-width: 420px) {
+  .global-loader-content { padding: 12px; gap: 8px; }
+  .spinner { width: 32px; height: 32px; }
+}
 
-        }
     </style>
 }
+
 @section Scripts {
-   
-        <script>
-                     /* wwwroot/js/loader.js
-           Debounced global loader, integrates with:
-           - jQuery AJAX events ($.ajaxStart/Stop)
-           - click navigation (skips anchors/# and target=_blank and data-no-loader)
-           - non-AJAX form submissions
-           - a small API for fetch: fetchWithLoader()
-           - helpers for loading partials into a modal
-        */
+    <script>
+         // wwwroot/js/loader.js
         (function () {
-            const $overlay = $("#global-loader-overlay");
-            const DEBOUNCE_MS = 300; // show loader only if request runs longer than this (ms)
-            let showTimer = null;
-            let visibleCount = 0; // track nested calls
+            const $ = window.jQuery;
+            const loaderSelector = '#global-loader';
+            const hideClass = 'd-none';
 
-            function _showNow() {
-                if (!$overlay.length) return;
-                visibleCount++;
-                $overlay.removeClass("d-none").attr("aria-hidden", "false");
+            function getEl() {
+                return document.querySelector(loaderSelector);
             }
 
-            function _hideNow(force = false) {
-                if (!$overlay.length) return;
-                if (force) {
-                    visibleCount = 0;
-                } else {
-                    visibleCount = Math.max(0, visibleCount - 1);
-                }
-                if (visibleCount === 0) {
-                    $overlay.addClass("d-none").attr("aria-hidden", "true");
-                }
+            function show() {
+                const el = getEl();
+                if (!el) return;
+                el.classList.remove(hideClass);
             }
 
-            window.showLoader = function () {
-                // called by user code to request a visible loader
-                if (showTimer) clearTimeout(showTimer);
-                showTimer = setTimeout(() => {
-                    _showNow();
-                    showTimer = null;
-                }, DEBOUNCE_MS);
-            };
+            function hide() {
+                const el = getEl();
+                if (!el) return;
+                el.classList.add(hideClass);
+            }
 
-            window.hideLoader = function () {
-                if (showTimer) {
-                    clearTimeout(showTimer);
-                    showTimer = null;
-                    // no show happened so nothing to hide
-                    return;
+            // Expose API
+            window.Loader = {
+                show,
+                hide,
+                toggle: function(showing) {
+                    if (showing) show(); else hide();
                 }
-                _hideNow();
             };
 
-            // Force hide (useful on page load)
-            window.forceHideLoader = function () {
-                if (showTimer) { clearTimeout(showTimer); showTimer = null; }
-                _hideNow(true);
-            };
-
-            // jQuery AJAX integration
-            if (window.jQuery) {
+            // If jQuery present, hook global ajax events
+            if ($) {
+                // Show when any ajax starts
                 $(document).ajaxStart(function () {
-                    window.showLoader();
-                }).ajaxStop(function () {
-                    window.hideLoader();
+                    show();
+                });
+
+                // Hide when all done
+                $(document).ajaxStop(function () {
+                    hide();
+                });
+
+                // In case of error also hide after a small delay
+                $(document).ajaxError(function () {
+                    setTimeout(hide, 200);
                 });
             }
 
-            // Navigation: show loader for regular same-origin navigation links
-            $(document).on("click", "a", function (e) {
-                const href = $(this).attr("href") || "";
-                const target = $(this).attr("target");
-                const noLoader = $(this).data("no-loader");
-
-                if (noLoader || target === "_blank" || !href || href.startsWith("#") || href.startsWith("javascript:")) {
-                    return;
-                }
-
-                // if link is marked data-ajax (handled with AJAX) skip showing loader here
-                if ($(this).data("ajax")) return;
-
-                // show loader — debounced
-                window.showLoader();
-            });
-
-            // Show loader for non-ajax POST form submits (GET forms usually quick)
-            $(document).on("submit", "form", function (e) {
-                const $form = $(this);
-                if ($form.data("ajax") || ($form.attr("method") || "get").toLowerCase() === "get") {
-                    return;
-                }
-                window.showLoader();
-            });
-
-            // fetch wrapper that shows loader
-            window.fetchWithLoader = async function (input, init) {
-                try {
-                    window.showLoader();
-                    const res = await fetch(input, init);
-                    return res;
-                } finally {
-                    window.hideLoader();
-                }
-            };
-
-            // Helper: load a partial view into a Bootstrap modal (by selector)
-            // Usage: loadPartialIntoModal('/Admin/Movies/Create', '#myModal .modal-content')
-            window.loadPartialIntoModal = function (url, targetSelector, options = {}) {
-                // options: method (GET/POST), data, onSuccess(responseHtml), onError
-                const method = (options.method || "GET").toUpperCase();
-
-                // Use jQuery ajax if available (better at handling MVC partials and anti-forgery)
-                if (window.jQuery) {
-                    window.showLoader();
-                    return $.ajax({
-                        url: url,
-                        method: method,
-                        data: options.data || null,
-                        cache: false
-                    }).done(function (html) {
-                        $(targetSelector).html(html);
-                        if (typeof options.onSuccess === "function") options.onSuccess(html);
-                    }).fail(function (xhr, status, err) {
-                        if (typeof options.onError === "function") options.onError(xhr, status, err);
-                    }).always(function () {
-                        window.hideLoader();
+            // Wrap fetch (very small wrapper) to show loader while fetch is in progress
+            // Use window.fetchWithLoader(...) in your code instead of fetch
+            window.fetchWithLoader = function (input, init) {
+                show();
+                return fetch(input, init)
+                    .then(function (res) {
+                        // keep loader visible a little if you want smoother UX
+                        setTimeout(hide, 150);
+                        return res;
+                    })
+                    .catch(function (err) {
+                        setTimeout(hide, 150);
+                        throw err;
                     });
-                } else {
-                    // fallback to fetch
-                    return window.fetchWithLoader(url, { method: method })
-                        .then(r => r.text())
-                        .then(html => {
-                            document.querySelector(targetSelector).innerHTML = html;
-                            if (typeof options.onSuccess === "function") options.onSuccess(html);
-                        }).catch(err => {
-                            if (typeof options.onError === "function") options.onError(err);
-                        });
-                }
             };
 
-            // ensure loader hidden at startup
-            $(function () { window.forceHideLoader(); });
-        })();
+            // Show loader on beforeunload to give immediate feedback on full-page navigation
+            window.addEventListener('beforeunload', function () {
+                // Don't block unload; only visual feedback
+                show();
+            });
 
+            // Optionally hide loader when window loaded (in case you want a small preload splash)
+            window.addEventListener('load', function () {
+                hide();
+            });
+
+        })();
     </script>
 }

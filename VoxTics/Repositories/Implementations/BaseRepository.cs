@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using VoxTics.Data;
 using VoxTics.Repositories.Interfaces;
 
@@ -16,94 +11,102 @@ namespace VoxTics.Repositories.Implementations
 
         public BaseRepository(MovieDbContext context)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _context = context;
             _dbSet = _context.Set<T>();
-            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-
-            _context.Database.SetCommandTimeout(180);
-
-            _context.ChangeTracker.LazyLoadingEnabled = false;
         }
 
-        public IQueryable<T> Query(string? includeProperties = null, bool asNoTracking = true)
+        public virtual async Task<T?> GetByIdAsync(int id)
         {
-            IQueryable<T> query = _dbSet;
-            if (asNoTracking) query = query.AsNoTracking();
-
-            if (!string.IsNullOrWhiteSpace(includeProperties))
+            try
             {
-                foreach (var include in includeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries))
-                {
-                    var propName = include.Trim();
-                    var prop = typeof(T).GetProperty(propName);
-
-                    if (prop != null) // property exists on the entity
-                    {
-                        query = query.Include(propName);
-                    }
-                    else
-                    {
-                        // optional: log warning instead of throwing
-                        Console.WriteLine($"⚠️ Warning: '{propName}' is not a navigation property of {typeof(T).Name}");
-                    }
-                }
+                return await _dbSet.FindAsync(id);
             }
-
-            return query;
-        }
-
-
-        public async Task<IEnumerable<T>> GetAllAsync(string? includeProperties = null)
-            => await Query(includeProperties).ToListAsync();
-
-        public async Task<T?> GetByIdAsync(object id, string? includeProperties = null)
-        {
-            if (string.IsNullOrWhiteSpace(includeProperties))
+            catch (Exception)
             {
-                var found = await _dbSet.FindAsync(id);
-                return found;
+                throw;
             }
-
-            var prop = typeof(T).GetProperty("Id");
-            if (prop == null)
-                return await Query(includeProperties, asNoTracking: false).FirstOrDefaultAsync();
-
-            object convertedId;
-            try { convertedId = Convert.ChangeType(id, prop.PropertyType); }
-            catch { return null; }
-
-            var param = Expression.Parameter(typeof(T), "e");
-            var left = Expression.Property(param, prop);
-            var right = Expression.Constant(convertedId, prop.PropertyType);
-            var body = Expression.Equal(left, right);
-            var lambda = Expression.Lambda<Func<T, bool>>(body, param);
-
-            return await Query(includeProperties, asNoTracking: false).FirstOrDefaultAsync(lambda);
         }
 
-        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, string? includeProperties = null)
-            => await Query(includeProperties, asNoTracking: false).Where(predicate).ToListAsync();
-
-        public async Task AddAsync(T entity)
+        public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
-            await _dbSet.AddAsync(entity);
-            await _context.SaveChangesAsync();
+            try
+            {
+                return await _dbSet.ToListAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public async Task UpdateAsync(T entity)
+        public virtual async Task<T> AddAsync(T entity)
         {
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
-            _dbSet.Update(entity);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _dbSet.AddAsync(entity);
+                await _context.SaveChangesAsync();
+                return entity;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public async Task DeleteAsync(object id)
+        public virtual async Task<bool> UpdateAsync(T entity)
         {
-            var existing = await _dbSet.FindAsync(id);
-            if (existing == null) return;
-            _dbSet.Remove(existing);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _dbSet.Update(entity);
+                var result = await _context.SaveChangesAsync();
+                return result > 0;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public virtual async Task<bool> DeleteAsync(int id)
+        {
+            try
+            {
+                var entity = await GetByIdAsync(id);
+                if (entity == null)
+                    return false;
+
+                _dbSet.Remove(entity);
+                var result = await _context.SaveChangesAsync();
+                return result > 0;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public virtual async Task<bool> ExistsAsync(int id)
+        {
+            try
+            {
+                return await _dbSet.FindAsync(id) != null;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public virtual async Task<int> CountAsync()
+        {
+            try
+            {
+                return await _dbSet.CountAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

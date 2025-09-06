@@ -1,35 +1,59 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace VoxTics.Models.Entities
 {
-    public class User
+    public class User : BaseEntity
     {
-        public int Id { get; set; }
+        [Required]
+        [StringLength(50)]
+        public string FirstName { get; set; } = string.Empty;
 
-        [Required, StringLength(100)]
-        public string FullName { get; set; } = string.Empty;
+        [Required]
+        [StringLength(50)]
+        public string LastName { get; set; } = string.Empty;
 
-        [Required, EmailAddress, StringLength(150)]
+        [Required]
+        [StringLength(100)]
+        [EmailAddress]
         public string Email { get; set; } = string.Empty;
 
         [Required]
+        [StringLength(100)]
         public string PasswordHash { get; set; } = string.Empty;
 
-        [Phone, StringLength(20)]
+        [StringLength(15)]
         public string? Phone { get; set; }
 
-        [StringLength(250)]
-        public string? Address { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? DateOfBirth { get; set; }
 
-        [Required, StringLength(20)]
-        public string Role { get; set; } = "User";  // "User" | "Admin"
+        [Required]
+        public UserRole Role { get; set; } = UserRole.Customer;
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public bool IsActive { get; set; } = true;
 
-        [StringLength(250)]
-        public string? ImageUrl { get; set; }
+        public bool IsEmailConfirmed { get; set; } = false;
 
-        // Navigation property
-        public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+        [StringLength(100)]
+        public string? EmailConfirmationToken { get; set; }
+
+        [StringLength(100)]
+        public string? PasswordResetToken { get; set; }
+
+        public DateTime? PasswordResetExpires { get; set; }
+
+        public DateTime? LastLoginDate { get; set; }
+
+        // Navigation properties
+        public virtual ICollection<Booking> Bookings { get; set; } = new HashSet<Booking>();
+
+        // Computed property
+        [Display(Name = "Full Name")]
+        public string FullName => $"{FirstName} {LastName}";
+
+        // ✅ Optional: Social media links for user profiles
+        public virtual ICollection<SocialMediaLink> SocialMediaLinks { get; set; } = new List<SocialMediaLink>();
     }
 }

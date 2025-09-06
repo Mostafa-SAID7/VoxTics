@@ -1,36 +1,25 @@
-﻿@model VoxTics.Helpers.PaginatedList<VoxTics.Models.ViewModels.MovieVM>
+﻿@using VoxTics.Helpers
+@model PaginatedList<VoxTics.Models.ViewModels.MovieVM>
 
-<div class="space-y-6">
-    <!-- Search & Filter -->
-    <form id="filterForm" method="get" class="flex gap-2">
-        <input type="text" name="search"
-               value="@ViewContext.HttpContext.Request.Query["search"]"
-               placeholder="Search cinemas..."
-               class="border p-2 rounded w-full" />
+<h2 class="mb-4">Movies</h2>
 
-        <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded">
-            Search
-        </button>
+<div class="mb-3">
+    <form asp-action="Index" method="get" class="ajax-search-form" data-target="#cards-container">
+        <div class="input-group">
+            <input type="text" name="search" value="@(Model.RouteValues?["search"] ?? "")" class="form-control" placeholder="Search movies...">
+            <select name="categoryId" class="form-select ajax-filter">
+                <option value="">All categories</option>
+                @* populate categories list as needed *@
+            </select>
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
     </form>
+</div>
 
-    <!-- Movie cards (loaded via AJAX) -->
-    <div id="moviesContainer">
+<div id="movies-container">
+    <div id="cards-container">
         @await Html.PartialAsync("_MovieCards", Model)
     </div>
 
-    <!-- Pagination -->
-    <div class="mt-4">
-        @await Html.PartialAsync("_Pagination", Model)
-    </div>
+    @await Html.PartialAsync("~/Views/Shared/_Pagination.cshtml", Model, new ViewDataDictionary(ViewData) { { "Action", "Index" }, { "Controller", "Movies" }, { "Target", "#cards-container" } })
 </div>
-
-@section Scripts {
-    <script>
-        $(document).on("submit", "#filterForm", function (e) {
-            e.preventDefault();
-            $.get('@Url.Action("Index")', $(this).serialize(), function (data) {
-                $("#moviesContainer").html($(data).find("#moviesContainer").html());
-            });
-        });
-    </script>
-}

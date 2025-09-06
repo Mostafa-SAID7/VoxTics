@@ -1,0 +1,29 @@
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace VoxTics.Models.Entities
+{
+    public class BookingSeat : BaseEntity
+    {
+        // Foreign Keys
+        [Required]
+        public int BookingId { get; set; }
+
+        [Required]
+        public int SeatId { get; set; }
+
+        // Price of this seat
+        [Required]
+        [Column(TypeName = "decimal(18,2)")]
+        [Range(0, double.MaxValue, ErrorMessage = "Seat price must be positive")]
+        public decimal SeatPrice { get; set; }
+
+        // Navigation Properties
+        [ForeignKey("BookingId")]
+        public virtual Booking Booking { get; set; } = null!;
+
+        [ForeignKey("SeatId")]
+        public virtual Seat Seat { get; set; } = null!;
+    }
+}

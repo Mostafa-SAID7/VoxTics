@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System.Diagnostics;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Mvc;
 using VoxTics.Helpers;
 using VoxTics.Models.ViewModels;
@@ -10,44 +12,72 @@ namespace VoxTics.Controllers
     {
         private readonly ICinemaRepository _cinemaRepo;
         private readonly IMapper _mapper;
+        private readonly ILogger<CinemasController> _logger;
 
-        public CinemasController(ICinemaRepository cinemaRepo, IMapper mapper)
+        public CinemasController(ICinemaRepository cinemaRepo, IMapper mapper, ILogger<CinemasController> logger)
         {
             _cinemaRepo = cinemaRepo;
             _mapper = mapper;
+            _logger = logger;
         }
 
-        public async Task<IActionResult> Index(string? search, int pageIndex = 1, int pageSize = 12)
+        // GET: /Cinemas
+        public async Task<IActionResult> Index(string? search, string? location, int pageIndex = 1, int pageSize = 12)
         {
-            // Use Query() instead of GetAllQueryable()
-            var query = _cinemaRepo.Query();
+            try
+            {
+                var query = _cinemaRepo.Query(); // includeProperties if needed
 
-            if (!string.IsNullOrWhiteSpace(search))
-                query = query.Where(c => c.Name.Contains(search));
+                if (!string.IsNullOrWhiteSpace(search))
+                    query = query.Where(c => c.Name.Contains(search));
 
-            // 1. Paginate entities
-            var pagedEntities = await PaginatedList<VoxTics.Models.Entities.Cinema>.CreateAsync(query, pageIndex, pageSize);
+                if (!string.IsNullOrWhiteSpace(location))
+                    query = query.Where(c => c.Address.Contains(location));
 
-            // 2. Map to view models
-            var mapped = pagedEntities.Select(c => _mapper.Map<CinemaVM>(c));
+                var projected = query
+                    .OrderBy(c => c.Name)
+                    .ProjectTo<CinemaVM>(_mapper.ConfigurationProvider);
 
-            // 3. Build PaginatedList<VM> with static Create
-            var pagedVM = PaginatedList<CinemaVM>.Create(mapped, pageIndex, pageSize);
+                var paged = await PaginatedList<CinemaVM>.CreateAsync(projected, pageIndex, pageSize);
 
-            // Handle AJAX request
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                return PartialView("_CinemaCards", pagedVM);
+                paged.RouteValues = new Dictionary<string, object>
+                {
+                    ["search"] = search ?? string.Empty,
+                    ["location"] = location ?? string.Empty
+                };
 
-            return View(pagedVM);
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    return PartialView("_CinemaCards", paged);
+
+                return View(paged);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Cinemas.Index error");
+                return StatusCode(500);
+            }
         }
 
+        // GET: /Cinemas/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var cinema = await _cinemaRepo.GetByIdAsync(id);
-            if (cinema == null) return NotFound();
+            try
+            {
+                var entity = await _cinemaRepo.GetByIdAsync(id, includeProperties: "Halls,Showtimes");
+                if (entity == null) return NotFound();
 
-            var vm = _mapper.Map<CinemaVM>(cinema);
-            return View(vm);
+                var vm = _mapper.Map<CinemaVM>(entity);
+
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    return PartialView("_DetailsPartial", vm);
+
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Cinemas.Details error (id={CinemaId})", id);
+                return StatusCode(500);
+            }
         }
     }
 }

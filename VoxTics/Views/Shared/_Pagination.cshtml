@@ -1,42 +1,120 @@
 ﻿@using VoxTics.Helpers
-@using Microsoft.AspNetCore.WebUtilities
-@model PaginatedList<VoxTics.Models.Entities.Movie>
+@using Microsoft.AspNetCore.Routing
+@model PaginatedList<object>
 
 @{
-    // Helper to build current query string with replaced page param
-    var currentQuery = Context.Request.Query.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToString());
+    var action = ViewData["Action"]?.ToString() ?? "Index";
+    var controller = ViewData["Controller"]?.ToString() ?? ViewContext.RouteData.Values["controller"]?.ToString();
+    var area = ViewData["Area"]?.ToString();
+    var target = ViewData["Target"]?.ToString() ?? "#cards-container";
+
+    var baseDict = new RouteValueDictionary(Model.RouteValues ?? new Dictionary<string, object>());
+    if (!string.IsNullOrEmpty(area)) baseDict["area"] = area;
 }
 
 @if (Model.TotalPages > 1)
 {
-    <nav>
-        <ul class="pagination justify-content-center">
+    <nav aria-label="Pagination" class="mt-4">
+        <ul class="pagination justify-content-center flex-wrap gap-1">
+
             <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
                 @{
-                    var prevPage = Model.PageIndex - 1;
-                    currentQuery["page"] = prevPage.ToString();
-                    var prevUrl = Url.Action("Index", "Movies", currentQuery);
+                    var rv = new RouteValueDictionary(baseDict) { ["pageIndex"] = Model.PageIndex - 1 };
                 }
-                <a class="page-link" href="@prevUrl">Previous</a>
+                <a class="page-link ajax-page" data-target="@target" data-url="@Url.Action(action, controller, rv)">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
             </li>
 
-            @for (int i = 1; i <= Model.TotalPages; i++)
-            {
-                currentQuery["page"] = i.ToString();
-                var pageUrl = Url.Action("Index", "Movies", currentQuery);
-                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
-                    <a class="page-link" href="@pageUrl">@i</a>
-                </li>
+            @{
+                int start = Math.Max(1, Model.PageIndex - 2);
+                int end = Math.Min(Model.TotalPages, Model.PageIndex + 2);
+                if (start > 1)
+                {
+                    var rv1 = new RouteValueDictionary(baseDict) { ["pageIndex"] = 1 };
+                    <li class="page-item">
+                        <a class="page-link ajax-page" data-target="@target" data-url="@Url.Action(action, controller, rv1)">1</a>
+                    </li>
+                    if (start > 2)
+                    {
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                        ;
+                    }
+                }
+                for (int i = start; i <= end; i++)
+                {
+                    var rvi = new RouteValueDictionary(baseDict) { ["pageIndex"] = i };
+                    <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                        <a class="page-link ajax-page" data-target="@target" data-url="@Url.Action(action, controller, rvi)">@i</a>
+                    </li>
+                }
+                if (end < Model.TotalPages)
+                {
+                    if (end < Model.TotalPages - 1)
+                    {
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                        ;
+                    }
+                    var rvLast = new RouteValueDictionary(baseDict) { ["pageIndex"] = Model.TotalPages };
+                    <li class="page-item">
+                        <a class="page-link ajax-page" data-target="@target" data-url="@Url.Action(action, controller, rvLast)">@Model.TotalPages</a>
+                    </li>
+                }
             }
 
             <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
                 @{
-                    var nextPage = Model.PageIndex + 1;
-                    currentQuery["page"] = nextPage.ToString();
-                    var nextUrl = Url.Action("Index", "Movies", currentQuery);
+                    var rvNext = new RouteValueDictionary(baseDict) { ["pageIndex"] = Model.PageIndex + 1 };
                 }
-                <a class="page-link" href="@nextUrl">Next</a>
+                <a class="page-link ajax-page" data-target="@target" data-url="@Url.Action(action, controller, rvNext)">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
             </li>
         </ul>
     </nav>
+}
+
+@section Scripts {
+    <script>
+        function loadWithAjax(url, target, push = true) {
+            if (!url || !target) return;
+            window.showLoader();
+            $(target).fadeTo(200, 0.5);
+
+            $.get(url).done(function (result) {
+                $(target).html(result);
+                $(target).fadeTo(200, 1);
+                $("html, body").animate({ scrollTop: $(target).offset().top - 100 }, 300);
+                if (push) history.pushState({ url: url, target: target }, "", url);
+            }).always(function () {
+                window.hideLoader();
+            });
+        }
+
+        $(document).on("click", ".ajax-page", function (e) {
+            e.preventDefault();
+            var url = $(this).data("url");
+            var target = $(this).data("target");
+            loadWithAjax(url, target);
+        });
+
+        $(document).on("submit", ".ajax-search-form", function (e) {
+            e.preventDefault();
+            var $form = $(this);
+            var url = $form.attr("action") + "?" + $form.serialize();
+            var target = $form.data("target") || "#cards-container";
+            loadWithAjax(url, target);
+        });
+
+        $(document).on("change", ".ajax-filter", function () {
+            var $form = $(this).closest("form.ajax-search-form");
+            if ($form.length) $form.trigger("submit");
+        });
+
+        window.addEventListener("popstate", function (event) {
+            if (event.state && event.state.url && event.state.target) {
+                loadWithAjax(event.state.url, event.state.target, false);
+            }
+        });
+    </script>
 }

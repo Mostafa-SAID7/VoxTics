@@ -1,19 +1,31 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using VoxTics.Models.Enums;
 
 namespace VoxTics.Models.ViewModels
 {
-    // Public-facing simplified profile
+    // Unified UserVM for public display and admin
     public class UserVM
     {
         public int Id { get; set; }
-        public string FullName { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string? ImageUrl { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
         public string? Phone { get; set; }
-        public string? Address { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public UserRole Role { get; set; }
+        public bool IsActive { get; set; }
+        public bool IsEmailConfirmed { get; set; }
+        public DateTime RegistrationDate { get; set; }
+        public DateTime? LastLoginDate { get; set; }
+        public string FullName => $"{FirstName} {LastName}";
+        public List<BookingVM> RecentBookings { get; set; } = new();
+        public int TotalBookings { get; set; }
+        public decimal TotalSpent { get; set; }
     }
 
-    // Login
+    // Login model
     public class LoginVM
     {
         [Required, EmailAddress, Display(Name = "Email Address")]
@@ -26,7 +38,7 @@ namespace VoxTics.Models.ViewModels
         public bool RememberMe { get; set; }
     }
 
-    // Register
+    // Registration model
     public class RegisterVM
     {
         [Required, StringLength(100)]
@@ -51,7 +63,7 @@ namespace VoxTics.Models.ViewModels
         public string? Address { get; set; }
     }
 
-    // For user self-editing
+    // Model for user self-edit
     public class UserEditVM
     {
         public int Id { get; set; }
@@ -66,7 +78,7 @@ namespace VoxTics.Models.ViewModels
         public string? Address { get; set; }
     }
 
-    // For admin management
+    // Model for admin management
     public class UserAdminVM
     {
         public int Id { get; set; }

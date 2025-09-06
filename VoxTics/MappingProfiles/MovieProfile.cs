@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using VoxTics.Areas.Admin.ViewModels;
+using VoxTics.Helpers;
 using VoxTics.Models.Entities;
 using VoxTics.Models.ViewModels;
 
@@ -10,49 +11,35 @@ namespace VoxTics.MappingProfiles
     {
         public MovieProfile()
         {
-            // Entity -> Public VM (Frontend)
+            // Entity to ViewModel mappings
             CreateMap<Movie, MovieVM>()
-             .ForMember(dest => dest.ImageUrl,
-                 opt => opt.MapFrom(src => src.Images != null && src.Images.Any() ? src.Images.First().ImageUrl : null))
-             .ForMember(dest => dest.Categories,
-                 opt => opt.MapFrom(src => src.MovieCategories != null
-                     ? src.MovieCategories.Select(mc => new CategoryItemVM { Id = mc.CategoryId, Name = mc.Category != null ? mc.Category.Name : string.Empty }).ToList()
-                     : new List<CategoryItemVM>()))
-             .ForMember(dest => dest.Actors,
-                 opt => opt.MapFrom(src => src.MovieActors != null
-                     ? src.MovieActors.Select(ma => ma.Actor != null ? ma.Actor.FullName : string.Empty).ToList()
-                     : new List<string>()));
+                .ForMember(dest => dest.Categories, opt => opt.MapFrom(src =>
+                    src.MovieCategories.Select(mc => mc.Category)))
+                .ForMember(dest => dest.Actors, opt => opt.MapFrom(src =>
+                    src.MovieActors.Select(ma => ma.Actor)))
+                .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.MovieImages));
 
-            // Entity -> Admin VM
             CreateMap<Movie, MovieViewModel>()
-                .ForMember(dest => dest.SelectedCategoryIds, opt =>
-                    opt.MapFrom(src => src.MovieCategories != null
-                        ? src.MovieCategories.Select(mc => mc.CategoryId)
-                        : new List<int>()))
-                .ForMember(dest => dest.ImageUrl, opt =>
-                    opt.MapFrom(src => src.Images != null && src.Images.Any()
-                        ? src.Images.First().ImageUrl
-                        : null));
+                .ForMember(dest => dest.MovieCategories, opt => opt.MapFrom(src =>
+                    src.MovieCategories.Select(mc => mc.Category)))
+                .ForMember(dest => dest.MovieActors, opt => opt.MapFrom(src =>
+                    src.MovieActors.Select(ma => ma.Actor)))
+                .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.MovieImages))
+                .ForMember(dest => dest.ShowtimesCount, opt => opt.MapFrom(src => src.Showtimes.Count))
+                .ForMember(dest => dest.BookingsCount, opt => opt.MapFrom(src =>
+                    src.Showtimes.SelectMany(s => s.Bookings).Count()));
 
-            // Admin VM -> Entity
+            CreateMap<Actor, ActorVM>();
+            CreateMap<Actor, ActorViewModel>();
+            CreateMap<MovieImg, MovieImageVM>();
+            CreateMap<MovieImg, MovieImageViewModel>();
+
+            // ViewModel to Entity mappings
             CreateMap<MovieViewModel, Movie>()
-                // don’t map MovieCategories directly, handled in service/controller
                 .ForMember(dest => dest.MovieCategories, opt => opt.Ignore())
-                // don’t map MovieActors directly here
                 .ForMember(dest => dest.MovieActors, opt => opt.Ignore())
-                // don’t map Images directly, handled separately
-                .ForMember(dest => dest.Images, opt => opt.Ignore())
-                // conditional mapping: only overwrite if value present
-                .ForMember(dest => dest.Title, opt =>
-                    opt.Condition(src => !string.IsNullOrWhiteSpace(src.Title)))
-                .ForMember(dest => dest.Description, opt =>
-                    opt.Condition(src => !string.IsNullOrWhiteSpace(src.Description)))
-                .ForMember(dest => dest.Price, opt =>
-                    opt.Condition(src => src.Price > 0))
-                .ForMember(dest => dest.Duration, opt =>
-                    opt.Condition(src => src.Duration > 0))
-                .ForMember(dest => dest.ReleaseDate, opt =>
-                    opt.Condition(src => src.ReleaseDate != default));
+                .ForMember(dest => dest.MovieImages, opt => opt.Ignore())
+                .ForMember(dest => dest.Showtimes, opt => opt.Ignore());
         }
     }
-}
+    }

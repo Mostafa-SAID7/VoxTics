@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using VoxTics.Areas.Admin.ViewModels;
 using VoxTics.Models.Entities;
 using VoxTics.Models.ViewModels;
 
@@ -8,22 +9,27 @@ namespace VoxTics.MappingProfiles
     {
         public UserProfile()
         {
-            // For showing a user's public profile
-            CreateMap<User, UserVM>().ReverseMap();
+            // Entity to ViewModel mappings
+            CreateMap<User, UserVM>()
+                .ForMember(dest => dest.TotalBookings, opt => opt.MapFrom(src => src.Bookings.Count))
+                .ForMember(dest => dest.TotalSpent, opt => opt.MapFrom(src =>
+                    src.Bookings.Where(b => b.PaymentStatus == Models.Enums.PaymentStatus.Paid).Sum(b => b.TotalAmount)))
+                .ForMember(dest => dest.RecentBookings, opt => opt.MapFrom(src =>
+                    src.Bookings.OrderByDescending(b => b.BookingDate).Take(5)));
 
-            // For user editing own profile
-            CreateMap<User, UserEditVM>().ReverseMap();
+            CreateMap<User, UserViewModel>()
+                .ForMember(dest => dest.TotalBookings, opt => opt.MapFrom(src => src.Bookings.Count))
+                .ForMember(dest => dest.TotalSpent, opt => opt.MapFrom(src =>
+                    src.Bookings.Where(b => b.PaymentStatus == Models.Enums.PaymentStatus.Paid).Sum(b => b.TotalAmount)))
+                .ForMember(dest => dest.RegistrationDate, opt => opt.MapFrom(src => src.CreatedDate));
 
-            // For admin management view
-            CreateMap<User, UserAdminVM>().ReverseMap();
-
-            // For registration (map VM -> Entity, password handled separately)
-            CreateMap<RegisterVM, User>()
-                .ForMember(dest => dest.PasswordHash, opt => opt.Ignore()) // hash manually
-                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => "User"))
-                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
-
-            // LoginVM does not need mapping → used only for auth input
+            // ViewModel to Entity mappings
+            CreateMap<UserViewModel, User>()
+                .ForMember(dest => dest.PasswordHash, opt => opt.Ignore())
+                .ForMember(dest => dest.Bookings, opt => opt.Ignore())
+                .ForMember(dest => dest.EmailConfirmationToken, opt => opt.Ignore())
+                .ForMember(dest => dest.PasswordResetToken, opt => opt.Ignore())
+                .ForMember(dest => dest.PasswordResetExpires, opt => opt.Ignore());
         }
     }
 }
