@@ -22,8 +22,7 @@ namespace VoxTics.Models.ViewModels
         // Showtimes
         public List<ShowtimeVM> TodayShowtimes { get; set; } = new List<ShowtimeVM>();
 
-        // Search
-        public SearchResultVM SearchForm { get; set; } = new();
+       
 
         // Statistics for dashboard
         public int TotalMovies { get; set; }

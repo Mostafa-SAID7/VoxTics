@@ -1,60 +1,115 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using VoxTics.Repositories.Interfaces;
+using Microsoft.Extensions.Logging;
+using VoxTics.Models.Entities;
 using VoxTics.Models.ViewModels;
+using VoxTics.Repositories.Interfaces;
 
 namespace VoxTics.Controllers
 {
     public class CategoriesController : Controller
     {
-        private readonly ICategoryRepository _categoryRepo;
-        private readonly IMovieRepository _movieRepo;
-        private readonly IMapper _mapper;
+        private readonly ICategoryRepository _categoryRepository;
+        private readonly IMovieRepository _movieRepository;
+        private readonly ILogger<CategoriesController> _logger;
 
-        public CategoriesController(ICategoryRepository categoryRepo,
-                                    IMovieRepository movieRepo,
-                                    IMapper mapper)
+        public CategoriesController(
+            ICategoryRepository categoryRepository,
+            IMovieRepository movieRepository,
+            ILogger<CategoriesController> logger)
         {
-            _categoryRepo = categoryRepo;
-            _movieRepo = movieRepo;
-            _mapper = mapper;
+            _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
+            _movieRepository = movieRepository ?? throw new ArgumentNullException(nameof(movieRepository));
+            _logger = logger;
         }
 
         // GET: /Categories
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? searchTerm)
         {
-            var categories = await _categoryRepo.GetAllAsync();
-            return View(categories);
+            try
+            {
+                IEnumerable<Category> categories;
+
+                if (!string.IsNullOrWhiteSpace(searchTerm))
+                    categories = await _categoryRepository.SearchAsync(searchTerm);
+                else
+                    categories = await _categoryRepository.GetAllAsync();
+
+                var withCounts = await _categoryRepository.GetAllWithMovieCountsAsync();
+
+                var vms = withCounts.Select(x => new CategoryVM
+                {
+                    Id = x.category.Id,
+                    Name = x.category.Name,
+                    Description = x.category.Description,
+                    MovieCount = x.movieCount
+                }).ToList();
+
+                return View(vms);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading categories");
+                TempData["Error"] = "Unable to load categories.";
+                return View(new List<CategoryVM>());
+            }
         }
 
         // GET: /Categories/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var category = await _categoryRepo.GetByIdWithMoviesAsync(id);
-            if (category == null) return NotFound();
-
-            var vm = new CategoryVM
+            try
             {
-                Id = category.Id,
-                Name = category.Name,
-                Movies = category.MovieCategories
-                    .Select(mc => new MovieVM
-                    {
-                        Id = mc.Movie.Id,
-                        Title = mc.Movie.Title,
-                        ImageUrl = mc.Movie.Images.FirstOrDefault()?.ImageUrl,
-                        Duration = mc.Movie.Duration,
-                        Categories = mc.Movie.MovieCategories
-                            .Select(inner => new CategoryItemVM
-                            {
-                                Id = inner.CategoryId,
-                                Name = inner.Category.Name
-                            }).ToList()
-                    }).ToList()
-            };
+                var category = await _categoryRepository.GetCategoryWithMoviesAsync(id);
+                if (category == null) return NotFound();
 
-            return View(vm);
+                var vm = new CategoryVM
+                {
+                    Id = category.Id,
+                    Name = category.Name,
+                    Description = category.Description,
+                    MovieCount = category.MovieCategories?.Count ?? 0,
+                    Movies = category.MovieCategories?
+                        .Select(mc => new MovieVM
+                        {
+                            Id = mc.Movie.Id,
+                            Title = mc.Movie.Title,
+                            Description = mc.Movie.Description,
+                            PosterImage = mc.Movie.ImageUrl,
+                            ReleaseDate = mc.Movie.ReleaseDate,
+                            DurationInMinutes = mc.Movie.DurationMinutes
+                        }).ToList() ?? new List<MovieVM>()
+                };
+
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading category {CategoryId}", id);
+                TempData["Error"] = "Unable to load category.";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
+        // GET: /Categories/BySlug/action
+        [Route("categories/{slug}")]
+        public async Task<IActionResult> BySlug(string slug)
+        {
+            try
+            {
+                var category = await _categoryRepository.GetBySlugAsync(slug);
+                if (category == null) return NotFound();
+
+                return RedirectToAction(nameof(Details), new { id = category.Id });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading category by slug {Slug}", slug);
+                return RedirectToAction(nameof(Index));
+            }
+        }
     }
 }

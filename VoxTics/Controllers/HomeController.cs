@@ -1,5 +1,8 @@
-using AutoMapper;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using VoxTics.Models.ViewModels;
 using VoxTics.Repositories.Interfaces;
 
@@ -7,43 +10,102 @@ namespace VoxTics.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IMovieRepository _movieRepo;
-        private readonly ICinemaRepository _cinemaRepo;
-        private readonly IShowtimeRepository _showtimeRepo;
-        private readonly IMapper _mapper;
+        private readonly IMovieRepository _movieRepository;
+        private readonly ICinemaRepository _cinemaRepository;
+        private readonly ICategoryRepository _categoryRepository;
+        private readonly IShowtimeRepository _showtimeRepository;
+        private readonly ILogger<HomeController> _logger;
 
         public HomeController(
-            IMovieRepository movieRepo,
-            ICinemaRepository cinemaRepo,
-            IShowtimeRepository showtimeRepo,
-            IMapper mapper)
+            IMovieRepository movieRepository,
+            ICinemaRepository cinemaRepository,
+            ICategoryRepository categoryRepository,
+            IShowtimeRepository showtimeRepository,
+            ILogger<HomeController> logger)
         {
-            _movieRepo = movieRepo;
-            _cinemaRepo = cinemaRepo;
-            _showtimeRepo = showtimeRepo;
-            _mapper = mapper;
+            _movieRepository = movieRepository;
+            _cinemaRepository = cinemaRepository;
+            _categoryRepository = categoryRepository;
+            _showtimeRepository = showtimeRepository;
+            _logger = logger;
         }
 
-        // Landing page
+        // GET: /
         public async Task<IActionResult> Index()
         {
-            var movies = (await _movieRepo.GetAllAsync("Genre")).Take(6); // latest 6 movies
-            var cinemas = (await _cinemaRepo.GetAllAsync()).Take(4);     // highlight 4 cinemas
-            var showtimes = (await _showtimeRepo.GetAllAsync("Movie,Cinema"))
-                            .OrderBy(s => s.StartTime)
-                            .Take(6); // next 6 showtimes
-
-            var vm = new HomeVM
+            try
             {
-                Movies = movies.Select(m => _mapper.Map<MovieVM>(m)).ToList(),
-                Cinemas = cinemas.Select(c => _mapper.Map<CinemaVM>(c)).ToList(),
-                Showtimes = showtimes.Select(s => _mapper.Map<ShowtimeVM>(s)).ToList()
-            };
+                var featuredMovies = await _movieRepository.GetFeaturedMoviesAsync(6);
+                var nowShowing = await _movieRepository.GetFeaturedMoviesAsync(12);
+                var upcoming = await _movieRepository.GetUpcomingMoviesAsync(12);
+                var categories = await _categoryRepository.GetTopCategoriesByMoviesAsync(6);
+                var todayShowtimes = await _showtimeRepository.GetTodaysShowtimesAsync();
 
-            return View(vm);
+                var vm = new HomeVM
+                {
+                    FeaturedMovies = featuredMovies.Select(m => new MovieVM
+                    {
+                        Id = m.Id,
+                        Title = m.Title,
+                        PosterImage = m.ImageUrl,
+                        ReleaseDate = m.ReleaseDate,
+                        Status = m.Status,
+                        DurationInMinutes = m.DurationMinutes
+                    }).ToList(),
+
+                    NowShowingMovies = nowShowing.Select(m => new MovieVM
+                    {
+                        Id = m.Id,
+                        Title = m.Title,
+                        PosterImage = m.ImageUrl,
+                        ReleaseDate = m.ReleaseDate,
+                        Status = m.Status,
+                        DurationInMinutes = m.DurationMinutes
+                    }).ToList(),
+
+                    UpcomingMovies = upcoming.Select(m => new MovieVM
+                    {
+                        Id = m.Id,
+                        Title = m.Title,
+                        PosterImage = m.ImageUrl,
+                        ReleaseDate = m.ReleaseDate,
+                        Status = m.Status,
+                        DurationInMinutes = m.DurationMinutes
+                    }).ToList(),
+
+                  
+
+                    PopularCategories = categories.Select(c => new CategoryVM
+                    {
+                        Id = c.category.Id,
+                        Name = c.category.Name,
+                        Description = c.category.Description,
+                        MovieCount = c.movieCount
+                    }).ToList(),
+
+                    TodayShowtimes = todayShowtimes.Select(st => new ShowtimeVM
+                    {
+                        Id = st.Id,
+                        ShowDateTime = st.StartTime,
+                        MovieTitle = st.Movie?.Title ?? "Unknown",
+                        HallName = st.Hall?.Name ?? "N/A",
+                        CinemaName = st.Hall?.Cinema?.Name ?? "N/A",
+                        Price = st.Price
+                    }).ToList(),
+
+                    TotalMovies = featuredMovies.Count(),
+                    TotalUpcoming = upcoming.Count(),
+                    TotalNowShowing = nowShowing.Count()
+                };
+
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading home page");
+                TempData["Error"] = "Unable to load home page data.";
+                return View(new HomeVM());
+            }
         }
-
-        public IActionResult About() => View();
-        public IActionResult Contact() => View();
     }
 }

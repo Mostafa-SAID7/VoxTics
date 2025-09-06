@@ -1,8 +1,10 @@
-﻿using System.Diagnostics;
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using VoxTics.Helpers;
+using Microsoft.Extensions.Logging;
+using VoxTics.Models.Entities;
 using VoxTics.Models.ViewModels;
 using VoxTics.Repositories.Interfaces;
 
@@ -10,51 +12,52 @@ namespace VoxTics.Controllers
 {
     public class CinemasController : Controller
     {
-        private readonly ICinemaRepository _cinemaRepo;
-        private readonly IMapper _mapper;
+        private readonly ICinemaRepository _cinemaRepository;
+        private readonly IShowtimeRepository _showtimeRepository;
         private readonly ILogger<CinemasController> _logger;
 
-        public CinemasController(ICinemaRepository cinemaRepo, IMapper mapper, ILogger<CinemasController> logger)
+        public CinemasController(
+            ICinemaRepository cinemaRepository,
+            IShowtimeRepository showtimeRepository,
+            ILogger<CinemasController> logger)
         {
-            _cinemaRepo = cinemaRepo;
-            _mapper = mapper;
+            _cinemaRepository = cinemaRepository ?? throw new ArgumentNullException(nameof(cinemaRepository));
+            _showtimeRepository = showtimeRepository ?? throw new ArgumentNullException(nameof(showtimeRepository));
             _logger = logger;
         }
 
         // GET: /Cinemas
-        public async Task<IActionResult> Index(string? search, string? location, int pageIndex = 1, int pageSize = 12)
+        public async Task<IActionResult> Index(string? searchTerm)
         {
             try
             {
-                var query = _cinemaRepo.Query(); // includeProperties if needed
+                IEnumerable<Cinema> cinemas;
 
-                if (!string.IsNullOrWhiteSpace(search))
-                    query = query.Where(c => c.Name.Contains(search));
+                if (!string.IsNullOrWhiteSpace(searchTerm))
+                    cinemas = await _cinemaRepository.SearchCinemasAsync(searchTerm);
+                else
+                    cinemas = await _cinemaRepository.GetAllAsync();
 
-                if (!string.IsNullOrWhiteSpace(location))
-                    query = query.Where(c => c.Address.Contains(location));
-
-                var projected = query
-                    .OrderBy(c => c.Name)
-                    .ProjectTo<CinemaVM>(_mapper.ConfigurationProvider);
-
-                var paged = await PaginatedList<CinemaVM>.CreateAsync(projected, pageIndex, pageSize);
-
-                paged.RouteValues = new Dictionary<string, object>
+                var vms = cinemas.Select(c => new CinemaVM
                 {
-                    ["search"] = search ?? string.Empty,
-                    ["location"] = location ?? string.Empty
-                };
+                    Id = c.Id,
+                    Name = c.Name,
+                    Description = c.Description,
+                    Location = c.Address,
+                    Email = c.Email,
+                    Phone = c.Phone,
+                    Website = c.Website,
+                    ImageUrl = c.ImageUrl,
+                    HallCount = c.Halls?.Count ?? 0
+                }).ToList();
 
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                    return PartialView("_CinemaCards", paged);
-
-                return View(paged);
+                return View(vms);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Cinemas.Index error");
-                return StatusCode(500);
+                _logger.LogError(ex, "Error loading cinemas");
+                TempData["Error"] = "Unable to load cinemas.";
+                return View(new List<CinemaVM>());
             }
         }
 
@@ -63,20 +66,50 @@ namespace VoxTics.Controllers
         {
             try
             {
-                var entity = await _cinemaRepo.GetByIdAsync(id, includeProperties: "Halls,Showtimes");
-                if (entity == null) return NotFound();
+                var cinema = await _cinemaRepository.GetByIdWithIncludesAsync(
+                    id,
+                    c => c.Halls!,
+                    c => c.SocialMediaLinks!
+                );
 
-                var vm = _mapper.Map<CinemaVM>(entity);
+                if (cinema == null) return NotFound();
 
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                    return PartialView("_DetailsPartial", vm);
+                var upcomingShowtimes = await _showtimeRepository.GetUpcomingShowtimesAsync(id);
+
+                var vm = new CinemaVM
+                {
+                    Id = cinema.Id,
+                    Name = cinema.Name,
+                    Description = cinema.Description,
+                    Location = cinema.Address,
+                    Email = cinema.Email,
+                    Phone = cinema.Phone,
+                    Website = cinema.Website,
+                    ImageUrl = cinema.ImageUrl,
+                    HallCount = cinema.Halls?.Count ?? 0,
+                    SocialMediaLinks = cinema.SocialMediaLinks?
+                        .Select(sm => new SocialMediaLinkVM
+                        {
+                            Platform = sm.Platform,
+                            Url = sm.Url
+                        }).ToList() ?? new List<SocialMediaLinkVM>(),
+                    Showtimes = upcomingShowtimes.Select(st => new ShowtimeVM
+                    {
+                        Id = st.Id,
+                        ShowDateTime = st.StartTime,
+                        MovieTitle = st.Movie?.Title ?? "Unknown",
+                        HallName = st.Hall?.Name ?? "N/A",
+                        Price = st.Price
+                    }).ToList()
+                };
 
                 return View(vm);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Cinemas.Details error (id={CinemaId})", id);
-                return StatusCode(500);
+                _logger.LogError(ex, "Error loading cinema {CinemaId}", id);
+                TempData["Error"] = "Unable to load cinema.";
+                return RedirectToAction(nameof(Index));
             }
         }
     }
