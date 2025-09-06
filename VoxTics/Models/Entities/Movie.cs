@@ -26,16 +26,15 @@ namespace VoxTics.Models.Entities
 
         [Required]
         [Range(1, 600, ErrorMessage = "Duration must be between 1 and 600 minutes")]
-        public int Duration { get; set; } // in minutes
+        public int DurationMinutes { get; set; } // match repo’s DurationMinutes usage
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
         [Range(0, double.MaxValue, ErrorMessage = "Price must be positive")]
         public decimal Price { get; set; }
 
-
         [Range(0.0, 10.0)]
-        public double? Rating { get; set; }
+        public decimal Rating { get; set; } = 0; // repo expects decimal, not nullable double
 
         [Required]
         [StringLength(20)]
@@ -48,6 +47,8 @@ namespace VoxTics.Models.Entities
         public string? AgeRating { get; set; }
 
         public string? ImageUrl { get; set; }
+
+        public bool IsFeatured { get; set; } = false; // repo uses this for GetFeaturedMoviesAsync
 
         [Required]
         public MovieStatus Status { get; set; } = MovieStatus.Upcoming;

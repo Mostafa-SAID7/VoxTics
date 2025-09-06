@@ -15,20 +15,46 @@ namespace VoxTics.Models.Entities
         [EmailAddress]
         public string? Email { get; set; }
 
+        [Phone]
+        [StringLength(20)]
         public string? Phone { get; set; }
 
-        [Required]
         [MaxLength(200)]
-        public string Location { get; set; } = string.Empty;
+        public string? Address { get; set; }
 
+        [MaxLength(100)]
+        public string? City { get; set; }
+
+        [MaxLength(100)]
+        public string? State { get; set; }
+
+        [MaxLength(100)]
+        public string? Country { get; set; }
+
+        [MaxLength(20)]
+        public string? PostalCode { get; set; }
+
+        // Geolocation
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
+
+        [Url]
         public string? Website { get; set; }
 
+        [Url]
         public string? ImageUrl { get; set; }
+
+        // Status
+        public bool IsActive { get; set; } = true;
+
+        // Tracking
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
 
         // Navigation properties
         public virtual ICollection<Hall> Halls { get; set; } = new List<Hall>();
         public virtual ICollection<Showtime> Showtimes { get; set; } = new List<Showtime>();
+        public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
         public virtual ICollection<SocialMediaLink> SocialMediaLinks { get; set; } = new List<SocialMediaLink>();
-
     }
 }

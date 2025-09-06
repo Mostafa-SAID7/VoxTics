@@ -1,44 +1,64 @@
-﻿using VoxTics.Models.Entities;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using VoxTics.Areas.Admin.ViewModels;
+using VoxTics.Models.Entities;
 using VoxTics.Models.Enums;
-using VoxTics.Helpers;
+using VoxTics.Models.ViewModels; // BasePaginatedFilterVM, MovieFilterVM
 
 namespace VoxTics.Repositories.Interfaces
 {
-    public interface IBaseRepository<T> where T : class
-    {
-        Task<T?> GetByIdAsync(int id);
-        Task<IEnumerable<T>> GetAllAsync();
-        Task<T> AddAsync(T entity);
-        Task<bool> UpdateAsync(T entity);
-        Task<bool> DeleteAsync(int id);
-        Task<bool> ExistsAsync(int id);
-        Task<int> CountAsync();
-    }
-
     public interface IMovieRepository : IBaseRepository<Movie>
     {
-        Task<PaginatedList<Movie>> GetAllAsync(
-            string? searchTerm = null,
-            int? categoryId = null,
-            MovieStatus? status = null,
-            int pageNumber = 1,
-            int pageSize = 10,
-            string sortBy = "Title",
-            bool sortDescending = false);
+        // Listing & details
+        Task<IEnumerable<Movie>> GetMoviesByStatusAsync(MovieStatus status);
+        Task<IEnumerable<Movie>> GetMoviesByCategoryAsync(int categoryId);
+        Task<IEnumerable<Movie>> GetMoviesByCinemaAsync(int cinemaId);
+        Task<Movie?> GetMovieWithDetailsAsync(int movieId);
 
-        Task<Movie?> GetByTitleAsync(string title);
-        Task<IEnumerable<Movie>> GetByStatusAsync(MovieStatus status);
-        Task<IEnumerable<Movie>> GetByCategoryAsync(int categoryId);
-        Task<IEnumerable<Movie>> GetUpcomingMoviesAsync();
-        Task<IEnumerable<Movie>> GetNowShowingMoviesAsync();
-        Task<IEnumerable<Movie>> GetFeaturedMoviesAsync(int count = 10);
-        Task<bool> HasRelatedDataAsync(int movieId);
+        // Includes shortcuts
+        Task<IEnumerable<Movie>> GetMoviesWithCategoriesAsync();
+        Task<IEnumerable<Movie>> GetMoviesWithActorsAsync();
+        Task<IEnumerable<Movie>> GetMoviesWithImagesAsync();
+
+        // Featured / Popular / Latest / Upcoming
+        Task<IEnumerable<Movie>> GetFeaturedMoviesAsync(int count = 6);
+        Task<IEnumerable<Movie>> GetPopularMoviesAsync(int count = 10);
+        Task<IEnumerable<Movie>> GetLatestMoviesAsync(int count = 10);
+        Task<IEnumerable<Movie>> GetUpcomingMoviesAsync(int count = 10);
+
+        // Search and filter
         Task<IEnumerable<Movie>> SearchMoviesAsync(string searchTerm);
-        Task<bool> IsTitleUniqueAsync(string title, int? excludeId = null);
-        Task<IEnumerable<Movie>> GetMoviesByCategoriesAsync(List<int> categoryIds);
-        Task<Dictionary<MovieStatus, int>> GetMovieCountByStatusAsync();
-        Task<IEnumerable<Movie>> GetRecentMoviesAsync(int count = 5);
-        Task<decimal> GetAveragePriceAsync();
-        Task<Movie?> GetMovieWithDetailsAsync(int id);
+        Task<IEnumerable<Movie>> GetFilteredMoviesAsync(MovieFilterVM filter);
+        Task<(IEnumerable<Movie> movies, int totalCount)> GetPagedFilteredMoviesAsync(MovieFilterVM filter);
+
+        // Statistics
+        Task<int> GetMovieCountByStatusAsync(MovieStatus status);
+        Task<decimal> GetAverageRatingAsync(int movieId);
+        Task<int> GetTotalBookingsAsync(int movieId);
+
+        // Images
+        Task<IEnumerable<MovieImg>> GetMovieImagesAsync(int movieId);
+        Task AddMovieImageAsync(MovieImg movieImage);
+        Task RemoveMovieImageAsync(int movieImageId);
+
+        // Categories
+        Task<IEnumerable<Category>> GetMovieCategoriesAsync(int movieId);
+        Task AddMovieCategoryAsync(int movieId, int categoryId);
+        Task RemoveMovieCategoryAsync(int movieId, int categoryId);
+
+        // Actors
+        Task<IEnumerable<Actor>> GetMovieActorsAsync(int movieId);
+        Task AddMovieActorAsync(int movieId, int actorId);
+        Task RemoveMovieActorAsync(int movieId, int actorId);
+
+        // Admin
+        Task<IEnumerable<Movie>> GetMoviesForAdminAsync();
+        Task<(IEnumerable<Movie> movies, int totalCount)> GetPagedMoviesForAdminAsync(BasePaginatedFilterVM filter);
+
+        // Validation
+        Task<bool> IsMovieTitleUniqueAsync(string title, int? excludeId = null);
+        Task<bool> HasActiveShowtimesAsync(int movieId);
+        Task<bool> CanDeleteMovieAsync(int movieId);
     }
 }

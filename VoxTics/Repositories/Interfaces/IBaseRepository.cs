@@ -1,19 +1,46 @@
-﻿using System.Linq.Expressions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using VoxTics.Models.Entities;
 
 namespace VoxTics.Repositories.Interfaces
 {
-    public interface IBaseRepository<T> where T : class
+    public interface IBaseRepository<T> where T : BaseEntity
     {
-        IQueryable<T> Query(string? includeProperties = null, bool asNoTracking = true);
+        // Basic CRUD Operations
+        Task<T?> GetByIdAsync(int id);
+        Task<IEnumerable<T>> GetAllAsync();
+        Task<T> AddAsync(T entity);
+        Task<T> UpdateAsync(T entity);
+        Task DeleteAsync(int id);
+        Task DeleteAsync(T entity);
 
-        Task<T?> GetByIdAsync(object id, string? includeProperties = null);
+        // Query Operations
+        Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
+        Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
+        Task<IEnumerable<T>> GetPagedAsync(int pageNumber, int pageSize);
+        Task<IEnumerable<T>> GetPagedAsync(int pageNumber, int pageSize, Expression<Func<T, bool>> predicate);
 
-        Task<IEnumerable<T>> GetAllAsync(string? includeProperties = null);
+        // Count Operations
+        Task<int> CountAsync();
+        Task<int> CountAsync(Expression<Func<T, bool>> predicate);
 
-        Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, string? includeProperties = null);
+        // Existence Check
+        Task<bool> ExistsAsync(int id);
+        Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate);
 
-        Task AddAsync(T entity);
-        Task UpdateAsync(T entity);
-        Task DeleteAsync(object id);
+        // Include Operations
+        Task<T?> GetByIdWithIncludesAsync(int id, params Expression<Func<T, object>>[] includes);
+        Task<IEnumerable<T>> GetAllWithIncludesAsync(params Expression<Func<T, object>>[] includes);
+        Task<IEnumerable<T>> FindWithIncludesAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes);
+
+        // Bulk Operations
+        Task AddRangeAsync(IEnumerable<T> entities);
+        Task UpdateRangeAsync(IEnumerable<T> entities);
+        Task DeleteRangeAsync(IEnumerable<T> entities);
+
+        // Save Changes
+        Task<int> SaveChangesAsync();
     }
 }

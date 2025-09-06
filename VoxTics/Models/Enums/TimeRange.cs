@@ -25,4 +25,11 @@ namespace VoxTics.Models.Enums
         [Display(Name = "All Time")]
         AllTime = 7
     }
+    public enum TimeOfDayRange
+    {
+        Morning = 1,     // 6–12
+        Afternoon = 2,   // 12–18
+        Evening = 3,     // 18–24
+        Night = 4        // 0–6
+    }
 }

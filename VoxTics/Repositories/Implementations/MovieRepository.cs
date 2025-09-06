@@ -1,374 +1,469 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using VoxTics.Data;
-using VoxTics.Helpers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using VoxTics.Data;               // contains MovieDbContext
 using VoxTics.Models.Entities;
 using VoxTics.Models.Enums;
+using VoxTics.Models.ViewModels;  // MovieFilterVM, BasePaginatedFilterVM
 using VoxTics.Repositories.Interfaces;
 
 namespace VoxTics.Repositories.Implementations
 {
     public class MovieRepository : BaseRepository<Movie>, IMovieRepository
     {
-        public MovieRepository(VoxTicsDbContext context) : base(context)
+        public MovieRepository(MovieDbContext context) : base(context)
         {
         }
 
-        public override async Task<Movie?> GetByIdAsync(int id)
+        // -------------------------
+        // Listing & details
+        // -------------------------
+        public async Task<IEnumerable<Movie>> GetMoviesByStatusAsync(MovieStatus status)
         {
-            try
-            {
-                return await _dbSet
-                    .Include(m => m.MovieCategories)
-                    .ThenInclude(mc => mc.Category)
-                    .FirstOrDefaultAsync(m => m.Id == id);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return await _dbSet
+                .Where(m => m.Status == status)
+                .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
+                .Include(m => m.MovieImages)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
-        public override async Task<IEnumerable<Movie>> GetAllAsync()
+        public async Task<IEnumerable<Movie>> GetMoviesByCategoryAsync(int categoryId)
         {
-            try
-            {
-                return await _dbSet
-                    .Include(m => m.MovieCategories)
-                    .ThenInclude(mc => mc.Category)
-                    .OrderBy(m => m.Title)
-                    .ToListAsync();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return await _dbSet
+                .Where(m => m.MovieCategories.Any(mc => mc.CategoryId == categoryId))
+                .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
+                .Include(m => m.MovieImages)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
-        public async Task<PaginatedList<Movie>> GetAllAsync(
-            string? searchTerm = null,
-            int? categoryId = null,
-            MovieStatus? status = null,
-            int pageNumber = 1,
-            int pageSize = 10,
-            string sortBy = "Title",
-            bool sortDescending = false)
+        public async Task<IEnumerable<Movie>> GetMoviesByCinemaAsync(int cinemaId)
         {
-            try
-            {
-                var query = _dbSet
-                    .Include(m => m.MovieCategories)
-                    .ThenInclude(mc => mc.Category)
-                    .AsQueryable();
+            var query = _dbSet
+                .Where(m => m.Showtimes.Any(s => s.Hall.CinemaId == cinemaId))
+                .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
+                .Include(m => m.MovieImages)
+                .AsNoTracking()
+                .Distinct();
 
-                // Apply filters
-                if (!string.IsNullOrEmpty(searchTerm))
-                {
-                    query = query.Where(m => m.Title.Contains(searchTerm) ||
-                                           m.Description.Contains(searchTerm));
-                }
-
-                if (categoryId.HasValue && categoryId > 0)
-                {
-                    query = query.Where(m => m.MovieCategories
-                        .Any(mc => mc.CategoryId == categoryId));
-                }
-
-                if (status.HasValue)
-                {
-                    query = query.Where(m => m.Status == status);
-                }
-
-                // Apply sorting
-                query = sortBy.ToLower() switch
-                {
-                    "title" => sortDescending ? query.OrderByDescending(m => m.Title) : query.OrderBy(m => m.Title),
-                    "price" => sortDescending ? query.OrderByDescending(m => m.Price) : query.OrderBy(m => m.Price),
-                    "releasedate" => sortDescending ? query.OrderByDescending(m => m.ReleaseDate) : query.OrderBy(m => m.ReleaseDate),
-                    "duration" => sortDescending ? query.OrderByDescending(m => m.Duration) : query.OrderBy(m => m.Duration),
-                    "status" => sortDescending ? query.OrderByDescending(m => m.Status) : query.OrderBy(m => m.Status),
-                    "createdate" => sortDescending ? query.OrderByDescending(m => m.CreatedDate) : query.OrderBy(m => m.CreatedDate),
-                    _ => sortDescending ? query.OrderByDescending(m => m.Title) : query.OrderBy(m => m.Title)
-                };
-
-                return await PaginatedList<Movie>.CreateAsync(query, pageNumber, pageSize);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return await query.ToListAsync();
         }
 
-        public async Task<Movie?> GetByTitleAsync(string title)
+        public async Task<Movie?> GetMovieWithDetailsAsync(int movieId)
         {
-            try
-            {
-                return await _dbSet
-                    .Include(m => m.MovieCategories)
-                    .ThenInclude(mc => mc.Category)
-                    .FirstOrDefaultAsync(m => m.Title.ToLower() == title.ToLower());
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return await _dbSet
+                .Where(m => m.Id == movieId)
+                .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
+                .Include(m => m.MovieActors).ThenInclude(ma => ma.Actor)
+                .Include(m => m.MovieImages)
+                .Include(m => m.Showtimes).ThenInclude(s => s.Hall).ThenInclude(h => h.Cinema)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<Movie>> GetByStatusAsync(MovieStatus status)
+        // -------------------------
+        // Includes shortcuts
+        // -------------------------
+        public async Task<IEnumerable<Movie>> GetMoviesWithCategoriesAsync()
         {
-            try
-            {
-                return await _dbSet
-                    .Include(m => m.MovieCategories)
-                    .ThenInclude(mc => mc.Category)
-                    .Where(m => m.Status == status)
-                    .OrderBy(m => m.Title)
-                    .ToListAsync();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return await _dbSet
+                .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
-        public async Task<IEnumerable<Movie>> GetByCategoryAsync(int categoryId)
+        public async Task<IEnumerable<Movie>> GetMoviesWithActorsAsync()
         {
-            try
-            {
-                return await _dbSet
-                    .Include(m => m.MovieCategories)
-                    .ThenInclude(mc => mc.Category)
-                    .Where(m => m.MovieCategories.Any(mc => mc.CategoryId == categoryId))
-                    .OrderBy(m => m.Title)
-                    .ToListAsync();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return await _dbSet
+                .Include(m => m.MovieActors).ThenInclude(ma => ma.Actor)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
-        public async Task<IEnumerable<Movie>> GetUpcomingMoviesAsync()
+        public async Task<IEnumerable<Movie>> GetMoviesWithImagesAsync()
         {
-            try
-            {
-                return await _dbSet
-                    .Include(m => m.MovieCategories)
-                    .ThenInclude(mc => mc.Category)
-                    .Where(m => m.Status == MovieStatus.Upcoming)
-                    .OrderBy(m => m.ReleaseDate)
-                    .ToListAsync();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return await _dbSet
+                .Include(m => m.MovieImages)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
-        public async Task<IEnumerable<Movie>> GetNowShowingMoviesAsync()
+        // -------------------------
+        // Featured / Popular / Latest / Upcoming
+        // -------------------------
+        public async Task<IEnumerable<Movie>> GetFeaturedMoviesAsync(int count = 6)
         {
-            try
-            {
-                return await _dbSet
-                    .Include(m => m.MovieCategories)
-                    .ThenInclude(mc => mc.Category)
-                    .Where(m => m.Status == MovieStatus.NowShowing)
-                    .OrderBy(m => m.Title)
-                    .ToListAsync();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return await _dbSet
+                .Where(m => m.Status == MovieStatus.NowShowing && m.IsFeatured)
+                .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
+                .Include(m => m.MovieImages)
+                .OrderByDescending(m => m.CreatedAt)
+                .Take(count)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
-        public async Task<IEnumerable<Movie>> GetFeaturedMoviesAsync(int count = 10)
+        public async Task<IEnumerable<Movie>> GetPopularMoviesAsync(int count = 10)
         {
-            try
-            {
-                return await _dbSet
-                    .Include(m => m.MovieCategories)
-                    .ThenInclude(mc => mc.Category)
-                    .Where(m => m.Status == MovieStatus.NowShowing)
-                    .OrderByDescending(m => m.CreatedDate)
-                    .Take(count)
-                    .ToListAsync();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            // aggregate bookings count by movie for efficiency
+            var q = from m in _dbSet
+                    where m.Status == MovieStatus.NowShowing
+                    select new
+                    {
+                        Movie = m,
+                        BookingsCount = m.Showtimes.SelectMany(s => s.Bookings).Count()
+                    };
+
+            var list = await q
+                .OrderByDescending(x => x.BookingsCount)
+                .Take(count)
+                .Select(x => x.Movie)
+                .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
+                .Include(m => m.MovieImages)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return list;
         }
 
-        public async Task<bool> HasRelatedDataAsync(int movieId)
+        public async Task<IEnumerable<Movie>> GetLatestMoviesAsync(int count = 10)
         {
-            try
-            {
-                // Check if movie has any showtimes
-                var hasShowtimes = await _context.Showtimes
-                    .AnyAsync(s => s.MovieId == movieId);
-
-                if (hasShowtimes)
-                    return true;
-
-                // Check if movie has any bookings through showtimes
-                var hasBookings = await _context.Bookings
-                    .AnyAsync(b => b.Showtime.MovieId == movieId);
-
-                return hasBookings;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return await _dbSet
+                .Where(m => m.Status == MovieStatus.NowShowing)
+                .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
+                .Include(m => m.MovieImages)
+                .OrderByDescending(m => m.ReleaseDate)
+                .Take(count)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
+        public async Task<IEnumerable<Movie>> GetUpcomingMoviesAsync(int count = 10)
+        {
+            return await _dbSet
+                .Where(m => m.Status == MovieStatus.Upcoming)
+                .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
+                .Include(m => m.MovieImages)
+                .OrderBy(m => m.ReleaseDate)
+                .Take(count)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        // -------------------------
+        // Search and filter
+        // -------------------------
         public async Task<IEnumerable<Movie>> SearchMoviesAsync(string searchTerm)
         {
-            try
-            {
-                if (string.IsNullOrEmpty(searchTerm))
-                    return await GetAllAsync();
+            if (string.IsNullOrWhiteSpace(searchTerm))
+                return await GetAllAsync();
 
-                return await _dbSet
-                    .Include(m => m.MovieCategories)
-                    .ThenInclude(mc => mc.Category)
-                    .Where(m => m.Title.Contains(searchTerm) ||
-                               m.Description.Contains(searchTerm) ||
-                               m.MovieCategories.Any(mc => mc.Category.Name.Contains(searchTerm)))
-                    .OrderBy(m => m.Title)
-                    .ToListAsync();
-            }
-            catch (Exception)
+            var lower = searchTerm.ToLower();
+
+            var query = _dbSet.Where(m =>
+                    EF.Functions.Like(m.Title.ToLower(), $"%{lower}%") ||
+                    EF.Functions.Like(m.Description.ToLower(), $"%{lower}%") ||
+                    EF.Functions.Like(m.Director.ToLower(), $"%{lower}%") ||
+                    m.MovieActors.Any(ma => EF.Functions.Like(ma.Actor.FullName.ToLower(), $"%{lower}%")) ||
+                    m.MovieCategories.Any(mc => EF.Functions.Like(mc.Category.Name.ToLower(), $"%{lower}%"))
+                )
+                .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
+                .Include(m => m.MovieImages)
+                .AsNoTracking();
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<IEnumerable<Movie>> GetFilteredMoviesAsync(MovieFilterVM filter)
+        {
+            var query = _dbSet.AsQueryable();
+
+            if (filter.Status.HasValue)
+                query = query.Where(m => m.Status == filter.Status.Value);
+
+            if (filter.CategoryId.HasValue)
+                query = query.Where(m => m.MovieCategories.Any(mc => mc.CategoryId == filter.CategoryId.Value));
+
+            if (filter.CinemaId.HasValue)
+                query = query.Where(m => m.Showtimes.Any(s => s.Hall.CinemaId == filter.CinemaId.Value));
+
+            if (filter.ReleaseYear.HasValue)
+                query = query.Where(m => m.ReleaseDate.HasValue && m.ReleaseDate.Value.Year == filter.ReleaseYear.Value);
+
+            if (filter.MinRating.HasValue)
+                query = query.Where(m => m.Rating >= filter.MinRating.Value);
+
+            if (filter.AgeRating.HasValue)
+                query = query.Where(m => m.Rating <= filter.MaxRating.Value);
+
+            if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
             {
-                throw;
+                var s = filter.SearchTerm.ToLower();
+                query = query.Where(m =>
+                    EF.Functions.Like(m.Title.ToLower(), $"%{s}%") ||
+                    EF.Functions.Like(m.Description.ToLower(), $"%{s}%") ||
+                    EF.Functions.Like(m.Director.ToLower(), $"%{s}%"));
+            }
+
+            query = filter.SortBy?.ToLower() switch
+            {
+                "title" => filter.SortOrder == SortOrder.Desc ? query.OrderByDescending(m => m.Title) : query.OrderBy(m => m.Title),
+                "releasedate" => filter.SortOrder == SortOrder.Desc ? query.OrderByDescending(m => m.ReleaseDate) : query.OrderBy(m => m.ReleaseDate),
+                "rating" => filter.SortOrder == SortOrder.Desc ? query.OrderByDescending(m => m.Rating) : query.OrderBy(m => m.Rating),
+                "duration" => filter.SortOrder == SortOrder.Desc ? query.OrderByDescending(m => m.DurationMinutes) : query.OrderBy(m => m.DurationMinutes),
+                _ => query.OrderByDescending(m => m.CreatedAt)
+            };
+
+            return await query
+                .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
+                .Include(m => m.MovieImages)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<(IEnumerable<Movie> movies, int totalCount)> GetPagedFilteredMoviesAsync(MovieFilterVM filter)
+        {
+            if (filter == null) throw new ArgumentNullException(nameof(filter));
+            if (filter.PageNumber <= 0) filter.PageNumber = 1;
+            if (filter.PageSize <= 0) filter.PageSize = 10;
+
+            var baseQuery = _dbSet.AsQueryable();
+
+            if (filter.Status.HasValue)
+                baseQuery = baseQuery.Where(m => m.Status == filter.Status.Value);
+
+            if (filter.CategoryId.HasValue)
+                baseQuery = baseQuery.Where(m => m.MovieCategories.Any(mc => mc.CategoryId == filter.CategoryId.Value));
+
+            if (filter.CinemaId.HasValue)
+                baseQuery = baseQuery.Where(m => m.Showtimes.Any(s => s.Hall.CinemaId == filter.CinemaId.Value));
+
+            if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
+            {
+                var s = filter.SearchTerm.ToLower();
+                baseQuery = baseQuery.Where(m =>
+                    EF.Functions.Like(m.Title.ToLower(), $"%{s}%") ||
+                    EF.Functions.Like(m.Description.ToLower(), $"%{s}%") ||
+                    EF.Functions.Like(m.Director.ToLower(), $"%{s}%"));
+            }
+
+            var totalCount = await baseQuery.CountAsync();
+
+            baseQuery = filter.SortBy?.ToLower() switch
+            {
+                "title" => filter.SortOrder == SortOrder.Desc ? baseQuery.OrderByDescending(m => m.Title) : baseQuery.OrderBy(m => m.Title),
+                "releasedate" => filter.SortOrder == SortOrder.Desc ? baseQuery.OrderByDescending(m => m.ReleaseDate) : baseQuery.OrderBy(m => m.ReleaseDate),
+                "rating" => filter.SortOrder == SortOrder.Desc ? baseQuery.OrderByDescending(m => m.Rating) : baseQuery.OrderBy(m => m.Rating),
+                _ => baseQuery.OrderByDescending(m => m.CreatedAt)
+            };
+
+            // safe paging: fetch ids first
+            var ids = await baseQuery
+                .Select(m => m.Id)
+                .Skip((filter.PageNumber - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .ToListAsync();
+
+            var movies = await _dbSet
+                .Where(m => ids.Contains(m.Id))
+                .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
+                .Include(m => m.MovieImages)
+                .AsNoTracking()
+                .ToListAsync();
+
+            var ordered = ids.Select(id => movies.First(m => m.Id == id)).ToList();
+
+            return (ordered, totalCount);
+        }
+
+        // -------------------------
+        // Statistics
+        // -------------------------
+        public async Task<int> GetMovieCountByStatusAsync(MovieStatus status)
+        {
+            return await _dbSet.CountAsync(m => m.Status == status);
+        }
+
+        public async Task<decimal> GetAverageRatingAsync(int movieId)
+        {
+            var movie = await _dbSet.FindAsync(movieId);
+            return movie?.Rating ?? 0m;
+        }
+
+        public async Task<int> GetTotalBookingsAsync(int movieId)
+        {
+            return await _context.Bookings.CountAsync(b => b.Showtime.MovieId == movieId);
+        }
+
+        // -------------------------
+        // Images
+        // -------------------------
+        public async Task<IEnumerable<MovieImg>> GetMovieImagesAsync(int movieId)
+        {
+            return await _context.MovieImages
+                .Where(mi => mi.MovieId == movieId)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task AddMovieImageAsync(MovieImg movieImage)
+        {
+            if (movieImage == null) throw new ArgumentNullException(nameof(movieImage));
+            await _context.MovieImages.AddAsync(movieImage);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveMovieImageAsync(int movieImageId)
+        {
+            var movieImage = await _context.MovieImages.FindAsync(movieImageId);
+            if (movieImage != null)
+            {
+                _context.MovieImages.Remove(movieImage);
+                await _context.SaveChangesAsync();
             }
         }
 
-        public async Task<bool> IsTitleUniqueAsync(string title, int? excludeId = null)
+        // -------------------------
+        // Categories
+        // -------------------------
+        public async Task<IEnumerable<Category>> GetMovieCategoriesAsync(int movieId)
         {
-            try
-            {
-                var query = _dbSet.Where(m => m.Title.ToLower() == title.ToLower());
+            return await _context.MovieCategories
+                .Where(mc => mc.MovieId == movieId)
+                .Select(mc => mc.Category)
+                .AsNoTracking()
+                .ToListAsync();
+        }
 
-                if (excludeId.HasValue)
-                {
-                    query = query.Where(m => m.Id != excludeId.Value);
-                }
-
-                return !await query.AnyAsync();
-            }
-            catch (Exception)
+        public async Task AddMovieCategoryAsync(int movieId, int categoryId)
+        {
+            // avoid duplicates
+            var exists = await _context.MovieCategories.AnyAsync(mc => mc.MovieId == movieId && mc.CategoryId == categoryId);
+            if (!exists)
             {
-                throw;
+                await _context.MovieCategories.AddAsync(new MovieCategory { MovieId = movieId, CategoryId = categoryId });
+                await _context.SaveChangesAsync();
             }
         }
 
-        public async Task<IEnumerable<Movie>> GetMoviesByCategoriesAsync(List<int> categoryIds)
+        public async Task RemoveMovieCategoryAsync(int movieId, int categoryId)
         {
-            try
+            var movieCategory = await _context.MovieCategories
+                .FirstOrDefaultAsync(mc => mc.MovieId == movieId && mc.CategoryId == categoryId);
+
+            if (movieCategory != null)
             {
-                return await _dbSet
-                    .Include(m => m.MovieCategories)
-                    .ThenInclude(mc => mc.Category)
-                    .Where(m => m.MovieCategories.Any(mc => categoryIds.Contains(mc.CategoryId)))
-                    .Distinct()
-                    .OrderBy(m => m.Title)
-                    .ToListAsync();
-            }
-            catch (Exception)
-            {
-                throw;
+                _context.MovieCategories.Remove(movieCategory);
+                await _context.SaveChangesAsync();
             }
         }
 
-        public async Task<Dictionary<MovieStatus, int>> GetMovieCountByStatusAsync()
+        // -------------------------
+        // Actors
+        // -------------------------
+        public async Task<IEnumerable<Actor>> GetMovieActorsAsync(int movieId)
         {
-            try
-            {
-                var counts = await _dbSet
-                    .GroupBy(m => m.Status)
-                    .Select(g => new { Status = g.Key, Count = g.Count() })
-                    .ToDictionaryAsync(x => x.Status, x => x.Count);
+            return await _context.MovieActors
+                .Where(ma => ma.MovieId == movieId)
+                .Select(ma => ma.Actor)
+                .AsNoTracking()
+                .ToListAsync();
+        }
 
-                return counts;
-            }
-            catch (Exception)
+        public async Task AddMovieActorAsync(int movieId, int actorId)
+        {
+            var exists = await _context.MovieActors.AnyAsync(ma => ma.MovieId == movieId && ma.ActorId == actorId);
+            if (!exists)
             {
-                throw;
+                await _context.MovieActors.AddAsync(new MovieActor { MovieId = movieId, ActorId = actorId });
+                await _context.SaveChangesAsync();
             }
         }
 
-        public async Task<IEnumerable<Movie>> GetRecentMoviesAsync(int count = 5)
+        public async Task RemoveMovieActorAsync(int movieId, int actorId)
         {
-            try
+            var movieActor = await _context.MovieActors
+                .FirstOrDefaultAsync(ma => ma.MovieId == movieId && ma.ActorId == actorId);
+
+            if (movieActor != null)
             {
-                return await _dbSet
-                    .Include(m => m.MovieCategories)
-                    .ThenInclude(mc => mc.Category)
-                    .OrderByDescending(m => m.CreatedDate)
-                    .Take(count)
-                    .ToListAsync();
-            }
-            catch (Exception)
-            {
-                throw;
+                _context.MovieActors.Remove(movieActor);
+                await _context.SaveChangesAsync();
             }
         }
 
-        public async Task<decimal> GetAveragePriceAsync()
+        // -------------------------
+        // Admin
+        // -------------------------
+        public async Task<IEnumerable<Movie>> GetMoviesForAdminAsync()
         {
-            try
-            {
-                return await _dbSet.AverageAsync(m => m.Price);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return await _dbSet
+                .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
+                .Include(m => m.Showtimes)
+                .OrderByDescending(m => m.CreatedAt)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
-        public async Task<Movie?> GetMovieWithDetailsAsync(int id)
+        public async Task<(IEnumerable<Movie> movies, int totalCount)> GetPagedMoviesForAdminAsync(BasePaginatedFilterVM filter)
         {
-            try
+            if (filter == null) throw new ArgumentNullException(nameof(filter));
+            if (filter.PageNumber <= 0) filter.PageNumber = 1;
+            if (filter.PageSize <= 0) filter.PageSize = 10;
+
+            var baseQuery = _dbSet.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
             {
-                return await _dbSet
-                    .Include(m => m.MovieCategories)
-                    .ThenInclude(mc => mc.Category)
-                    .Include(m => m.Showtimes)
-                    .ThenInclude(s => s.Cinema)
-                    .FirstOrDefaultAsync(m => m.Id == id);
+                var s = filter.SearchTerm.ToLower();
+                baseQuery = baseQuery.Where(m => EF.Functions.Like(m.Title.ToLower(), $"%{s}%") ||
+                                                 EF.Functions.Like(m.Director.ToLower(), $"%{s}%"));
             }
-            catch (Exception)
-            {
-                throw;
-            }
+
+            var totalCount = await baseQuery.CountAsync();
+
+            var ids = await baseQuery
+                .OrderByDescending(m => m.CreatedAt)
+                .Select(m => m.Id)
+                .Skip((filter.PageNumber - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .ToListAsync();
+
+            var movies = await _dbSet
+                .Where(m => ids.Contains(m.Id))
+                .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
+                .Include(m => m.Showtimes)
+                .AsNoTracking()
+                .ToListAsync();
+
+            var ordered = ids.Select(id => movies.First(m => m.Id == id)).ToList();
+
+            return (ordered, totalCount);
         }
 
-        public override async Task<bool> DeleteAsync(int id)
+        // -------------------------
+        // Validation
+        // -------------------------
+        public async Task<bool> IsMovieTitleUniqueAsync(string title, int? excludeId = null)
         {
-            try
-            {
-                var movie = await _dbSet
-                    .Include(m => m.MovieCategories)
-                    .FirstOrDefaultAsync(m => m.Id == id);
+            var q = _dbSet.Where(m => m.Title.ToLower() == title.ToLower());
+            if (excludeId.HasValue) q = q.Where(m => m.Id != excludeId.Value);
+            return !await q.AnyAsync();
+        }
 
-                if (movie == null)
-                    return false;
+        public async Task<bool> HasActiveShowtimesAsync(int movieId)
+        {
+            return await _context.Showtimes.AnyAsync(s => s.MovieId == movieId && s.StartTime > DateTime.UtcNow);
+        }
 
-                // Remove related MovieCategory entries
-                if (movie.MovieCategories != null && movie.MovieCategories.Any())
-                {
-                    _context.MovieCategories.RemoveRange(movie.MovieCategories);
-                }
-
-                _dbSet.Remove(movie);
-                var result = await _context.SaveChangesAsync();
-                return result > 0;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+        public async Task<bool> CanDeleteMovieAsync(int movieId)
+        {
+            var hasBookings = await _context.Bookings.AnyAsync(b => b.Showtime.MovieId == movieId);
+            var hasActiveShowtimes = await HasActiveShowtimesAsync(movieId);
+            return !hasBookings && !hasActiveShowtimes;
         }
     }
 }

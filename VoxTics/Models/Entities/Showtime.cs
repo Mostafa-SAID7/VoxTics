@@ -8,23 +8,24 @@ namespace VoxTics.Models.Entities
 {
     public class Showtime : BaseEntity
     {
+        // -------------------------
         // Foreign Keys
+        // -------------------------
         [Required]
         public int MovieId { get; set; }
 
         [Required]
-        public int CinemaId { get; set; }
-
-        [Required]
         public int HallId { get; set; }
 
+        // -------------------------
         // Showtime details
+        // -------------------------
         [Required]
         public DateTime StartTime { get; set; }
 
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "Duration must be positive")]
-        public int Duration { get; set; }        // Duration in minutes
+        public int Duration { get; set; }  // in minutes
 
         [Required]
         [Column(TypeName = "decimal(8,2)")]
@@ -34,11 +35,15 @@ namespace VoxTics.Models.Entities
         [Required]
         public ShowtimeStatus Status { get; set; } = ShowtimeStatus.Scheduled;
 
+        // -------------------------
         // Computed property
+        // -------------------------
         [NotMapped]
         public DateTime EndTime => StartTime.AddMinutes(Duration);
 
-        // Extended / Optional Properties
+        // -------------------------
+        // Extended / Optional
+        // -------------------------
         public bool Is3D { get; set; } = false;
 
         [MaxLength(50)]
@@ -47,18 +52,23 @@ namespace VoxTics.Models.Entities
         [MaxLength(50)]
         public string ScreenType { get; set; } = "Standard";
 
+        // -------------------------
         // Navigation properties
-        [ForeignKey("MovieId")]
+        // -------------------------
+        [ForeignKey(nameof(MovieId))]
         public virtual Movie Movie { get; set; } = null!;
 
-        [ForeignKey("CinemaId")]
-        public virtual Cinema Cinema { get; set; } = null!;
-
-        [ForeignKey("HallId")]
+        [ForeignKey(nameof(HallId))]
         public virtual Hall Hall { get; set; } = null!;
+
+        // Hall → Cinema already navigates to Cinema, so you don’t need a separate CinemaId column here.
+        // You can still expose a convenience property if you want quick access:
+        [NotMapped]
+        public int CinemaId => Hall?.CinemaId ?? 0;
 
         public virtual ICollection<Booking> Bookings { get; set; } = new HashSet<Booking>();
 
+        // Optional: marketing hooks
         public virtual ICollection<SocialMediaLink> SocialMediaLinks { get; set; } = new List<SocialMediaLink>();
     }
 }

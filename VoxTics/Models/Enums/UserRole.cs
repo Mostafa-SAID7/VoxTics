@@ -14,8 +14,8 @@ namespace VoxTics.Models.Enums
         [Display(Name = "Manager")]
         Manager = 3,
 
-        [Display(Name = "Administrator")]
-        Administrator = 4,
+        [Display(Name = "Admin")]
+        Admin = 4,
 
         [Display(Name = "Super Admin")]
         SuperAdmin = 5
