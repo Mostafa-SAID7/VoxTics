@@ -68,6 +68,7 @@ namespace VoxTics.Areas.Admin.ViewModels
 
         [Display(Name = "Poster Image")]
         public IFormFile? PosterImageFile { get; set; }
+        public IFormFile? TrailerImageFile { get; set; }
         public string? CurrentPosterImage { get; set; }
 
         [Display(Name = "Categories")]
@@ -117,6 +118,7 @@ namespace VoxTics.Areas.Admin.ViewModels
             new SelectListItem { Value = MovieStatus.NowShowing.ToString(), Text = "Now Showing" },
             new SelectListItem { Value = MovieStatus.EndedShowing.ToString(), Text = "Ended Showing" }
         };
+        public IEnumerable<SelectListItem> AvailableCategories { get; set; } = new List<SelectListItem>();
 
         public List<SelectListItem> CategoryOptions
         {

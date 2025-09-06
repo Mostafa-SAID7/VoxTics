@@ -6,6 +6,7 @@ using VoxTics.Areas.Admin.ViewModels;
 using VoxTics.Helpers;
 using VoxTics.Models.Entities;
 using VoxTics.Models.Enums;
+using VoxTics.Models.ViewModels;
 using VoxTics.Repositories.Interfaces;
 using VoxTics.Utility;
 
@@ -34,30 +35,38 @@ namespace MovieTickets.Areas.Admin.Controllers
             _logger = logger;
         }
 
-        // GET: Admin/Movies
+        // inside MoviesController
         public async Task<IActionResult> Index(string? searchTerm = "", int categoryId = 0,
             MovieStatus? status = null, int page = 1, int pageSize = 10)
         {
             try
             {
-                var movies = await _movieRepository.GetAllAsync(
-                    searchTerm: searchTerm,
-                    categoryId: categoryId,
-                    status: status,
-                    pageNumber: page,
-                    pageSize: pageSize);
+                // Build filter for repository
+                var filter = new MovieFilterVM
+                {
+                    SearchTerm = string.IsNullOrWhiteSpace(searchTerm) ? null : searchTerm,
+                    CategoryId = categoryId == 0 ? null : categoryId,
+                    Status = status,
+                    PageNumber = page <= 0 ? 1 : page,
+                    PageSize = pageSize <= 0 ? 10 : pageSize,
+                    SortBy = "CreatedAt",
+                    SortOrder = SortOrder.Desc
+                };
+
+                var (movies, totalCount) = await _movieRepository.GetPagedFilteredMoviesAsync(filter);
 
                 var categories = await _categoryRepository.GetAllAsync();
 
-                var viewModel = new MovieViewModel
+                var viewModel = new MoviesIndexVM
                 {
-                    Movies = _mapper.Map<PaginatedList<MovieViewModel>>(movies),
+                    Movies = _mapper.Map<List<MovieViewModel>>(movies),
                     Categories = _mapper.Map<List<CategoryViewModel>>(categories),
                     SearchTerm = searchTerm,
                     SelectedCategoryId = categoryId,
                     SelectedStatus = status,
                     CurrentPage = page,
-                    PageSize = pageSize
+                    PageSize = pageSize,
+                    TotalCount = totalCount
                 };
 
                 if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
@@ -77,10 +86,9 @@ namespace MovieTickets.Areas.Admin.Controllers
                 }
 
                 TempData["Error"] = "Error loading movies data";
-                return View(new MovieViewModel());
+                return View(new MoviesIndexVM());
             }
         }
-
         // GET: Admin/Movies/Details/5
         public async Task<IActionResult> Details(int id)
         {
@@ -128,7 +136,7 @@ namespace MovieTickets.Areas.Admin.Controllers
                 {
                     Categories = _mapper.Map<List<CategoryViewModel>>(categories),
                     ReleaseDate = DateTime.Now.Date,
-                    Status = MovieStatus.ComingSoon
+                    Status = MovieStatus.Upcoming
                 };
 
                 if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
@@ -161,9 +169,9 @@ namespace MovieTickets.Areas.Admin.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    // Check if movie with same title already exists
-                    var existingMovie = await _movieRepository.GetByTitleAsync(viewModel.Title);
-                    if (existingMovie != null)
+                    // Use repo method that exists
+                    var isUnique = await _movieRepository.IsMovieTitleUniqueAsync(viewModel.Title);
+                    if (!isUnique)
                     {
                         ModelState.AddModelError("Title", "A movie with this title already exists");
                     }
@@ -171,22 +179,22 @@ namespace MovieTickets.Areas.Admin.Controllers
                     {
                         var movie = _mapper.Map<Movie>(viewModel);
 
-                        // Handle image upload
-                        if (viewModel.ImageFile != null)
+                        // Handle poster upload
+                        if (viewModel.PosterImageFile != null)
                         {
-                            var imagePath = await SaveImageAsync(viewModel.ImageFile, "movies");
+                            var imagePath = await SaveImageAsync(viewModel.PosterImageFile, "movies");
                             movie.ImageUrl = imagePath;
                         }
 
-                        // Handle trailer image upload
+                        // Handle trailer image upload (store separately)
                         if (viewModel.TrailerImageFile != null)
                         {
                             var trailerImagePath = await SaveImageAsync(viewModel.TrailerImageFile, "movies");
-                            movie.TrailerImageUrl = trailerImagePath;
+                            movie.TrailerImageUrl = trailerImagePath; // ensure Movie has TrailerImageUrl
                         }
 
-                        movie.CreatedDate = DateTime.UtcNow;
-                        movie.ModifiedDate = DateTime.UtcNow;
+                        movie.CreatedAt = DateTime.UtcNow;
+                        movie.UpdatedAt = DateTime.UtcNow;
 
                         var result = await _movieRepository.AddAsync(movie);
 
@@ -210,14 +218,12 @@ namespace MovieTickets.Areas.Admin.Controllers
                     }
                 }
 
-                // If we got this far, something failed, redisplay form
+                // Redisplay form on error: refill categories
                 var categories = await _categoryRepository.GetAllAsync();
                 viewModel.Categories = _mapper.Map<List<CategoryViewModel>>(categories);
 
                 if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
                     return PartialView("_Create", viewModel);
-                }
 
                 return View(viewModel);
             }
@@ -226,14 +232,13 @@ namespace MovieTickets.Areas.Admin.Controllers
                 _logger.LogError(ex, "Error occurred while creating movie");
 
                 if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
                     return Json(new { success = false, message = "Error creating movie" });
-                }
 
                 TempData["Error"] = "Error creating movie";
                 return RedirectToAction(nameof(Index));
             }
         }
+
 
         // GET: Admin/Movies/Edit/5
         public async Task<IActionResult> Edit(int id)
@@ -283,9 +288,7 @@ namespace MovieTickets.Areas.Admin.Controllers
             if (id != viewModel.Id)
             {
                 if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
                     return Json(new { success = false, message = "Invalid movie ID" });
-                }
                 return BadRequest();
             }
 
@@ -297,54 +300,46 @@ namespace MovieTickets.Areas.Admin.Controllers
                     if (existingMovie == null)
                     {
                         if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                        {
                             return Json(new { success = false, message = "Movie not found" });
-                        }
                         return NotFound();
                     }
 
-                    // Check if another movie with same title exists (excluding current movie)
-                    var duplicateMovie = await _movieRepository.GetByTitleAsync(viewModel.Title);
-                    if (duplicateMovie != null && duplicateMovie.Id != id)
+                    // Check uniqueness (exclude current id)
+                    var isUnique = await _movieRepository.IsMovieTitleUniqueAsync(viewModel.Title, id);
+                    if (!isUnique)
                     {
                         ModelState.AddModelError("Title", "A movie with this title already exists");
                     }
                     else
                     {
                         // Store old image paths for cleanup
-                        var oldImagePath = existingMovie.ImageUrl;
-                        var oldTrailerImagePath = existingMovie.TrailerImageUrl;
+                        var oldPosterPath = existingMovie.ImageUrl;
+                        var oldTrailerPath = existingMovie.TrailerImageUrl;
 
-                        // Map updated values
+                        // Map updated values into existing entity
                         _mapper.Map(viewModel, existingMovie);
 
-                        // Handle new image upload
-                        if (viewModel.ImageFile != null)
+                        // New poster upload
+                        if (viewModel.PosterImageFile != null)
                         {
-                            var imagePath = await SaveImageAsync(viewModel.ImageFile, "movies");
+                            var imagePath = await SaveImageAsync(viewModel.PosterImageFile, "movies");
                             existingMovie.ImageUrl = imagePath;
 
-                            // Delete old image
-                            if (!string.IsNullOrEmpty(oldImagePath))
-                            {
-                                DeleteImage(oldImagePath);
-                            }
+                            if (!string.IsNullOrEmpty(oldPosterPath))
+                                DeleteImage(oldPosterPath);
                         }
 
-                        // Handle new trailer image upload
+                        // New trailer image upload
                         if (viewModel.TrailerImageFile != null)
                         {
-                            var trailerImagePath = await SaveImageAsync(viewModel.TrailerImageFile, "movies");
-                            existingMovie.TrailerImageUrl = trailerImagePath;
+                            var trailerPath = await SaveImageAsync(viewModel.TrailerImageFile, "movies");
+                            existingMovie.TrailerImageUrl = trailerPath;
 
-                            // Delete old trailer image
-                            if (!string.IsNullOrEmpty(oldTrailerImagePath))
-                            {
-                                DeleteImage(oldTrailerImagePath);
-                            }
+                            if (!string.IsNullOrEmpty(oldTrailerPath))
+                                DeleteImage(oldTrailerPath);
                         }
 
-                        existingMovie.ModifiedDate = DateTime.UtcNow;
+                        existingMovie.UpdatedAt = DateTime.UtcNow;
 
                         var result = await _movieRepository.UpdateAsync(existingMovie);
 
@@ -354,11 +349,7 @@ namespace MovieTickets.Areas.Admin.Controllers
 
                             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
                             {
-                                return Json(new
-                                {
-                                    success = true,
-                                    message = "Movie updated successfully!"
-                                });
+                                return Json(new { success = true, message = "Movie updated successfully!" });
                             }
 
                             TempData["Success"] = "Movie updated successfully!";
@@ -367,14 +358,12 @@ namespace MovieTickets.Areas.Admin.Controllers
                     }
                 }
 
-                // If we got this far, something failed, redisplay form
+                // If we got this far, redisplay
                 var categories = await _categoryRepository.GetAllAsync();
                 viewModel.Categories = _mapper.Map<List<CategoryViewModel>>(categories);
 
                 if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
                     return PartialView("_Edit", viewModel);
-                }
 
                 return View(viewModel);
             }
@@ -383,9 +372,7 @@ namespace MovieTickets.Areas.Admin.Controllers
                 _logger.LogError(ex, "Error occurred while updating movie with ID: {MovieId}", id);
 
                 if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
                     return Json(new { success = false, message = "Error updating movie" });
-                }
 
                 TempData["Error"] = "Error updating movie";
                 return RedirectToAction(nameof(Index));
@@ -468,7 +455,7 @@ namespace MovieTickets.Areas.Admin.Controllers
                 var imagePath = movie.ImageUrl;
                 var trailerImagePath = movie.TrailerImageUrl;
 
-                var result = await _movieRepository.DeleteAsync(id);
+                var result = await _movieRepository.DeleteAsync( );
 
                 if (result)
                 {
@@ -538,12 +525,12 @@ namespace MovieTickets.Areas.Admin.Controllers
                 // Toggle status logic
                 movie.Status = movie.Status switch
                 {
-                    MovieStatus.ComingSoon => MovieStatus.NowShowing,
-                    MovieStatus.NowShowing => MovieStatus.ComingSoon,
-                    _ => MovieStatus.ComingSoon
+                    MovieStatus.Upcoming => MovieStatus.NowShowing,
+                    MovieStatus.NowShowing => MovieStatus.Upcoming,
+                    _ => MovieStatus.Upcoming
                 };
 
-                movie.ModifiedDate = DateTime.UtcNow;
+                movie.UpdatedAt = DateTime.UtcNow;
 
                 var result = await _movieRepository.UpdateAsync(movie);
 
@@ -597,7 +584,7 @@ namespace MovieTickets.Areas.Admin.Controllers
                                 var imagePath = movie.ImageUrl;
                                 var trailerImagePath = movie.TrailerImageUrl;
 
-                                var result = await _movieRepository.DeleteAsync(id);
+                                var result = await _movieRepository.DeleteAsync(int );
                                 if (result)
                                 {
                                     // Delete associated images

@@ -25,7 +25,7 @@
                 new Cinema
                 {
                     Name = "Mega Cinema Mall",
-                    Location = "Shopping Mall, Level 3",
+                    Address = "Shopping Mall, Level 3",
                     City = "Downtown",
                     Phone = "555-0789",
                     Email = "info@megacinema.com",
@@ -84,12 +84,12 @@
                 {
                     Title = "Avengers: Endgame",
                     Description = "The grave course of events set in motion by Thanos that wiped out half the universe and fractured the Avengers ranks compels the remaining Avengers to take one final stand.",
-                    Duration = 181,
+                    DurationMinutes = 181,
                     ReleaseDate = new DateTime(2019, 4, 26),
                     Director = "Anthony Russo, Joe Russo",
                     Language = "English",
                     Country = "USA",
-                    Rating = 8.4,
+                    Rating = 8,
                     AgeRating = "PG-13",
                     Status = MovieStatus.NowShowing,
                     ImageUrl = "/images/movies/avengers-endgame.jpg"
@@ -98,12 +98,12 @@
                 {
                     Title = "The Lion King",
                     Description = "A young lion prince is cast out of his pride by his cruel uncle, who claims he killed his father so that he can become the new king.",
-                    Duration = 118,
+                    DurationMinutes = 118,
                     ReleaseDate = new DateTime(2019, 7, 19),
                     Director = "Jon Favreau",
                     Language = "English",
                     Country = "USA",
-                    Rating = 6.8,
+                    Rating = 6,
                     AgeRating = "PG",
                     Status = MovieStatus.NowShowing,
                     ImageUrl = "/images/movies/lion-king.jpg"
@@ -166,9 +166,8 @@
                                 showtimes.Add(new Showtime
                                 {
                                     MovieId = movie.Id,
-                                    CinemaId = cinema.Id,
                                     HallId = hall.Id,
-                                    ShowDateTime = showDate.Add(time),
+                                    StartTime = showDate.Add(time),
                                     Price = 12.50m + (decimal)(new Random().NextDouble() * 5), // Random price between 12.50 and 17.50
                                     Status = ShowtimeStatus.Scheduled
                                 });

@@ -3,19 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using VoxTics.Data;               // contains MovieDbContext
+using VoxTics.Data;
 using VoxTics.Models.Entities;
 using VoxTics.Models.Enums;
-using VoxTics.Models.ViewModels;  // MovieFilterVM, BasePaginatedFilterVM
+using VoxTics.Models.ViewModels;
 using VoxTics.Repositories.Interfaces;
 
 namespace VoxTics.Repositories.Implementations
 {
     public class MovieRepository : BaseRepository<Movie>, IMovieRepository
     {
-        public MovieRepository(MovieDbContext context) : base(context)
-        {
-        }
+        public MovieRepository(MovieDbContext context) : base(context) { }
 
         // -------------------------
         // Listing & details
@@ -39,17 +37,20 @@ namespace VoxTics.Repositories.Implementations
                 .AsNoTracking()
                 .ToListAsync();
         }
-
+        public async Task<bool> IsMovieTitleUniqueAsync(string title, int? excludeId = null)
+        {
+            var q = _dbSet.Where(m => m.Title.ToLower() == title.ToLower());
+            if (excludeId.HasValue) q = q.Where(m => m.Id != excludeId.Value);
+            return !await q.AnyAsync();
+        }
         public async Task<IEnumerable<Movie>> GetMoviesByCinemaAsync(int cinemaId)
         {
-            var query = _dbSet
+            return await _dbSet
                 .Where(m => m.Showtimes.Any(s => s.Hall.CinemaId == cinemaId))
                 .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
                 .Include(m => m.MovieImages)
                 .AsNoTracking()
-                .Distinct();
-
-            return await query.ToListAsync();
+                .ToListAsync();
         }
 
         public async Task<Movie?> GetMovieWithDetailsAsync(int movieId)
@@ -67,6 +68,29 @@ namespace VoxTics.Repositories.Implementations
         // -------------------------
         // Includes shortcuts
         // -------------------------
+        public async Task<bool> HasRelatedDataAsync(int movieId)
+        {
+            if (movieId <= 0) return false;
+
+            // Check for showtimes, bookings, categories, actors, images — anything that should block deletion
+            var hasShowtimes = await _context.Showtimes.AnyAsync(s => s.MovieId == movieId);
+            if (hasShowtimes) return true;
+
+            var hasBookings = await _context.Bookings.AnyAsync(b => b.Showtime.MovieId == movieId);
+            if (hasBookings) return true;
+
+            var hasCategories = await _context.MovieCategories.AnyAsync(mc => mc.MovieId == movieId);
+            if (hasCategories) return true;
+
+            var hasActors = await _context.MovieActors.AnyAsync(ma => ma.MovieId == movieId);
+            if (hasActors) return true;
+
+            var hasImages = await _context.MovieImages.AnyAsync(mi => mi.MovieId == movieId);
+            if (hasImages) return true;
+
+            return false;
+        }
+
         public async Task<IEnumerable<Movie>> GetMoviesWithCategoriesAsync()
         {
             return await _dbSet
@@ -108,25 +132,14 @@ namespace VoxTics.Repositories.Implementations
 
         public async Task<IEnumerable<Movie>> GetPopularMoviesAsync(int count = 10)
         {
-            // aggregate bookings count by movie for efficiency
-            var q = from m in _dbSet
-                    where m.Status == MovieStatus.NowShowing
-                    select new
-                    {
-                        Movie = m,
-                        BookingsCount = m.Showtimes.SelectMany(s => s.Bookings).Count()
-                    };
-
-            var list = await q
-                .OrderByDescending(x => x.BookingsCount)
-                .Take(count)
-                .Select(x => x.Movie)
+            return await _dbSet
+                .Where(m => m.Status == MovieStatus.NowShowing)
                 .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
                 .Include(m => m.MovieImages)
+                .OrderByDescending(m => m.Showtimes.SelectMany(s => s.Bookings).Count())
+                .Take(count)
                 .AsNoTracking()
                 .ToListAsync();
-
-            return list;
         }
 
         public async Task<IEnumerable<Movie>> GetLatestMoviesAsync(int count = 10)
@@ -163,7 +176,8 @@ namespace VoxTics.Repositories.Implementations
 
             var lower = searchTerm.ToLower();
 
-            var query = _dbSet.Where(m =>
+            return await _dbSet
+                .Where(m =>
                     EF.Functions.Like(m.Title.ToLower(), $"%{lower}%") ||
                     EF.Functions.Like(m.Description.ToLower(), $"%{lower}%") ||
                     EF.Functions.Like(m.Director.ToLower(), $"%{lower}%") ||
@@ -172,9 +186,8 @@ namespace VoxTics.Repositories.Implementations
                 )
                 .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
                 .Include(m => m.MovieImages)
-                .AsNoTracking();
-
-            return await query.ToListAsync();
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<Movie>> GetFilteredMoviesAsync(MovieFilterVM filter)
@@ -191,13 +204,16 @@ namespace VoxTics.Repositories.Implementations
                 query = query.Where(m => m.Showtimes.Any(s => s.Hall.CinemaId == filter.CinemaId.Value));
 
             if (filter.ReleaseYear.HasValue)
-                query = query.Where(m => m.ReleaseDate.HasValue && m.ReleaseDate.Value.Year == filter.ReleaseYear.Value);
+                query = query.Where(m => m.ReleaseDate.Year == filter.ReleaseYear.Value);
 
             if (filter.MinRating.HasValue)
                 query = query.Where(m => m.Rating >= filter.MinRating.Value);
 
-            if (filter.AgeRating.HasValue)
+            if (filter.MaxRating.HasValue)
                 query = query.Where(m => m.Rating <= filter.MaxRating.Value);
+
+            if (!string.IsNullOrWhiteSpace(filter.AgeRating))
+                query = query.Where(m => m.AgeRating == filter.AgeRating);
 
             if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
             {
@@ -230,38 +246,37 @@ namespace VoxTics.Repositories.Implementations
             if (filter.PageNumber <= 0) filter.PageNumber = 1;
             if (filter.PageSize <= 0) filter.PageSize = 10;
 
-            var baseQuery = _dbSet.AsQueryable();
+            var query = _dbSet.AsQueryable();
 
             if (filter.Status.HasValue)
-                baseQuery = baseQuery.Where(m => m.Status == filter.Status.Value);
+                query = query.Where(m => m.Status == filter.Status.Value);
 
             if (filter.CategoryId.HasValue)
-                baseQuery = baseQuery.Where(m => m.MovieCategories.Any(mc => mc.CategoryId == filter.CategoryId.Value));
+                query = query.Where(m => m.MovieCategories.Any(mc => mc.CategoryId == filter.CategoryId.Value));
 
             if (filter.CinemaId.HasValue)
-                baseQuery = baseQuery.Where(m => m.Showtimes.Any(s => s.Hall.CinemaId == filter.CinemaId.Value));
+                query = query.Where(m => m.Showtimes.Any(s => s.Hall.CinemaId == filter.CinemaId.Value));
 
             if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
             {
                 var s = filter.SearchTerm.ToLower();
-                baseQuery = baseQuery.Where(m =>
+                query = query.Where(m =>
                     EF.Functions.Like(m.Title.ToLower(), $"%{s}%") ||
                     EF.Functions.Like(m.Description.ToLower(), $"%{s}%") ||
                     EF.Functions.Like(m.Director.ToLower(), $"%{s}%"));
             }
 
-            var totalCount = await baseQuery.CountAsync();
+            var totalCount = await query.CountAsync();
 
-            baseQuery = filter.SortBy?.ToLower() switch
+            query = filter.SortBy?.ToLower() switch
             {
-                "title" => filter.SortOrder == SortOrder.Desc ? baseQuery.OrderByDescending(m => m.Title) : baseQuery.OrderBy(m => m.Title),
-                "releasedate" => filter.SortOrder == SortOrder.Desc ? baseQuery.OrderByDescending(m => m.ReleaseDate) : baseQuery.OrderBy(m => m.ReleaseDate),
-                "rating" => filter.SortOrder == SortOrder.Desc ? baseQuery.OrderByDescending(m => m.Rating) : baseQuery.OrderBy(m => m.Rating),
-                _ => baseQuery.OrderByDescending(m => m.CreatedAt)
+                "title" => filter.SortOrder == SortOrder.Desc ? query.OrderByDescending(m => m.Title) : query.OrderBy(m => m.Title),
+                "releasedate" => filter.SortOrder == SortOrder.Desc ? query.OrderByDescending(m => m.ReleaseDate) : query.OrderBy(m => m.ReleaseDate),
+                "rating" => filter.SortOrder == SortOrder.Desc ? query.OrderByDescending(m => m.Rating) : query.OrderBy(m => m.Rating),
+                _ => query.OrderByDescending(m => m.CreatedAt)
             };
 
-            // safe paging: fetch ids first
-            var ids = await baseQuery
+            var ids = await query
                 .Select(m => m.Id)
                 .Skip((filter.PageNumber - 1) * filter.PageSize)
                 .Take(filter.PageSize)
@@ -282,10 +297,8 @@ namespace VoxTics.Repositories.Implementations
         // -------------------------
         // Statistics
         // -------------------------
-        public async Task<int> GetMovieCountByStatusAsync(MovieStatus status)
-        {
-            return await _dbSet.CountAsync(m => m.Status == status);
-        }
+        public async Task<int> GetMovieCountByStatusAsync(MovieStatus status) =>
+            await _dbSet.CountAsync(m => m.Status == status);
 
         public async Task<decimal> GetAverageRatingAsync(int movieId)
         {
@@ -293,21 +306,17 @@ namespace VoxTics.Repositories.Implementations
             return movie?.Rating ?? 0m;
         }
 
-        public async Task<int> GetTotalBookingsAsync(int movieId)
-        {
-            return await _context.Bookings.CountAsync(b => b.Showtime.MovieId == movieId);
-        }
+        public async Task<int> GetTotalBookingsAsync(int movieId) =>
+            await _context.Bookings.CountAsync(b => b.Showtime.MovieId == movieId);
 
         // -------------------------
         // Images
         // -------------------------
-        public async Task<IEnumerable<MovieImg>> GetMovieImagesAsync(int movieId)
-        {
-            return await _context.MovieImages
+        public async Task<IEnumerable<MovieImg>> GetMovieImagesAsync(int movieId) =>
+            await _context.MovieImages
                 .Where(mi => mi.MovieId == movieId)
                 .AsNoTracking()
                 .ToListAsync();
-        }
 
         public async Task AddMovieImageAsync(MovieImg movieImage)
         {
@@ -329,18 +338,15 @@ namespace VoxTics.Repositories.Implementations
         // -------------------------
         // Categories
         // -------------------------
-        public async Task<IEnumerable<Category>> GetMovieCategoriesAsync(int movieId)
-        {
-            return await _context.MovieCategories
+        public async Task<IEnumerable<Category>> GetMovieCategoriesAsync(int movieId) =>
+            await _context.MovieCategories
                 .Where(mc => mc.MovieId == movieId)
                 .Select(mc => mc.Category)
                 .AsNoTracking()
                 .ToListAsync();
-        }
 
         public async Task AddMovieCategoryAsync(int movieId, int categoryId)
         {
-            // avoid duplicates
             var exists = await _context.MovieCategories.AnyAsync(mc => mc.MovieId == movieId && mc.CategoryId == categoryId);
             if (!exists)
             {
@@ -364,14 +370,12 @@ namespace VoxTics.Repositories.Implementations
         // -------------------------
         // Actors
         // -------------------------
-        public async Task<IEnumerable<Actor>> GetMovieActorsAsync(int movieId)
-        {
-            return await _context.MovieActors
+        public async Task<IEnumerable<Actor>> GetMovieActorsAsync(int movieId) =>
+            await _context.MovieActors
                 .Where(ma => ma.MovieId == movieId)
                 .Select(ma => ma.Actor)
                 .AsNoTracking()
                 .ToListAsync();
-        }
 
         public async Task AddMovieActorAsync(int movieId, int actorId)
         {
@@ -398,15 +402,13 @@ namespace VoxTics.Repositories.Implementations
         // -------------------------
         // Admin
         // -------------------------
-        public async Task<IEnumerable<Movie>> GetMoviesForAdminAsync()
-        {
-            return await _dbSet
+        public async Task<IEnumerable<Movie>> GetMoviesForAdminAsync() =>
+            await _dbSet
                 .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
                 .Include(m => m.Showtimes)
                 .OrderByDescending(m => m.CreatedAt)
                 .AsNoTracking()
                 .ToListAsync();
-        }
 
         public async Task<(IEnumerable<Movie> movies, int totalCount)> GetPagedMoviesForAdminAsync(BasePaginatedFilterVM filter)
         {
@@ -414,18 +416,18 @@ namespace VoxTics.Repositories.Implementations
             if (filter.PageNumber <= 0) filter.PageNumber = 1;
             if (filter.PageSize <= 0) filter.PageSize = 10;
 
-            var baseQuery = _dbSet.AsQueryable();
+            var query = _dbSet.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
             {
                 var s = filter.SearchTerm.ToLower();
-                baseQuery = baseQuery.Where(m => EF.Functions.Like(m.Title.ToLower(), $"%{s}%") ||
-                                                 EF.Functions.Like(m.Director.ToLower(), $"%{s}%"));
+                query = query.Where(m => EF.Functions.Like(m.Title.ToLower(), $"%{s}%") ||
+                                         EF.Functions.Like(m.Director.ToLower(), $"%{s}%"));
             }
 
-            var totalCount = await baseQuery.CountAsync();
+            var totalCount = await query.CountAsync();
 
-            var ids = await baseQuery
+            var ids = await query
                 .OrderByDescending(m => m.CreatedAt)
                 .Select(m => m.Id)
                 .Skip((filter.PageNumber - 1) * filter.PageSize)
@@ -447,17 +449,16 @@ namespace VoxTics.Repositories.Implementations
         // -------------------------
         // Validation
         // -------------------------
-        public async Task<bool> IsMovieTitleUniqueAsync(string title, int? excludeId = null)
+        public async Task<bool> IsTitleUniqueAsync(string title, int? excludeId = null)
         {
             var q = _dbSet.Where(m => m.Title.ToLower() == title.ToLower());
             if (excludeId.HasValue) q = q.Where(m => m.Id != excludeId.Value);
             return !await q.AnyAsync();
         }
+        
 
-        public async Task<bool> HasActiveShowtimesAsync(int movieId)
-        {
-            return await _context.Showtimes.AnyAsync(s => s.MovieId == movieId && s.StartTime > DateTime.UtcNow);
-        }
+        public async Task<bool> HasActiveShowtimesAsync(int movieId) =>
+            await _context.Showtimes.AnyAsync(s => s.MovieId == movieId && s.StartTime > DateTime.UtcNow);
 
         public async Task<bool> CanDeleteMovieAsync(int movieId)
         {

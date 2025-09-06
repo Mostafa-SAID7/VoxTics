@@ -50,19 +50,17 @@ namespace VoxTics.Repositories.Implementations
             return user;
         }
 
-        public async Task<bool> VerifyPasswordAsync(User user, string password)
+        public Task<bool> VerifyPasswordAsync(User user, string password)
         {
-            if (user == null) return false;
+            if (user == null) return Task.FromResult(false);
 
-            // If an IPasswordHasher<User> is injected, use it (recommended).
             if (_passwordHasher != null && !string.IsNullOrEmpty(user.PasswordHash))
             {
                 var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
-                return result == PasswordVerificationResult.Success || result == PasswordVerificationResult.SuccessRehashNeeded;
+                return Task.FromResult(result == PasswordVerificationResult.Success || result == PasswordVerificationResult.SuccessRehashNeeded);
             }
 
-            // Fallback (unsafe): compare raw strings (use only if passwords are stored in plain text or you pass hashed string as 'password')
-            return user.PasswordHash == password;
+            return Task.FromResult(user.PasswordHash == password);
         }
 
         public async Task<User> UpdatePasswordAsync(int userId, string newPasswordHash)
@@ -356,7 +354,8 @@ namespace VoxTics.Repositories.Implementations
         // -------------------------
         public async Task<IEnumerable<User>> SearchUsersAsync(string searchTerm)
         {
-            if (string.IsNullOrWhiteSpace(searchTerm)) return await GetAllAsync();
+            if (string.IsNullOrWhiteSpace(searchTerm))
+                return await GetAllAsync();   // ✅ should just call the parameterless version
 
             var s = searchTerm.ToLower();
             return await _dbSet

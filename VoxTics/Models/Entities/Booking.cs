@@ -8,6 +8,9 @@ namespace VoxTics.Models.Entities
 {
     public class Booking : BaseEntity
     {
+        // -------------------------
+        // Required fields
+        // -------------------------
         [Required(ErrorMessage = "User is required")]
         public int UserId { get; set; }
 
@@ -58,7 +61,9 @@ namespace VoxTics.Models.Entities
         [StringLength(500)]
         public string? CancellationReason { get; set; }
 
+        // -------------------------
         // Navigation properties
+        // -------------------------
         [ForeignKey("UserId")]
         public virtual User User { get; set; } = null!;
 
@@ -67,7 +72,15 @@ namespace VoxTics.Models.Entities
 
         public virtual ICollection<BookingSeat> BookingSeats { get; set; } = new List<BookingSeat>();
 
-        // Computed properties
+        // -------------------------
+        // Additional properties
+        // -------------------------
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal TotalPrice { get; set; }  // repository expects this
+
+        // -------------------------
+        // Computed / NotMapped
+        // -------------------------
         [NotMapped]
         public bool CanBeCancelled => Status == BookingStatus.Confirmed &&
                                      Showtime.EndTime > DateTime.UtcNow.AddHours(2);
@@ -78,5 +91,4 @@ namespace VoxTics.Models.Entities
         [NotMapped]
         public string BookingReference => $"BK{Id:D6}";
     }
-
 }

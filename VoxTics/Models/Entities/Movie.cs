@@ -34,7 +34,7 @@ namespace VoxTics.Models.Entities
         public decimal Price { get; set; }
 
         [Range(0.0, 10.0)]
-        public decimal Rating { get; set; } = 0; // repo expects decimal, not nullable double
+        public decimal Rating { get; set; }  // repo expects decimal, not nullable double
 
         [Required]
         [StringLength(20)]
@@ -47,6 +47,7 @@ namespace VoxTics.Models.Entities
         public string? AgeRating { get; set; }
 
         public string? ImageUrl { get; set; }
+        public string? TrailerImageUrl { get; set; }
 
         public bool IsFeatured { get; set; } = false; // repo uses this for GetFeaturedMoviesAsync
 

@@ -61,10 +61,9 @@ namespace VoxTics.Models.Entities
         [ForeignKey(nameof(HallId))]
         public virtual Hall Hall { get; set; } = null!;
 
-        // Hall → Cinema already navigates to Cinema, so you don’t need a separate CinemaId column here.
-        // You can still expose a convenience property if you want quick access:
-        [NotMapped]
+       [NotMapped]
         public int CinemaId => Hall?.CinemaId ?? 0;
+        public virtual Cinema Cinema { get; set; } = null!;   // ✅ Reference
 
         public virtual ICollection<Booking> Bookings { get; set; } = new HashSet<Booking>();
 

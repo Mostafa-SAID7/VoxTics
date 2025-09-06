@@ -19,6 +19,7 @@ namespace VoxTics.Models.Entities
         public int CinemaId { get; set; }
 
         public string? Description { get; set; }
+        public bool IsActive { get; set; } = true;
 
         // Navigation properties
         [ForeignKey("CinemaId")]

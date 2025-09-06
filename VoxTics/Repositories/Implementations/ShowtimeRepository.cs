@@ -336,7 +336,7 @@ namespace VoxTics.Repositories.Implementations
             return (ordered, totalCount);
         }
 
-        public async Task<IEnumerable<Showtime>> GetFilteredShowtimesAsync(BasePaginatedFilterVM filter)
+        public async Task<IEnumerable<Showtime>> GetFilteredShowtimesAsync(ShowtimeFilterVM filter)
         {
             if (filter == null) throw new ArgumentNullException(nameof(filter));
             var query = _dbSet.AsQueryable();

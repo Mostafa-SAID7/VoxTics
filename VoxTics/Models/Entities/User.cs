@@ -55,10 +55,7 @@ namespace VoxTics.Models.Entities
         // Preferences (stored as JSON)
         public string? PreferencesJson { get; set; }
 
-        // Auditing (if not in BaseEntity)
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
+  
         // Navigation properties
         public virtual ICollection<Booking> Bookings { get; set; } = new HashSet<Booking>();
         public virtual ICollection<SocialMediaLink> SocialMediaLinks { get; set; } = new List<SocialMediaLink>();

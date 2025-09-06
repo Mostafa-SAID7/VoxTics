@@ -22,6 +22,7 @@ namespace VoxTics.Repositories.Interfaces
 
         // Paging with total count (safe paging)
         Task<(IEnumerable<Category> categories, int totalCount)> GetPagedAsync(BasePaginatedFilterVM filter);
+        Task<IEnumerable<Category>> GetByParentIdAsync(int parentId);
 
         // Top categories by number of movies
         Task<IEnumerable<(Category category, int movieCount)>> GetTopCategoriesByMoviesAsync(int count = 10);

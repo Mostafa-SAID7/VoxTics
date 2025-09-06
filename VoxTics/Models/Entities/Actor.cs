@@ -21,7 +21,10 @@ namespace VoxTics.Models.Entities
 
         [MaxLength(250)]
         public string? ImageUrl { get; set; }
+        [MaxLength(100)]
+        public string? Nationality { get; set; }   // ✅ Added
 
+        public bool IsActive { get; set; } = true; // ✅ Added
         public DateTime? DateOfBirth { get; set; }
 
         [NotMapped]

@@ -16,7 +16,13 @@ namespace VoxTics.Repositories.Implementations
         public CategoryRepository(MovieDbContext context) : base(context)
         {
         }
-
+        public async Task<IEnumerable<Category>> GetByParentIdAsync(int parentId)
+        {
+            return await _dbSet
+                .Where(c => c.Id == parentId) // make sure ParentCategoryId exists in your Category entity
+                .AsNoTracking()
+                .ToListAsync();
+        }
         public async Task<Category?> GetBySlugAsync(string slug)
         {
             if (string.IsNullOrWhiteSpace(slug)) return null;

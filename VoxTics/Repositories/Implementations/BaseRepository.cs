@@ -33,6 +33,20 @@ namespace VoxTics.Repositories.Implementations
         {
             return await _dbSet.AsNoTracking().ToListAsync();
         }
+        public async Task<IEnumerable<T>> GetAllAsync(string? searchTerm = null)
+        {
+            IQueryable<T> query = _dbSet;
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                // If your entities share a common searchable property, you can apply filtering here.
+                // Otherwise, just return all.
+                // Example for entities with "Name" property:
+                // query = query.Where(e => EF.Property<string>(e, "Name").Contains(searchTerm));
+            }
+
+            return await query.AsNoTracking().ToListAsync();
+        }
 
         public virtual async Task<T> AddAsync(T entity)
         {
@@ -114,7 +128,7 @@ namespace VoxTics.Repositories.Implementations
                 .Take(pageSize)
                 .ToListAsync();
         }
-
+        public IQueryable<T> Query() => _dbSet.AsQueryable();
         // -------------------------
         // Count Operations
         // -------------------------

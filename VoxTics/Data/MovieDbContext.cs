@@ -114,7 +114,7 @@ namespace VoxTics.Data
             modelBuilder.Entity<Actor>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.FullName).IsRequired().HasMaxLength(100);
             });
         }
 
@@ -156,7 +156,7 @@ namespace VoxTics.Data
             modelBuilder.Entity<BookingSeat>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Price).HasColumnType("decimal(8,2)");
+                entity.Property(e => e.SeatPrice).HasColumnType("decimal(8,2)");
                 entity.HasOne(e => e.Booking).WithMany(e => e.BookingSeats).HasForeignKey(e => e.BookingId);
                 entity.HasOne(e => e.Seat).WithMany(e => e.BookingSeats).HasForeignKey(e => e.SeatId);
                 entity.HasIndex(e => new { e.BookingId, e.SeatId }).IsUnique();
@@ -199,14 +199,14 @@ namespace VoxTics.Data
         {
             // Seed Categories
             modelBuilder.Entity<Category>().HasData(
-                new Category { Id = 1, Name = "Action", Description = "Action movies", IsActive = true, CreatedDate = DateTime.Now },
-                new Category { Id = 2, Name = "Comedy", Description = "Comedy movies", IsActive = true, CreatedDate = DateTime.Now },
-                new Category { Id = 3, Name = "Drama", Description = "Drama movies", IsActive = true, CreatedDate = DateTime.Now },
-                new Category { Id = 4, Name = "Horror", Description = "Horror movies", IsActive = true, CreatedDate = DateTime.Now },
-                new Category { Id = 5, Name = "Romance", Description = "Romance movies", IsActive = true, CreatedDate = DateTime.Now },
-                new Category { Id = 6, Name = "Sci-Fi", Description = "Science Fiction movies", IsActive = true, CreatedDate = DateTime.Now },
-                new Category { Id = 7, Name = "Thriller", Description = "Thriller movies", IsActive = true, CreatedDate = DateTime.Now },
-                new Category { Id = 8, Name = "Animation", Description = "Animated movies", IsActive = true, CreatedDate = DateTime.Now }
+                new Category { Id = 1, Name = "Action", Description = "Action movies", IsActive = true, CreatedAt = DateTime.Now },
+                new Category { Id = 2, Name = "Comedy", Description = "Comedy movies", IsActive = true, CreatedAt = DateTime.Now },
+                new Category { Id = 3, Name = "Drama", Description = "Drama movies", IsActive = true, CreatedAt = DateTime.Now },
+                new Category { Id = 4, Name = "Horror", Description = "Horror movies", IsActive = true, CreatedAt = DateTime.Now },
+                new Category { Id = 5, Name = "Romance", Description = "Romance movies", IsActive = true, CreatedAt = DateTime.Now },
+                new Category { Id = 6, Name = "Sci-Fi", Description = "Science Fiction movies", IsActive = true, CreatedAt = DateTime.Now },
+                new Category { Id = 7, Name = "Thriller", Description = "Thriller movies", IsActive = true, CreatedAt = DateTime.Now },
+                new Category { Id = 8, Name = "Animation", Description = "Animated movies", IsActive = true, CreatedAt = DateTime.Now }
             );
 
             // Seed User Roles
@@ -218,10 +218,10 @@ namespace VoxTics.Data
                     LastName = "User",
                     Email = "admin@cinema.com",
                     PasswordHash = "AQAAAAEAACcQAAAAEH3QhLhFhBpz9Kpx8qHiuZs1kJ2sNFKJCyKGXUwNdU9u6Vp8IJ1aGk3K3wIZl4M5QQ==", // Password123!
-                    Role = UserRole.Administrator,
+                    Role = UserRole.Admin,
                     IsActive = true,
                     IsEmailConfirmed = true,
-                    CreatedDate = DateTime.Now
+                    CreatedAt = DateTime.Now
                 }
             );
 
@@ -236,7 +236,7 @@ namespace VoxTics.Data
                     Phone = "555-0123",
                     Email = "info@grandcinema.com",
                     IsActive = true,
-                    CreatedDate = DateTime.Now
+                    CreatedAt = DateTime.Now
                 },
                 new Cinema
                 {
@@ -247,17 +247,17 @@ namespace VoxTics.Data
                     Phone = "555-0456",
                     Email = "info@citycentercinema.com",
                     IsActive = true,
-                    CreatedDate = DateTime.Now
+                    CreatedAt = DateTime.Now
                 }
             );
 
             // Seed Actors
             modelBuilder.Entity<Actor>().HasData(
-                new Actor { Id = 1, Name = "Robert Downey Jr.", Nationality = "American", IsActive = true, CreatedDate = DateTime.Now },
-                new Actor { Id = 2, Name = "Scarlett Johansson", Nationality = "American", IsActive = true, CreatedDate = DateTime.Now },
-                new Actor { Id = 3, Name = "Chris Evans", Nationality = "American", IsActive = true, CreatedDate = DateTime.Now },
-                new Actor { Id = 4, Name = "Jennifer Lawrence", Nationality = "American", IsActive = true, CreatedDate = DateTime.Now },
-                new Actor { Id = 5, Name = "Leonardo DiCaprio", Nationality = "American", IsActive = true, CreatedDate = DateTime.Now }
+                new Actor { Id = 1, FirstName = "Robert Downey Jr.", Nationality = "American", IsActive = true, CreatedAt = DateTime.Now },
+                new Actor { Id = 2, FirstName = "Scarlett Johansson", Nationality = "American", IsActive = true, CreatedAt = DateTime.Now },
+                new Actor { Id = 3, FirstName = "Chris Evans", Nationality = "American", IsActive = true, CreatedAt = DateTime.Now },
+                new Actor { Id = 4, FirstName = "Jennifer Lawrence", Nationality = "American", IsActive = true, CreatedAt = DateTime.Now },
+                new Actor { Id = 5, FirstName = "Leonardo DiCaprio", Nationality = "American", IsActive = true, CreatedAt = DateTime.Now }
             );
         }
 
@@ -282,10 +282,10 @@ namespace VoxTics.Data
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.CreatedDate = DateTime.Now;
+                        entry.Entity.CreatedAt = DateTime.Now;
                         break;
                     case EntityState.Modified:
-                        entry.Entity.LastModifiedDate = DateTime.Now;
+                        entry.Entity.UpdatedAt = DateTime.Now;
                         break;
                 }
             }

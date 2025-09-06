@@ -176,14 +176,14 @@ namespace VoxTics.Areas.Admin.Controllers
                         var movie = _mapper.Map<Movie>(viewModel);
 
                         // Handle image upload
-                        if (viewModel.ImageFile != null)
+                        if (viewModel.PosterImageFile != null)
                         {
-                            var imagePath = await SaveImageAsync(viewModel.ImageFile, "movies");
+                            var imagePath = await SaveImageAsync(viewModel.PosterImageFile, "movies");
                             movie.ImageUrl = imagePath;
                         }
 
-                        movie.CreatedDate = DateTime.UtcNow;
-                        movie.ModifiedDate = DateTime.UtcNow;
+                        movie.CreatedAt = DateTime.UtcNow;
+                        movie.UpdatedAt = DateTime.UtcNow;
 
                         var result = await _movieRepository.AddAsync(movie);
 
@@ -316,9 +316,9 @@ namespace VoxTics.Areas.Admin.Controllers
                         _mapper.Map(viewModel, existingMovie);
 
                         // Handle new image upload
-                        if (viewModel.ImageFile != null)
+                        if (viewModel.PosterImageFile != null)
                         {
-                            var imagePath = await SaveImageAsync(viewModel.ImageFile, "movies");
+                            var imagePath = await SaveImageAsync(viewModel.PosterImageFile, "movies");
                             existingMovie.ImageUrl = imagePath;
 
                             // Delete old image
@@ -328,11 +328,11 @@ namespace VoxTics.Areas.Admin.Controllers
                             }
                         }
 
-                        existingMovie.ModifiedDate = DateTime.UtcNow;
+                        existingMovie.UpdatedAt = DateTime.UtcNow;
 
                         var result = await _movieRepository.UpdateAsync(existingMovie);
 
-                        if (result)
+                        if (result != null)
                         {
                             // Update movie categories
                             await UpdateMovieCategoriesAsync(id, viewModel.SelectedCategoryIds);
@@ -453,7 +453,7 @@ namespace VoxTics.Areas.Admin.Controllers
                 // Store image path for cleanup
                 var imagePath = movie.ImageUrl;
 
-                var result = await _movieRepository.DeleteAsync(id);
+                var result = await _movieRepository.DeleteAsync(Id);
 
                 if (result)
                 {
@@ -524,11 +524,11 @@ namespace VoxTics.Areas.Admin.Controllers
                     _ => MovieStatus.Upcoming
                 };
 
-                movie.ModifiedDate = DateTime.UtcNow;
+                movie.UpdatedAt = DateTime.UtcNow;
 
                 var result = await _movieRepository.UpdateAsync(movie);
 
-                if (result)
+                if (result != null)
                 {
                     _logger.LogInformation("Movie status toggled successfully for ID: {MovieId} to {Status}",
                         id, movie.Status);

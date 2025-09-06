@@ -1,6 +1,16 @@
-﻿namespace VoxTics.Models.ViewModels
+﻿using System;
+using VoxTics.Models.Enums;
+
+namespace VoxTics.Models.ViewModels
 {
-    public class ShowtimeFilterVM
+    public class ShowtimeFilterVM : BasePaginatedFilterVM
     {
+        public int? MovieId { get; set; }
+        public int? CinemaId { get; set; }
+        public int? HallId { get; set; }
+        public ShowtimeStatus? Status { get; set; } 
+        public TimeOfDayRange? TimeOfDayRange { get; set; }   
+
+        public bool? HasAvailableSeats { get; set; }
     }
 }

@@ -15,8 +15,13 @@ namespace VoxTics.Repositories.Interfaces
         Task<IEnumerable<Movie>> GetMoviesByCategoryAsync(int categoryId);
         Task<IEnumerable<Movie>> GetMoviesByCinemaAsync(int cinemaId);
         Task<Movie?> GetMovieWithDetailsAsync(int movieId);
+        Task<bool> HasRelatedDataAsync(int movieId);
 
+        Task<bool> IsMovieTitleUniqueAsync(string title, int? excludeId = null);
+
+        Task<bool> IsTitleUniqueAsync(string title, int? excludeId = null);
         // Includes shortcuts
+
         Task<IEnumerable<Movie>> GetMoviesWithCategoriesAsync();
         Task<IEnumerable<Movie>> GetMoviesWithActorsAsync();
         Task<IEnumerable<Movie>> GetMoviesWithImagesAsync();
@@ -57,8 +62,8 @@ namespace VoxTics.Repositories.Interfaces
         Task<(IEnumerable<Movie> movies, int totalCount)> GetPagedMoviesForAdminAsync(BasePaginatedFilterVM filter);
 
         // Validation
-        Task<bool> IsMovieTitleUniqueAsync(string title, int? excludeId = null);
         Task<bool> HasActiveShowtimesAsync(int movieId);
         Task<bool> CanDeleteMovieAsync(int movieId);
+        
     }
 }

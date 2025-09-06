@@ -10,13 +10,16 @@ namespace VoxTics.Repositories.Interfaces
     {
         // Basic CRUD Operations
         Task<T?> GetByIdAsync(int id);
-        Task<IEnumerable<T>> GetAllAsync();
+        Task<IEnumerable<T>> GetAllAsync(string? searchTerm = null);
+
         Task<T> AddAsync(T entity);
         Task<T> UpdateAsync(T entity);
         Task DeleteAsync(int id);
         Task DeleteAsync(T entity);
 
         // Query Operations
+        IQueryable<T> Query(); // Add this
+     
         Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
         Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
         Task<IEnumerable<T>> GetPagedAsync(int pageNumber, int pageSize);

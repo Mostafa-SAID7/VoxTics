@@ -244,7 +244,7 @@ namespace VoxTics.Repositories.Implementations
                 "name" => filter.SortOrder == SortOrder.Desc ? baseQuery.OrderByDescending(c => c.Name) : baseQuery.OrderBy(c => c.Name),
                 "city" => filter.SortOrder == SortOrder.Desc ? baseQuery.OrderByDescending(c => c.City) : baseQuery.OrderBy(c => c.City),
                 "hallcount" => filter.SortOrder == SortOrder.Desc ? baseQuery.OrderByDescending(c => c.Halls.Count) : baseQuery.OrderBy(c => c.Halls.Count),
-                "createddate" => filter.SortOrder == SortOrder.Desc ? baseQuery.OrderByDescending(c => c.CreatedDate) : baseQuery.OrderBy(c => c.CreatedDate),
+                "createddate" => filter.SortOrder == SortOrder.Desc ? baseQuery.OrderByDescending(c => c.CreatedAt) : baseQuery.OrderBy(c => c.CreatedAt),
                 _ => baseQuery.OrderBy(c => c.Name)
             };
 
@@ -356,7 +356,7 @@ namespace VoxTics.Repositories.Implementations
         {
             return await _dbSet
                 .Include(c => c.Halls)
-                .OrderByDescending(c => c.CreatedDate)
+                .OrderByDescending(c => c.CreatedAt)
                 .AsNoTracking()
                 .ToListAsync();
         }

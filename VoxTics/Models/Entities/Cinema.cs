@@ -47,11 +47,6 @@ namespace VoxTics.Models.Entities
         // Status
         public bool IsActive { get; set; } = true;
 
-        // Tracking
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-        public DateTime? UpdatedAt { get; set; }
-
-        // Navigation properties
         public virtual ICollection<Hall> Halls { get; set; } = new List<Hall>();
         public virtual ICollection<Showtime> Showtimes { get; set; } = new List<Showtime>();
         public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
