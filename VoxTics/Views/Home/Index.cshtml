@@ -1,10 +1,95 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model VoxTics.Models.ViewModels.HomeVM
+
+@{
+    ViewData["Title"] = "Home";
 }
-@model VoxTics.Models.ViewModels.HomeVM
 
-<div class="space-y-12">
+<h1>Welcome to VoxTics</h1>
 
-
-
+<!-- Featured Movies -->
+<h2>Featured Movies (@Model.TotalMovies)</h2>
+<div class="row">
+    @foreach (var movie in Model.FeaturedMovies)
+    {
+        <div class="col-md-2 mb-3">
+            <div class="card">
+                <img src="@movie.PosterImage" class="card-img-top" alt="@movie.Title" />
+                <div class="card-body">
+                    <h5 class="card-title">@movie.Title</h5>
+                    <p class="card-text">Release: @movie.ReleaseDate.ToShortDateString()</p>
+                    <p>Status: @movie.Status</p>
+                    <p>Duration: @movie.DurationInMinutes mins</p>
+                </div>
+            </div>
+        </div>
+    }
 </div>
+
+<!-- Now Showing Movies -->
+<h2>Now Showing (@Model.TotalNowShowing)</h2>
+<div class="row">
+    @foreach (var movie in Model.NowShowingMovies)
+    {
+        <div class="col-md-2 mb-3">
+            <div class="card">
+                <img src="@movie.PosterImage" class="card-img-top" alt="@movie.Title" />
+                <div class="card-body">
+                    <h5 class="card-title">@movie.Title</h5>
+                    <p>Release: @movie.ReleaseDate.ToShortDateString()</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Upcoming Movies -->
+<h2>Upcoming Movies (@Model.TotalUpcoming)</h2>
+<div class="row">
+    @foreach (var movie in Model.UpcomingMovies)
+    {
+        <div class="col-md-2 mb-3">
+            <div class="card">
+                <img src="@movie.PosterImage" class="card-img-top" alt="@movie.Title" />
+                <div class="card-body">
+                    <h5 class="card-title">@movie.Title</h5>
+                    <p>Release: @movie.ReleaseDate.ToShortDateString()</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Popular Categories -->
+<h2>Popular Categories</h2>
+<ul>
+    @foreach (var category in Model.PopularCategories)
+    {
+        <li>@category.Name (@category.MovieCount movies)</li>
+    }
+</ul>
+
+<!-- Today's Showtimes -->
+<h2>Today's Showtimes</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Movie</th>
+            <th>Cinema</th>
+            <th>Hall</th>
+            <th>Start Time</th>
+            <th>Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var st in Model.TodayShowtimes)
+        {
+            <tr>
+                <td>@st.MovieTitle</td>
+                <td>@st.CinemaName</td>
+                <td>@st.HallName</td>
+                <td>@st.ShowDateTime.ToString("HH:mm")</td>
+                <td>@st.Price.ToString("C")</td>
+            </tr>
+        }
+    </tbody>
+</table>

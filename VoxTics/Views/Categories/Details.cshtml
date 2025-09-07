@@ -1,24 +1,34 @@
 ﻿@model VoxTics.Models.ViewModels.CategoryVM
 
 @{
-    ViewData["Title"] = $"Movies in {Model.Name}";
+    ViewData["Title"] = Model.Name;
 }
 
 <h2>@Model.Name</h2>
 
-<div class="row">
-    @foreach (var movie in Model.Movies)
-    {
-        <div class="col-md-3 mb-4">
-            <div class="card h-100">
-                <img src="@movie.PosterImage" class="card-img-top" style="object-fit:cover; height:220px;" />
-                <div class="card-body">
-                    <h5 class="card-title">
-                        <a asp-controller="Movies" asp-action="Details" asp-route-id="@movie.Id">@movie.Title</a>
-                    </h5>
-                    <p class="card-text text-muted">@movie.DurationInMinutes min</p>
+<p>@Model.Description</p>
+
+@if (Model.Movies == null || !Model.Movies.Any())
+{
+    <p>No movies found in this category.</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var m in Model.Movies)
+        {
+            <div class="col-md-3 mb-3">
+                <div class="card h-100">
+                    <img src="@m.PosterImage" class="card-img-top" alt="@m.Title" />
+                    <div class="card-body">
+                        <h5 class="card-title">@m.Title</h5>
+                        <p class="card-text">@m.Description</p>
+                        <a class="btn btn-primary" href="@Url.Action("Details", "Movies", new { id = m.Id })">View Movie</a>
+                    </div>
                 </div>
             </div>
-        </div>
-    }
-</div>
+        }
+    </div>
+}
+
+<a class="btn btn-secondary mt-3" href="@Url.Action("Index", "Categories")">Back to Categories</a>

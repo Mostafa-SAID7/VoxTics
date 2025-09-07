@@ -12,8 +12,8 @@ using VoxTics.Data;
 namespace VoxTics.Migrations
 {
     [DbContext(typeof(MovieDbContext))]
-    [Migration("20250907091700_FullMethods")]
-    partial class FullMethods
+    [Migration("20250907094936_FixedShowtimeSeed")]
+    partial class FixedShowtimeSeed
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -547,6 +547,28 @@ namespace VoxTics.Migrations
                     b.HasIndex("CinemaId");
 
                     b.ToTable("Halls");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CinemaId = 1,
+                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsActive = true,
+                            IsDeleted = false,
+                            Name = "Hall 1",
+                            TotalSeats = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CinemaId = 1,
+                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsActive = true,
+                            IsDeleted = false,
+                            Name = "Hall 2",
+                            TotalSeats = 0
+                        });
                 });
 
             modelBuilder.Entity("VoxTics.Models.Entities.Movie", b =>
@@ -877,6 +899,42 @@ namespace VoxTics.Migrations
                     b.HasIndex("MovieId");
 
                     b.ToTable("Showtimes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CinemaId = 0,
+                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Duration = 0,
+                            HallId = 1,
+                            Is3D = false,
+                            IsDeleted = false,
+                            Language = "EN",
+                            MovieId = 2,
+                            Price = 10.00m,
+                            ScreenType = "Standard",
+                            ShowDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StartTime = new DateTime(2025, 9, 8, 12, 0, 0, 0, DateTimeKind.Utc),
+                            Status = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CinemaId = 0,
+                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Duration = 0,
+                            HallId = 2,
+                            Is3D = false,
+                            IsDeleted = false,
+                            Language = "EN",
+                            MovieId = 2,
+                            Price = 12.00m,
+                            ScreenType = "Standard",
+                            ShowDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StartTime = new DateTime(2025, 9, 8, 14, 30, 0, 0, DateTimeKind.Utc),
+                            Status = 0
+                        });
                 });
 
             modelBuilder.Entity("VoxTics.Models.Entities.SocialMediaLink", b =>

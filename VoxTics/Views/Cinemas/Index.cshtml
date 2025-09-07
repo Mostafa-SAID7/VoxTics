@@ -1,38 +1,43 @@
-﻿@using VoxTics.Helpers
-@model PaginatedList<VoxTics.Models.ViewModels.CinemaVM>
+﻿@model IEnumerable<VoxTics.Models.ViewModels.CinemaVM>
 
-<h2 class="mb-4">Cinemas</h2>
+@{
+    ViewData["Title"] = "Cinemas";
+}
 
-<div class="mb-3">
-    <form asp-action="Index" method="get" class="ajax-search-form" data-target="#cards-container">
-        <div class="row g-2">
-            <div class="col-md-6">
-                <input type="text" name="search" class="form-control"
-                       placeholder="Search cinemas..."
-                       value="@(Model.RouteValues != null && Model.RouteValues.ContainsKey("search") ? Model.RouteValues["search"] : "")" />
-            </div>
-            <div class="col-md-4">
-                <input type="text" name="location" class="form-control ajax-filter"
-                       placeholder="Location"
-                       value="@(Model.RouteValues != null && Model.RouteValues.ContainsKey("location") ? Model.RouteValues["location"] : "")" />
-            </div>
-            <div class="col-md-2 d-grid">
-                <button type="submit" class="btn btn-primary">Search</button>
-            </div>
-        </div>
-    </form>
-</div>
+<h2>@ViewData["Title"]</h2>
 
-<div id="cinemas-container">
-    <div id="cards-container">
-        @await Html.PartialAsync("_CinemaCards", Model)
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<form method="get" asp-action="Index" class="mb-3">
+    <input type="text" name="searchTerm" class="form-control" placeholder="Search cinemas..." value="@ViewBag.SearchTerm" />
+</form>
+
+@if (!Model.Any())
+{
+    <p>No cinemas found.</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var cinema in Model)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    @if (!string.IsNullOrWhiteSpace(cinema.ImageUrl))
+                    {
+                        <img src="@cinema.ImageUrl" class="card-img-top" alt="@cinema.Name" />
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@cinema.Name</h5>
+                        <p class="card-text">@cinema.Location</p>
+                        <p class="card-text">Halls: @cinema.HallCount</p>
+                        <a class="btn btn-primary" href="@Url.Action("Details", "Cinemas", new { id = cinema.Id })">View Details</a>
+                    </div>
+                </div>
+            </div>
+        }
     </div>
-
-    @await Html.PartialAsync("~/Views/Shared/_Pagination.cshtml", Model, new ViewDataDictionary(ViewData) {
-        { "Action", "Index" },
-        { "Controller", "Cinemas" },
-        { "Target", "#cards-container" }
-        })
-</div>
-
-@await Html.PartialAsync("~/Views/Shared/_Loader.cshtml")
+}

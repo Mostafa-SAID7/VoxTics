@@ -1,11 +1,61 @@
-﻿@model VoxTics.Helpers.PaginatedList<VoxTics.Models.ViewModels.BookingVM>
+﻿@model IEnumerable<VoxTics.Models.ViewModels.BookingVM>
 
-<h2 class="text-2xl font-bold mb-6">My Bookings</h2>
+@{
+    ViewData["Title"] = "My Bookings";
+}
 
-<div id="bookingsContainer">
-    @await Html.PartialAsync("_BookingList", Model)
-</div>
+<h2>@ViewData["Title"]</h2>
 
-<div class="mt-4">
-    @await Html.PartialAsync("_Pagination", Model)
-</div>
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@if (!Model.Any())
+{
+    <p>No bookings found.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Booking #</th>
+                <th>Movie</th>
+                <th>Cinema</th>
+                <th>Hall</th>
+                <th>Seats</th>
+                <th>Showtime</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Payment</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var b in Model)
+            {
+                <tr>
+                    <td>@b.BookingNumber</td>
+                    <td>@b.MovieTitle</td>
+                    <td>@b.CinemaName</td>
+                    <td>@b.HallName</td>
+                    <td>@string.Join(", ", b.SeatNumbers)</td>
+                    <td>@b.ShowtimeStart.ToString("g")</td>
+                    <td>@b.TotalPrice.ToString("C")</td>
+                    <td>@b.Status</td>
+                    <td>@b.PaymentStatus</td>
+                    <td>
+                        <a class="btn btn-sm btn-primary" href="@Url.Action("Details", "Booking", new { id = b.Id })">Details</a>
+                        @if (b.CanBeCancelled)
+                        {
+                            <form method="post" asp-action="Cancel" asp-controller="Booking" asp-route-id="@b.Id" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -270,6 +270,37 @@ namespace VoxTics.Data
                 new Actor { Id = 4, FirstName = "Jennifer Lawrence", Nationality = "American", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) },
                 new Actor { Id = 5, FirstName = "Leonardo DiCaprio", Nationality = "American", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) }
             );
+            // ===================
+            // Halls
+            // ===================
+            modelBuilder.Entity<Hall>().HasData(
+                new Hall { Id = 1, Name = "Hall 1", CinemaId = 1, CreatedAt = new DateTime(2025, 9, 7) },
+                new Hall { Id = 2, Name = "Hall 2", CinemaId = 1, CreatedAt = new DateTime(2025, 9, 7) }
+            );
+
+            // ===================
+            // Showtimes (use static StartTime values - deterministic)
+            // ===================
+            modelBuilder.Entity<Showtime>().HasData(
+                new Showtime
+                {
+                    Id = 1,
+                    MovieId = 2,
+                    HallId = 1,
+                    StartTime = new DateTime(2025, 9, 8, 12, 00, 00, DateTimeKind.Utc),
+                    Price = 10.00m,
+                    CreatedAt = new DateTime(2025, 9, 7)
+                },
+                new Showtime
+                {
+                    Id = 2,
+                    MovieId = 2,
+                    HallId = 2,
+                    StartTime = new DateTime(2025, 9, 8, 14, 30, 00, DateTimeKind.Utc),
+                    Price = 12.00m,
+                    CreatedAt = new DateTime(2025, 9, 7)
+                }
+            );
         }
 
         public override int SaveChanges()

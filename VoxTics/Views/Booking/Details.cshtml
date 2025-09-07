@@ -1,0 +1,26 @@
+﻿@model VoxTics.Models.ViewModels.BookingVM
+
+@{
+    ViewData["Title"] = "Booking Details";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div>
+    <h4>Booking #@Model.BookingNumber</h4>
+    <p><strong>Movie:</strong> @Model.MovieTitle</p>
+    <p><strong>Cinema:</strong> @Model.CinemaName</p>
+    <p><strong>Hall:</strong> @Model.HallName</p>
+    <p><strong>Seats:</strong> @string.Join(", ", Model.SeatNumbers)</p>
+    <p><strong>Showtime:</strong> @Model.ShowtimeStart.ToString("g")</p>
+    <p><strong>Total:</strong> @Model.TotalPrice.ToString("C")</p>
+    <p><strong>Status:</strong> @Model.Status</p>
+    <p><strong>Payment:</strong> @Model.PaymentStatus</p>
+</div>
+
+<a class="btn btn-secondary" href="@Url.Action("Index", "Booking")">Back to My Bookings</a>

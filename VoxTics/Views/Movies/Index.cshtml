@@ -1,25 +1,43 @@
-﻿@using VoxTics.Helpers
-@model PaginatedList<VoxTics.Models.ViewModels.MovieVM>
+﻿@model IEnumerable<VoxTics.Models.ViewModels.MovieVM>
 
-<h2 class="mb-4">Movies</h2>
+@{
+    ViewData["Title"] = "Movies";
+}
 
-<div class="mb-3">
-    <form asp-action="Index" method="get" class="ajax-search-form" data-target="#cards-container">
-        <div class="input-group">
-            <input type="text" name="search" value="@(Model.RouteValues?["search"] ?? "")" class="form-control" placeholder="Search movies...">
-            <select name="categoryId" class="form-select ajax-filter">
-                <option value="">All categories</option>
-                @* populate categories list as needed *@
-            </select>
-            <button class="btn btn-primary" type="submit">Search</button>
-        </div>
-    </form>
-</div>
+<h1>Movies</h1>
 
-<div id="movies-container">
-    <div id="cards-container">
-        @await Html.PartialAsync("_MovieCards", Model)
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<form method="get" class="mb-3">
+    <input type="text" name="searchTerm"
+           placeholder="Search movies..."
+           class="form-control mb-2"
+           value="@Context.Request.Query["searchTerm"]" />
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+@if (!Model.Any())
+{
+    <p>No movies found.</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var movie in Model)
+        {
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    <img class="card-img-top" src="@movie.PosterImage" alt="@movie.Title" />
+                    <div class="card-body">
+                        <h5 class="card-title">@movie.Title</h5>
+                        <p class="card-text">@movie.CategoryNames</p>
+                        <a class="btn btn-sm btn-primary" asp-action="Details" asp-route-id="@movie.Id">Details</a>
+                    </div>
+                </div>
+            </div>
+        }
     </div>
-
-    @await Html.PartialAsync("~/Views/Shared/_Pagination.cshtml", Model, new ViewDataDictionary(ViewData) { { "Action", "Index" }, { "Controller", "Movies" }, { "Target", "#cards-container" } })
-</div>
+}
