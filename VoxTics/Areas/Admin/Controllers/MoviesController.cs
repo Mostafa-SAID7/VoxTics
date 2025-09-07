@@ -137,7 +137,7 @@ namespace VoxTics.Areas.Admin.Controllers
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
                 return PartialView("_Create", vm);
 
-            return View(vm);
+            return PartialView("_Create", vm);
         }
 
         // POST: Admin/Movies/Create
@@ -225,7 +225,7 @@ namespace VoxTics.Areas.Admin.Controllers
                 if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
                     return PartialView("_Edit", vm);
 
-                return View(vm);
+                return PartialView("_Edit", vm);
             }
             catch (Exception ex)
             {
@@ -315,7 +315,7 @@ namespace VoxTics.Areas.Admin.Controllers
             if (movie == null) return NotFound();
 
             var vm = _mapper.Map<MovieViewModel>(movie);
-            return View(vm);
+            return PartialView("_Delete", vm);
         }
 
         // POST: Admin/Movies/Delete/5
