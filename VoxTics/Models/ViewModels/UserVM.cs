@@ -9,9 +9,9 @@ namespace VoxTics.Models.ViewModels
     public class UserVM
     {
         public int Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
         public string? Phone { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public UserRole Role { get; set; }
@@ -44,7 +44,8 @@ namespace VoxTics.Models.ViewModels
         [Required, StringLength(100)]
         [Display(Name = "Full Name")]
         public string FullName { get; set; } = string.Empty;
-
+        public string FirstName { get; set; } = string.Empty;   
+        public string LastName { get; set; } = string.Empty;
         [Required, EmailAddress]
         public string Email { get; set; } = string.Empty;
 
@@ -70,8 +71,8 @@ namespace VoxTics.Models.ViewModels
 
         [Required, StringLength(100)]
         [Display(Name = "Full Name")]
-        public string FullName { get; set; } = string.Empty;
-
+        public string FirstName { get; set; } = string.Empty;   
+        public string LastName { get; set; } = string.Empty;
         [Phone]
         public string? Phone { get; set; }
 

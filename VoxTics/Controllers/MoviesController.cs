@@ -29,38 +29,28 @@ namespace VoxTics.Controllers
         {
             try
             {
-                var movies = await _movieRepository.GetAllWithIncludesAsync(m => m.Categories);
+                var movies = await _movieRepository.GetAllWithIncludesAsync(m => m.MovieCategories);
 
                 if (!string.IsNullOrEmpty(searchTerm))
                 {
                     movies = movies.Where(m => m.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
                 }
-
                 if (categoryId.HasValue)
                 {
-                    movies = movies.Where(m => m.Categories.Any(c => c.Id == categoryId.Value));
+                    movies = movies.Where(m => m.MovieCategories.Any(mc => mc.CategoryId == categoryId.Value));
                 }
-
                 var vm = movies.Select(m => new MovieVM
                 {
                     Id = m.Id,
                     Title = m.Title,
                     Description = m.Description,
-                    BasePrice = m.BasePrice,
-                    DurationInMinutes = m.Duration,
+                    PosterImage = m.ImageUrl,
                     ReleaseDate = m.ReleaseDate,
-                    PosterImage = m.PosterUrl,
                     Status = m.Status,
-                    IsUpcoming = m.Status == Models.Enums.MovieStatus.Upcoming,
-                    IsNowShowing = m.Status == Models.Enums.MovieStatus.NowShowing,
-                    IsEndedShowing = m.Status == Models.Enums.MovieStatus.EndedShowing,
-                    AverageRating = m.AverageRating,
-                    TotalRatings = m.TotalRatings,
-                    ViewCount = m.ViewCount,
-                    BookingCount = m.BookingCount,
-                    Categories = m.Categories.Select(c => c.Name).ToList(),
-                    CategoryNames = string.Join(", ", m.Categories.Select(c => c.Name))
+                    Categories = m.MovieCategories.Select(mc => mc.Category.Name).ToList(),
+                    CategoryNames = string.Join(", ", m.MovieCategories.Select(mc => mc.Category.Name))
                 }).ToList();
+
 
                 return View(vm);
             }
@@ -77,43 +67,39 @@ namespace VoxTics.Controllers
         {
             try
             {
-                var movie = await _movieRepository.GetByIdWithIncludesAsync(id, m => m.MovieCategories, m => m.Actors);
+                var movie = await _movieRepository.GetByIdWithIncludesAsync(id, m => m.MovieCategories, m => m.MovieActors);
 
                 if (movie == null)
                 {
                     return NotFound();
                 }
 
+                
+
                 var vm = new MovieVM
                 {
                     Id = movie.Id,
                     Title = movie.Title,
                     Description = movie.Description,
-                    BasePrice = movie.BasePrice,
-                    DurationInMinutes = movie.Duration,
+                    BasePrice = movie.Price,
+                    DurationInMinutes = movie.DurationMinutes,
                     ReleaseDate = movie.ReleaseDate,
                     Director = movie.Director,
                     Language = movie.Language,
                     Country = movie.Country,
-                    Rating = movie.Rating,
                     AgeRating = movie.AgeRating,
-                    TrailerUrl = movie.TrailerUrl,
-                    PosterImage = movie.PosterUrl,
+                    TrailerUrl = movie.TrailerImageUrl,
+                    PosterImage = movie.ImageUrl,
                     Status = movie.Status,
-                    AverageRating = movie.AverageRating,
-                    TotalRatings = movie.TotalRatings,
-                    ViewCount = movie.ViewCount,
-                    BookingCount = movie.BookingCount,
-                    Categories = movie.Categories.Select(c => c.Name).ToList(),
-                    CategoryNames = string.Join(", ", movie.Categories.Select(c => c.Name)),
-                    Actors = movie.Actors.Select(a => new ActorVM
+                    Categories = movie.MovieCategories.Select(mc => mc.Category.Name).ToList(),
+                    CategoryNames = string.Join(", ", movie.MovieCategories.Select(mc => mc.Category.Name)),
+                    Actors = movie.MovieActors.Select(ma => new ActorVM
                     {
-                        Id = a.Id,
-                        FirstName = a.FullName,
-                        ImageUrl = a.ProfileImage
+                        Id = ma.Actor.Id,
+                        FirstName = ma.Actor.FullName,
+                        ImageUrl = ma.Actor.ImageUrl
                     }).ToList()
                 };
-
                 return View(vm);
             }
             catch (Exception ex)
@@ -129,23 +115,23 @@ namespace VoxTics.Controllers
         {
             try
             {
-                var category = await _categoryRepository.GetByIdWithIncludesAsync(id, c => c.Movies);
+                var category = await _categoryRepository.GetByIdWithIncludesAsync(id, c => c.MovieCategories);
 
                 if (category == null)
                 {
                     return NotFound();
                 }
 
-                var vm = category.Movies.Select(m => new MovieVM
+                var vm = category.MovieCategories.Select(mc => new MovieVM
                 {
-                    Id = m.Id,
-                    Title = m.Title,
-                    Description = m.Description,
-                    PosterImage = m.PosterUrl,
-                    ReleaseDate = m.ReleaseDate,
-                    Status = m.Status,
-                    Categories = m.Categories.Select(c => c.Name).ToList(),
-                    CategoryNames = string.Join(", ", m.Categories.Select(c => c.Name))
+                    Id = mc.Movie.Id,
+                    Title = mc.Movie.Title,
+                    Description = mc.Movie.Description,
+                    PosterImage = mc.Movie.ImageUrl,
+                    ReleaseDate = mc.Movie.ReleaseDate,
+                    Status = mc.Movie.Status,
+                    Categories = mc.Movie.MovieCategories.Select(x => x.Category.Name).ToList(),
+                    CategoryNames = string.Join(", ", mc.Movie.MovieCategories.Select(x => x.Category.Name))
                 }).ToList();
 
                 ViewBag.CategoryName = category.Name;

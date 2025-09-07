@@ -22,7 +22,7 @@ namespace VoxTics.Models.Entities
         public string PasswordHash { get; set; } = string.Empty;
 
         [StringLength(15)]
-        public string? Phone { get; set; }
+        public string? PhoneNumber { get; set; }
 
         [StringLength(200)]
         public string? AvatarUrl { get; set; }
@@ -54,8 +54,8 @@ namespace VoxTics.Models.Entities
 
         // Preferences (stored as JSON)
         public string? PreferencesJson { get; set; }
+        public bool EmailConfirmed { get; set; }
 
-  
         // Navigation properties
         public virtual ICollection<Booking> Bookings { get; set; } = new HashSet<Booking>();
         public virtual ICollection<SocialMediaLink> SocialMediaLinks { get; set; } = new List<SocialMediaLink>();

@@ -24,13 +24,13 @@ namespace VoxTics.Areas.Admin.Controllers
         private readonly ILogger<HomeController> _logger;
 
         public HomeController(
-            IMovieRepository movieRepository,
-            IUserRepository userRepository,
-            IBookingRepository bookingRepository,
-            ICategoryRepository categoryRepository,
-            IShowtimeRepository showtimeRepository,
-            IMapper mapper,
-            ILogger<HomeController> logger)
+    IMovieRepository movieRepository,
+    IUserRepository userRepository,
+    IBookingRepository bookingRepository,
+    ICategoryRepository categoryRepository,
+    IShowtimeRepository showtimeRepository, 
+    IMapper mapper,
+    ILogger<HomeController> logger)
         {
             _movieRepository = movieRepository;
             _userRepository = userRepository;
@@ -38,7 +38,10 @@ namespace VoxTics.Areas.Admin.Controllers
             _categoryRepository = categoryRepository;
             _mapper = mapper;
             _logger = logger;
+
+            _showtimeRepository = showtimeRepository;
         }
+
 
         // GET: Admin/Home/Index
         public async Task<IActionResult> Index()

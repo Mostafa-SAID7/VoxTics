@@ -2,9 +2,10 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using VoxTics.Data;
 using VoxTics.Models.Entities;
 using VoxTics.Models.ViewModels;
 
@@ -12,20 +13,15 @@ namespace VoxTics.Controllers
 {
     public class UsersController : Controller
     {
-        private readonly UserManager<MovieDbContext> _userManager;
-        private readonly SignInManager<MovieDbContext> _signInManager;
+        private readonly MovieDbContext _db;
         private readonly ILogger<UsersController> _logger;
 
-        public UsersController(
-            UserManager<MovieDbContext> userManager,
-            SignInManager<MovieDbContext> signInManager,
-            ILogger<UsersController> logger)
+        public UsersController(MovieDbContext db, ILogger<UsersController> logger)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _db = db;
             _logger = logger;
         }
-
+        
         // -----------------------
         // Register
         // -----------------------
@@ -42,25 +38,31 @@ namespace VoxTics.Controllers
 
             try
             {
-                var user = new MovieDbContext.User
+                if (await _db.Users.AnyAsync(u => u.Email == model.Email))
                 {
-                    UserName = model.Email,
-                    Email = model.Email,
-                    PhoneNumber = model.Phone,
-                    CreatedAt = DateTime.UtcNow
-                };
-
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation("New user registered: {Email}", model.Email);
-
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home");
+                    ModelState.AddModelError("", "Email already registered.");
+                    return View(model);
                 }
 
-                foreach (var error in result.Errors)
-                    ModelState.AddModelError("", error.Description);
+                var user = new User
+                {
+                    FirstName = model.FirstName,  // ✅ make sure RegisterVM has these
+                    LastName = model.LastName,
+                    Email = model.Email,
+                    PhoneNumber = model.Phone,
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password),
+                    CreatedAt = DateTime.UtcNow,
+                    IsActive = true
+                };
+
+                _db.Users.Add(user);
+                await _db.SaveChangesAsync();
+
+                // TODO: Save user ID in session or cookie for "login"
+                HttpContext.Session.SetInt32("UserId", user.Id);
+
+                _logger.LogInformation("New user registered: {Email}", model.Email);
+                return RedirectToAction("Index", "Home");
             }
             catch (Exception ex)
             {
@@ -89,26 +91,26 @@ namespace VoxTics.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            try
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+            if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
             {
-                var result = await _signInManager.PasswordSignInAsync(
-                    model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation("User logged in: {Email}", model.Email);
-                    return RedirectToLocal(returnUrl);
-                }
-
                 ModelState.AddModelError("", "Invalid login attempt.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error during login for {Email}", model.Email);
-                ModelState.AddModelError("", "An unexpected error occurred.");
+                return View(model);
             }
 
-            return View(model);
+            if (!user.IsActive)
+            {
+                ModelState.AddModelError("", "Your account is inactive.");
+                return View(model);
+            }
+
+            // Save login session
+            HttpContext.Session.SetInt32("UserId", user.Id);
+            user.LastLoginDate = DateTime.UtcNow;
+            await _db.SaveChangesAsync();
+
+            _logger.LogInformation("User logged in: {Email}", model.Email);
+            return RedirectToLocal(returnUrl);
         }
 
         // -----------------------
@@ -116,9 +118,9 @@ namespace VoxTics.Controllers
         // -----------------------
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Logout()
+        public IActionResult Logout()
         {
-            await _signInManager.SignOutAsync();
+            HttpContext.Session.Remove("UserId");
             _logger.LogInformation("User logged out.");
             return RedirectToAction("Index", "Home");
         }
@@ -129,21 +131,23 @@ namespace VoxTics.Controllers
         [Authorize]
         public async Task<IActionResult> Profile()
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-                return RedirectToAction("Login");
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return RedirectToAction("Login");
+
+            var user = await _db.Users.FindAsync(userId.Value);
+            if (user == null) return RedirectToAction("Login");
 
             var vm = new UserVM
             {
                 Id = user.Id,
-                FirstName = user.FirstName ?? "",
-                LastName = user.LastName ?? "",
-                Email = user.Email ?? "",
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
                 Phone = user.PhoneNumber,
                 DateOfBirth = user.DateOfBirth,
                 Role = user.Role,
                 IsActive = user.IsActive,
-                IsEmailConfirmed = user.EmailConfirmed,
+                IsEmailConfirmed = user.IsEmailConfirmed,
                 RegistrationDate = user.CreatedAt,
                 LastLoginDate = user.LastLoginDate
             };
@@ -158,24 +162,21 @@ namespace VoxTics.Controllers
             if (!ModelState.IsValid)
                 return View("Profile", model);
 
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-                return RedirectToAction("Login");
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return RedirectToAction("Login");
 
-            user.FullName = model.FullName;
+            var user = await _db.Users.FindAsync(userId.Value);
+            if (user == null) return RedirectToAction("Login");
+
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
             user.PhoneNumber = model.Phone;
 
-            var result = await _userManager.UpdateAsync(user);
-            if (result.Succeeded)
-            {
-                TempData["Success"] = "Profile updated successfully.";
-                return RedirectToAction("Profile");
-            }
+            _db.Users.Update(user);
+            await _db.SaveChangesAsync();
 
-            foreach (var error in result.Errors)
-                ModelState.AddModelError("", error.Description);
-
-            return View("Profile", model);
+            TempData["Success"] = "Profile updated successfully.";
+            return RedirectToAction("Profile");
         }
 
         // -----------------------

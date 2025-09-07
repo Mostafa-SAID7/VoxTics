@@ -7,14 +7,14 @@ namespace VoxTics.Models.ViewModels
     {
         public int Id { get; set; }
         public int MovieId { get; set; }
-        public string MovieTitle { get; set; }
-        public string MoviePosterImage { get; set; }
+        public string MovieTitle { get; set; } = string.Empty;
+        public string MoviePosterImage { get; set; } = string.Empty;
         public int MovieDuration { get; set; }
         public int CinemaId { get; set; }
-        public string CinemaName { get; set; }
-        public string CinemaAddress { get; set; }
+        public string CinemaName { get; set; } = string.Empty;
+        public string CinemaAddress { get; set; } = string.Empty;
         public int HallId { get; set; }
-        public string HallName { get; set; }
+        public string HallName { get; set; } = string.Empty;
         public DateTime ShowDateTime { get; set; }
         public decimal Price { get; set; }
         public ShowtimeStatus Status { get; set; }

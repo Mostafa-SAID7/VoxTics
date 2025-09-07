@@ -18,6 +18,7 @@ namespace VoxTics.Models.Entities
 
         [Required]
         public int RowNumber { get; set; }
+        public string? Row { get; set; }   // <-- add this if you want rows like "A", "B", etc.
 
         [Required]
         public int SeatNumberInRow { get; set; }

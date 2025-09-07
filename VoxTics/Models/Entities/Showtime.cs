@@ -64,6 +64,11 @@ namespace VoxTics.Models.Entities
        [NotMapped]
         public int CinemaId => Hall?.CinemaId ?? 0;
         public virtual Cinema Cinema { get; set; } = null!;   // ✅ Reference
+        [NotMapped]
+        public int TotalSeats => Hall?.Seats?.Count ?? 0;
+
+        [NotMapped]
+        public int AvailableSeats => TotalSeats - (Bookings?.SelectMany(b => b.BookingSeats).Count() ?? 0);
 
         public virtual ICollection<Booking> Bookings { get; set; } = new HashSet<Booking>();
 

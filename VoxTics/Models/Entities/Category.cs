@@ -20,9 +20,6 @@ namespace VoxTics.Models.Entities
         // Status
         public bool IsActive { get; set; } = true;
 
-        // Tracking
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime? UpdatedAt { get; set; }
 
         // Navigation properties
         public virtual ICollection<MovieCategory> MovieCategories { get; set; } = new List<MovieCategory>();
