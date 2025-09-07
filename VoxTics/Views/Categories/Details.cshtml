@@ -11,12 +11,12 @@
     {
         <div class="col-md-3 mb-4">
             <div class="card h-100">
-                <img src="@movie.ImageUrl" class="card-img-top" style="object-fit:cover; height:220px;" />
+                <img src="@movie.PosterImage" class="card-img-top" style="object-fit:cover; height:220px;" />
                 <div class="card-body">
                     <h5 class="card-title">
                         <a asp-controller="Movies" asp-action="Details" asp-route-id="@movie.Id">@movie.Title</a>
                     </h5>
-                    <p class="card-text text-muted">@movie.Duration min</p>
+                    <p class="card-text text-muted">@movie.DurationInMinutes min</p>
                 </div>
             </div>
         </div>

@@ -33,7 +33,7 @@ namespace VoxTics.Areas.Admin.ViewModels
         public bool IsActive { get; set; } = true;
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
-
+        public int TotalSeats { get; set; }
         // Display properties
         public int HallCount { get; set; }
         public int ShowtimeCount { get; set; }

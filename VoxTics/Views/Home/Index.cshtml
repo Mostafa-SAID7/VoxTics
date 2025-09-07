@@ -5,22 +5,6 @@
 
 <div class="space-y-12">
 
-    <!-- Movies -->
-    <section>
-        <h2 class="text-2xl font-bold mb-4">Now Showing</h2>
-        @await Html.PartialAsync("~/Views/Movies/_MovieCards.cshtml", Model.Movies)
-    </section>
 
-    <!-- Cinemas -->
-    <section>
-        <h2 class="text-2xl font-bold mb-4">Featured Cinemas</h2>
-        @await Html.PartialAsync("~/Views/Cinemas/_CinemaCards.cshtml", Model.Cinemas)
-    </section>
-
-    <!-- Showtimes -->
-    <section>
-        <h2 class="text-2xl font-bold mb-4">Upcoming Showtimes</h2>
-        @await Html.PartialAsync("~/Views/Showtimes/_ShowtimeCards.cshtml", Model.Showtimes)
-    </section>
 
 </div>

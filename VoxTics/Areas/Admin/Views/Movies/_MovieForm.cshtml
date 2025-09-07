@@ -28,14 +28,10 @@
 
             <div class="row g-2">
                 <div class="col-md-4">
-                    <label asp-for="Price" class="form-label"></label>
-                    <input asp-for="Price" class="form-control" />
-                    <span asp-validation-for="Price" class="text-danger"></span>
+                  
                 </div>
                 <div class="col-md-4">
-                    <label asp-for="Duration" class="form-label"></label>
-                    <input asp-for="Duration" class="form-control" />
-                    <span asp-validation-for="Duration" class="text-danger"></span>
+        
                 </div>
                 <div class="col-md-4">
                     <label asp-for="ReleaseDate" class="form-label"></label>
@@ -60,13 +56,7 @@
         <div class="col-md-4">
             <div class="card p-3">
                 <div class="mb-3 text-center">
-                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
-                    {
-                        <img src="@Model.ImageUrl" alt="poster" class="file-preview" />
-                    }
-                    <label class="form-label w-100">Poster (optional)</label>
-                    <input asp-for="ImageFile" type="file" class="form-control" />
-                    <span asp-validation-for="ImageFile" class="text-danger"></span>
+          
                 </div>
 
                 <div>

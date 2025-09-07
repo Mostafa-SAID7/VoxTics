@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using VoxTics.Repositories.Interfaces;
+using System.Reflection;
 using VoxTics.Repositories.Implementations;
+using VoxTics.Repositories.Interfaces;
 
 namespace VoxTics
 {
@@ -18,7 +19,7 @@ namespace VoxTics
             services.AddScoped<IShowtimeRepository, ShowtimeRepository>();
 
             // Add AutoMapper
-
+            services.AddAutoMapper(cfg => { }, Assembly.GetExecutingAssembly());
             return services;
         }
     }

@@ -20,7 +20,8 @@ namespace VoxTics.Models.Entities
 
         public string? Description { get; set; }
         public bool IsActive { get; set; } = true;
-
+        [NotMapped] // EF won’t map this to the database
+        public int SeatCount => Seats?.Count ?? 0; 
         // Navigation properties
         [ForeignKey("CinemaId")]
         public virtual Cinema Cinema { get; set; } = null!;

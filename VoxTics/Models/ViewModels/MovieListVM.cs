@@ -30,7 +30,7 @@ namespace VoxTics.Models.ViewModels
 
         // Sorting
         public MovieSortBy SortBy { get; set; } = MovieSortBy.Title;
-        public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
+        public SortOrder SortOrder { get; set; } = SortOrder.Asc;
 
         // Filter options for UI
         public List<CategoryVM> Categories { get; set; } = new List<CategoryVM>();

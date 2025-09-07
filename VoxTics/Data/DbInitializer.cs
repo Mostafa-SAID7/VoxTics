@@ -191,7 +191,7 @@
                     LastName = "Doe",
                     Email = "john.doe@example.com",
                     PasswordHash = "AQAAAAEAACcQAAAAEH3QhLhFhBpz9Kpx8qHiuZs1kJ2sNFKJCyKGXUwNdU9u6Vp8IJ1aGk3K3wIZl4M5QQ==", // Password123!
-                    Phone = "555-0001",
+                    PhoneNumber = "555-0001",
                     Role = UserRole.Customer,
                     IsActive = true,
                     IsEmailConfirmed = true
@@ -202,7 +202,7 @@
                     LastName = "Smith",
                     Email = "jane.smith@example.com",
                     PasswordHash = "AQAAAAEAACcQAAAAEH3QhLhFhBpz9Kpx8qHiuZs1kJ2sNFKJCyKGXUwNdU9u6Vp8IJ1aGk3K3wIZl4M5QQ==", // Password123!
-                    Phone = "555-0002",
+                    PhoneNumber = "555-0002",
                     Role = UserRole.Customer,
                     IsActive = true,
                     IsEmailConfirmed = true
@@ -213,7 +213,7 @@
                     LastName = "Manager",
                     Email = "manager@cinema.com",
                     PasswordHash = "AQAAAAEAACcQAAAAEH3QhLhFhBpz9Kpx8qHiuZs1kJ2sNFKJCyKGXUwNdU9u6Vp8IJ1aGk3K3wIZl4M5QQ==", // Password123!
-                    Phone = "555-0003",
+                    PhoneNumber = "555-0003",
                     Role = UserRole.Manager,
                     IsActive = true,
                     IsEmailConfirmed = true

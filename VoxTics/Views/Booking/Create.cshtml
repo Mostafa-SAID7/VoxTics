@@ -16,16 +16,6 @@
             <p class="p-2 border rounded bg-gray-50">@Model.CinemaName</p>
         </div>
 
-        <div class="mb-3">
-            <label class="block text-sm font-medium">Showtime</label>
-            <p class="p-2 border rounded bg-gray-50">@Model.Showtime.ToString("f")</p>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="SeatsBooked" class="block text-sm font-medium"></label>
-            <input asp-for="SeatsBooked" class="border p-2 rounded w-full" type="number" min="1" />
-            <span asp-validation-for="SeatsBooked" class="text-red-500 text-sm"></span>
-        </div>
 
         <div class="mt-4 flex justify-between">
             <a asp-controller="Showtimes" asp-action="Index"

@@ -109,7 +109,11 @@ namespace VoxTics.Areas.Admin.ViewModels
         // Sorting
         public string SortBy { get; set; } = "Title";
         public bool SortDescending { get; set; }
-
+        public List<CategoryVM> MovieCategories { get; set; } = new();
+        public int ShowtimesCount { get; set; }
+        public int BookingsCount { get; set; }
+        public List<ActorViewModel> MovieActors { get; set; } = new();
+        public List<MovieImageViewModel> Images { get; set; } = new();
         // Dropdown options
         public List<SelectListItem> StatusOptions { get; set; } = new List<SelectListItem>
         {

@@ -68,7 +68,6 @@ MappingProfiles/
  ├─ MovieProfile.cs
  ├─ ShowtimeProfile.cs
  ├─ UserProfile.cs
- └─ ServiceCollectionExtensions.cs
 
 
 Helpers/

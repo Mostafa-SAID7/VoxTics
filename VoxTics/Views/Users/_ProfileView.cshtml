@@ -1,11 +1,9 @@
 ﻿@model VoxTics.Models.ViewModels.UserVM
 
 <div class="p-4 border rounded shadow space-y-3">
-    <img src="@Model.ImageUrl ?? " /images/default-user.png"" class="w-24 h-24 rounded-full" />
     <h3 class="text-xl font-bold">@Model.FullName</h3>
     <p><strong>Email:</strong> @Model.Email</p>
     <p><strong>Phone:</strong> @Model.Phone ?? "N/A"</p>
-    <p><strong>Address:</strong> @Model.Address ?? "N/A"</p>
     <button class="bg-indigo-600 text-white px-4 py-2 rounded"
             data-bs-toggle="modal" data-bs-target="#editProfileModal">
         Edit Profile

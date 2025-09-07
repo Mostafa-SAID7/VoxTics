@@ -17,9 +17,7 @@
             <tr>
                 <td class="p-2 border">@booking.MovieTitle</td>
                 <td class="p-2 border">@booking.CinemaName</td>
-                <td class="p-2 border">@booking.Showtime.ToString("g")</td>
-                <td class="p-2 border">@booking.SeatsBooked</td>
-                <td class="p-2 border">@booking.CreatedAt.ToString("g")</td>
+
                 <td class="p-2 border">
                     <form asp-action="Delete" asp-route-id="@booking.Id" method="post"
                           onsubmit="return confirm('Cancel this booking?');">

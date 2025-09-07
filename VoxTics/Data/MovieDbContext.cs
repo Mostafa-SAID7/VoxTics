@@ -53,12 +53,23 @@ namespace VoxTics.Data
         {
             modelBuilder.Entity<User>(entity =>
             {
-                entity.HasKey(e => e.Id);
-                entity.HasIndex(e => e.Email).IsUnique();
-                entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.FirstName).IsRequired().HasMaxLength(50);
-                entity.Property(e => e.LastName).IsRequired().HasMaxLength(50);
-                entity.Property(e => e.PasswordHash).IsRequired().HasMaxLength(100);
+                entity.Ignore(u => u.AvatarUrl);
+                entity.Ignore(u => u.BanReason);
+                entity.Ignore(u => u.DateOfBirth);
+                entity.Ignore(u => u.EmailConfirmationToken);
+                entity.Ignore(u => u.FirstName);
+                entity.Ignore(u => u.LastName);
+                entity.Ignore(u => u.LastLoginDate);
+                entity.Ignore(u => u.PhoneNumber);
+                entity.Ignore(u => u.PreferencesJson);
+                entity.Ignore(u => u.PasswordResetToken);
+                entity.Ignore(u => u.PasswordResetExpires);
+                entity.Ignore(u => u.IsEmailConfirmed);
+                entity.Ignore(u => u.IsActive);
+                entity.Ignore(u => u.IsBanned);
+                entity.Ignore(u => u.IsDeleted);
+                entity.Ignore(u => u.UpdatedAt);
+                entity.Ignore(u => u.Username);
             });
         }
 
@@ -135,8 +146,8 @@ namespace VoxTics.Data
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Price).HasColumnType("decimal(8,2)");
                 entity.HasOne(e => e.Movie).WithMany(e => e.Showtimes).HasForeignKey(e => e.MovieId);
-                entity.HasOne(e => e.Cinema).WithMany(e => e.Showtimes).HasForeignKey(e => e.CinemaId);
-                entity.HasOne(e => e.Hall).WithMany(e => e.Showtimes).HasForeignKey(e => e.HallId);
+                entity.HasOne(e => e.Cinema).WithMany(e => e.Showtimes).HasForeignKey(e => e.CinemaId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.Hall).WithMany(e => e.Showtimes).HasForeignKey(e => e.HallId).OnDelete(DeleteBehavior.Restrict); 
             });
         }
 
@@ -199,14 +210,14 @@ namespace VoxTics.Data
         {
             // Seed Categories
             modelBuilder.Entity<Category>().HasData(
-                new Category { Id = 1, Name = "Action", Description = "Action movies", IsActive = true, CreatedAt = DateTime.Now },
-                new Category { Id = 2, Name = "Comedy", Description = "Comedy movies", IsActive = true, CreatedAt = DateTime.Now },
-                new Category { Id = 3, Name = "Drama", Description = "Drama movies", IsActive = true, CreatedAt = DateTime.Now },
-                new Category { Id = 4, Name = "Horror", Description = "Horror movies", IsActive = true, CreatedAt = DateTime.Now },
-                new Category { Id = 5, Name = "Romance", Description = "Romance movies", IsActive = true, CreatedAt = DateTime.Now },
-                new Category { Id = 6, Name = "Sci-Fi", Description = "Science Fiction movies", IsActive = true, CreatedAt = DateTime.Now },
-                new Category { Id = 7, Name = "Thriller", Description = "Thriller movies", IsActive = true, CreatedAt = DateTime.Now },
-                new Category { Id = 8, Name = "Animation", Description = "Animated movies", IsActive = true, CreatedAt = DateTime.Now }
+                new Category { Id = 1, Name = "Action", Description = "Action movies", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) },
+                new Category { Id = 2, Name = "Comedy", Description = "Comedy movies", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) },
+                new Category { Id = 3, Name = "Drama", Description = "Drama movies", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) },
+                new Category { Id = 4, Name = "Horror", Description = "Horror movies", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) },
+                new Category { Id = 5, Name = "Romance", Description = "Romance movies", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) },
+                new Category { Id = 6, Name = "Sci-Fi", Description = "Science Fiction movies", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) },
+                new Category { Id = 7, Name = "Thriller", Description = "Thriller movies", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) },
+                new Category { Id = 8, Name = "Animation", Description = "Animated movies", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) }
             );
 
             // Seed User Roles
@@ -221,7 +232,7 @@ namespace VoxTics.Data
                     Role = UserRole.Admin,
                     IsActive = true,
                     IsEmailConfirmed = true,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = new DateTime(2025, 9, 7)
                 }
             );
 
@@ -236,7 +247,7 @@ namespace VoxTics.Data
                     Phone = "555-0123",
                     Email = "info@grandcinema.com",
                     IsActive = true,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = new DateTime(2025, 9, 7)
                 },
                 new Cinema
                 {
@@ -247,17 +258,17 @@ namespace VoxTics.Data
                     Phone = "555-0456",
                     Email = "info@citycentercinema.com",
                     IsActive = true,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = new DateTime(2025, 9, 7)
                 }
             );
 
             // Seed Actors
             modelBuilder.Entity<Actor>().HasData(
-                new Actor { Id = 1, FirstName = "Robert Downey Jr.", Nationality = "American", IsActive = true, CreatedAt = DateTime.Now },
-                new Actor { Id = 2, FirstName = "Scarlett Johansson", Nationality = "American", IsActive = true, CreatedAt = DateTime.Now },
-                new Actor { Id = 3, FirstName = "Chris Evans", Nationality = "American", IsActive = true, CreatedAt = DateTime.Now },
-                new Actor { Id = 4, FirstName = "Jennifer Lawrence", Nationality = "American", IsActive = true, CreatedAt = DateTime.Now },
-                new Actor { Id = 5, FirstName = "Leonardo DiCaprio", Nationality = "American", IsActive = true, CreatedAt = DateTime.Now }
+                new Actor { Id = 1, FirstName = "Robert Downey Jr.", Nationality = "American", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) },
+                new Actor { Id = 2, FirstName = "Scarlett Johansson", Nationality = "American", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) },
+                new Actor { Id = 3, FirstName = "Chris Evans", Nationality = "American", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) },
+                new Actor { Id = 4, FirstName = "Jennifer Lawrence", Nationality = "American", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) },
+                new Actor { Id = 5, FirstName = "Leonardo DiCaprio", Nationality = "American", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) }
             );
         }
 
@@ -282,10 +293,10 @@ namespace VoxTics.Data
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.CreatedAt = DateTime.Now;
+                        entry.Entity.CreatedAt = new DateTime(2025, 9, 7);
                         break;
                     case EntityState.Modified:
-                        entry.Entity.UpdatedAt = DateTime.Now;
+                        entry.Entity.UpdatedAt = new DateTime(2025, 9, 7);
                         break;
                 }
             }

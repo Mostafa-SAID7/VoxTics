@@ -7,15 +7,19 @@ namespace VoxTics.Models.Entities
     {
         [Required]
         [MaxLength(50)]
-        public string FirstName { get; set; } = string.Empty;
+        public string FirstName { get; set; } = "";
+        public string LastName { get; set; } = "";
 
-        [Required]
-        [MaxLength(50)]
-        public string LastName { get; set; } = string.Empty;
-
-        [NotMapped]
-        public string FullName => $"{FirstName} {LastName}";
-
+        public string FullName
+        {
+            get => $"{FirstName} {LastName}";
+            set
+            {
+                var parts = value.Split(' ', 2);
+                FirstName = parts[0];
+                LastName = parts.Length > 1 ? parts[1] : "";
+            }
+        }
         [MaxLength(500)]
         public string? Bio { get; set; }
 

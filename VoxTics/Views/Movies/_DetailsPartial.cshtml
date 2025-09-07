@@ -8,13 +8,13 @@
 <div class="modal-body">
     <div class="row">
         <div class="col-md-4">
-            <img src="@(string.IsNullOrWhiteSpace(Model.ImageUrl) ? "/images/logo.png" : Model.ImageUrl)" class="img-fluid rounded mb-3" alt="@Model.Title" />
+            <img src="@(string.IsNullOrWhiteSpace(Model.PosterImage) ? "/images/logo.png" : Model.PosterImage)" class="img-fluid rounded mb-3" alt="@Model.Title" />
         </div>
         <div class="col-md-8">
-            <p class="text-muted">@Model.Duration min | Released: @(Model.ReleaseDate.ToString("yyyy") ?? "-")</p>
+            <p class="text-muted">@Model.DurationInMinutes min | Released: @(Model.ReleaseDate.ToString("yyyy") ?? "-")</p>
             <p>@Model.Description</p>
 
-            <p><strong>Price:</strong> @(Model.Price.ToString("C"))</p>
+            <p><strong>Price:</strong> @(Model.BasePrice.ToString("C"))</p>
 
             @if (Model.Categories != null && Model.Categories.Any())
             {
@@ -22,7 +22,7 @@
                     <strong>Categories:</strong>
                     @foreach (var cat in Model.Categories)
                     {
-                        <a asp-controller="Categories" asp-action="Details" asp-route-id="@cat.Id" class="badge bg-secondary me-1">@cat.Name</a>
+                        <a asp-controller="Categories" asp-action="Details" asp-route-id="" class="badge bg-secondary me-1">@cat</a>
                     }
                 </p>
             }

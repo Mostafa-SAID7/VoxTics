@@ -35,6 +35,7 @@ namespace VoxTics.Areas.Admin.ViewModels
         [Display(Name = "Profile Image")]
         public IFormFile? ImageFile { get; set; }
         public string? ImageUrl { get; set; }
+        public DateTime RegistrationDate { get; set; }
 
         public DateTime CreatedDate { get; set; }
         public DateTime? LastLoginDate { get; set; }

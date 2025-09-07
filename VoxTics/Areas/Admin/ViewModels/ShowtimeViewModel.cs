@@ -62,9 +62,10 @@ namespace VoxTics.Areas.Admin.ViewModels
         [Display(Name = "End Time")]
         public DateTime EndTime { get; set; }
 
-        
+        public DateTime ShowDate { get; set; }       // Date part
+        public TimeSpan ShowTime { get; set; }       // Time part
 
-       
+
 
         [Required(ErrorMessage = "Status is required")]
         [Display(Name = "Status")]

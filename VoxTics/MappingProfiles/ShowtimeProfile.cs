@@ -12,8 +12,8 @@ namespace VoxTics.MappingProfiles
             // Entity to ViewModel mappings
             CreateMap<Showtime, ShowtimeVM>()
                 .ForMember(dest => dest.MovieTitle, opt => opt.MapFrom(src => src.Movie.Title))
-                .ForMember(dest => dest.MoviePosterImage, opt => opt.MapFrom(src => src.Movie.PosterImage))
-                .ForMember(dest => dest.MovieDuration, opt => opt.MapFrom(src => src.Movie.Duration))
+                .ForMember(dest => dest.MoviePosterImage, opt => opt.MapFrom(src => src.Movie.ImageUrl))
+                .ForMember(dest => dest.MovieDuration, opt => opt.MapFrom(src => src.Movie.DurationMinutes))
                 .ForMember(dest => dest.CinemaName, opt => opt.MapFrom(src => src.Cinema.Name))
                 .ForMember(dest => dest.CinemaAddress, opt => opt.MapFrom(src => src.Cinema.Address))
                 .ForMember(dest => dest.HallName, opt => opt.MapFrom(src => src.Hall.Name))

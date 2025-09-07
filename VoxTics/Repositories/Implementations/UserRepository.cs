@@ -105,7 +105,7 @@ namespace VoxTics.Repositories.Implementations
             // update allowed fields - copy explicitly to avoid overwriting sensitive fields accidentally
             exists.FirstName = user.FirstName;
             exists.LastName = user.LastName;
-            exists.Phone = user.Phone;
+            exists.PhoneNumber = user.PhoneNumber;
             exists.AvatarUrl = user.AvatarUrl;
             exists.UpdatedAt = DateTime.UtcNow;
 
@@ -392,7 +392,7 @@ namespace VoxTics.Repositories.Implementations
         public async Task<bool> IsPhoneUniqueAsync(string phone, int? excludeUserId = null)
         {
             if (string.IsNullOrWhiteSpace(phone)) return true;
-            var q = _dbSet.Where(u => u.Phone == phone);
+            var q = _dbSet.Where(u => u.PhoneNumber == phone);
             if (excludeUserId.HasValue) q = q.Where(u => u.Id != excludeUserId.Value);
             return !await q.AnyAsync();
         }

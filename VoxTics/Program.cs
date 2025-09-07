@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using VoxTics;
 using VoxTics.Data;
 using VoxTics.MappingProfiles;
 using VoxTics.Repositories;
@@ -16,10 +17,8 @@ builder.Services.AddDbContext<MovieDbContext>(options =>
 builder.Services.AddControllersWithViews();
 
 // Repositories (extension method you created in VoxTics.Repositories)
-builder.Services.AddVoxTicsRepositories();
+builder.Services.AddApplicationServices();
 
-// Register AutoMapper profiles
-builder.Services.AddMappingProfiles();
 
 // Useful for services/controllers that need HttpContext
 builder.Services.AddHttpContextAccessor();

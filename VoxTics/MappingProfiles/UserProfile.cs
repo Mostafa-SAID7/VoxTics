@@ -13,15 +13,15 @@ namespace VoxTics.MappingProfiles
             CreateMap<User, UserVM>()
                 .ForMember(dest => dest.TotalBookings, opt => opt.MapFrom(src => src.Bookings.Count))
                 .ForMember(dest => dest.TotalSpent, opt => opt.MapFrom(src =>
-                    src.Bookings.Where(b => b.PaymentStatus == Models.Enums.PaymentStatus.Paid).Sum(b => b.TotalAmount)))
+                    src.Bookings.Where(b => b.PaymentStatus == Models.Enums.PaymentStatus.Pending).Sum(b => b.TotalAmount)))
                 .ForMember(dest => dest.RecentBookings, opt => opt.MapFrom(src =>
                     src.Bookings.OrderByDescending(b => b.BookingDate).Take(5)));
 
             CreateMap<User, UserViewModel>()
                 .ForMember(dest => dest.TotalBookings, opt => opt.MapFrom(src => src.Bookings.Count))
                 .ForMember(dest => dest.TotalSpent, opt => opt.MapFrom(src =>
-                    src.Bookings.Where(b => b.PaymentStatus == Models.Enums.PaymentStatus.Paid).Sum(b => b.TotalAmount)))
-                .ForMember(dest => dest.RegistrationDate, opt => opt.MapFrom(src => src.CreatedDate));
+                    src.Bookings.Where(b => b.PaymentStatus == Models.Enums.PaymentStatus.Pending).Sum(b => b.TotalAmount)))
+                .ForMember(dest => dest.RegistrationDate, opt => opt.MapFrom(src => src.CreatedAt));
 
             // ViewModel to Entity mappings
             CreateMap<UserViewModel, User>()

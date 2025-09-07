@@ -9,6 +9,7 @@ namespace VoxTics.Helpers
         public int TotalPages { get; private set; }
         public int TotalCount { get; private set; }
         public int PageSize { get; private set; }
+        public Dictionary<string, object>? RouteValues { get; set; }
 
         public PaginatedList(List<T> items, int count, int pageIndex, int pageSize)
         {

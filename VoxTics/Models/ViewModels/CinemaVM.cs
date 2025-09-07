@@ -32,8 +32,10 @@ namespace VoxTics.Models.ViewModels
         // Halls & Showtimes
         public int HallCount { get; set; }
         public List<ShowtimeVM> Showtimes { get; set; } = new List<ShowtimeVM>();
-
         // Computed helpers
+        public int TotalSeats { get; set; }
+
+        public int SeatCount { get; set; }
         public string HallSummary => HallCount == 1 ? "1 Hall" : $"{HallCount} Halls";
         public bool HasShowtimes => Showtimes.Any();
     }
