@@ -229,7 +229,7 @@ namespace VoxTics.Repositories.Implementations
                 "title" => filter.SortOrder == SortOrder.Desc ? query.OrderByDescending(m => m.Title) : query.OrderBy(m => m.Title),
                 "releasedate" => filter.SortOrder == SortOrder.Desc ? query.OrderByDescending(m => m.ReleaseDate) : query.OrderBy(m => m.ReleaseDate),
                 "rating" => filter.SortOrder == SortOrder.Desc ? query.OrderByDescending(m => m.Rating) : query.OrderBy(m => m.Rating),
-                "duration" => filter.SortOrder == SortOrder.Desc ? query.OrderByDescending(m => m.DurationMinutes) : query.OrderBy(m => m.DurationMinutes),
+                "duration" => filter.SortOrder == SortOrder.Desc ? query.OrderByDescending(m => m.Duration) : query.OrderBy(m => m.Duration),
                 _ => query.OrderByDescending(m => m.CreatedAt)
             };
 

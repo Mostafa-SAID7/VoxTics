@@ -1,45 +1,93 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using VoxTics.Data;
 using VoxTics.Models.ViewModels;
-using VoxTics.Repositories.Interfaces;
+using VoxTics.Helpers; // for PaginatedList<T>
+using System.Collections.Generic;
 
 namespace VoxTics.Controllers
 {
     public class MoviesController : Controller
     {
-        private readonly IMovieRepository _movieRepository;
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly MovieDbContext _context;
         private readonly ILogger<MoviesController> _logger;
 
-        public MoviesController(
-            IMovieRepository movieRepository,
-            ICategoryRepository categoryRepository,
-            ILogger<MoviesController> logger)
+        public MoviesController(MovieDbContext context, ILogger<MoviesController> logger)
         {
-            _movieRepository = movieRepository;
-            _categoryRepository = categoryRepository;
+            _context = context;
             _logger = logger;
         }
 
         // GET: /Movies
-        public async Task<IActionResult> Index(string? searchTerm, int? categoryId)
+        // Accepts filter via query string. Example: /Movies?SearchTerm=batman&PageNumber=2&PageSize=12&SortBy=title&SortOrder=Desc&categoryId=3
+        public async Task<IActionResult> Index([FromQuery] BasePaginatedFilterVM filter, int? categoryId)
         {
             try
             {
-                var movies = await _movieRepository.GetAllWithIncludesAsync(m => m.MovieCategories);
+                // ensure sensible defaults
+                var pageNumber = filter?.PageNumber ?? 1;
+                var pageSize = filter?.PageSize ?? 12;
+                var search = filter?.SearchTerm?.Trim();
+                var sortBy = (filter?.SortBy ?? "releasedate").ToLowerInvariant();
+                var sortOrder = filter?.SortOrder ?? Models.Enums.SortOrder.Desc;
 
-                if (!string.IsNullOrEmpty(searchTerm))
+                // base query with includes
+                var query = _context.Movies
+                                    .AsNoTracking()
+                                    .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
+                                    .Include(m => m.MovieActors).ThenInclude(ma => ma.Actor)
+                                    .AsQueryable();
+
+                // filter by category
+                if (categoryId.HasValue && categoryId.Value > 0)
                 {
-                    movies = movies.Where(m => m.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+                    query = query.Where(m => m.MovieCategories.Any(mc => mc.CategoryId == categoryId.Value));
                 }
-                if (categoryId.HasValue)
+
+                // date range (uses ReleaseDate)
+                if (filter?.StartDate != null)
+                    query = query.Where(m => m.ReleaseDate >= filter.StartDate.Value.Date);
+                if (filter?.EndDate != null)
+                    query = query.Where(m => m.ReleaseDate <= filter.EndDate.Value.Date.AddDays(1).AddTicks(-1));
+
+                // safe search only on translatable columns (Title, Description, Director)
+                if (!string.IsNullOrEmpty(search))
                 {
-                    movies = movies.Where(m => m.MovieCategories.Any(mc => mc.CategoryId == categoryId.Value));
+                    query = query.Where(m =>
+                        EF.Functions.Like(m.Title, $"%{search}%") ||
+                        EF.Functions.Like(m.Description, $"%{search}%") ||
+                        EF.Functions.Like(m.Director, $"%{search}%")
+                    );
                 }
-                var vm = movies.Select(m => new MovieVM
+
+                // sorting
+                IOrderedQueryable<Models.Entities.Movie> orderedQuery;
+                bool desc = sortOrder == Models.Enums.SortOrder.Desc;
+
+                switch (sortBy)
+                {
+                    case "title":
+                        orderedQuery = desc ? query.OrderByDescending(m => m.Title) : query.OrderBy(m => m.Title);
+                        break;
+                    case "price":
+                    case "baseprice":
+                        orderedQuery = desc ? query.OrderByDescending(m => m.Price) : query.OrderBy(m => m.Price);
+                        break;
+                    case "duration":
+                        orderedQuery = desc ? query.OrderByDescending(m => m.Duration) : query.OrderBy(m => m.Duration);
+                        break;
+                    case "releasedate":
+                    default:
+                        orderedQuery = desc ? query.OrderByDescending(m => m.ReleaseDate) : query.OrderBy(m => m.ReleaseDate);
+                        break;
+                }
+
+                // project to MovieVM (EF Core will translate the simple projections)
+                var projected = orderedQuery.Select(m => new MovieVM
                 {
                     Id = m.Id,
                     Title = m.Title,
@@ -48,81 +96,109 @@ namespace VoxTics.Controllers
                     ReleaseDate = m.ReleaseDate,
                     Status = m.Status,
                     Categories = m.MovieCategories.Select(mc => mc.Category.Name).ToList(),
-                    CategoryNames = string.Join(", ", m.MovieCategories.Select(mc => mc.Category.Name))
-                }).ToList();
+                    CategoryNames = string.Join(", ", m.MovieCategories.Select(mc => mc.Category.Name)),
+                    ReleaseDateFormatted = m.ReleaseDate.ToString("MMM dd, yyyy"),
+                    AgeRating = m.AgeRating, // if exists
+                    BasePrice = m.Price,
+                    DurationInMinutes = m.Duration
+                });
 
+                var paged = await PaginatedList<MovieVM>.CreateAsync(projected.AsNoTracking(), pageNumber, pageSize);
 
-                return View(vm);
+                // attach route values so you can build pager links (optional)
+                var rv = new Dictionary<string, object?>();
+                if (!string.IsNullOrEmpty(search)) rv["SearchTerm"] = search;
+                if (categoryId.HasValue) rv["categoryId"] = categoryId.Value;
+                if (!string.IsNullOrEmpty(filter?.SortBy)) rv["SortBy"] = filter.SortBy;
+                rv["SortOrder"] = sortOrder.ToString();
+                rv["PageSize"] = pageSize;
+                paged.RouteValues = rv.ToDictionary(k => k.Key, k => (object)k.Value!);
+
+                // pass helper data to view
+                ViewBag.Filter = filter ?? new BasePaginatedFilterVM();
+                ViewBag.SelectedCategoryId = categoryId ?? 0;
+                ViewBag.Categories = await _context.Categories.AsNoTracking().OrderBy(c => c.Name).ToListAsync();
+
+                return View(paged);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching movies");
-                TempData["Error"] = "Unable to load movies.";
-                return View(Enumerable.Empty<MovieVM>());
+                _logger.LogError(ex, "Error loading movies list");
+                return View(new PaginatedList<MovieVM>(new List<MovieVM>(), 0, 1, filter?.PageSize ?? 12));
             }
         }
 
-        // GET: /Movies/Details/5
+        // GET: /Movies/Details/5 (modal partial)
         public async Task<IActionResult> Details(int id)
         {
             try
             {
-                var movie = await _movieRepository.GetByIdWithIncludesAsync(id, m => m.MovieCategories, m => m.MovieActors);
+                var movie = await _context.Movies
+                    .AsNoTracking()
+                    .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
+                    .Include(m => m.MovieActors).ThenInclude(ma => ma.Actor)
+                    .FirstOrDefaultAsync(m => m.Id == id);
 
-                if (movie == null)
-                {
-                    return NotFound();
-                }
-
-                
+                if (movie == null) return NotFound();
 
                 var vm = new MovieVM
                 {
                     Id = movie.Id,
                     Title = movie.Title,
                     Description = movie.Description,
-                    BasePrice = movie.Price,
-                    DurationInMinutes = movie.DurationMinutes,
+                    BasePrice = movie.Price,                       // keep decimal
+                    DurationInMinutes = movie.Duration,
                     ReleaseDate = movie.ReleaseDate,
                     Director = movie.Director,
                     Language = movie.Language,
                     Country = movie.Country,
                     AgeRating = movie.AgeRating,
-                    TrailerUrl = movie.TrailerImageUrl,
+                    TrailerUrl = movie.TrailerUrl,
                     PosterImage = movie.ImageUrl,
                     Status = movie.Status,
+
                     Categories = movie.MovieCategories.Select(mc => mc.Category.Name).ToList(),
                     CategoryNames = string.Join(", ", movie.MovieCategories.Select(mc => mc.Category.Name)),
+
                     Actors = movie.MovieActors.Select(ma => new ActorVM
                     {
                         Id = ma.Actor.Id,
                         FirstName = ma.Actor.FullName,
                         ImageUrl = ma.Actor.ImageUrl
-                    }).ToList()
+                    }).ToList(),
+
+                    // ? FIX: map images
+                    AdditionalImages = movie.MovieImages.Select(mi => mi.ImageUrl).ToList(),
+
+                    // ? formatting
+                    ReleaseDateFormatted = movie.ReleaseDate.ToString("MMM dd, yyyy"),
+                    FormattedDuration = $"{movie.Duration} min",
+                    FormattedPrice = movie.Price.ToString("C")   // decimal ? string
                 };
-                return View(vm);
+
+
+                return PartialView("_DetailsPartial", vm);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error fetching movie details for id={id}");
-                TempData["Error"] = "Unable to load movie details.";
-                return RedirectToAction(nameof(Index));
+                _logger.LogError(ex, $"Error fetching movie details id={id}");
+                return NotFound();
             }
         }
 
-        // GET: /Movies/ByCategory/3
+        // GET: /Movies/ByCategory/3 (keeps same behavior)
         public async Task<IActionResult> ByCategory(int id)
         {
             try
             {
-                var category = await _categoryRepository.GetByIdWithIncludesAsync(id, c => c.MovieCategories);
+                var category = await _context.Categories
+                    .Include(c => c.MovieCategories)
+                        .ThenInclude(mc => mc.Movie)
+                    .FirstOrDefaultAsync(c => c.Id == id);
 
-                if (category == null)
-                {
-                    return NotFound();
-                }
+                if (category == null) return NotFound();
 
-                var vm = category.MovieCategories.Select(mc => new MovieVM
+                var vmList = category.MovieCategories.Select(mc => new MovieVM
                 {
                     Id = mc.Movie.Id,
                     Title = mc.Movie.Title,
@@ -131,16 +207,17 @@ namespace VoxTics.Controllers
                     ReleaseDate = mc.Movie.ReleaseDate,
                     Status = mc.Movie.Status,
                     Categories = mc.Movie.MovieCategories.Select(x => x.Category.Name).ToList(),
-                    CategoryNames = string.Join(", ", mc.Movie.MovieCategories.Select(x => x.Category.Name))
+                    CategoryNames = string.Join(", ", mc.Movie.MovieCategories.Select(x => x.Category.Name)),
+                    ReleaseDateFormatted = mc.Movie.ReleaseDate.ToString("MMM dd, yyyy"),
+                    ShortDescription = string.IsNullOrWhiteSpace(mc.Movie.Description) ? "" : (mc.Movie.Description.Length > 150 ? mc.Movie.Description[..147] + "..." : mc.Movie.Description)
                 }).ToList();
 
                 ViewBag.CategoryName = category.Name;
-                return View("Index", vm);
+                return View("Index", vmList);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error fetching movies by category id={id}");
-                TempData["Error"] = "Unable to load category movies.";
                 return RedirectToAction(nameof(Index));
             }
         }

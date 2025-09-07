@@ -1,147 +1,116 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using VoxTics.Helpers;
 using VoxTics.Models.Enums;
 
 namespace VoxTics.Areas.Admin.ViewModels
 {
+    // --- custom validators below (placed in same file for convenience) ---
+    [AttributeUsage(AttributeTargets.Property)]
+    public class MaxFileSizeAttribute : ValidationAttribute
+    {
+        private readonly int _maxBytes;
+        public MaxFileSizeAttribute(int maxBytes) => _maxBytes = maxBytes;
+
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+        {
+            var file = value as IFormFile;
+            if (file == null) return ValidationResult.Success;
+            return file.Length <= _maxBytes ? ValidationResult.Success :
+                new ValidationResult(ErrorMessage ?? $"File size must be <= {_maxBytes / 1024 / 1024} MB");
+        }
+    }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public class AllowedExtensionsAttribute : ValidationAttribute
+    {
+        private readonly string[] _extensions;
+        public AllowedExtensionsAttribute(string[] extensions) => _extensions = extensions;
+
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+        {
+            var file = value as IFormFile;
+            if (file == null) return ValidationResult.Success;
+            var ext = System.IO.Path.GetExtension(file.FileName).ToLowerInvariant();
+            return Array.Exists(_extensions, e => e.Equals(ext, StringComparison.OrdinalIgnoreCase))
+                ? ValidationResult.Success
+                : new ValidationResult(ErrorMessage ?? $"Allowed extensions: {string.Join(", ", _extensions)}");
+        }
+    }
+
+    // --- main VM ---
     public class MovieViewModel
     {
-        // ------------------------------
-        // Core movie properties
-        // ------------------------------
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Movie title is required")]
-        [StringLength(200, ErrorMessage = "Title cannot exceed 200 characters")]
-        [Display(Name = "Movie Title")]
+        [StringLength(200)]
         public string Title { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Description is required")]
-        [StringLength(2000, ErrorMessage = "Description cannot exceed 2000 characters")]
-        [Display(Name = "Description")]
+        [StringLength(2000)]
         public string Description { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Duration is required")]
         [Range(1, 600, ErrorMessage = "Duration must be between 1 and 600 minutes")]
-        [Display(Name = "Duration (Minutes)")]
         public int DurationInMinutes { get; set; }
 
         [Required(ErrorMessage = "Release date is required")]
         [DataType(DataType.Date)]
-        [Display(Name = "Release Date")]
         public DateTime ReleaseDate { get; set; }
 
-        [StringLength(100, ErrorMessage = "Director name cannot exceed 100 characters")]
-        [Display(Name = "Director")]
-        public string? Director { get; set; }
+        // DB required field — make required to avoid null DB writes
+        [Required(ErrorMessage = "Director is required")]
+        [StringLength(200)]
+        public string Director { get; set; } = string.Empty;
 
-        [StringLength(100, ErrorMessage = "Language cannot exceed 100 characters")]
-        [Display(Name = "Language")]
+        [StringLength(100)]
         public string? Language { get; set; }
 
-        [StringLength(50, ErrorMessage = "Rating cannot exceed 50 characters")]
-        [Display(Name = "Rating")]
+        [StringLength(20)]
         public string? Rating { get; set; }
 
-        [Url(ErrorMessage = "Invalid URL format")]
-        [StringLength(500, ErrorMessage = "Trailer URL cannot exceed 500 characters")]
-        [Display(Name = "Trailer URL")]
+        [Url(ErrorMessage = "Trailer must be a valid URL")]
+        [StringLength(500)]
         public string? TrailerUrl { get; set; }
 
-        [Range(0, 10, ErrorMessage = "IMDb rating must be between 0 and 10")]
-        [Display(Name = "IMDb Rating")]
+        [Range(0.0, 10.0, ErrorMessage = "IMDB rating must be between 0 and 10")]
         public decimal? ImdbRating { get; set; }
 
         [Required(ErrorMessage = "Base price is required")]
-        [Range(0, double.MaxValue, ErrorMessage = "Price must be a positive value")]
-        [Display(Name = "Base Price")]
+        [Range(0, 9999, ErrorMessage = "Price must be positive")]
         public decimal BasePrice { get; set; }
 
-        [Required(ErrorMessage = "Status is required")]
-        [Display(Name = "Movie Status")]
-        public MovieStatus Status { get; set; }
+        [Required]
+        public MovieStatus Status { get; set; } = MovieStatus.Upcoming;
 
-        [Display(Name = "Is Active")]
         public bool IsActive { get; set; } = true;
 
-        [Display(Name = "Poster Image")]
+        // Poster image: allow optional, but validate file type + size
+        [AllowedExtensions(new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" }, ErrorMessage = "Poster must be an image (.jpg/.png/.webp/.gif)")]
+        [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Poster max size is 5 MB")]
         public IFormFile? PosterImageFile { get; set; }
-        public IFormFile? TrailerImageFile { get; set; }
+
         public string? CurrentPosterImage { get; set; }
 
-        [Display(Name = "Categories")]
-        public List<int> SelectedCategoryIds { get; set; } = new List<int>();
-
-        [Display(Name = "Actors")]
-        public List<int> SelectedActorIds { get; set; } = new List<int>();
-
-        [Display(Name = "Additional Images")]
-        public List<IFormFile> AdditionalImages { get; set; } = new List<IFormFile>();
-
-        public List<string> CurrentImages { get; set; } = new List<string>();
+        public List<int> SelectedCategoryIds { get; set; } = new();
+        public List<int> SelectedActorIds { get; set; } = new();
+        public List<string> CurrentImages { get; set; } = new();
 
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        // ------------------------------
-        // Listing / pagination
-        // ------------------------------
-        public PaginatedList<MovieViewModel> Movies { get; set; } =
-            new PaginatedList<MovieViewModel>(new List<MovieViewModel>(), 0, 1, 10);
-
-        public List<CategoryViewModel> Categories { get; set; } = new List<CategoryViewModel>();
-
-        // Filters
-        public string? SearchTerm { get; set; }
-        public int SelectedCategoryId { get; set; }
-        public MovieStatus? SelectedStatus { get; set; }
-
-        // Pagination helpers
-        public int CurrentPage { get; set; } = 1;
-        public int PageSize { get; set; } = 10;
-        public int TotalCount => Movies.TotalCount;
-        public int TotalPages => Movies.TotalPages;
-        public bool HasPreviousPage => Movies.HasPreviousPage;
-        public bool HasNextPage => Movies.HasNextPage;
-
-        // Sorting
-        public string SortBy { get; set; } = "Title";
-        public bool SortDescending { get; set; }
-        public List<CategoryVM> MovieCategories { get; set; } = new();
-        public int ShowtimesCount { get; set; }
-        public int BookingsCount { get; set; }
-        public List<ActorViewModel> MovieActors { get; set; } = new();
-        public List<MovieImageViewModel> Images { get; set; } = new();
-        // Dropdown options
-        public List<SelectListItem> StatusOptions { get; set; } = new List<SelectListItem>
-        {
-            new SelectListItem { Value = "", Text = "All Status", Selected = true },
-            new SelectListItem { Value = MovieStatus.Upcoming.ToString(), Text = "Upcoming" },
-            new SelectListItem { Value = MovieStatus.NowShowing.ToString(), Text = "Now Showing" },
-            new SelectListItem { Value = MovieStatus.EndedShowing.ToString(), Text = "Ended Showing" }
-        };
+        // presentation collections
+        public List<CategoryViewModel> Categories { get; set; } = new();
         public IEnumerable<SelectListItem> AvailableCategories { get; set; } = new List<SelectListItem>();
 
-        public List<SelectListItem> CategoryOptions
-        {
-            get
-            {
-                var options = new List<SelectListItem>
-                {
-                    new SelectListItem { Value = "0", Text = "All Categories", Selected = SelectedCategoryId == 0 }
-                };
+        public List<string> MovieCategories { get; set; } = new();
+        public List<ActorViewModel> MovieActors { get; set; } = new();
+        public List<MovieImageViewModel> Images { get; set; } = new();
 
-                options.AddRange(Categories.Select(c => new SelectListItem
-                {
-                    Value = c.Id.ToString(),
-                    Text = c.Name,
-                    Selected = c.Id == SelectedCategoryId
-                }));
-
-                return options;
-            }
-        }
+        public int ShowtimesCount { get; set; }
+        public int BookingsCount { get; set; }
     }
 }

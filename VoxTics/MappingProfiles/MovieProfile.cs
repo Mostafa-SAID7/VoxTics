@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using VoxTics.Areas.Admin.ViewModels;
-using VoxTics.Helpers;
 using VoxTics.Models.Entities;
-using VoxTics.Models.ViewModels;
+using System.Linq;
 
 namespace VoxTics.MappingProfiles
 {
@@ -11,35 +9,25 @@ namespace VoxTics.MappingProfiles
     {
         public MovieProfile()
         {
-            // Entity to ViewModel mappings
-            CreateMap<Movie, MovieVM>()
-                .ForMember(dest => dest.Categories, opt => opt.MapFrom(src =>
-                    src.MovieCategories.Select(mc => mc.Category)))
-                .ForMember(dest => dest.Actors, opt => opt.MapFrom(src =>
-                    src.MovieActors.Select(ma => ma.Actor)))
-                .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.MovieImages));
-
+            // Movie -> MovieViewModel
             CreateMap<Movie, MovieViewModel>()
-                .ForMember(dest => dest.MovieCategories, opt => opt.MapFrom(src =>
-                    src.MovieCategories.Select(mc => mc.Category)))
-                .ForMember(dest => dest.MovieActors, opt => opt.MapFrom(src =>
-                    src.MovieActors.Select(ma => ma.Actor)))
-                .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.MovieImages))
-                .ForMember(dest => dest.ShowtimesCount, opt => opt.MapFrom(src => src.Showtimes.Count))
-                .ForMember(dest => dest.BookingsCount, opt => opt.MapFrom(src =>
-                    src.Showtimes.SelectMany(s => s.Bookings).Count()));
+                .ForMember(d => d.CurrentPosterImage, opt => opt.MapFrom(s => s.ImageUrl))
+                .ForMember(d => d.SelectedCategoryIds, opt => opt.MapFrom(s => s.MovieCategories.Select(mc => mc.CategoryId)))
+                .ForMember(d => d.MovieCategories, opt => opt.MapFrom(s => s.MovieCategories.Select(mc => mc.Category.Name)))
+                .ForMember(d => d.BasePrice, opt => opt.MapFrom(s => s.Price))
+                .PreserveReferences()
+                .MaxDepth(2);
 
-            CreateMap<Actor, ActorVM>();
-            CreateMap<Actor, ActorViewModel>();
-            CreateMap<MovieImg, MovieImageVM>();
-            CreateMap<MovieImg, MovieImageViewModel>();
-
-            // ViewModel to Entity mappings
+            // MovieViewModel -> Movie (ignore relations managed by repo)
             CreateMap<MovieViewModel, Movie>()
-                .ForMember(dest => dest.MovieCategories, opt => opt.Ignore())
-                .ForMember(dest => dest.MovieActors, opt => opt.Ignore())
-                .ForMember(dest => dest.MovieImages, opt => opt.Ignore())
-                .ForMember(dest => dest.Showtimes, opt => opt.Ignore());
+     .ForMember(d => d.MovieCategories, opt => opt.Ignore())
+     .ForMember(d => d.MovieActors, opt => opt.Ignore())
+     .ForMember(d => d.MovieImages, opt => opt.Ignore())
+     .ForMember(d => d.Showtimes, opt => opt.Ignore())
+     .ForMember(d => d.TrailerUrl, opt => opt.Ignore())
+     // Prevent overwriting destination with null source values
+     .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+
         }
     }
-    }
+}

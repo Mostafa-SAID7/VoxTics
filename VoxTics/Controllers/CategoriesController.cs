@@ -80,7 +80,7 @@ namespace VoxTics.Controllers
                             Description = mc.Movie.Description,
                             PosterImage = mc.Movie.ImageUrl,
                             ReleaseDate = mc.Movie.ReleaseDate,
-                            DurationInMinutes = mc.Movie.DurationMinutes
+                            DurationInMinutes = mc.Movie.Duration
                         }).ToList() ?? new List<MovieVM>()
                 };
 

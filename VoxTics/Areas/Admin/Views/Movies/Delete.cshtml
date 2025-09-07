@@ -1,0 +1,15 @@
+﻿@model VoxTics.Areas.Admin.ViewModels.MovieViewModel
+@{
+    ViewData["Title"] = "Delete Movie";
+}
+<div class="container py-4">
+    <h3>Delete Movie</h3>
+    <div class="alert alert-warning">
+        Are you sure you want to delete "<strong>@Model.Title</strong>"?
+    </div>
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="Id" />
+        <a class="btn btn-secondary" href="@Url.Action("Index")">Cancel</a>
+        <button type="submit" class="btn btn-danger">Delete</button>
+    </form>
+</div>

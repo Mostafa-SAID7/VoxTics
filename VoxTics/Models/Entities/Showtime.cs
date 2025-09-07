@@ -61,7 +61,6 @@ namespace VoxTics.Models.Entities
         [ForeignKey(nameof(HallId))]
         public virtual Hall Hall { get; set; } = null!;
         public DateTime ShowDateTime { get; set; }   // <-- add this
-
         [NotMapped]
         public int CinemaId { get; set; }
         public virtual Cinema Cinema { get; set; } = null!;   // ✅ Reference

@@ -14,7 +14,11 @@ builder.Services.AddDbContext<MovieDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // MVC
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+   .AddJsonOptions(opt => {
+        opt.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    }
+    );
 
 // Repositories (extension method you created in VoxTics.Repositories)
 builder.Services.AddApplicationServices();

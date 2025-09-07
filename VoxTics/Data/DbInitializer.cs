@@ -84,7 +84,7 @@
                 {
                     Title = "Avengers: Endgame",
                     Description = "The grave course of events set in motion by Thanos that wiped out half the universe and fractured the Avengers ranks compels the remaining Avengers to take one final stand.",
-                    DurationMinutes = 181,
+                    Duration = 181,
                     ReleaseDate = new DateTime(2019, 4, 26),
                     Director = "Anthony Russo, Joe Russo",
                     Language = "English",
@@ -98,7 +98,7 @@
                 {
                     Title = "The Lion King",
                     Description = "A young lion prince is cast out of his pride by his cruel uncle, who claims he killed his father so that he can become the new king.",
-                    DurationMinutes = 118,
+                    Duration     = 118,
                     ReleaseDate = new DateTime(2019, 7, 19),
                     Director = "Jon Favreau",
                     Language = "English",

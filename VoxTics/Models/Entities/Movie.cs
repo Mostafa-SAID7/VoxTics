@@ -26,7 +26,7 @@ namespace VoxTics.Models.Entities
 
         [Required]
         [Range(1, 600, ErrorMessage = "Duration must be between 1 and 600 minutes")]
-        public int DurationMinutes { get; set; } // match repo’s DurationMinutes usage
+        public int Duration { get; set; } // match repo’s DurationMinutes usage
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
@@ -53,7 +53,8 @@ namespace VoxTics.Models.Entities
 
         [Required]
         public MovieStatus Status { get; set; } = MovieStatus.Upcoming;
-
+        public string? TrailerUrl { get; set; }
+        public string ShortDescription { get; set; } = string.Empty;
         // Navigation properties
         public virtual ICollection<MovieCategory> MovieCategories { get; set; } = new List<MovieCategory>();
         public virtual ICollection<MovieActor> MovieActors { get; set; } = new List<MovieActor>();

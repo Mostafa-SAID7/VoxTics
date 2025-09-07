@@ -1,72 +1,77 @@
 ﻿@model VoxTics.Areas.Admin.ViewModels.MovieViewModel
 
-<form asp-action="Create" enctype="multipart/form-data" id="movieForm">
+<form id="movieForm" asp-action="Edit" asp-route-id="@Model.Id" enctype="multipart/form-data" method="post">
+    @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Id" />
-
     <div class="modal-header">
-        <h5 class="modal-title">Add Movie</h5>
+        <h5 class="modal-title">Edit Movie</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
     </div>
+
     <div class="modal-body">
-        <div class="mb-3">
-            <label asp-for="Title" class="form-label"></label>
-            <input asp-for="Title" class="form-control" />
-            <span asp-validation-for="Title" class="text-danger"></span>
-        </div>
+        @* reuse same structure as _Create *@
+        <div class="row">
+            <div class="col-md-8">
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label"></label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
 
-        <div class="mb-3">
-            <label asp-for="Description" class="form-label"></label>
-            <textarea asp-for="Description" class="form-control"></textarea>
-            <span asp-validation-for="Description" class="text-danger"></span>
-        </div>
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label"></label>
+                    <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
 
-        <div class="mb-3">
-            <label asp-for="DurationInMinutes" class="form-label"></label>
-            <input asp-for="DurationInMinutes" class="form-control" type="number" />
-            <span asp-validation-for="DurationInMinutes" class="text-danger"></span>
-        </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="DurationInMinutes" class="form-label"></label>
+                        <input asp-for="DurationInMinutes" class="form-control" type="number"/>
+                        <span asp-validation-for="DurationInMinutes" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="ReleaseDate" class="form-label"></label>
+                        <input asp-for="ReleaseDate" class="form-control" type="date"/>
+                        <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="BasePrice" class="form-label"></label>
+                        <input asp-for="BasePrice" class="form-control" type="number" step="0.01"/>
+                        <span asp-validation-for="BasePrice" class="text-danger"></span>
+                    </div>
+                </div>
 
-        <div class="mb-3">
-            <label asp-for="ReleaseDate" class="form-label"></label>
-            <input asp-for="ReleaseDate" class="form-control" type="date" />
-            <span asp-validation-for="ReleaseDate" class="text-danger"></span>
-        </div>
+                <div class="mb-3">
+                    <label asp-for="Status" class="form-label"></label>
+                   
+                </div>
 
-        <div class="mb-3">
-            <label asp-for="PosterImageFile" class="form-label"></label>
-            <input asp-for="PosterImageFile" type="file" class="form-control" />
-            @if (!string.IsNullOrEmpty(Model.CurrentPosterImage))
-            {
-                <img src="@Model.CurrentPosterImage" width="80" class="img-thumbnail mt-2" />
-            }
-        </div>
+                <div class="mb-3">
+                    <label asp-for="SelectedCategoryIds" class="form-label">Categories</label>
+                    <select asp-for="SelectedCategoryIds" asp-items="Model.AvailableCategories" class="form-select" multiple></select>
+                </div>
+            </div>
 
-        <div class="mb-3">
-            <label asp-for="BasePrice" class="form-label"></label>
-            <input asp-for="BasePrice" class="form-control" type="number" step="0.01" />
-            <span asp-validation-for="BasePrice" class="text-danger"></span>
-        </div>
+            <div class="col-md-4">
+                <div class="mb-3">
+                    <label asp-for="PosterImageFile" class="form-label">Poster</label>
+                    <input asp-for="PosterImageFile" type="file" class="form-control" />
+                    <span asp-validation-for="PosterImageFile" class="text-danger"></span>
+                    @if (!string.IsNullOrEmpty(Model.CurrentPosterImage))
+                    {
+                        <img src="@Model.CurrentPosterImage" class="img-thumbnail mt-2" width="150" />
+                    }
+                </div>
 
-        <div class="mb-3">
-            <label asp-for="Status" class="form-label"></label>
-            <select asp-for="Status" class="form-select">
-                @foreach (var s in Model.StatusOptions)
-                {
-                    <option value="@s.Value" selected="@(s.Selected ? "selected" : "")">@s.Text</option>
-                }
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="SelectedCategoryIds" class="form-label">Categories</label>
-            <select asp-for="SelectedCategoryIds" asp-items="Model.AvailableCategories" class="form-select" multiple></select>
-        </div>
-
-        <div class="form-check mb-3">
-            <input asp-for="IsActive" class="form-check-input" />
-            <label asp-for="IsActive" class="form-check-label"></label>
+                <div class="form-check mb-3">
+                    <input asp-for="IsActive" class="form-check-input" />
+                    <label asp-for="IsActive" class="form-check-label"></label>
+                </div>
+            </div>
         </div>
     </div>
+
     <div class="modal-footer">
         <button type="submit" class="btn btn-primary">Save</button>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -75,20 +80,4 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        $("#movieForm").submit(function(e){
-            e.preventDefault();
-            var formData = new FormData(this);
-            $.ajax({
-                url: this.action,
-                type: this.method,
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(result){
-                    if(result.success) location.reload();
-                }
-            });
-        });
-    </script>
 }

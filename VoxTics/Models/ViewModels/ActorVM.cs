@@ -7,7 +7,12 @@
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
 
-        public string FullName => $"{FirstName} {LastName}";
+        private string? _fullName;
+        public string FullName
+        {
+            get => _fullName ?? $"{FirstName} {LastName}".Trim();
+            set => _fullName = value;
+        }
 
         public string? Bio { get; set; }         
         public string? ImageUrl { get; set; }     // ProfileImage renamed to match entity

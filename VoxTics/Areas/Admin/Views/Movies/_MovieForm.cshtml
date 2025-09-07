@@ -1,93 +1,93 @@
 ﻿@model VoxTics.Areas.Admin.ViewModels.MovieViewModel
-@using VoxTics.Models.Enums
-@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
-@{
-    var isEdit = Model?.Id > 0;
-    var actionName = isEdit ? "Edit" : "Create";
-}
-
-<form id="movieForm" asp-area="Admin" asp-controller="Movies" asp-action="@actionName" method="post" enctype="multipart/form-data">
+<form asp-action="@ViewContext.RouteData.Values["action"]" asp-controller="Movies" method="post" enctype="multipart/form-data" class="row g-3">
     @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
     <input type="hidden" asp-for="Id" />
 
-    <div class="row g-3">
-        <!-- Left column -->
-        <div class="col-md-8">
-            <div class="mb-3">
-                <label asp-for="Title" class="form-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
+    <div class="col-12">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
 
-            <div class="mb-3">
-                <label asp-for="Description" class="form-label"></label>
-                <textarea asp-for="Description" class="form-control" rows="6"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
+    <div class="col-12">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
 
-            <div class="row g-2">
-                <div class="col-md-4">
-                  
-                </div>
-                <div class="col-md-4">
-        
-                </div>
-                <div class="col-md-4">
-                    <label asp-for="ReleaseDate" class="form-label"></label>
-                    <input asp-for="ReleaseDate" class="form-control" type="date" />
-                    <span asp-validation-for="ReleaseDate" class="text-danger"></span>
-                </div>
-            </div>
+    <div class="col-md-4">
+        <label asp-for="DurationInMinutes" class="form-label"></label>
+        <input asp-for="DurationInMinutes" class="form-control" />
+        <span asp-validation-for="DurationInMinutes" class="text-danger"></span>
+    </div>
 
-            <div class="mt-3">
-                <label asp-for="Status" class="form-label"></label>
-                <select asp-for="Status" class="form-select">
-                    @foreach (var s in Enum.GetValues(typeof(MovieStatus)).Cast<MovieStatus>())
-                    {
-                        <option value="@s" selected="@(s == Model.Status ? "selected" : null)">@s</option>
-                    }
-                </select>
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-        </div>
+    <div class="col-md-4">
+        <label asp-for="ReleaseDate" class="form-label"></label>
+        <input asp-for="ReleaseDate" type="date" class="form-control" />
+        <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+    </div>
 
-        <!-- Right column -->
-        <div class="col-md-4">
-            <div class="card p-3">
-                <div class="mb-3 text-center">
-          
-                </div>
+    <div class="col-md-4">
+        <label asp-for="BasePrice" class="form-label"></label>
+        <input asp-for="BasePrice" class="form-control" />
+        <span asp-validation-for="BasePrice" class="text-danger"></span>
+    </div>
 
-                <div>
-                    <label class="form-label">Categories</label>
-                    <div style="max-height:220px; overflow:auto;">
-                        @foreach (var cat in Model.AvailableCategories)
-                        {
-                            var isChecked = Model.SelectedCategoryIds?.Contains(int.Parse(cat.Value)) ?? false;
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox"
-                                       name="SelectedCategoryIds"
-                                       value="@cat.Value"
-                                       @(isChecked ? "checked" : "")
-                                       id="cat_@cat.Value" />
-                                <label class="form-check-label" for="cat_@cat.Value">@cat.Text</label>
-                            </div>
-                        }
-                    </div>
-                    <span asp-validation-for="SelectedCategoryIds" class="text-danger"></span>
-                </div>
+    <div class="col-md-6">
+        <label asp-for="Director" class="form-label"></label>
+        <input asp-for="Director" class="form-control" />
+        <span asp-validation-for="Director" class="text-danger"></span>
+    </div>
 
-                <div class="mt-3 d-grid">
-                    <button type="submit" class="btn btn-primary">
-                        @(isEdit ? "Update" : "Save")
-                    </button>
-                </div>
-            </div>
-        </div>
+    <div class="col-md-3">
+        <label asp-for="Language" class="form-label"></label>
+        <input asp-for="Language" class="form-control" />
+        <span asp-validation-for="Language" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="ImdbRating" class="form-label">IMDB</label>
+        <input asp-for="ImdbRating" class="form-control" />
+        <span asp-validation-for="ImdbRating" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="TrailerUrl" class="form-label"></label>
+        <input asp-for="TrailerUrl" class="form-control" />
+        <span asp-validation-for="TrailerUrl" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label">Poster Image</label>
+        @if (!string.IsNullOrWhiteSpace(Model.CurrentPosterImage))
+        {
+            <div class="mb-2"><img src="@Model.CurrentPosterImage" class="img-fluid rounded" style="max-height:150px;" /></div>
+        }
+        <input asp-for="PosterImageFile" type="file" class="form-control" />
+        <span asp-validation-for="PosterImageFile" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label">Categories</label>
+        <select asp-for="SelectedCategoryIds" asp-items="Model.AvailableCategories" class="form-select" multiple></select>
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="Status" class="form-label"></label>
+        <select asp-for="Status" class="form-select">
+            @foreach (var s in Enum.GetValues(typeof(VoxTics.Models.Enums.MovieStatus)))
+            {
+                <option value="@s" selected="@(s.Equals(Model.Status) ? "selected" : "")">@s</option>
+            }
+        </select>
+    </div>
+
+    <div class="col-12 text-end">
+        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-success">Save</button>
     </div>
 </form>
-
-@section Scripts {
-    <partial name="~/Views/Shared/_ValidationScriptsPartial.cshtml" />
-}

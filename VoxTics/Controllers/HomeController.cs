@@ -50,7 +50,7 @@ namespace VoxTics.Controllers
                         PosterImage = m.ImageUrl,
                         ReleaseDate = m.ReleaseDate,
                         Status = m.Status,
-                        DurationInMinutes = m.DurationMinutes
+                        DurationInMinutes = m.Duration
                     }).ToList(),
 
                     NowShowingMovies = nowShowing.Select(m => new MovieVM
@@ -60,7 +60,7 @@ namespace VoxTics.Controllers
                         PosterImage = m.ImageUrl,
                         ReleaseDate = m.ReleaseDate,
                         Status = m.Status,
-                        DurationInMinutes = m.DurationMinutes
+                        DurationInMinutes = m.Duration
                     }).ToList(),
 
                     UpcomingMovies = upcoming.Select(m => new MovieVM
@@ -70,7 +70,7 @@ namespace VoxTics.Controllers
                         PosterImage = m.ImageUrl,
                         ReleaseDate = m.ReleaseDate,
                         Status = m.Status,
-                        DurationInMinutes = m.DurationMinutes
+                        DurationInMinutes = m.Duration
                     }).ToList(),
 
                   

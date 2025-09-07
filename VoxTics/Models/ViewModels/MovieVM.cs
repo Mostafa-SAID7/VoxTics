@@ -60,8 +60,17 @@ namespace VoxTics.Models.ViewModels
         public int BookingCount { get; set; }
 
         // Short description for cards
-        public string ShortDescription => Description.Length > 150 ? Description[..147] + "..." : Description;
-
+        private string? _shortDescription;
+        public string ShortDescription
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(_shortDescription)) return _shortDescription;
+                if (string.IsNullOrEmpty(Description)) return string.Empty;
+                return Description.Length > 150 ? Description.Substring(0, 147) + "..." : Description;
+            }
+            set => _shortDescription = value;
+        }
         // Badge helpers
         public string StatusBadgeClass => Status switch
         {

@@ -1,58 +1,190 @@
-﻿@model VoxTics.Areas.Admin.ViewModels.MovieViewModel
+﻿@model VoxTics.Areas.Admin.ViewModels.MoviesIndexViewModel
+@{
+    ViewData["Title"] = "Movies";
+}
 
-<table class="table table-striped table-bordered">
-    <thead>
-        <tr>
-            <th>Poster</th>
-            <th>Title</th>
-            <th>Release</th>
-            <th>Status</th>
-            <th>Categories</th>
-            <th>Duration</th>
-            <th>Price</th>
-            <th>Created</th>
-            <th>Active</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var movie in Model.Movies)
-        {
-            <tr>
-                <td>
-                    <img src="@(!string.IsNullOrEmpty(movie.CurrentPosterImage) ? movie.CurrentPosterImage : "/images/default-movie.png")" width="60" class="img-thumbnail" />
-                </td>
-                <td>@movie.Title</td>
-                <td>@movie.ReleaseDate.ToString("MMM dd, yyyy")</td>
-                <td>@movie.Status</td>
-                <td>
-                    @foreach(var cat in movie.MovieCategories)
-                    {
-                        <span class="badge bg-info">@cat.Name</span>
+@* <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Movies</h2>
+    <button class="btn btn-primary" id="btnCreateMovie">Add Movie</button>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-4">
+        <input id="searchTerm" class="form-control" placeholder="Search by title or director..." value="@Model.SearchTerm" />
+    </div>
+
+    <div class="col-md-3">
+        <!-- Use asp-items to avoid manual option rendering and selected-attribute issues -->
+        <label class="visually-hidden" for="categoryFilter">Category</label>
+        <select asp-for="SelectedCategoryId" asp-items="Model.CategoryOptions" id="categoryFilter" class="form-select"></select>
+    </div>
+
+    <div class="col-md-3">
+        <select id="sortBy" class="form-select">
+            <option value="createdat" selected="@(Model.SortBy?.ToLower() == "createdat" ? "selected" : null)">Newest</option>
+            <option value="title" selected="@(Model.SortBy?.ToLower() == "title" ? "selected" : null)">Title</option>
+            <option value="releasedate" selected="@(Model.SortBy?.ToLower() == "releasedate" ? "selected" : null)">Release Date</option>
+        </select>
+    </div>
+
+    <div class="col-md-2 text-end">
+        <button class="btn btn-outline-secondary" id="btnFilter">Filter</button>
+    </div>
+</div> *@
+
+<div id="moviesTableContainer">
+    @await Html.PartialAsync("_MoviesTable", Model)
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="movieModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content" id="movieModalContent"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function($) {
+            function loadTable(params) {
+                params = params || {};
+                params.searchTerm = $("#searchTerm").val();
+                params.categoryId = $("#categoryFilter").val();
+                params.sortBy = $("#sortBy").val();
+
+                $.get('@Url.Action("Index", "Movies", new { area = "Admin" })', params, function (html) {
+                    // Controller returns PartialView("_MoviesTable", vm) for AJAX
+                    $("#moviesTableContainer").html(html);
+                });
+            }
+
+            // initial bind: filter button
+            $("#btnFilter").on("click", function () {
+                loadTable();
+            });
+
+            // search on Enter
+            $("#searchTerm").on("keyup", function(e) {
+                if (e.key === "Enter") loadTable();
+            });
+
+            // Create - load partial into modal
+            $("#btnCreateMovie").on("click", function () {
+                $.get('@Url.Action("Create", "Movies", new { area = "Admin" })', function (html) {
+                    $("#movieModalContent").html(html);
+                    $("#movieModal").modal("show");
+                });
+            });
+
+            // Delegate clicks for dynamically loaded buttons inside table
+            $(document).on("click", ".btnEdit", function () {
+                var id = $(this).data("id");
+                $.get('@Url.Action("Edit", "Movies", new { area = "Admin" })/' + id, function (html) {
+                    $("#movieModalContent").html(html);
+                    $("#movieModal").modal("show");
+                });
+            });
+
+            $(document).on("click", ".btnDetails", function () {
+                var id = $(this).data("id");
+                $.get('@Url.Action("Details", "Movies", new { area = "Admin" })/' + id, function (html) {
+                    $("#movieModalContent").html(html);
+                    $("#movieModal").modal("show");
+                });
+            });
+
+            $(document).on("click", ".btnDelete", function () {
+                var id = $(this).data("id");
+                $.get('@Url.Action("Delete", "Movies", new { area = "Admin" })/' + id, function (html) {
+                    $("#movieModalContent").html(html);
+                    $("#movieModal").modal("show");
+                });
+            });
+
+            // Pagination: .page-link data-page attribute rendered by partial
+            $(document).on("click", ".page-link", function(e) {
+                e.preventDefault();
+                var page = $(this).data("page");
+                var params = {
+                    page: page,
+                    searchTerm: $("#searchTerm").val(),
+                    categoryId: $("#categoryFilter").val(),
+                    sortBy: $("#sortBy").val()
+                };
+                $.get('@Url.Action("Index", "Movies", new { area = "Admin" })', params, function (html) {
+                    $("#moviesTableContainer").html(html);
+                });
+            });
+
+            // Generic handler for modal form submissions (handles HTML or JSON responses)
+            $(document).on("submit", "#movieForm", function (e) {
+                e.preventDefault();
+                var form = this;
+                var url = $(form).attr("action") || window.location.href;
+                var method = ($(form).attr("method") || "post").toUpperCase();
+
+                var fd = new FormData(form);
+
+                $.ajax({
+                    url: url,
+                    type: method,
+                    data: fd,
+                    processData: false,
+                    contentType: false,
+                    success: function (response, textStatus, jqXHR) {
+                        // If server returned JSON { success: true }, reload table and close modal
+                        if (response && response.success) {
+                            $("#movieModal").modal("hide");
+                            loadTable();
+                            // optional: show toast using your existing alert mechanism
+                            return;
+                        }
+
+                        // Otherwise server returned HTML (form with validation errors or new form)
+                        // Replace modal content
+                        var ct = jqXHR.getResponseHeader("content-type") || "";
+                        if (ct.indexOf("text/html") !== -1) {
+                            $("#movieModalContent").html(response);
+                        } else {
+                            // fallback: reload page
+                            location.reload();
+                        }
+                    },
+                    error: function (xhr) {
+                        // If server redirected (302), we may get the HTML of redirect page — just reload.
+                        if (xhr.status >= 300 && xhr.status < 400) location.reload();
+                        else {
+                            var ct = xhr.getResponseHeader("content-type") || "";
+                            if (ct.indexOf("text/html") !== -1) {
+                                $("#movieModalContent").html(xhr.responseText);
+                            } else {
+                                alert("An error occurred. See console for details.");
+                                console.error(xhr);
+                            }
+                        }
                     }
-                </td>
-                <td>@movie.DurationInMinutes mins</td>
-                <td>$@movie.BasePrice</td>
-                <td>@movie.CreatedAt.ToString("MMM dd, yyyy")</td>
-                <td>@(movie.IsActive ? "Yes" : "No")</td>
-                <td>
-                    <button class="btn btn-info btn-sm btnDetails" data-id="@movie.Id">Details</button>
-                    <button class="btn btn-warning btn-sm btnEdit" data-id="@movie.Id">Edit</button>
-                    <button class="btn btn-danger btn-sm btnDelete" data-id="@movie.Id">Delete</button>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                });
+            });
 
-<!-- Pagination -->
-<nav>
-    <ul class="pagination">
-        @foreach(var page in Model.Movies.GetPageNumbers())
-        {
-            <li class="page-item @(page == Model.CurrentPage ? "active" : "")">
-                <a href="#" class="page-link" data-page=""></a>
-            </li>
-        }
-    </ul>
-</nav>
+            // Delete action inside modal (the delete form posts to Delete action)
+            $(document).on("submit", "#deleteMovieForm", function (e) {
+                e.preventDefault();
+                var $form = $(this);
+                var fd = $form.serialize();
+
+                $.post($form.attr("action"), fd, function (response) {
+                    if (response && response.success) {
+                        $("#movieModal").modal("hide");
+                        loadTable();
+                        return;
+                    }
+                    // show returned HTML (if not JSON)
+                    $("#movieModalContent").html(response);
+                }).fail(function (xhr) {
+                    if (xhr.responseText) $("#movieModalContent").html(xhr.responseText);
+                });
+            });
+
+        })(jQuery);
+    </script>
+}
