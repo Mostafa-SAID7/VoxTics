@@ -1,8 +1,195 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model VoxTics.Areas.Admin.ViewModels.AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container-fluid">
+    <h1 class="mb-4">⚙ Admin Dashboard</h1>
+
+    <!-- Top Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-2">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Movies</h5>
+                    <p class="card-text display-6">@Model.TotalMovies</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Users</h5>
+                    <p class="card-text display-6">@Model.TotalUsers</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Bookings</h5>
+                    <p class="card-text display-6">@Model.TotalBookings</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Categories</h5>
+                    <p class="card-text display-6">@Model.TotalCategories</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white bg-secondary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Cinemas</h5>
+                    <p class="card-text display-6">@Model.TotalCinemas</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Revenue Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card border-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Revenue</h5>
+                    <p class="card-text display-6">@Model.FormattedTotalRevenue</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Monthly Revenue</h5>
+                    <p class="card-text display-6">@Model.FormattedMonthlyRevenue</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Daily Revenue</h5>
+                    <p class="card-text display-6">@Model.FormattedDailyRevenue</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Movie Status -->
+    <div class="row mb-4">
+        @foreach (var kvp in Model.MoviesByStatus)
+        {
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="card-title">@kvp.Key.ToString()</h6>
+                        <p class="card-text display-6">@kvp.Value</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Booking Status -->
+    <div class="row mb-4">
+        @foreach (var kvp in Model.BookingsByStatus)
+        {
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="card-title">@kvp.Key.ToString()</h6>
+                        <p class="card-text display-6">@kvp.Value</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Recent Movies -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h4>Recent Movies</h4>
+            <ul class="list-group">
+                @foreach (var movie in Model.RecentMovies)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        @movie.Title
+                        <span class="badge bg-primary">@movie.ReleaseDate.ToString("MMM dd, yyyy")</span>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <!-- Recent Bookings -->
+        <div class="col-md-6">
+            <h4>Recent Bookings</h4>
+            <ul class="list-group">
+                @foreach (var booking in Model.RecentBookings)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        @booking.BookingNumber
+                        <span class="badge bg-success">@booking.BookingDate.ToString("MMM dd, yyyy")</span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+
+    <!-- Recent Users -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h4>Recent Users</h4>
+            <ul class="list-group">
+                @foreach (var user in Model.RecentUsers)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        @user.FullName
+                        <span class="badge bg-secondary">@user.CreatedAt.ToString("MMM dd, yyyy")</span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+
+    <!-- Charts Placeholder -->
+    <div class="row">
+        <div class="col-md-12">
+            <h4>Monthly Bookings (Last 30 Days)</h4>
+            <canvas id="monthlyBookingsChart"></canvas>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('monthlyBookingsChart').getContext('2d');
+        const labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyBookings.Keys));
+        const data = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyBookings.Values));
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Bookings',
+                    data: data,
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: true } },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    </script>
+}

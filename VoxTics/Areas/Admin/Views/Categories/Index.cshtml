@@ -1,79 +1,94 @@
-﻿@model IEnumerable<VoxTics.Areas.Admin.ViewModels.CategoryViewModel>
+﻿@model List<VoxTics.Areas.Admin.ViewModels.CategoryViewModel>
 
 @{
-    ViewData["Title"] = "Manage Categories";
+    ViewData["Title"] = "Categories";
 }
 
-<div class="d-flex justify-content-between mb-3">
-    <h2>Categories</h2>
-    <button id="btnCreateCategory" class="btn btn-primary">
-        <i class="bi bi-plus-lg"></i> Add Category
-    </button>
+<h2>Categories</h2>
+
+<div class="mb-3">
+    <button class="btn btn-primary" id="btnCreateCategory">Create Category</button>
 </div>
 
-<div id="categoriesTableContainer">
-    @Html.Partial("_CategoriesTable", Model)
+<div class="mb-3">
+    <input type="text" id="searchInput" class="form-control w-25 d-inline-block" placeholder="Search..." />
+    <button class="btn btn-secondary" id="btnSearch">Search</button>
 </div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Movies</th>
+            <th>Active</th>
+            <th>Created</th>
+            <th>Updated</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="categoryTableBody">
+        @foreach (var cat in Model)
+        {
+            <tr>
+                <td>@cat.Name</td>
+                <td>@cat.Description</td>
+                <td>@cat.MovieCount</td>
+                <td>@(cat.IsActive ? "Yes" : "No")</td>
+                <td>@cat.CreatedAtFormatted</td>
+                <td>@cat.UpdatedAtFormatted</td>
+                <td>
+                    <button class="btn btn-warning btn-sm btnEdit" data-id="@cat.Id">Edit</button>
+                    <button class="btn btn-danger btn-sm btnDelete" data-id="@cat.Id">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 <!-- Modal -->
-<div class="modal fade" id="crudModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content"></div>
+<div class="modal fade" id="categoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" id="categoryModalContent">
+            <!-- Partial view will be loaded here -->
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <script>
-        (function($){
-            const base = '/Admin/Categories';
-
-            async function openModal(url){
-                const html = await $.get(url);
-                $("#crudModal .modal-content").html(html);
-                var modal = new bootstrap.Modal(document.getElementById('crudModal'));
-                modal.show();
-                if ($.validator) $.validator.unobtrusive.parse($("#crudModal"));
-            }
-
-            async function reloadTable(){
-                const html = await $.get(base);
-                const newTable = $(html).find('#categoriesTableContainer').html();
-                $('#categoriesTableContainer').html(newTable);
-            }
-
-            $(document).on('click', '#btnCreateCategory', e => {
-                e.preventDefault(); openModal(base + '/Create');
-            });
-
-            $(document).on('click', '.btn-edit-category', function(){
-                openModal(base + '/Edit/' + $(this).data('id'));
-            });
-
-            $(document).on('click', '.btn-delete-category', function(){
-                openModal(base + '/Delete/' + $(this).data('id'));
-            });
-
-            $(document).on('submit', '#crudModal form', function(e){
-                e.preventDefault();
-                const $form = $(this);
-
-                $.ajax({
-                    url: $form.attr('action'),
-                    method: $form.attr('method'),
-                    data: $form.serialize(),
-                    success: function(res){
-                        if(res.success){
-                            bootstrap.Modal.getInstance(document.getElementById('crudModal')).hide();
-                            toastr.success(res.message);
-                            reloadTable();
-                        } else {
-                            $("#crudModal .modal-content").html(res);
-                            if ($.validator) $.validator.unobtrusive.parse($("#crudModal"));
-                        }
-                    },
-                    error: () => toastr.error("Error processing request")
+        $(document).ready(function() {
+            // Create
+            $("#btnCreateCategory").click(function() {
+                $.get('@Url.Action("Create")', function(data) {
+                    $("#categoryModalContent").html(data);
+                    $("#categoryModal").modal("show");
                 });
             });
-        })(jQuery);
+
+            // Edit
+            $(".btnEdit").click(function() {
+                const id = $(this).data("id");
+                $.get('@Url.Action("Edit")/' + id, function(data) {
+                    $("#categoryModalContent").html(data);
+                    $("#categoryModal").modal("show");
+                });
+            });
+
+            // Delete
+            $(".btnDelete").click(function() {
+                const id = $(this).data("id");
+                $.get('@Url.Action("Delete")/' + id, function(data) {
+                    $("#categoryModalContent").html(data);
+                    $("#categoryModal").modal("show");
+                });
+            });
+
+            // Optional: Search
+            $("#btnSearch").click(function() {
+                const term = $("#searchInput").val();
+                window.location.href = '@Url.Action("Index")?search=' + term;
+            });
+        });
     </script>
 }

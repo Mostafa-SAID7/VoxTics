@@ -1,0 +1,60 @@
+﻿@model List<VoxTics.Areas.Admin.ViewModels.ShowtimeViewModel>
+
+@{
+    ViewData["Title"] = "Showtimes";
+}
+
+<h2>Showtimes</h2>
+
+<div class="mb-3 row">
+    <div class="col-md-4">
+        <input type="text" id="searchTerm" class="form-control" placeholder="Search by movie or cinema..." value="@ViewBag.SearchTerm" />
+    </div>
+    <div class="col-md-4 text-end">
+        <button class="btn btn-primary" id="btnCreateShowtime">Add Showtime</button>
+    </div>
+</div>
+
+<div id="showtimesTableContainer">
+    @await Html.PartialAsync("_ShowtimesTable", Model)
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="showtimeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="showtimeModalContent"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function(){
+            // Create
+            $("#btnCreateShowtime").click(function(){
+                $.get('@Url.Action("Create")', function(data){
+                    $("#showtimeModalContent").html(data);
+                    $("#showtimeModal").modal("show");
+                });
+            });
+
+            // Filters
+            $("#searchTerm").on("keyup", function(){
+                loadShowtimes();
+            });
+
+            // Pagination
+            $(document).on("click", ".page-link", function(e){
+                e.preventDefault();
+                var page = $(this).data("page");
+                loadShowtimes(page);
+            });
+
+            function loadShowtimes(page = 1){
+                var searchTerm = $("#searchTerm").val();
+                $.get('@Url.Action("Index")', { searchTerm, page }, function(data){
+                    $("#showtimesTableContainer").html(data);
+                });
+            }
+        });
+    </script>
+}

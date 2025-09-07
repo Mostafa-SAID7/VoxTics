@@ -1,0 +1,31 @@
+﻿@model VoxTics.Areas.Admin.ViewModels.BookingViewModel
+
+@{
+    ViewData["Title"] = "Booking Details";
+}
+
+<h2>Booking Details</h2>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">@Model.BookingNumber</h5>
+        <p><strong>User:</strong> @Model.UserName (@Model.UserEmail)</p>
+        <p><strong>Movie:</strong> @Model.MovieTitle</p>
+        <p><strong>Cinema / Hall:</strong> @Model.CinemaName / @Model.HallName</p>
+        <p><strong>Showtime:</strong> @Model.ShowDateTimeFormatted</p>
+        <p><strong>Seats:</strong> @string.Join(", ", Model.SeatNumbers)</p>
+        <p><strong>Total Price:</strong> @Model.FormattedTotalPrice</p>
+        <p><strong>Status:</strong> <span class="@Model.StatusBadge">@Model.Status</span></p>
+        <p><strong>Payment Status:</strong> @Model.PaymentStatus</p>
+        <p><strong>Booking Date:</strong> @Model.BookingDateFormatted</p>
+        @if (!string.IsNullOrEmpty(Model.CancellationReason))
+        {
+            <p><strong>Cancellation Reason:</strong> @Model.CancellationReason</p>
+        }
+    </div>
+</div>
+
+<p>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</p>

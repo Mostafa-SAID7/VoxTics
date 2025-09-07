@@ -1,26 +1,79 @@
 ﻿@model VoxTics.Areas.Admin.ViewModels.CinemaViewModel
-<form asp-action="@(Model.Id == 0 ? "Create" : "Edit")"
-      asp-controller="Cinemas" asp-area="Admin" method="post" enctype="multipart/form-data" id="cinema-form">
-    @if (Model.Id != 0)
-    {
-        <input type="hidden" name="Id" value="@Model.Id" />
-    }
-    <div class="form-group">
-        <label asp-for="Name"></label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
+
+<form asp-action="@ViewContext.RouteData.Values["action"]" enctype="multipart/form-data" id="cinemaForm">
+    <div class="modal-header">
+        <h5 class="modal-title">@((Model.Id == 0) ? "Add Cinema" : "Edit Cinema")</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
     </div>
-    <div class="form-group">
-        <label asp-for="Address"></label>
-        <input asp-for="Address" class="form-control" />
+    <div class="modal-body">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="City" class="form-label"></label>
+            <input asp-for="City" class="form-control" />
+            <span asp-validation-for="City" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Address" class="form-label"></label>
+            <input asp-for="Address" class="form-control" />
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="PhoneNumber" class="form-label"></label>
+            <input asp-for="PhoneNumber" class="form-control" />
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label"></label>
+            <textarea asp-for="Description" class="form-control"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ImageFile" class="form-label"></label>
+            <input asp-for="ImageFile" type="file" class="form-control" />
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <img src="@Model.ImageUrl" class="img-thumbnail mt-2" width="100" />
+            }
+        </div>
+
+        <div class="form-check mb-3">
+            <input asp-for="IsActive" class="form-check-input" />
+            <label asp-for="IsActive" class="form-check-label"></label>
+        </div>
     </div>
-    <div class="form-group">
-        <label asp-for="ImageFile">Image</label>
-        <input asp-for="ImageFile" type="file" class="form-control-file" />
-        @if (!string.IsNullOrEmpty(Model.ImageUrl))
-        {
-            <img src="@Model.ImageUrl" alt="image" class="img-thumbnail mt-2" style="max-width:120px" />
-        }
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
     </div>
-    <button type="submit" class="btn btn-primary">Save</button>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $("#cinemaForm").submit(function(e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            $.ajax({
+                url: this.action,
+                type: this.method,
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(result) {
+                    if (result.success) location.reload();
+                }
+            });
+        });
+    </script>
+}

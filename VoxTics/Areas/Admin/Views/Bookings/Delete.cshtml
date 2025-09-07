@@ -1,0 +1,17 @@
+﻿@model VoxTics.Areas.Admin.ViewModels.BookingViewModel
+
+@{
+    ViewData["Title"] = "Delete Booking";
+}
+
+<h2>Delete Booking</h2>
+
+<div class="alert alert-danger">
+    Are you sure you want to delete booking <strong>@Model.BookingNumber</strong> for user <strong>@Model.UserName</strong>?
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

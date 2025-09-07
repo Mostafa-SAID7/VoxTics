@@ -1,0 +1,17 @@
+﻿@model VoxTics.Models.Entities.Cinema
+
+<div class="modal-header">
+    <h5 class="modal-title">@Model.Name</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+    <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/default-cinema.jpg" : Model.ImageUrl)" class="img-thumbnail mb-3" width="150" />
+    <p><strong>City:</strong> @Model.City</p>
+    <p><strong>Address:</strong> @Model.Address</p>
+    <p><strong>Phone:</strong> @Model.Phone</p>
+    <p><strong>Description:</strong> @Model.Description</p>
+    <p><strong>Active:</strong> @(Model.IsActive ? "Yes" : "No")</p>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+</div>

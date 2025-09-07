@@ -24,7 +24,8 @@ namespace VoxTics.Areas.Admin.Controllers
         public async Task<IActionResult> Index()
         {
             var cinemas = await _cinemaRepo.GetAllAsync();
-            return View(cinemas); // table with AJAX actions
+            var vmList = _mapper.Map<List<CinemaViewModel>>(cinemas); // Map entities -> viewmodels
+            return View(vmList); // now the types match
         }
 
         // GET: Admin/Cinemas/Create

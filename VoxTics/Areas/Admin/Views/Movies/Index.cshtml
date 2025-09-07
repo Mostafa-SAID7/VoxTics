@@ -1,212 +1,81 @@
-﻿@model IEnumerable<VoxTics.Areas.Admin.ViewModels.MovieViewModel>
+﻿@model VoxTics.Areas.Admin.ViewModels.MovieViewModel
 
 @{
-    ViewData["Title"] = "Manage Movies";
+    ViewData["Title"] = "Movies";
 }
 
-@section Styles {
-    <style>
-        /* small page-specific styles */
-        .movie-card-img {
-            width: 72px;
-            height: 72px;
-            object-fit: cover;
-            border-radius: 6px;
-        }
+<h2>Movies</h2>
 
-        .table-actions {
-            display: flex;
-            gap: 0.4rem;
-        }
-
-        .modal-lg .modal-body {
-            max-height: 70vh;
-            overflow: auto;
-        }
-
-        .file-preview {
-            max-width: 140px;
-            max-height: 140px;
-            object-fit: cover;
-            display: block;
-            margin-bottom: .5rem;
-            border-radius: 6px;
-        }
-    </style>
-}
-
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Movies</h2>
-    <div>
-        <button id="btnCreateMovie" class="btn btn-primary">
-            <i class="bi bi-plus-lg"></i> Create Movie
-        </button>
+<div class="mb-3 row">
+    <div class="col-md-3">
+        <input type="text" id="searchTerm" class="form-control" placeholder="Search by title..." value="@Model.SearchTerm" />
     </div>
-</div>
-
-<div class="mb-3">
-    <div class="row g-2">
-        <div class="col-auto">
-            <input id="searchInput" type="search" class="form-control" placeholder="Search title or description..." />
-        </div>
-        <div class="col-auto">
-            <button id="btnSearch" class="btn btn-outline-secondary">Search</button>
-            <button id="btnReset" class="btn btn-outline-light">Reset</button>
-        </div>
+    <div class="col-md-3">
+        <select id="categoryFilter" class="form-select">
+            @foreach (var cat in Model.CategoryOptions)
+            {
+                <option value="@cat.Value" selected="@(cat.Selected ? "selected" : "")">@cat.Text</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select id="statusFilter" class="form-select">
+            @foreach (var status in Model.StatusOptions)
+            {
+                <option value="@status.Value" selected="@(status.Selected ? "selected" : "")">@status.Text</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3 text-end">
+        <button class="btn btn-primary" id="btnCreateMovie">Add Movie</button>
     </div>
 </div>
 
 <div id="moviesTableContainer">
-    @Html.Partial("_MoviesTable", Model)
+    @await Html.PartialAsync("_MoviesTable", Model)
 </div>
 
-<!-- Shared CRUD Modal -->
-<div class="modal fade" id="crudModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content">
-            <!-- partial content injected here -->
-        </div>
+<!-- Modal -->
+<div class="modal fade" id="movieModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="movieModalContent"></div>
     </div>
 </div>
 
 @section Scripts {
     <script>
-        (function($){
-            const adminBase = '/Admin/Movies';
+        $(document).ready(function() {
 
-            // helper: show notifications (uses toastr if present)
-            function notifySuccess(msg){
-                if (window.toastr) toastr.success(msg);
-                else alert(msg);
-            }
-            function notifyError(msg){
-                if (window.toastr) toastr.error(msg);
-                else alert(msg);
-            }
-
-            // open modal and load partial
-            async function openModal(url){
-                try {
-                    window.showLoader?.();
-                    const html = await $.get(url);
-                    $("#crudModal .modal-content").html(html);
-                    // init bootstrap modal
-                    var modal = new bootstrap.Modal(document.getElementById('crudModal'));
-                    modal.show();
-                    // link unobtrusive validation
-                    if ($.validator) $.validator.unobtrusive.parse($("#crudModal"));
-                } catch (err) {
-                    notifyError("Failed to load form.");
-                    console.error(err);
-                } finally {
-                    window.hideLoader?.();
-                }
-            }
-
-            // reload movies table by fetching Index and replacing container
-            async function reloadMoviesTable(queryString){
-                try {
-                    window.showLoader?.();
-                    const url = adminBase + (queryString ? ("?"+queryString) : "");
-                    const html = await $.get(url);
-                    const newTableHtml = $(html).find('#moviesTableContainer').html();
-                    if (newTableHtml) {
-                        $('#moviesTableContainer').html(newTableHtml);
-                    } else {
-                        // fallback - if controller returns only partial table, replace whole
-                        $('#moviesTableContainer').html(html);
-                    }
-                } catch (err) {
-                    console.error(err);
-                    notifyError("Could not refresh movies list.");
-                } finally {
-                    window.hideLoader?.();
-                }
-            }
-
-            // bind create
-            $(document).on('click', '#btnCreateMovie', function(e){
-                e.preventDefault();
-                openModal(adminBase + '/Create');
+            // Filters
+            $("#searchTerm, #categoryFilter, #statusFilter").on("change keyup", function() {
+                loadMovies();
             });
 
-            // bind edit (buttons inside table with data-id)
-            $(document).on('click', '.btn-edit-movie', function(e){
-                e.preventDefault();
-                const id = $(this).data('id');
-                openModal(adminBase + '/Edit/' + id);
-            });
-
-            // bind delete (open delete confirm)
-            $(document).on('click', '.btn-delete-movie', function(e){
-                e.preventDefault();
-                const id = $(this).data('id');
-                openModal(adminBase + '/Delete/' + id);
-            });
-
-            // handle form submission inside modal (uses delegated handler)
-            $(document).on('submit', '#crudModal form', function(e){
-                e.preventDefault();
-                const $form = $(this);
-                const action = $form.attr('action');
-                const method = ($form.attr('method') || 'POST').toUpperCase();
-
-                // use FormData for file uploads
-                const hasFile = $form.find('input[type="file"]').length > 0;
-                const formData = hasFile ? new FormData(this) : $form.serialize();
-
-                window.showLoader?.();
-
-                $.ajax({
-                    url: action,
-                    method: method,
-                    data: formData,
-                    processData: !hasFile,
-                    contentType: hasFile ? false : 'application/x-www-form-urlencoded; charset=UTF-8',
-                    success: function (res) {
-                        // if server returns JSON success
-                        if (res && res.success) {
-                            var modalEl = document.getElementById('crudModal');
-                            var bs = bootstrap.Modal.getInstance(modalEl);
-                            if (bs) bs.hide();
-
-                            notifySuccess(res.message || 'Saved successfully');
-                            // refresh table
-                            reloadMoviesTable();
-                        } else {
-                            // server returned HTML (validation errors) -> replace modal body
-                            if (typeof res === "string") {
-                                $("#crudModal .modal-content").html(res);
-                                if ($.validator) $.validator.unobtrusive.parse($("#crudModal"));
-                            } else {
-                                notifyError(res?.message || 'Save failed');
-                            }
-                        }
-                    },
-                    error: function(xhr){
-                        console.error(xhr);
-                        notifyError('Server error occurred');
-                    },
-                    complete: function(){
-                        window.hideLoader?.();
-                    }
+            // Create
+            $("#btnCreateMovie").click(function() {
+                $.get('@Url.Action("Create")', function(data) {
+                    $("#movieModalContent").html(data);
+                    $("#movieModal").modal("show");
                 });
             });
 
-            // search handlers
-            $('#btnSearch').on('click', function(){
-                const q = $('#searchInput').val() || '';
-                reloadMoviesTable($.param({ search: q }));
-            });
-            $('#btnReset').on('click', function(){
-                $('#searchInput').val('');
-                reloadMoviesTable();
-            });
+            // Load movies table via AJAX
+            function loadMovies(page = 1) {
+                var searchTerm = $("#searchTerm").val();
+                var categoryId = $("#categoryFilter").val();
+                var status = $("#statusFilter").val();
 
-            // initial unobtrusive parse (in case partials include validation)
-            $(function(){
-                if ($.validator) $.validator.unobtrusive.parse($(document));
+                $.get('@Url.Action("Index")', { searchTerm, categoryId, page }, function(data) {
+                    $("#moviesTableContainer").html(data);
+                });
+            }
+
+            // Pagination click
+            $(document).on("click", ".page-link", function(e) {
+                e.preventDefault();
+                var page = $(this).data("page");
+                loadMovies(page);
             });
-        })(jQuery);
+        });
     </script>
 }
