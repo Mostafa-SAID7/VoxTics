@@ -1,95 +1,238 @@
-﻿@model VoxTics.Models.ViewModels.HomeVM
-
+﻿@model HomeVM
 @{
     ViewData["Title"] = "Home";
 }
 
-<h1>Welcome to VoxTics</h1>
+<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/countup.js/2.0.7/countUp.min.js"></script>
 
-<!-- Featured Movies -->
-<h2>Featured Movies (@Model.TotalMovies)</h2>
-<div class="row">
-    @foreach (var movie in Model.FeaturedMovies)
-    {
-        <div class="col-md-2 mb-3">
-            <div class="card">
-                <img src="@movie.PosterImage" class="card-img-top" alt="@movie.Title" />
-                <div class="card-body">
-                    <h5 class="card-title">@movie.Title</h5>
-                    <p class="card-text">Release: @movie.ReleaseDate.ToShortDateString()</p>
-                    <p>Status: @movie.Status</p>
-                    <p>Duration: @movie.DurationInMinutes mins</p>
-                </div>
-            </div>
+<div class="container-fluid p-0">
+
+    <!-- Hero Banner -->
+    <section class="hero-banner text-white text-center d-flex align-items-center justify-content-center">
+        <div class="overlay"></div>
+        <div class="hero-content" data-aos="zoom-in">
+            <h1 class="display-3 fw-bold">🎬 Welcome to VoxTics</h1>
+            <p class="lead">Your ultimate destination for movies, showtimes, and entertainment</p>
+            <a href="#now-showing" class="btn btn-lg btn-primary mt-3 shadow">Explore Movies</a>
         </div>
-    }
-</div>
+    </section>
 
-<!-- Now Showing Movies -->
-<h2>Now Showing (@Model.TotalNowShowing)</h2>
-<div class="row">
-    @foreach (var movie in Model.NowShowingMovies)
-    {
-        <div class="col-md-2 mb-3">
-            <div class="card">
-                <img src="@movie.PosterImage" class="card-img-top" alt="@movie.Title" />
-                <div class="card-body">
-                    <h5 class="card-title">@movie.Title</h5>
-                    <p>Release: @movie.ReleaseDate.ToShortDateString()</p>
-                </div>
+    <div class="container my-5">
+
+        <!-- Now Showing -->
+        <section id="now-showing" class="mb-5">
+            <h2 class="mb-4 fw-bold border-bottom pb-2">🍿 Now Showing</h2>
+            <div class="row row-cols-1 row-cols-md-4 g-4">
+                @foreach (var movie in Model.NowShowingMovies)
+                {
+                    <div class="col" data-aos="fade-up">
+                        <div class="card movie-card h-100 shadow-sm">
+                            <div class="poster-wrapper">
+                                <img src="@movie.PosterImage" class="card-img-top" alt="@movie.Title" />
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">@movie.Title</h5>
+                                <p class="card-text text-muted">Released: @movie.ReleaseDate.ToString("MMM dd, yyyy")</p>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
-        </div>
-    }
-</div>
+        </section>
 
-<!-- Upcoming Movies -->
-<h2>Upcoming Movies (@Model.TotalUpcoming)</h2>
-<div class="row">
-    @foreach (var movie in Model.UpcomingMovies)
-    {
-        <div class="col-md-2 mb-3">
-            <div class="card">
-                <img src="@movie.PosterImage" class="card-img-top" alt="@movie.Title" />
-                <div class="card-body">
-                    <h5 class="card-title">@movie.Title</h5>
-                    <p>Release: @movie.ReleaseDate.ToShortDateString()</p>
-                </div>
+        <!-- Upcoming Movies -->
+        <section class="mb-5">
+            <h2 class="mb-4 fw-bold border-bottom pb-2">🚀 Upcoming Movies</h2>
+            <div class="row row-cols-1 row-cols-md-4 g-4">
+                @foreach (var movie in Model.UpcomingMovies)
+                {
+                    <div class="col" data-aos="fade-up" data-aos-delay="100">
+                        <div class="card movie-card upcoming h-100 shadow-sm">
+                            <div class="poster-wrapper">
+                                <img src="@movie.PosterImage" class="card-img-top" alt="@movie.Title" />
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">@movie.Title</h5>
+                                <span class="badge bg-primary">Coming @movie.ReleaseDate.ToString("MMM dd, yyyy")</span>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
-        </div>
-    }
-</div>
+        </section>
 
-<!-- Popular Categories -->
-<h2>Popular Categories</h2>
-<ul>
-    @foreach (var category in Model.PopularCategories)
-    {
-        <li>@category.Name (@category.MovieCount movies)</li>
-    }
-</ul>
+        <!-- Static About Section -->
+        <section class="about-section text-center my-5 p-5 rounded shadow-lg" data-aos="fade-right">
+            <h2 class="fw-bold mb-3">About VoxTics</h2>
+            <p class="lead text-muted">
+                VoxTics brings the magic of cinema to your fingertips. Browse the latest releases, discover upcoming hits,
+                and book your tickets with ease. Enjoy the ultimate movie-going experience!
+            </p>
+            <a href="#" class="btn btn-lg btn-outline-primary mt-3">Learn More</a>
+        </section>
 
-<!-- Today's Showtimes -->
-<h2>Today's Showtimes</h2>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Movie</th>
-            <th>Cinema</th>
-            <th>Hall</th>
-            <th>Start Time</th>
-            <th>Price</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var st in Model.TodayShowtimes)
+        <!-- Today's Showtimes -->
+        <section class="mb-5">
+            <h2 class="mb-4 fw-bold border-bottom pb-2">📅 Today’s Showtimes</h2>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped shadow-sm">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Movie</th>
+                            <th>Cinema</th>
+                            <th>Hall</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.TodayShowtimes.Any())
+                        {
+                            @foreach (var show in Model.TodayShowtimes)
+                            {
+                                <tr data-aos="fade-up">
+                                    <td>@show.MovieTitle</td>
+                                    <td>@show.CinemaName</td>
+                                    <td>@show.HallName</td>
+                                    <td>@show.ShowDateTime.ToString("hh:mm tt")</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">No showtimes today</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Popular Categories -->
+        @if (Model.PopularCategories != null && Model.PopularCategories.Any())
         {
-            <tr>
-                <td>@st.MovieTitle</td>
-                <td>@st.CinemaName</td>
-                <td>@st.HallName</td>
-                <td>@st.ShowDateTime.ToString("HH:mm")</td>
-                <td>@st.Price.ToString("C")</td>
-            </tr>
+            <section class="mb-5">
+                <h2 class="mb-4 fw-bold border-bottom pb-2">🔥 Popular Categories</h2>
+                <div class="d-flex flex-wrap gap-2" data-aos="fade-up">
+                    @foreach (var category in Model.PopularCategories)
+                    {
+                        <span class="badge bg-info text-dark p-3 category-badge">
+                            @category.Name (@category.MovieCount)
+                        </span>
+                    }
+                </div>
+            </section>
         }
-    </tbody>
-</table>
+
+        <!-- Stats Footer with Counters -->
+        <footer class="stats-footer bg-dark text-white text-center py-5 mt-5 rounded shadow-lg" data-aos="fade-up">
+            <div class="row">
+                <div class="col">
+                    <h5>Total Movies</h5>
+                    <p class="fw-bold counter" data-count="@Model.TotalMovies">0</p>
+                </div>
+                <div class="col">
+                    <h5>Now Showing</h5>
+                    <p class="fw-bold counter" data-count="@Model.TotalNowShowing">0</p>
+                </div>
+                <div class="col">
+                    <h5>Upcoming</h5>
+                    <p class="fw-bold counter" data-count="@Model.TotalUpcoming">0</p>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+</div>
+
+<!-- Custom Styles -->
+<style>
+    .hero-banner {
+        background: url('/images/cinema-bg.jpg') center/cover no-repeat;
+        min-height: 70vh;
+        position: relative;
+    }
+
+        .hero-banner .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+        }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .movie-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+        .movie-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+    .poster-wrapper {
+        overflow: hidden;
+    }
+
+        .poster-wrapper img {
+            height: 300px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+    .movie-card:hover img {
+        transform: scale(1.1);
+    }
+
+    .about-section {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    }
+
+    .category-badge {
+        font-size: 1.1rem;
+        transition: transform 0.3s ease, background 0.3s ease;
+    }
+
+        .category-badge:hover {
+            transform: scale(1.1);
+            background: #0dcaf0;
+            color: #fff;
+        }
+
+    .stats-footer h5 {
+        font-size: 1.2rem;
+    }
+
+    .stats-footer p {
+        font-size: 2rem;
+    }
+</style>
+
+<!-- Init Scripts -->
+<script>
+    AOS.init({
+        duration: 1000,
+        once: true
+    });
+
+    // Animated counters
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('.counter').forEach(function (el) {
+            const countTo = el.getAttribute('data-count');
+            const counter = new CountUp(el, countTo, { duration: 2 });
+            if (!counter.error) {
+                counter.start();
+            }
+        });
+    });
+</script>

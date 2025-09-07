@@ -6,28 +6,36 @@
     var selectedCategoryId = ViewBag.SelectedCategoryId as int? ?? 0;
 }
 
+<!-- Header -->
+<section class="page-header text-center text-white py-5 mb-4">
+    <div class="container">
+        <h1 class="fw-bold display-5">🎬 Browse Movies</h1>
+        <p class="lead">Filter, search, and discover your next favorite movie.</p>
+    </div>
+</section>
+
 <div class="container py-4">
+
+    <!-- Filter Form -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-4">
-        <h2 class="mb-0">🎬 @((selectedCategoryId > 0) ? (categories.FirstOrDefault(c => c.Id == selectedCategoryId)?.Name ?? "Category") : "All Movies")</h2>
+        <h2 class="mb-0">@(selectedCategoryId > 0 ? categories.FirstOrDefault(c => c.Id == selectedCategoryId)?.Name ?? "Category" : "All Movies")</h2>
 
         <form class="row g-2 align-items-center" method="get" asp-action="Index">
             <div class="col-auto">
-                <input name="SearchTerm" value="@filter.SearchTerm" class="form-control form-control-sm" placeholder="Search title, description or director" />
+                <input name="SearchTerm" value="@filter.SearchTerm" class="form-control form-control-sm" placeholder="🔍 Search movies..." />
             </div>
             <div class="col-auto">
                 <select name="categoryId" class="form-select form-select-sm">
                     <option value="0" selected="@(selectedCategoryId == 0)">All categories</option>
                     @foreach (var c in categories)
                     {
-                        <option value="@c.Id" selected="@(c.Id == selectedCategoryId)">
-                            @c.Name
-                        </option>
+                        <option value="@c.Id" selected="@(c.Id == selectedCategoryId)">@c.Name</option>
                     }
                 </select>
             </div>
             <div class="col-auto">
                 <select name="SortBy" class="form-select form-select-sm">
-                    <option value="releasedate" selected="@(string.IsNullOrEmpty(filter.SortBy) || filter.SortBy == "releasedate")">Release date</option>
+                    <option value="releasedate" selected="@(string.IsNullOrEmpty(filter.SortBy) || filter.SortBy == "releasedate")">Release Date</option>
                     <option value="title" selected="@(filter.SortBy == "title")">Title</option>
                     <option value="price" selected="@(filter.SortBy == "price")">Price</option>
                     <option value="duration" selected="@(filter.SortBy == "duration")">Duration</option>
@@ -47,16 +55,17 @@
                 </select>
             </div>
             <div class="col-auto">
-                <button class="btn btn-primary btn-sm">Apply</button>
+                <button class="btn btn-primary btn-sm shadow-sm">Apply</button>
             </div>
         </form>
     </div>
 
+    <!-- Movies Grid -->
     <div class="row g-4">
         @if (!Model.Any())
         {
             <div class="col-12">
-                <div class="alert alert-info">No movies found.</div>
+                <div class="alert alert-info text-center">No movies found 🎥</div>
             </div>
         }
         else
@@ -79,9 +88,7 @@
         <nav aria-label="Page navigation">
             <ul class="pagination mb-0">
                 <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
-                    <a class="page-link" href="@(Url.Action("Index", RouteValuesForPage(Model.PageIndex - 1, Model.PageSize, filter, selectedCategoryId)))" aria-label="Previous">
-                        ‹
-                    </a>
+                    <a class="page-link" href="@(Url.Action("Index", RouteValuesForPage(Model.PageIndex - 1, Model.PageSize, filter, selectedCategoryId)))" aria-label="Previous">‹</a>
                 </li>
 
                 @foreach (var p in Model.GetPageNumbers(7))
@@ -92,17 +99,59 @@
                 }
 
                 <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
-                    <a class="page-link" href="@(Url.Action("Index", RouteValuesForPage(Model.PageIndex + 1, Model.PageSize, filter, selectedCategoryId)))" aria-label="Next">
-                        ›
-                    </a>
+                    <a class="page-link" href="@(Url.Action("Index", RouteValuesForPage(Model.PageIndex + 1, Model.PageSize, filter, selectedCategoryId)))" aria-label="Next">›</a>
                 </li>
             </ul>
         </nav>
     </div>
 </div>
 
+<!-- Modal for Details -->
+<div class="modal fade" id="movieDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded shadow-lg">
+            <div class="modal-body text-center p-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3 text-muted">Loading movie details...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const modal = new bootstrap.Modal(document.getElementById("movieDetailsModal"));
+            const modalContent = document.querySelector("#movieDetailsModal .modal-content");
+
+            document.querySelectorAll(".view-details").forEach(btn => {
+                btn.addEventListener("click", function () {
+                    const url = this.getAttribute("data-url");
+
+                    modalContent.innerHTML = `
+                        <div class="modal-body text-center p-5">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p class="mt-3 text-muted">Loading movie details...</p>
+                        </div>
+                    `;
+                    modal.show();
+
+                    fetch(url)
+                        .then(r => r.text())
+                        .then(html => modalContent.innerHTML = html)
+                        .catch(err => {
+                            modalContent.innerHTML = `<div class="p-4 text-danger">⚠️ Error loading details.</div>`;
+                            console.error(err);
+                        });
+                });
+            });
+        });
+    </script>
+}
+
 @functions {
-    // helper to keep the querystring when building pager links
     private object RouteValuesForPage(int page, int pageSize, VoxTics.Models.ViewModels.BasePaginatedFilterVM filter, int categoryId)
     {
         var dict = new Dictionary<string, object?>
@@ -121,50 +170,33 @@
         return dict;
     }
 }
-<div class="modal fade" id="movieDetailsModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body text-center p-5">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-@section Scripts{
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const modal = new bootstrap.Modal(document.getElementById("movieDetailsModal"));
-            const modalContent = document.querySelector("#movieDetailsModal .modal-content");
 
-            document.querySelectorAll(".view-details").forEach(btn => {
-                btn.addEventListener("click", function () {
-                    const url = this.getAttribute("data-url");
+<!-- Custom Styles -->
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #1f1c2c, #928dab);
+    }
 
-                    // Show loader
-                    modalContent.innerHTML = `
-                        <div class="modal-body text-center p-5">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                        </div>
-                    `;
-                    modal.show();
+    .movie-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 12px;
+        overflow: hidden;
+    }
 
-                    // Load partial content
-                    fetch(url)
-                        .then(response => response.text())
-                        .then(html => {
-                            modalContent.innerHTML = html;
-                        })
-                        .catch(err => {
-                            modalContent.innerHTML = `<div class="p-4 text-danger">Error loading details.</div>`;
-                            console.error(err);
-                        });
-                });
-            });
-        });
-    </script>
+        .movie-card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
 
-}
+    .pagination .page-link {
+        border-radius: 8px;
+        margin: 0 3px;
+        transition: background 0.3s ease;
+    }
+
+    .pagination .page-item.active .page-link {
+        background: #0d6efd;
+        border-color: #0d6efd;
+        color: #fff;
+    }
+</style>
