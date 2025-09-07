@@ -138,56 +138,64 @@ namespace VoxTics.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, MovieViewModel viewModel)
         {
-            if (id != viewModel.Id) return BadRequest();
+            if (id != viewModel.Id)
+                return BadRequest();
 
             if (!ModelState.IsValid)
             {
                 await PopulateCategoriesAsync(viewModel);
-                return PartialView("_MovieForm", viewModel);
+                // return full view (not partial), so validation messages show correctly
+                return View(viewModel);
             }
 
             var existing = await _movieRepository.GetByIdAsync(id);
-            if (existing == null) return NotFound();
+            if (existing == null)
+                return NotFound();
 
-            if (!await _movie_repository_title_unique(viewModel.Title, id))
+            // check for duplicate title
+            if (!await _movieRepository.IsMovieTitleUniqueAsync(viewModel.Title, id))
             {
                 ModelState.AddModelError(nameof(viewModel.Title), "A movie with this title already exists.");
                 await PopulateCategoriesAsync(viewModel);
-                return PartialView("_MovieForm", viewModel);
+                return View(viewModel);
             }
 
-            // Map (AutoMapper configured to not overwrite with nulls via profile)
+            // Map fields using AutoMapper
             _mapper.Map(viewModel, existing);
 
-            // safeguard: preserve non-null DB columns if VM sent empty/whitespace
+            // safeguard: keep DB values if viewmodel sends empty/whitespace
             existing.Director = string.IsNullOrWhiteSpace(viewModel.Director) ? existing.Director : viewModel.Director;
             existing.Language = string.IsNullOrWhiteSpace(viewModel.Language) ? existing.Language : viewModel.Language;
-            // preserve Rating and TrailerUrl properly (fixed typo)
             existing.TrailerUrl = string.IsNullOrWhiteSpace(viewModel.TrailerUrl) ? existing.TrailerUrl : viewModel.TrailerUrl;
 
+            // handle duration
             var durProp = existing.GetType().GetProperty("DurationMinutes");
-            if (durProp != null) durProp.SetValue(existing, viewModel.DurationInMinutes);
+            if (durProp != null)
+                durProp.SetValue(existing, viewModel.DurationInMinutes);
 
+            // handle poster image upload
             var oldImage = existing.ImageUrl;
             if (viewModel.PosterImageFile != null)
             {
                 var newPath = await SaveImageAsync(viewModel.PosterImageFile, "movies");
                 existing.ImageUrl = newPath;
+
                 if (!string.IsNullOrWhiteSpace(oldImage))
                     DeleteImage(oldImage);
             }
 
+            // audit fields
             existing.UpdatedAt = DateTime.UtcNow;
 
+            // save
             await _movieRepository.UpdateAsync(existing);
             await _movieRepository.SaveChangesAsync();
 
+            // update categories
             await UpdateMovieCategoriesAsync(id, viewModel.SelectedCategoryIds);
 
-            return Json(new { success = true, message = "Movie updated successfully" });
-
-            async Task<bool> _movie_repository_title_unique(string title, int? excludeId)
-                => await _movieRepository.IsMovieTitleUniqueAsync(title, excludeId);
+            // ✅ Redirect to Index (PRG pattern) instead of returning JSON
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Admin/Movies/Delete/5 -> confirmation partial
