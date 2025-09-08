@@ -1,4 +1,4 @@
-﻿MovieTickets/
+﻿VoxTics/
 ├─ Areas/
 │  └─ Admin/
 │     ├─ Controllers/

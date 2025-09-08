@@ -1,0 +1,27 @@
+﻿@model VoxTics.Areas.Admin.ViewModels.BookingViewModel
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-3">Booking Number</dt>
+        <dd class="col-sm-9">@Model.BookingNumber</dd>
+
+        <dt class="col-sm-3">User</dt>
+        <dd class="col-sm-9">@Model.UserFullName</dd>
+
+        <dt class="col-sm-3">Showtime</dt>
+        <dd class="col-sm-9">@((Model.ShowtimeMovieTitle ?? "[No movie]")) - @Model.ShowtimeStartTime?.ToString("g")</dd>
+
+        <dt class="col-sm-3">Seats</dt>
+        <dd class="col-sm-9">@Model.SeatNumbers</dd>
+
+        <dt class="col-sm-3">Total</dt>
+        <dd class="col-sm-9">@Model.TotalAmount.ToString("C")</dd>
+
+        <dt class="col-sm-3">Booked At</dt>
+        <dd class="col-sm-9">@Model.BookingDate.ToString("g")</dd>
+    </dl>
+
+    <div class="text-end">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    </div>
+</div>

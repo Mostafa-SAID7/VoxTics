@@ -1,5 +1,5 @@
-﻿add loader in layout
-MovieTickets/
+﻿
+VoxTics/
 ├─ Areas/
 │  └─ Admin/
 │     ├─ Controllers/

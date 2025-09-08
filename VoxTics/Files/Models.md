@@ -1,4 +1,4 @@
-﻿Areas/Admin/ViewModels/
+﻿VoxTics/Areas/Admin/ViewModels/
  ├─ BaseAdminVM.cs                 # يحتوي أي خصائص مشتركة بين كل Admin VMs
  ├─ BasePaginatedFilterVM.cs       # PageNumber, PageSize, SearchTerm, SortBy إلخ
  ├─ AdminDashboardVM.cs
