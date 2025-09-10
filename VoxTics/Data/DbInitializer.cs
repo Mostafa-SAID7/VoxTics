@@ -1,4 +1,7 @@
-﻿namespace VoxTics.Data
+﻿using VoxTics.Areas.Identity.Models.Entities;
+using VoxTics.Areas.Identity.Models.Enums;
+
+namespace VoxTics.Data
 {
     public static class DbInitializer
     {
@@ -183,40 +186,34 @@
 
         private static async Task SeedUsersAsync(MovieDbContext context)
         {
-            var users = new List<User>
+            var users = new List<ApplicationUser>
             {
-                new User
+                new ApplicationUser
                 {
-                    FirstName = "John",
-                    LastName = "Doe",
+                    Name = "John Doe",
                     Email = "john.doe@example.com",
                     PasswordHash = "AQAAAAEAACcQAAAAEH3QhLhFhBpz9Kpx8qHiuZs1kJ2sNFKJCyKGXUwNdU9u6Vp8IJ1aGk3K3wIZl4M5QQ==", // Password123!
                     PhoneNumber = "555-0001",
                     Role = UserRole.Customer,
                     IsActive = true,
-                    IsEmailConfirmed = true
                 },
-                new User
+                new ApplicationUser
                 {
-                    FirstName = "Jane",
-                    LastName = "Smith",
+                    Name = "Jane Smith",
                     Email = "jane.smith@example.com",
                     PasswordHash = "AQAAAAEAACcQAAAAEH3QhLhFhBpz9Kpx8qHiuZs1kJ2sNFKJCyKGXUwNdU9u6Vp8IJ1aGk3K3wIZl4M5QQ==", // Password123!
                     PhoneNumber = "555-0002",
                     Role = UserRole.Customer,
                     IsActive = true,
-                    IsEmailConfirmed = true
                 },
-                new User
+                new ApplicationUser
                 {
-                    FirstName = "Mike",
-                    LastName = "Manager",
+                    Name = "Mike Manager",
                     Email = "manager@cinema.com",
                     PasswordHash = "AQAAAAEAACcQAAAAEH3QhLhFhBpz9Kpx8qHiuZs1kJ2sNFKJCyKGXUwNdU9u6Vp8IJ1aGk3K3wIZl4M5QQ==", // Password123!
                     PhoneNumber = "555-0003",
                     Role = UserRole.Manager,
                     IsActive = true,
-                    IsEmailConfirmed = true
                 }
             };
 

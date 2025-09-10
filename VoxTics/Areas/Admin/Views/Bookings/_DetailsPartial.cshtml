@@ -6,10 +6,10 @@
         <dd class="col-sm-9">@Model.BookingNumber</dd>
 
         <dt class="col-sm-3">User</dt>
-        <dd class="col-sm-9">@Model.UserFullName</dd>
+        @* <dd class="col-sm-9">@Model.</dd> *@
 
         <dt class="col-sm-3">Showtime</dt>
-        <dd class="col-sm-9">@((Model.ShowtimeMovieTitle ?? "[No movie]")) - @Model.ShowtimeStartTime?.ToString("g")</dd>
+        @* <dd class="col-sm-9">@((Model.ShowtimeMovieTitle ?? "[No movie]")) - @Model.ShowtimeStartTime?.ToString("g")</dd> *@
 
         <dt class="col-sm-3">Seats</dt>
         <dd class="col-sm-9">@Model.SeatNumbers</dd>

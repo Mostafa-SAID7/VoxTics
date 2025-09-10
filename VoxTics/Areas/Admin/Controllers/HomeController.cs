@@ -7,8 +7,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using VoxTics.Areas.Admin.ViewModels;
 using VoxTics.Models.Enums;
-using VoxTics.Repositories.Implementations;
-using VoxTics.Repositories.Interfaces;
+using VoxTics.Areas.Admin.Repositories.IRepositories;
+using VoxTics.Areas.Identity.Repositories.IRepositories;
+using VoxTics.Areas.Identity.Models.ViewModels;
+using VoxTics.Areas.Admin.ViewModels.Movie;
 
 namespace VoxTics.Areas.Admin.Controllers
 {
@@ -71,7 +73,7 @@ namespace VoxTics.Areas.Admin.Controllers
 
                 // Movies by status
                 vm.UpcomingMovies = await _movieRepository.GetMovieCountByStatusAsync(MovieStatus.Upcoming);
-                vm.EndedMovies = await _movieRepository.GetMovieCountByStatusAsync(MovieStatus.EndedShowing);
+                vm.EndedMovies = await _movieRepository.GetMovieCountByStatusAsync(MovieStatus.Ended);
 
                 // Bookings by status
                 vm.PendingBookings = await _bookingRepository.GetBookingCountByStatusAsync(BookingStatus.Pending);
@@ -123,7 +125,7 @@ namespace VoxTics.Areas.Admin.Controllers
                 {
                     [MovieStatus.Upcoming] = vm.UpcomingMovies,
                     [MovieStatus.NowShowing] = vm.NowShowingMovies,
-                    [MovieStatus.EndedShowing] = vm.EndedMovies
+                    [MovieStatus.Ended] = vm.EndedMovies
                 };
 
                 vm.BookingsByStatus = new Dictionary<BookingStatus, int>

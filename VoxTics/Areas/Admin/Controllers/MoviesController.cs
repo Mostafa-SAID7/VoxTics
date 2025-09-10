@@ -9,9 +9,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using VoxTics.Areas.Admin.Repositories.IRepositories;
 using VoxTics.Areas.Admin.ViewModels;
+using VoxTics.Areas.Admin.ViewModels.Movie;
 using VoxTics.Models.Entities;
-using VoxTics.Repositories.Interfaces;
 
 namespace VoxTics.Areas.Admin.Controllers
 {

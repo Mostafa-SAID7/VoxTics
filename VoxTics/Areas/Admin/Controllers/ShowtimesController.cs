@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using VoxTics.Areas.Admin.ViewModels;
 using VoxTics.Models.Entities;
-using VoxTics.Models.Enums;
 using VoxTics.Models.ViewModels;
-using VoxTics.Repositories.Interfaces;
 using AutoMapper;
 using System.Collections.Generic;
+using VoxTics.Models.Enums.Sorting;
+using VoxTics.Areas.Admin.Repositories.IRepositories;
 
 namespace VoxTics.Areas.Admin.Controllers
 {

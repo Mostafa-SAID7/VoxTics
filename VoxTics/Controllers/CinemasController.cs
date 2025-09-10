@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VoxTics.Areas.Admin.Repositories.IRepositories;
 using VoxTics.Models.Entities;
 using VoxTics.Models.ViewModels;
-using VoxTics.Repositories.Interfaces;
 
 namespace VoxTics.Controllers
 {

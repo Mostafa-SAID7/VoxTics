@@ -12,7 +12,6 @@
 			MovieListItemViewModel
 │        └─ MovieCategoryViewModel.cs
 			MovieImgViewModel.cs
-│        └─ MovieViewModel.cs
 		views/
 			Home/
 					AdminDashboard.cshtml
@@ -23,7 +22,7 @@
 					_Create.cshtml as modal
 					_Edit.cshtml as modal
 					_Delete.cshtml as modal
-					_DetailsPartial
+					_Details.cshtml
 			shared/
 				_AdminLayout.cshtml
 				add scripts lib+ styles lib like animation.css +sweetalert2 +toastr +bootstrap +jquery +bt icons+ jquery validation +ajax
@@ -42,7 +41,7 @@
  ├─ PaginatedList.cs
  ├─ SearchHelper.cs
  └─ ValidationHelpers.cs
-	IFileService.cs
+	ImageHelper.cs
 Models/
 	Entities/
 		BaseEntity
@@ -54,19 +53,18 @@ Models/
 	Enums/
 		MovieSortBy
 		SortOrder
-		TimeRange
 		MovieStatus
 ├─ MappingProfiles/
+      BaseProfile.cs
 │  └─ MovieProfile.cs               # AutoMapper profile
 ├─ Repositories or Services/
 │  ├─ Interfaces/
 		 IBaseRepository.cs					
 		 save changes method to commit changes to the database +
-		│  │  ├─ IMovieRepository.cs
+│  │  ├─ IMovieRepository.cs
 │  └─ Implementations/
 		 BaseRepository.cs
 │     ├─ MovieRepository.cs
-	  ServiceCollectionExtensions.cs(For collect all services in one class + Mapper)
 ├── Utility
 │   └── SD.cs                # Static details (constants, roles, etc.)
 ├─ wwwroot/
@@ -84,6 +82,7 @@ Models/
 └─ Program.cs
 	appsettings
 └── GlobalUsings.cs
+    ServiceCollectionExtensions.cs(For collect all services in one class + Mapper)
 
 when movie model 
 
@@ -163,38 +162,37 @@ namespace VoxTics.Models.Entities
            ┌───────────────────┴───────────────────┐
            │                                       │
    ┌───────▼────────┐                     ┌────────▼─────────┐
-   │  IBaseRepository│                     │ Movie-specific   │
-   │      CRUD       │                     │    Methods       │
-   └───────┬────────┘                     └────────┬─────────┘
-           │                                       │
- ┌─────────┴─────────┐          ┌─────────────────┴─────────────────┐
- │ GetByIdAsync(id)  │          │ GetMovieCountByStatusAsync(status) │
- │ GetAllAsync(term) │          │ GetMoviesForAdminAsync(includeDel)│
- │ AddAsync(entity)  │          │ GetFeaturedMoviesAsync(take)      │
- │ UpdateAsync(entity)│         │ GetAllWithIncludesAsync(includeDel)│
- │ DeleteAsync(id)   │          │ GetPagedMoviesAsync(search,sort,...) │
- │ DeleteAsync(entity)│         │ GetAllCategories()                 │
- └─────────┬─────────┘          └─────────────────┬─────────────────┘
-           │                                       │
+   │  IBaseRepository│                     │ Movie-specific   │             Services\
+   │      CRUD       │                     │    Methods       │                 MovieService.cs
+   └───────┬────────┘                     └────────┬─────────┘              
+           │                                       │                        Helpers\
+ ┌─────────┴─────────┐          ┌─────────────────┴─────────────────┐           PaginatedList
+ │ GetByIdAsync(id)  │          │ GetMovieCountByStatusAsync(status)│           SearchHelper
+ │ GetAllAsync(term) │          │ GetMoviesForAdminAsync(includeDel)│           ImageHelper
+ │ AddAsync(entity)  │          │ GetFeaturedMoviesAsync(take)      │           FilterBase
+ │ UpdateAsync(entity)│         │ GetAllWithIncludesAsync(includeDel)   │       ValidationHelpers
+ │ DeleteAsync(id)   │          │ GetPagedMoviesAsync(search,sort,...)  │
+ │ DeleteAsync(entity)│         │ GetAllCategories()                    │   MappingProfiles\
+ └─────────┬─────────┘          └─────────────────┬─────────────────┘           BaseProfile
+           │                                       │                            MovieProfile
            ▼                                       ▼
-   ┌──────────────┐                       ┌───────────────┐
-   │ Query(),      │                       │ IncludeOps    │
-   │ FindAsync(...)│                       │ GetByIdWithIncludesAsync(...) │
-   │ FirstOrDefault│                       │ FindWithIncludesAsync(...)   │
-   └──────────────┘                       └───────────────┘
-           │                                       │
-           ▼                                       ▼
-   ┌──────────────┐                       ┌───────────────┐
-   │ CountAsync() │                       │ BulkOps       │
-   │ ExistsAsync()│                       │ AddRangeAsync │
-   └──────────────┘                       │ UpdateRangeAsync │
-                                          │ DeleteRangeAsync │
-                                          │ Update(entity)   │
-                                          │ Remove(entity)   │
-                                          │ SaveChangesAsync │
-                                          └───────────────┘
-folder used
-Mapping
-Services => movie
-Helper
-Repos
+   ┌──────────────┐                       ┌───────────────┐                 models\
+   │ Query(),      │                       │ IncludeOps    │                    Movie.cs
+   │ FindAsync(...)│                       │ GetByIdWithIncludesAsync(...) │    MovieImg.cs    
+   │ FirstOrDefault│                       │ FindWithIncludesAsync(...)   │     MovieCategory.cs
+   └──────────────┘                       └───────────────┘                     MovieActor.cs
+           │                                       │                            BaseEntity.cs
+           ▼                                       ▼                            IAuditable.cs
+   ┌──────────────┐                       ┌───────────────┐                  Enums\
+   │ CountAsync() │                       │ BulkOps       │                      MovieStatus.cs   
+   │ ExistsAsync()│                       │ AddRangeAsync │                      SortOrder.cs
+   └──────────────┘                       │ UpdateRangeAsync │                   MovieSortBy.cs
+                                          │ DeleteRangeAsync │                   PageSize.cs
+                                           │ Update(entity)   │                  SearchOptions.cs
+                                          │ Remove(entity)   │   Area\Admin\ViewModels\
+                                          │ SaveChangesAsync │                   MovieCreateEditViewModel.cs
+                                          └───────────────┘                      MovieListItemViewModel.cs
+                                                                                 MovieCategoryViewModel.cs
+                                                                                 MovieActorViewModel.cs
+                                                                                 MovieImgViewModel.cs
+                                                                                 

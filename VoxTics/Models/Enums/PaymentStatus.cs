@@ -9,12 +9,13 @@ namespace VoxTics.Models.Enums
         [Description("Payment is being processed")]
         Pending = 0,
 
+        [Display(Name = "Processing")]
+        [Description("Payment is in progress")]
+        Processing = 1,
+
         [Display(Name = "Completed")]
         [Description("Payment has been completed successfully")]
-        Completed = 1,
-
-        [Display(Name = "Processing")]
-        Processing = 2,
+        Completed = 2,
 
         [Display(Name = "Failed")]
         [Description("Payment has failed")]
@@ -24,4 +25,5 @@ namespace VoxTics.Models.Enums
         [Description("Payment has been refunded")]
         Refunded = 4
     }
+
 }

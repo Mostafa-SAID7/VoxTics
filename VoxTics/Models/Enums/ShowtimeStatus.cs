@@ -23,10 +23,6 @@ namespace VoxTics.Models.Enums
 
         [Display(Name = "Postponed")]
         [Description("Showtime has been postponed")]
-        Postponed = 4,
-
-        [Display(Name = "Sold Out")]
-        [Description("All tickets have been sold")]
-        SoldOut = 5
+        Postponed = 4
     }
 }

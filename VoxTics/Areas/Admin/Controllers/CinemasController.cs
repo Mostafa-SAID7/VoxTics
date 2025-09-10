@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using VoxTics.Areas.Admin.Repositories.IRepositories;
 using VoxTics.Areas.Admin.ViewModels;
 using VoxTics.Models.Entities;
-using VoxTics.Repositories.Interfaces;
 
 namespace VoxTics.Areas.Admin.Controllers
 {

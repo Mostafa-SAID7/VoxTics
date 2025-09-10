@@ -20,7 +20,9 @@ namespace VoxTics.Models.Enums
         [Display(Name = "Disabled Access")]
         [Description("Seat accessible for disabled persons")]
         DisabledAccess = 3,
+
         [Display(Name = "Couple Seat")]
+        [Description("Seat for couples")]
         CoupleSeat = 4
     }
 }

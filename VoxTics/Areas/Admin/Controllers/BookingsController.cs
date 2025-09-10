@@ -4,9 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using VoxTics.Areas.Admin.ViewModels;
 using VoxTics.Models.Entities;
-using VoxTics.Models.Enums;
 using VoxTics.Models.ViewModels;
-using VoxTics.Repositories.Interfaces;
+using VoxTics.Models.Enums.Sorting;
+using VoxTics.Areas.Admin.Repositories.IRepositories;
+using VoxTics.Areas.Identity.Repositories.IRepositories;
 
 namespace VoxTics.Areas.Admin.Controllers
 {

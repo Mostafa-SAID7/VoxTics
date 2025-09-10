@@ -1,4 +1,6 @@
-﻿@model VoxTics.Helpers.PaginatedList<VoxTics.Models.ViewModels.MovieVM>
+﻿@using VoxTics.Helpers
+@using VoxTics.Models.Enums
+@model VoxTics.Helpers.PaginatedList<VoxTics.Models.ViewModels.MovieVM>
 
 @{
     var filter = ViewBag.Filter as VoxTics.Models.ViewModels.BasePaginatedFilterVM ?? new VoxTics.Models.ViewModels.BasePaginatedFilterVM();
@@ -43,8 +45,6 @@
             </div>
             <div class="col-auto">
                 <select name="SortOrder" class="form-select form-select-sm">
-                    <option value="Desc" selected="@(filter.SortOrder == VoxTics.Models.Enums.SortOrder.Desc)">Desc</option>
-                    <option value="Asc" selected="@(filter.SortOrder == VoxTics.Models.Enums.SortOrder.Asc)">Asc</option>
                 </select>
             </div>
             <div class="col-auto">

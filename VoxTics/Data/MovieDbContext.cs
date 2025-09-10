@@ -1,11 +1,13 @@
 ﻿// Data/MovieDbContext.cs
 using Microsoft.EntityFrameworkCore;
+using VoxTics.Areas.Identity.Models.Entities;
+using VoxTics.Areas.Identity.Models.Enums;
 using VoxTics.Models.Entities;
-using VoxTics.Models.Enums;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace VoxTics.Data
 {
-    public class MovieDbContext : DbContext
+    public class MovieDbContext : IdentityDbContext<ApplicationUser>
     {
         public MovieDbContext(DbContextOptions<MovieDbContext> options) : base(options)
         {
@@ -24,14 +26,13 @@ namespace VoxTics.Data
         public DbSet<MovieImg> MovieImages { get; set; }
         public DbSet<Seat> Seats { get; set; }
         public DbSet<Showtime> Showtimes { get; set; }
-        public DbSet<User> Users { get; set; }
-
+        public DbSet<ApplicationUser> Users { get; set; }
+        public DbSet<UserOTP> UserOTPs { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             // Configure entity relationships and constraints
-            ConfigureUserEntity(modelBuilder);
             ConfigureCinemaEntity(modelBuilder);
             ConfigureHallEntity(modelBuilder);
             ConfigureSeatEntity(modelBuilder);
@@ -49,30 +50,7 @@ namespace VoxTics.Data
             SeedData(modelBuilder);
         }
 
-        private void ConfigureUserEntity(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<User>(entity =>
-            {
-                entity.Ignore(u => u.AvatarUrl);
-                entity.Ignore(u => u.BanReason);
-                entity.Ignore(u => u.DateOfBirth);
-                entity.Ignore(u => u.EmailConfirmationToken);
-                entity.Ignore(u => u.FirstName);
-                entity.Ignore(u => u.LastName);
-                entity.Ignore(u => u.LastLoginDate);
-                entity.Ignore(u => u.PhoneNumber);
-                entity.Ignore(u => u.PreferencesJson);
-                entity.Ignore(u => u.PasswordResetToken);
-                entity.Ignore(u => u.PasswordResetExpires);
-                entity.Ignore(u => u.IsEmailConfirmed);
-                entity.Ignore(u => u.IsActive);
-                entity.Ignore(u => u.IsBanned);
-                entity.Ignore(u => u.IsDeleted);
-                entity.Ignore(u => u.UpdatedAt);
-                entity.Ignore(u => u.Username);
-            });
-        }
-
+      
         private void ConfigureCinemaEntity(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Cinema>(entity =>
@@ -221,18 +199,14 @@ namespace VoxTics.Data
             );
 
             // Seed User Roles
-            modelBuilder.Entity<User>().HasData(
-                new User
+            modelBuilder.Entity<ApplicationUser>().HasData(
+                new ApplicationUser
                 {
-                    Id = 1,
-                    FirstName = "Admin",
-                    LastName = "User",
+                    Name = "Admin",
                     Email = "admin@cinema.com",
                     PasswordHash = "AQAAAAEAACcQAAAAEH3QhLhFhBpz9Kpx8qHiuZs1kJ2sNFKJCyKGXUwNdU9u6Vp8IJ1aGk3K3wIZl4M5QQ==", // Password123!
                     Role = UserRole.Admin,
                     IsActive = true,
-                    IsEmailConfirmed = true,
-                    CreatedAt = new DateTime(2025, 9, 7)
                 }
             );
 
@@ -303,34 +277,7 @@ namespace VoxTics.Data
             );
         }
 
-        public override int SaveChanges()
-        {
-            UpdateAuditFields();
-            return base.SaveChanges();
-        }
 
-        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            UpdateAuditFields();
-            return await base.SaveChangesAsync(cancellationToken);
-        }
-
-        private void UpdateAuditFields()
-        {
-            var entries = ChangeTracker.Entries<IAuditable>();
-
-            foreach (var entry in entries)
-            {
-                switch (entry.State)
-                {
-                    case EntityState.Added:
-                        entry.Entity.CreatedAt = new DateTime(2025, 9, 7);
-                        break;
-                    case EntityState.Modified:
-                        entry.Entity.UpdatedAt = new DateTime(2025, 9, 7);
-                        break;
-                }
-            }
-        }
+      
     }
 }

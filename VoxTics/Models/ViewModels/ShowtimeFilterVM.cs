@@ -1,5 +1,6 @@
 ﻿using System;
 using VoxTics.Models.Enums;
+using VoxTics.Models.Enums.TimeRange;
 
 namespace VoxTics.Models.ViewModels
 {

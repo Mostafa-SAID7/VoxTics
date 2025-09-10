@@ -76,7 +76,7 @@ namespace VoxTics.Models.ViewModels
         {
             MovieStatus.Upcoming => "badge bg-info",
             MovieStatus.NowShowing => "badge bg-success",
-            MovieStatus.EndedShowing => "badge bg-secondary",
+            MovieStatus.Ended => "badge bg-secondary",
             _ => "badge bg-secondary"
         };
 
@@ -84,7 +84,7 @@ namespace VoxTics.Models.ViewModels
         {
             MovieStatus.Upcoming => "bi bi-clock-history",
             MovieStatus.NowShowing => "bi bi-play-circle",
-            MovieStatus.EndedShowing => "bi bi-stop-circle",
+            MovieStatus.Ended => "bi bi-stop-circle",
             _ => "bi bi-question-circle"
         };
     }

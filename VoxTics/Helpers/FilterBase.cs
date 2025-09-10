@@ -9,7 +9,8 @@ namespace VoxTics.Helpers
     /// Generic filter base class to apply common filtering logic on any entity.
     /// Supports Id, Search term, Date range, and custom search function.
     /// </summary>
-    public class FilterBase<T>
+    public class FilterBase<TSortBy> where TSortBy : Enum
+
     {
         private static readonly ConcurrentDictionary<string, PropertyInfo?> PropertyCache = new();
 
@@ -19,7 +20,7 @@ namespace VoxTics.Helpers
         public DateTime? ToDate { get; set; }
         public string DatePropertyName { get; set; } = "CreatedAt"; // default property for date filtering
 
-        public IQueryable<T> Apply(IQueryable<T> query, Func<IQueryable<T>, string?, IQueryable<T>>? searchFunc = null)
+        public IQueryable<TSortBy> Apply(IQueryable<TSortBy> query, Func<IQueryable<TSortBy>, string?, IQueryable<TSortBy>>? searchFunc = null)
         {
             // Filter by Id
             if (Id.HasValue)
@@ -54,15 +55,15 @@ namespace VoxTics.Helpers
         }
 
         // Default search: search all string properties
-        private IQueryable<T> DefaultStringSearch(IQueryable<T> query, string searchTerm)
+        private IQueryable<TSortBy> DefaultStringSearch(IQueryable<TSortBy> query, string searchTerm)
         {
-            var stringProps = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            var stringProps = typeof(TSortBy).GetProperties(BindingFlags.Public | BindingFlags.Instance)
                                        .Where(p => p.PropertyType == typeof(string));
 
             foreach (var prop in stringProps)
             {
                 query = query.Where(x =>
-                    ((string?)prop.GetValue(x)) != null &&
+                    (string?)prop.GetValue(x) != null &&
                     ((string?)prop.GetValue(x))!.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
                 );
             }
@@ -74,7 +75,7 @@ namespace VoxTics.Helpers
         private static PropertyInfo? GetPropertyCached(string propertyName)
         {
             return PropertyCache.GetOrAdd(propertyName, name =>
-                typeof(T).GetProperty(name, BindingFlags.Public | BindingFlags.Instance));
+                typeof(TSortBy).GetProperty(name, BindingFlags.Public | BindingFlags.Instance));
         }
     }
 }

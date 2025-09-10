@@ -8,6 +8,7 @@ using VoxTics.Data;
 using VoxTics.Models.ViewModels;
 using VoxTics.Helpers; // for PaginatedList<T>
 using System.Collections.Generic;
+using VoxTics.Models.Enums.Sorting;
 
 namespace VoxTics.Controllers
 {
@@ -33,7 +34,7 @@ namespace VoxTics.Controllers
                 var pageSize = filter?.PageSize ?? 12;
                 var search = filter?.SearchTerm?.Trim();
                 var sortBy = (filter?.SortBy ?? "releasedate").ToLowerInvariant();
-                var sortOrder = filter?.SortOrder ?? Models.Enums.SortOrder.Desc;
+                var sortOrder = filter?.SortOrder ?? SortOrder.Desc;
 
                 // base query with includes
                 var query = _context.Movies
@@ -66,7 +67,7 @@ namespace VoxTics.Controllers
 
                 // sorting
                 IOrderedQueryable<Models.Entities.Movie> orderedQuery;
-                bool desc = sortOrder == Models.Enums.SortOrder.Desc;
+                bool desc = sortOrder == SortOrder.Desc;
 
                 switch (sortBy)
                 {

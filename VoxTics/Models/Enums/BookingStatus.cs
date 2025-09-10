@@ -13,19 +13,20 @@ namespace VoxTics.Models.Enums
         [Description("Booking has been confirmed")]
         Confirmed = 1,
 
-        [Display(Name = "Cancelled")]
-        [Description("Booking has been cancelled")]
-        Cancelled = 2,
-
-        [Display(Name = "Rejected")]
-        Rejected = 5,
-
         [Display(Name = "Completed")]
         [Description("Movie show has been completed")]
-        Completed = 3,
+        Completed = 2,
+
+        [Display(Name = "Cancelled")]
+        [Description("Booking has been cancelled")]
+        Cancelled = 3,
+
+        [Display(Name = "Rejected")]
+        [Description("Booking has been rejected")]
+        Rejected = 4,
 
         [Display(Name = "No Show")]
         [Description("Customer did not show up")]
-        NoShow = 4
+        NoShow = 5
     }
 }

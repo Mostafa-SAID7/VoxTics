@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using VoxTics.Areas.Admin.ViewModels.Movie;
+using VoxTics.Areas.Identity.Models.ViewModels;
 using VoxTics.Models.Enums;
 
 namespace VoxTics.Areas.Admin.ViewModels

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using VoxTics.Models.Enums;
+using VoxTics.Models.Enums.Sorting;
 
 namespace VoxTics.Models.ViewModels
 {
@@ -38,7 +38,7 @@ namespace VoxTics.Models.ViewModels
         {
             { MovieStatus.Upcoming, "Upcoming" },
             { MovieStatus.NowShowing, "Now Showing" },
-            { MovieStatus.EndedShowing, "Ended Showing" }
+            { MovieStatus.Ended, "Ended Showing" }
         };
 
         // Sort options for UI

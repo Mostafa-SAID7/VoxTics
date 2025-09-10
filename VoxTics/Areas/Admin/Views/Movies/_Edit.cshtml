@@ -1,4 +1,5 @@
-﻿@model VoxTics.Areas.Admin.ViewModels.MovieViewModel
+﻿@using VoxTics.Areas.Admin.ViewModels.Movie
+@model MovieViewModel
 
 <form id="movieForm" asp-action="Edit" asp-route-id="@Model.Id" enctype="multipart/form-data" method="post">
     @Html.AntiForgeryToken()

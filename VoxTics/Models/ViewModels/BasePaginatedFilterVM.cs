@@ -1,4 +1,5 @@
 ﻿using System;
+using VoxTics.Models.Enums.Sorting;
 
 namespace VoxTics.Models.ViewModels
 {

@@ -1,25 +1,37 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using VoxTics;
+using VoxTics.Areas.Admin.MappingProfiles;
+using VoxTics.Areas.Admin.Repositories;
+using VoxTics.Areas.Identity.Models.Entities;
 using VoxTics.Data;
-using VoxTics.MappingProfiles;
-using VoxTics.Repositories;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // --- Services -----------------------------
 
 // DbContext (SQL Server)
-builder.Services.AddDbContext<MovieDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<MovieDbContext>(option =>
+{
+    option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
 
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(option =>
+{
+    option.Password.RequireNonAlphanumeric = false;
+    option.Password.RequiredLength = 8;
+    option.User.RequireUniqueEmail = true;
+})
+    .AddEntityFrameworkStores<MovieDbContext>()
+    .AddDefaultTokenProviders();
 // MVC
 builder.Services.AddControllersWithViews()
    .AddJsonOptions(opt => {
         opt.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     }
     );
-
 // Repositories (extension method you created in VoxTics.Repositories)
 builder.Services.AddApplicationServices();
 
