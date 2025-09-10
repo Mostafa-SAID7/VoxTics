@@ -17,20 +17,15 @@ namespace VoxTics.Models.Entities
         [StringLength(200, ErrorMessage = "Alt text cannot exceed 200 characters")]
         public string? AltText { get; set; }
 
-        [Display(Name = "Primary Image")]
-        public bool IsPrimary { get; set; } = false;
-
+    
         [StringLength(100)]
         public string? Caption { get; set; }
 
-        [Display(Name = "Sort Order")]
-        public int SortOrder { get; set; } = 0;
+
 
         // Navigation property
         [ForeignKey("MovieId")]
         public virtual Movie Movie { get; set; } = null!;
 
-        // ✅ Optional: Social media links for promotion
-        public virtual ICollection<SocialMediaLink> SocialMediaLinks { get; set; } = new List<SocialMediaLink>();
     }
 }

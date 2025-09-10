@@ -62,7 +62,5 @@ namespace VoxTics.Models.Entities
         public virtual ICollection<Showtime> Showtimes { get; set; } = new List<Showtime>();
         public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
-        // ✅ Optional: Social media links for the movie
-        public virtual ICollection<SocialMediaLink> SocialMediaLinks { get; set; } = new List<SocialMediaLink>();
     }
 }

@@ -12,11 +12,6 @@ namespace VoxTics.Models.Entities
         [Required]
         public int ActorId { get; set; }
 
-        // Role details
-        [MaxLength(100)]
-        public string? RoleName { get; set; }
-
-        public bool IsMainRole { get; set; } = false;
 
         // Navigation properties
         [ForeignKey("MovieId")]
@@ -25,7 +20,5 @@ namespace VoxTics.Models.Entities
         [ForeignKey("ActorId")]
         public virtual Actor Actor { get; set; } = null!;
 
-        // ✅ Optional: Social media links for promotion
-        public virtual ICollection<SocialMediaLink> SocialMediaLinks { get; set; } = new List<SocialMediaLink>();
     }
 }

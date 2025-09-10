@@ -19,10 +19,6 @@ namespace VoxTics.Models.Entities
         [ForeignKey("CategoryId")]
         public virtual Category Category { get; set; } = null!;
 
-        // ✅ Optional: Additional properties for future use
-        // e.g., Featured flag, DisplayOrder
-        public bool IsFeatured { get; set; } = false;
-
-        public int DisplayOrder { get; set; } = 0;
+     
     }
 }

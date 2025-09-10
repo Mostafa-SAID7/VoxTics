@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
-using VoxTics.Areas.Admin.Repositories.IRepositories;
 using VoxTics.Areas.Admin.MappingProfiles;
+using VoxTics.Areas.Admin.Repositories.IRepositories;
+using VoxTics.Areas.Admin.Service.Implementations;
+using VoxTics.Areas.Admin.Services.Interfaces;
 using VoxTics.Areas.Identity.MappingProfiles;
 using VoxTics.Areas.Identity.Repositories;
 using VoxTics.Areas.Identity.Repositories.IRepositories;
@@ -15,9 +17,11 @@ namespace VoxTics
         {
             //Add services
             services.AddTransient<IEmailSender, EmailSender>();
-            
+
             // Repositories
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+            services.AddScoped<IMovieService, MovieService>();
             services.AddScoped<IMovieRepository, MovieRepository>();
             services.AddScoped<IBookingRepository, BookingRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
@@ -28,8 +32,9 @@ namespace VoxTics
             services.AddScoped<IUserRepository, UserRepository>();
             
             // Add AutoMapper
-            services.AddAutoMapper(cfg => { }, Assembly.GetExecutingAssembly());
             
+            services.AddAutoMapper(typeof(MovieProfile).Assembly);
+
             // Add Helpers 
 
             return services;

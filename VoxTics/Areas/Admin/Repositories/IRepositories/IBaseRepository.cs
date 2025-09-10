@@ -6,44 +6,37 @@ using VoxTics.Models.Entities;
 
 namespace VoxTics.Areas.Admin.Repositories.IRepositories
 {
-    public interface IBaseRepository<T> where T : BaseEntity
+    public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
-        // Basic CRUD Operations
-        Task<T?> GetByIdAsync(int id);
-        Task<IEnumerable<T>> GetAllAsync(string? searchTerm = null);
+        protected readonly MovieDbContext _ctx;
+        protected readonly DbSet<T> _dbSet;
 
-        Task<T> AddAsync(T entity);
-        Task<T> UpdateAsync(T entity);
-        Task DeleteAsync(int id);
-        Task DeleteAsync(T entity);
+        public BaseRepository(MovieDbContext ctx)
+        {
+            _ctx = ctx;
+            _dbSet = ctx.Set<T>();
+        }
 
-        // Query Operations
-        IQueryable<T> Query(); // Add this
-     
-        Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
-        Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
-        Task<IEnumerable<T>> GetPagedAsync(int pageNumber, int pageSize);
-        Task<IEnumerable<T>> GetPagedAsync(int pageNumber, int pageSize, Expression<Func<T, bool>> predicate);
+        public IQueryable<T> GetAll(bool asNoTracking = true)
+        {
+            return asNoTracking ? _dbSet.AsNoTracking() : _dbSet;
+        }
 
-        // Count Operations
-        Task<int> CountAsync();
-        Task<int> CountAsync(Expression<Func<T, bool>> predicate);
+        public async Task<T?> GetByIdAsync(int id)
+        {
+            // assumes single-key named Id; override in specific repo if necessary
+            return await _dbSet.FindAsync(id);
+        }
 
-        // Existence Check
-        Task<bool> ExistsAsync(int id);
-        Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate);
+        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbSet.Where(predicate).ToListAsync();
+        }
 
-        // Include Operations
-        Task<T?> GetByIdWithIncludesAsync(int id, params Expression<Func<T, object>>[] includes);
-        Task<IEnumerable<T>> GetAllWithIncludesAsync(params Expression<Func<T, object>>[] includes);
-        Task<IEnumerable<T>> FindWithIncludesAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes);
-
-        // Bulk Operations
-        Task AddRangeAsync(IEnumerable<T> entities);
-        Task UpdateRangeAsync(IEnumerable<T> entities);
-        Task DeleteRangeAsync(IEnumerable<T> entities);
-
-        // Save Changes
-        Task<int> SaveChangesAsync();
+        public void Add(T entity) => _dbSet.Add(entity);
+        public void AddRange(IEnumerable<T> entities) => _dbSet.AddRange(entities);
+        public void Update(T entity) => _dbSet.Update(entity);
+        public void Remove(T entity) => _dbSet.Remove(entity);
+        public void RemoveRange(IEnumerable<T> entities) => _dbSet.RemoveRange(entities);
     }
 }
