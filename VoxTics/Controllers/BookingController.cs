@@ -7,11 +7,10 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VoxTics.Areas.Admin.Repositories.IRepositories;
 using VoxTics.Areas.Admin.ViewModels; // BookingViewModel (for admin usages) - optional
-using VoxTics.Areas.Identity.Repositories.IRepositories;
 using VoxTics.Models.Entities;
-using VoxTics.Models.ViewModels; // BookingVM
+using VoxTics.Models.ViewModels;
+using VoxTics.Repositories.IRepositories; // BookingVM
 
 namespace VoxTics.Controllers
 {

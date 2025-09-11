@@ -10,7 +10,7 @@ using VoxTics.Models.ViewModels;
 using AutoMapper;
 using System.Collections.Generic;
 using VoxTics.Models.Enums.Sorting;
-using VoxTics.Areas.Admin.Repositories.IRepositories;
+using VoxTics.Repositories.IRepositories;
 
 namespace VoxTics.Areas.Admin.Controllers
 {

@@ -7,10 +7,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using VoxTics.Areas.Admin.ViewModels;
 using VoxTics.Models.Enums;
-using VoxTics.Areas.Admin.Repositories.IRepositories;
-using VoxTics.Areas.Identity.Repositories.IRepositories;
 using VoxTics.Areas.Identity.Models.ViewModels;
 using VoxTics.Areas.Admin.ViewModels.Movie;
+using VoxTics.Repositories.IRepositories;
 
 namespace VoxTics.Areas.Admin.Controllers
 {

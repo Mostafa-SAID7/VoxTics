@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="15.0.1" />
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="Microsoft.AspNet.Identity.Core.cs" Version="2.2.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="9.0.9" />
@@ -25,8 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Identity\Services\Implementations\" />
-    <Folder Include="Areas\Identity\Services\Interfaces\" />
     <Folder Include="wwwroot\lib\animate.css\" />
     <Folder Include="wwwroot\lib\sweetalert2\" />
     <Folder Include="wwwroot\lib\toastr\" />

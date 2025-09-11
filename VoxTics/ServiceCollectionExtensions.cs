@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
-using VoxTics.Areas.Admin.MappingProfiles;
-using VoxTics.Areas.Admin.Repositories.IRepositories;
-using VoxTics.Areas.Admin.Service.Implementations;
-using VoxTics.Areas.Admin.Services.Interfaces;
 using VoxTics.Areas.Identity.MappingProfiles;
-using VoxTics.Areas.Identity.Repositories;
-using VoxTics.Areas.Identity.Repositories.IRepositories;
+using VoxTics.MappingProfiles;
+using VoxTics.Repositories;
+using VoxTics.Repositories.IRepositories;
+using VoxTics.Services.Implementations;
+using VoxTics.Services.Interfaces;
 
 namespace VoxTics
 {
