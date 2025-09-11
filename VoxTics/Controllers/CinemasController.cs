@@ -33,25 +33,9 @@ namespace VoxTics.Controllers
             {
                 IEnumerable<Cinema> cinemas;
 
-                if (!string.IsNullOrWhiteSpace(searchTerm))
-                    cinemas = await _cinemaRepository.SearchCinemasAsync(searchTerm);
-                else
-                    cinemas = await _cinemaRepository.GetAllAsync();
-
-                var vms = cinemas.Select(c => new CinemaVM
-                {
-                    Id = c.Id,
-                    Name = c.Name,
-                    Description = c.Description,
-                    Location = c.Address,
-                    Email = c.Email,
-                    Phone = c.Phone,
-                    Website = c.Website,
-                    ImageUrl = c.ImageUrl,
-                    HallCount = c.Halls?.Count ?? 0
-                }).ToList();
-
-                return View(vms);
+             
+             
+                return View();
             }
             catch (Exception ex)
             {
@@ -64,53 +48,7 @@ namespace VoxTics.Controllers
         // GET: /Cinemas/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            try
-            {
-                var cinema = await _cinemaRepository.GetByIdWithIncludesAsync(
-                    id,
-                    c => c.Halls!,
-                    c => c.SocialMediaLinks!
-                );
-
-                if (cinema == null) return NotFound();
-
-                var upcomingShowtimes = await _showtimeRepository.GetUpcomingShowtimesAsync(id);
-
-                var vm = new CinemaVM
-                {
-                    Id = cinema.Id,
-                    Name = cinema.Name,
-                    Description = cinema.Description,
-                    Location = cinema.Address,
-                    Email = cinema.Email,
-                    Phone = cinema.Phone,
-                    Website = cinema.Website,
-                    ImageUrl = cinema.ImageUrl,
-                    HallCount = cinema.Halls?.Count ?? 0,
-                    SocialMediaLinks = cinema.SocialMediaLinks?
-                        .Select(sm => new SocialMediaLinkVM
-                        {
-                            Platform = sm.Platform,
-                            Url = sm.Url
-                        }).ToList() ?? new List<SocialMediaLinkVM>(),
-                    Showtimes = upcomingShowtimes.Select(st => new ShowtimeVM
-                    {
-                        Id = st.Id,
-                        ShowDateTime = st.StartTime,
-                        MovieTitle = st.Movie?.Title ?? "Unknown",
-                        HallName = st.Hall?.Name ?? "N/A",
-                        Price = st.Price
-                    }).ToList()
-                };
-
-                return View(vm);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading cinema {CinemaId}", id);
-                TempData["Error"] = "Unable to load cinema.";
-                return RedirectToAction(nameof(Index));
-            }
+          return View();
         }
     }
 }

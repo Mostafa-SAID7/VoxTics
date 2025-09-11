@@ -33,22 +33,13 @@ namespace VoxTics.Controllers
             {
                 IEnumerable<Category> categories;
 
-                if (!string.IsNullOrWhiteSpace(searchTerm))
-                    categories = await _categoryRepository.SearchAsync(searchTerm);
+                if (!string.IsNullOrWhiteSpace(searchTerm)) ;
                 else
                     categories = await _categoryRepository.GetAllAsync();
 
-                var withCounts = await _categoryRepository.GetAllWithMovieCountsAsync();
 
-                var vms = withCounts.Select(x => new CategoryVM
-                {
-                    Id = x.category.Id,
-                    Name = x.category.Name,
-                    Description = x.category.Description,
-                    MovieCount = x.movieCount
-                }).ToList();
 
-                return View(vms);
+                return View();
             }
             catch (Exception ex)
             {
@@ -94,22 +85,6 @@ namespace VoxTics.Controllers
             }
         }
 
-        // GET: /Categories/BySlug/action
-        [Route("categories/{slug}")]
-        public async Task<IActionResult> BySlug(string slug)
-        {
-            try
-            {
-                var category = await _categoryRepository.GetBySlugAsync(slug);
-                if (category == null) return NotFound();
-
-                return RedirectToAction(nameof(Details), new { id = category.Id });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading category by slug {Slug}", slug);
-                return RedirectToAction(nameof(Index));
-            }
-        }
+       
     }
 }

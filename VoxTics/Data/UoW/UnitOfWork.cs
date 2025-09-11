@@ -31,7 +31,5 @@ namespace VoxTics.Data.UoW
 
         public void Dispose() => _context.Dispose();
     }
-    public class UnitOfWork
-    {
-    }
+   
 }

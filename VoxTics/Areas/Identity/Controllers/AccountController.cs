@@ -1,11 +1,16 @@
 ﻿
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using VoxTics.Areas.Identity.Models.Entities;
 using VoxTics.Areas.Identity.Models.ViewModels;
-using Microsoft.AspNetCore.Mvc;
+using VoxTics.Repositories.IRepositories;
 using VoxTics.Utitlity;
-using Microsoft.AspNetCore.Identity.UI.Services;
-
 namespace VoxTics.Areas.Identity.Controllers
 
 {
@@ -15,9 +20,9 @@ namespace VoxTics.Areas.Identity.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _emailSender;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IRepository<UserOTP> _userOTP;
+        private readonly IBaseRepository<UserOTP> _userOTP;
 
-        public AccountController(UserManager<ApplicationUser> userManager, IEmailSender emailSender, SignInManager<ApplicationUser> signInManager, IRepository<UserOTP> userOTP)
+        public AccountController(UserManager<ApplicationUser> userManager, IEmailSender emailSender, SignInManager<ApplicationUser> signInManager, IBaseRepository<UserOTP> userOTP)
         {
             _userManager = userManager;
             _emailSender = emailSender;
@@ -216,7 +221,7 @@ namespace VoxTics.Areas.Identity.Controllers
 
             await _emailSender.SendEmailAsync(user.Email!, "Reset Your Account!", $"Use this OTP Number: <b>{OTPNumber}</b> to reset your account. Don't share it.");
 
-            await _userOTP.CreateAsync(new UserOTP()
+            await _userOTP.AddAsync(new UserOTP()
             {
                 ApplicationUserId = user.Id,
                 OTPNumber = OTPNumber.ToString(),
@@ -250,7 +255,7 @@ namespace VoxTics.Areas.Identity.Controllers
             if (user is null)
                 return NotFound();
 
-            var lstOTP = (await _userOTP.GetAsync(e => e.ApplicationUserId == confirmOTPVM.ApplicationUserId)).OrderBy(e=>e.Id).LastOrDefault();
+            var lstOTP = (await _userOTP.GetAllAsync(e => e.ApplicationUserId == confirmOTPVM.ApplicationUserId)).OrderBy(e=>e.Id).LastOrDefault();
 
             if (lstOTP is null)
                 return NotFound();
