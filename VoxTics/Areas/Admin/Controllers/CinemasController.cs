@@ -3,146 +3,68 @@ using Microsoft.AspNetCore.Mvc;
 using VoxTics.Areas.Admin.ViewModels;
 using VoxTics.Models.Entities;
 using VoxTics.Repositories.IRepositories;
+using VoxTics.Services.Interfaces;
 
 namespace VoxTics.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class CinemasController : Controller
     {
-        private readonly ICinemaRepository _cinemaRepo;
-        private readonly IMapper _mapper;
-        private readonly IWebHostEnvironment _env;
+        private readonly ICinemaService _cinemaService;
 
-        public CinemasController(ICinemaRepository cinemaRepo, IMapper mapper, IWebHostEnvironment env)
+        public CinemasController(ICinemaService cinemaService)
         {
-            _cinemaRepo = cinemaRepo;
-            _mapper = mapper;
-            _env = env;
+            _cinemaService = cinemaService;
         }
 
-        // GET: Admin/Cinemas
-        public async Task<IActionResult> Index()
-        {
-            var cinemas = await _cinemaRepo.GetAllAsync();
-            var vmList = _mapper.Map<List<CinemaViewModel>>(cinemas); // Map entities -> viewmodels
-            return View(vmList); // now the types match
-        }
+        public async Task<IActionResult> Index() =>
+            View(await _cinemaService.GetAllAsync());
 
-        // GET: Admin/Cinemas/Create
-        public IActionResult Create()
-        {
-            var vm = new CinemaViewModel();
-            return PartialView("_CinemaForm", vm);
-        }
-
-        // POST: Admin/Cinemas/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CinemaViewModel vm)
-        {
-            if (!ModelState.IsValid)
-                return PartialView("_CinemaForm", vm);
-
-            var entity = _mapper.Map<Cinema>(vm);
-
-            // handle upload
-            if (vm.ImageFile != null)
-            {
-                var fileName = await SaveImageAsync(vm.ImageFile);
-                entity.ImageUrl = $"/uploads/cinemas/{fileName}";
-            }
-
-            await _cinemaRepo.AddAsync(entity);
-
-            TempData["Success"] = "Cinema created successfully.";
-            return Json(new { success = true });
-        }
-
-        // GET: Admin/Cinemas/Edit/5
-        public async Task<IActionResult> Edit(int id)
-        {
-            var entity = await _cinemaRepo.GetByIdAsync(id);
-            if (entity == null) return NotFound();
-
-            var vm = _mapper.Map<CinemaViewModel>(entity);
-            return PartialView("_CinemaForm", vm);
-        }
-
-        // POST: Admin/Cinemas/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, CinemaViewModel vm)
-        {
-            if (!ModelState.IsValid)
-                return PartialView("_CinemaForm", vm);
-
-            var entity = await _cinemaRepo.GetByIdAsync(id);
-            if (entity == null) return NotFound();
-
-            _mapper.Map(vm, entity);
-
-            if (vm.ImageFile != null)
-            {
-                // delete old file
-                if (!string.IsNullOrEmpty(entity.ImageUrl))
-                {
-                    var oldPath = Path.Combine(_env.WebRootPath, entity.ImageUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
-                    if (System.IO.File.Exists(oldPath)) System.IO.File.Delete(oldPath);
-                }
-
-                var fileName = await SaveImageAsync(vm.ImageFile);
-                entity.ImageUrl = $"/uploads/cinemas/{fileName}";
-            }
-
-            await _cinemaRepo.UpdateAsync(entity);
-
-            TempData["Success"] = "Cinema updated successfully.";
-            return Json(new { success = true });
-        }
-
-        // POST: Admin/Cinemas/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var entity = await _cinemaRepo.GetByIdAsync(id);
-            if (entity == null) return Json(new { success = false, message = "Not found" });
-
-            if (!string.IsNullOrEmpty(entity.ImageUrl))
-            {
-                var oldPath = Path.Combine(_env.WebRootPath, entity.ImageUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
-                if (System.IO.File.Exists(oldPath)) System.IO.File.Delete(oldPath);
-            }
-
-            await _cinemaRepo.DeleteAsync(id);
-
-            TempData["Success"] = "Cinema deleted.";
-            return Json(new { success = true });
-        }
-
-        // AJAX helper: quick details for modal
         public async Task<IActionResult> Details(int id)
         {
-            var entity = await _cinemaRepo.GetByIdAsync(id);
-            if (entity == null) return NotFound();
-            return PartialView("_DetailsPartial", entity);
+            var cinema = await _cinemaService.GetByIdAsync(id);
+            if (cinema == null) return NotFound();
+            return View(cinema);
         }
 
-        private async Task<string> SaveImageAsync(IFormFile file)
+        public IActionResult Create() => View();
+
+        [HttpPost]
+        public async Task<IActionResult> Create(Cinema cinema)
         {
-            var uploads = Path.Combine(_env.WebRootPath, "uploads", "cinemas");
-            if (!Directory.Exists(uploads)) Directory.CreateDirectory(uploads);
+            if (!ModelState.IsValid) return View(cinema);
+            await _cinemaService.CreateAsync(cinema);
+            return RedirectToAction(nameof(Index));
+        }
 
-            var ext = Path.GetExtension(file.FileName);
-            var filename = $"{Guid.NewGuid()}{ext}";
-            var filePath = Path.Combine(uploads, filename);
+        public async Task<IActionResult> Edit(int id)
+        {
+            var cinema = await _cinemaService.GetByIdAsync(id);
+            if (cinema == null) return NotFound();
+            return View(cinema);
+        }
 
-            using (var fs = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(fs);
-            }
+        [HttpPost]
+        public async Task<IActionResult> Edit(Cinema cinema)
+        {
+            if (!ModelState.IsValid) return View(cinema);
+            await _cinemaService.UpdateAsync(cinema);
+            return RedirectToAction(nameof(Index));
+        }
 
-            return filename;
+        public async Task<IActionResult> Delete(int id)
+        {
+            var cinema = await _cinemaService.GetByIdAsync(id);
+            if (cinema == null) return NotFound();
+            return View(cinema);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            await _cinemaService.DeleteAsync(id);
+            return RedirectToAction(nameof(Index));
         }
     }
+
 }

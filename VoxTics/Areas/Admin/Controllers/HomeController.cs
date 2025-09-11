@@ -16,20 +16,20 @@ namespace VoxTics.Areas.Admin.Controllers
     [Area("Admin")]
     public class HomeController : Controller
     {
-        private readonly IMovieRepository _movieRepository;
+        private readonly IMoviesRepository _movieRepository;
         private readonly IUserRepository _userRepository;
         private readonly IBookingRepository _bookingRepository;
-        private readonly ICategoryRepository _categoryRepository;
-        private readonly IShowtimeRepository _showtimeRepository;
+        private readonly ICategoriesRepository _categoryRepository;
+        private readonly IShowtimesRepository _showtimeRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<HomeController> _logger;
 
         public HomeController(
-    IMovieRepository movieRepository,
+    IMoviesRepository movieRepository,
     IUserRepository userRepository,
     IBookingRepository bookingRepository,
-    ICategoryRepository categoryRepository,
-    IShowtimeRepository showtimeRepository, 
+    ICategoriesRepository categoryRepository,
+    IShowtimesRepository showtimeRepository, 
     IMapper mapper,
     ILogger<HomeController> logger)
         {

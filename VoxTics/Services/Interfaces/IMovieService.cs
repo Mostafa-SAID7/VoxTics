@@ -6,10 +6,13 @@ namespace VoxTics.Services.Interfaces
 {
     public interface IMovieService
     {
-        Task<PagedResultVM<MovieListItemViewModel>> GetPagedAsync(MovieFilterVM filter);
-        Task<MovieDetailViewModel?> GetDetailsAsync(int id);
-        Task<int> CreateAsync(MovieCreateEditViewModel vm);
-        Task UpdateAsync(MovieCreateEditViewModel vm);
+        Task<IEnumerable<Movie>> GetAllAsync();
+        Task<Movie?> GetByIdAsync(int id);
+        Task<IEnumerable<Movie>> GetByCategoryAsync(int categoryId);
+        Task<IEnumerable<Movie>> GetUpcomingAsync(DateTime fromDate);
+        Task CreateAsync(Movie movie);
+        Task UpdateAsync(Movie movie);
         Task DeleteAsync(int id);
     }
+
 }

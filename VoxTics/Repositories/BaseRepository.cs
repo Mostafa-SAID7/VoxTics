@@ -1,24 +1,35 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using VoxTics.Areas.Admin.Repositories.IRepositories;
 using VoxTics.Data;
 using VoxTics.Models.Entities;
+using VoxTics.Repositories.IRepositories;
 
 namespace VoxTics.Repositories
 {
-    public interface IBaseRepository<T> where T : class
+    public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
-        IQueryable<T> GetAll(bool asNoTracking = true);
-        Task<T?> GetByIdAsync(int id);
-        Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
-        void Add(T entity);
-        void AddRange(IEnumerable<T> entities);
-        void Update(T entity);
-        void Remove(T entity);
-        void RemoveRange(IEnumerable<T> entities);
+        protected readonly MovieDbContext _context;
+        private readonly DbSet<T> _dbSet;
+
+        public BaseRepository(MovieDbContext context)
+        {
+            _context = context;
+            _dbSet = _context.Set<T>();
+        }
+
+        public async Task<IEnumerable<T>> GetAllAsync() => await _dbSet.ToListAsync();
+
+        public async Task<T?> GetByIdAsync(int id) => await _dbSet.FindAsync(id);
+
+        public async Task AddAsync(T entity) => await _dbSet.AddAsync(entity);
+
+        public void Update(T entity) => _dbSet.Update(entity);
+
+        public void Remove(T entity) => _dbSet.Remove(entity);
     }
+
 }

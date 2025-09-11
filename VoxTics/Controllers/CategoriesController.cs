@@ -12,13 +12,13 @@ namespace VoxTics.Controllers
 {
     public class CategoriesController : Controller
     {
-        private readonly ICategoryRepository _categoryRepository;
-        private readonly IMovieRepository _movieRepository;
+        private readonly ICategoriesRepository _categoryRepository;
+        private readonly IMoviesRepository _movieRepository;
         private readonly ILogger<CategoriesController> _logger;
 
         public CategoriesController(
-            ICategoryRepository categoryRepository,
-            IMovieRepository movieRepository,
+            ICategoriesRepository categoryRepository,
+            IMoviesRepository movieRepository,
             ILogger<CategoriesController> logger)
         {
             _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));

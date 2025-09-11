@@ -21,11 +21,11 @@ namespace VoxTics
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             services.AddScoped<IMovieService, MovieService>();
-            services.AddScoped<IMovieRepository, MovieRepository>();
-            services.AddScoped<IBookingRepository, BookingRepository>();
-            services.AddScoped<ICategoryRepository, CategoryRepository>();
-            services.AddScoped<ICinemaRepository, CinemaRepository>();
-            services.AddScoped<IShowtimeRepository, ShowtimeRepository>();
+            services.AddScoped<IMoviesRepository, MoviesRepository>();
+            services.AddScoped<IBookingRepository, BookingsRepository>();
+            services.AddScoped<ICategoriesRepository, CategoryRepository>();
+            services.AddScoped<ICinemasRepository, CinemasRepository>();
+            services.AddScoped<IShowtimesRepository, ShowtimesRepository>();
             
             // Repository for Identity
             services.AddScoped<IUserRepository, UserRepository>();

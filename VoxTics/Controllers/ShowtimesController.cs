@@ -10,15 +10,15 @@ namespace VoxTics.Controllers
 {
     public class ShowtimesController : Controller
     {
-        private readonly IShowtimeRepository _showtimeRepository;
-        private readonly IMovieRepository _movieRepository;
-        private readonly ICinemaRepository _cinemaRepository;
+        private readonly IShowtimesRepository _showtimeRepository;
+        private readonly IMoviesRepository _movieRepository;
+        private readonly ICinemasRepository _cinemaRepository;
         private readonly ILogger<ShowtimesController> _logger;
 
         public ShowtimesController(
-            IShowtimeRepository showtimeRepository,
-            IMovieRepository movieRepository,
-            ICinemaRepository cinemaRepository,
+            IShowtimesRepository showtimeRepository,
+            IMoviesRepository movieRepository,
+            ICinemasRepository cinemaRepository,
             ILogger<ShowtimesController> logger)
         {
             _showtimeRepository = showtimeRepository;

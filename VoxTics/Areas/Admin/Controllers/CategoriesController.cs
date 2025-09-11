@@ -3,85 +3,68 @@ using Microsoft.AspNetCore.Mvc;
 using VoxTics.Areas.Admin.ViewModels;
 using VoxTics.Models.Entities;
 using VoxTics.Repositories.IRepositories;
+using VoxTics.Services.Interfaces;
 
 namespace VoxTics.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class CategoriesController : Controller
     {
-        private readonly ICategoryRepository _categoryRepo;
-        private readonly IMapper _mapper;
+        private readonly ICategoryService _categoryService;
 
-        public CategoriesController(ICategoryRepository categoryRepo, IMapper mapper)
+        public CategoriesController(ICategoryService categoryService)
         {
-            _categoryRepo = categoryRepo;
-            _mapper = mapper;
+            _categoryService = categoryService;
         }
 
-        public async Task<IActionResult> Index(string? search)
+        public async Task<IActionResult> Index() =>
+            View(await _categoryService.GetAllAsync());
+
+        public async Task<IActionResult> Details(int id)
         {
-            var cats = await _categoryRepo.GetAllAsync();
-
-            if (!string.IsNullOrWhiteSpace(search))
-                cats = cats.Where(c => c.Name.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
-
-            var vm = cats.Select(c => _mapper.Map<CategoryViewModel>(c)).ToList();
-            return View(vm);
+            var category = await _categoryService.GetWithMoviesAsync(id);
+            if (category == null) return NotFound();
+            return View(category);
         }
 
-        public IActionResult Create() => PartialView("_CategoryForm", new CategoryViewModel());
+        public IActionResult Create() => View();
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CategoryViewModel vm)
+        public async Task<IActionResult> Create(Category category)
         {
-            if (!ModelState.IsValid) return PartialView("_CategoryForm", vm);
-
-            var category = _mapper.Map<Category>(vm);
-            await _categoryRepo.AddAsync(category);
-
-            return Json(new { success = true, message = "Category created successfully!" });
+            if (!ModelState.IsValid) return View(category);
+            await _categoryService.CreateAsync(category);
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var category = await _categoryRepo.GetByIdAsync(id);
+            var category = await _categoryService.GetByIdAsync(id);
             if (category == null) return NotFound();
-
-            var vm = _mapper.Map<CategoryViewModel>(category);
-            return PartialView("_CategoryForm", vm);
+            return View(category);
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(CategoryViewModel vm)
+        public async Task<IActionResult> Edit(Category category)
         {
-            if (!ModelState.IsValid) return PartialView("_CategoryForm", vm);
-
-            var cat = await _categoryRepo.GetByIdAsync(vm.Id);
-            if (cat == null) return NotFound();
-
-            _mapper.Map(vm, cat);
-            await _categoryRepo.UpdateAsync(cat);
-
-            return Json(new { success = true, message = "Category updated successfully!" });
+            if (!ModelState.IsValid) return View(category);
+            await _categoryService.UpdateAsync(category);
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var category = await _categoryRepo.GetByIdAsync(id);
+            var category = await _categoryService.GetByIdAsync(id);
             if (category == null) return NotFound();
-
-            var vm = _mapper.Map<CategoryViewModel>(category);
-            return PartialView("_Delete", vm);
+            return View(category);
         }
 
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _categoryRepo.DeleteAsync(id);
-            return Json(new { success = true, message = "Category deleted successfully!" });
+            await _categoryService.DeleteAsync(id);
+            return RedirectToAction(nameof(Index));
         }
     }
+
 }

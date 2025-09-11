@@ -9,10 +9,9 @@ using VoxTics.Repositories;
 
 namespace VoxTics.Repositories.IRepositories
 {
-    public interface IMovieRepository : IBaseRepository<Movie>
+    public interface IBookingsRepository : IBaseRepository<Booking>
     {
-        IQueryable<Movie> QueryWithIncludes(bool asNoTracking = true);
-        Task<Movie?> GetByIdWithDetailsAsync(int id);
-        Task<PaginatedList<Movie>> GetPagedAsync(MovieFilterVM filter);
+        Task<IEnumerable<Booking>> GetBookingsByUserIdAsync(string userId);
     }
+
 }

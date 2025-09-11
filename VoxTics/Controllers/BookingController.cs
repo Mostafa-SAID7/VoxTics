@@ -17,15 +17,15 @@ namespace VoxTics.Controllers
     [Authorize]
     public class BookingController : Controller
     {
-        private readonly IBookingRepository _bookingRepository;
-        private readonly IShowtimeRepository _showtimeRepository;
+        private readonly IBookingsRepository _bookingRepository;
+        private readonly IShowtimesRepository _showtimeRepository;
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<BookingController> _logger;
 
         public BookingController(
-            IBookingRepository bookingRepository,
-            IShowtimeRepository showtimeRepository,
+            IBookingsRepository bookingRepository,
+            IShowtimesRepository showtimeRepository,
             IUserRepository userRepository,
             IMapper mapper,
             ILogger<BookingController> logger)

@@ -1,165 +1,87 @@
 ﻿using AutoMapper;
-using VoxTics.Helpers;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using VoxTics.Areas.Admin.ViewModels;
+using VoxTics.Helpers;
 using VoxTics.Models.Entities;
-using VoxTics.Models.ViewModels;
 using VoxTics.Models.Enums.Sorting;
+using VoxTics.Models.ViewModels;
 using VoxTics.Repositories.IRepositories;
+using VoxTics.Services.Interfaces;
 
 namespace VoxTics.Areas.Admin.Controllers
 {
     [Area("Admin")]
+
     public class BookingsController : Controller
     {
-        private readonly IBookingRepository _bookingRepo;
-        private readonly IUserRepository _userRepo;
-        private readonly IShowtimeRepository _showtimeRepo;
-        private readonly IMapper _mapper;
+        private readonly IBookingService _bookingService;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public BookingsController(
-            IBookingRepository bookingRepo,
-            IUserRepository userRepo,
-            IShowtimeRepository showtimeRepo,
-            IMapper mapper)
+        public BookingsController(IBookingService bookingService, UserManager<IdentityUser> userManager)
         {
-            _bookingRepo = bookingRepo;
-            _userRepo = userRepo;
-            _showtimeRepo = showtimeRepo;
-            _mapper = mapper;
+            _bookingService = bookingService;
+            _userManager = userManager;
         }
 
-        // GET: Admin/Bookings
-        public async Task<IActionResult> Index(string? search, int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> Index()
         {
-            var filter = new BasePaginatedFilterVM
-            {
-                PageNumber = pageNumber,
-                PageSize = pageSize,
-                SearchTerm = search,
-                SortBy = "BookingDate",
-                SortOrder = SortOrder.Desc
-            };
-
-            var (bookings, totalCount) = await _bookingRepo.GetPagedBookingsForAdminAsync(filter);
-            var vmList = bookings.Select(b => _mapper.Map<BookingViewModel>(b)).ToList();
-
-            var vm = new PaginatedList<BookingViewModel>(vmList, totalCount, pageNumber, pageSize);
-            return View(vm);
+            var userId = _userManager.GetUserId(User);
+            var bookings = await _bookingService.GetBookingsByUserAsync(userId);
+            return View(bookings);
         }
 
-        // GET: Admin/Bookings/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var booking = await _bookingRepo.GetBookingWithDetailsAsync(id);
+            var booking = await _bookingService.GetBookingByIdAsync(id);
             if (booking == null) return NotFound();
-
-            var vm = _mapper.Map<BookingViewModel>(booking);
-            return View(vm);
+            return View(booking);
         }
 
-        // GET: Admin/Bookings/Create
-        public async Task<IActionResult> Create()
+        public IActionResult Create() => View();
+
+        [HttpPost]
+        public async Task<IActionResult> Create(Booking booking)
         {
-            var vm = new BookingViewModel
-            {
-                Users = (await _userRepo.GetAllAsync(null))
-                    .Select(u => new SelectListItem { Value = u.Id.ToString(), Text = u.FullName })
-                    .ToList(),
-                Showtimes = (await _showtimeRepo.GetAllAsync(null))
-                    .Select(s => new SelectListItem { Value = s.Id.ToString(), Text = $"{s.Movie.Title} - {s.StartTime:g}" })
-                    .ToList()
-            };
-
-            return View(vm);
-        }
-
-        // POST: Admin/Bookings/Create
-        [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(BookingViewModel vm)
-        {
-            if (!ModelState.IsValid)
-            {
-                await PopulateDropdowns(vm);
-                return View(vm);
-            }
-
-            var booking = _mapper.Map<Booking>(vm);
-            booking.BookingNumber = await _bookingRepo.GenerateBookingNumberAsync();
-
-            await _bookingRepo.AddAsync(booking);
-            await _bookingRepo.SaveChangesAsync();
-
-            TempData["Success"] = "Booking created successfully.";
+            if (!ModelState.IsValid) return View(booking);
+            var userId = _userManager.GetUserId(User);
+            await _bookingService.CreateBookingAsync(booking, userId);
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Admin/Bookings/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            var booking = await _bookingRepo.GetByIdAsync(id);
+            var booking = await _bookingService.GetBookingByIdAsync(id);
             if (booking == null) return NotFound();
-
-            var vm = _mapper.Map<BookingViewModel>(booking);
-            await PopulateDropdowns(vm);
-            return View(vm);
+            return View(booking);
         }
 
-        // POST: Admin/Bookings/Edit/5
-        [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(BookingViewModel vm)
+        [HttpPost]
+        public async Task<IActionResult> Edit(Booking booking)
         {
-            if (!ModelState.IsValid)
-            {
-                await PopulateDropdowns(vm);
-                return View(vm);
-            }
-
-            var booking = await _bookingRepo.GetByIdAsync(vm.Id);
-            if (booking == null) return NotFound();
-
-            _mapper.Map(vm, booking);
-            await _bookingRepo.UpdateAsync(booking);
-            await _bookingRepo.SaveChangesAsync();
-
-            TempData["Success"] = "Booking updated successfully.";
+            if (!ModelState.IsValid) return View(booking);
+            var userId = _userManager.GetUserId(User);
+            await _bookingService.UpdateBookingAsync(booking, userId);
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Admin/Bookings/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            var booking = await _bookingRepo.GetBookingWithDetailsAsync(id);
+            var booking = await _bookingService.GetBookingByIdAsync(id);
             if (booking == null) return NotFound();
-
-            var vm = _mapper.Map<BookingViewModel>(booking);
-            return View(vm);
+            return View(booking);
         }
 
-        // POST: Admin/Bookings/Delete/5
-        [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
+        [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _bookingRepo.DeleteAsync(id);
-            await _bookingRepo.SaveChangesAsync();
-
-            TempData["Success"] = "Booking deleted successfully.";
+            var userId = _userManager.GetUserId(User);
+            await _bookingService.DeleteBookingAsync(id, userId);
             return RedirectToAction(nameof(Index));
         }
-
-        // -------------------------
-        // Helper
-        // -------------------------
-        private async Task PopulateDropdowns(BookingViewModel vm)
-        {
-            vm.Users = (await _userRepo.GetAllAsync(null))
-                .Select(u => new SelectListItem { Value = u.Id.ToString(), Text = u.FullName })
-                .ToList();
-
-            vm.Showtimes = (await _showtimeRepo.GetAllAsync(null))
-                .Select(s => new SelectListItem { Value = s.Id.ToString(), Text = $"{s.Movie.Title} - {s.StartTime:g}" })
-                .ToList();
-        }
     }
+
+
+
 }

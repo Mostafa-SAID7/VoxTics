@@ -12,13 +12,13 @@ namespace VoxTics.Controllers
 {
     public class CinemasController : Controller
     {
-        private readonly ICinemaRepository _cinemaRepository;
-        private readonly IShowtimeRepository _showtimeRepository;
+        private readonly ICinemasRepository _cinemaRepository;
+        private readonly IShowtimesRepository _showtimeRepository;
         private readonly ILogger<CinemasController> _logger;
 
         public CinemasController(
-            ICinemaRepository cinemaRepository,
-            IShowtimeRepository showtimeRepository,
+            ICinemasRepository cinemaRepository,
+            IShowtimesRepository showtimeRepository,
             ILogger<CinemasController> logger)
         {
             _cinemaRepository = cinemaRepository ?? throw new ArgumentNullException(nameof(cinemaRepository));
