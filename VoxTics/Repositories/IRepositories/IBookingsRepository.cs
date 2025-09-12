@@ -12,6 +12,7 @@ namespace VoxTics.Repositories.IRepositories
     public interface IBookingsRepository : IBaseRepository<Booking>
     {
         Task<IEnumerable<Booking>> GetBookingsByUserIdAsync(string userId);
+        void Remove(Booking booking);
     }
 
 }

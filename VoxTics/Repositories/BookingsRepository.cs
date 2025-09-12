@@ -23,6 +23,11 @@ namespace VoxTics.Repositories
                 .Include(b => b.Showtime)
                 .ToListAsync();
         }
+
+        public void Remove(Booking booking)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

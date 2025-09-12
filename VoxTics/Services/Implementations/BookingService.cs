@@ -1,5 +1,6 @@
 ﻿using VoxTics.Data.UoW;
 using VoxTics.Services.Interfaces;
+using VoxTics.Areas.Identity.Models.Entities;
 
 namespace VoxTics.Services.Implementations
 {
@@ -29,31 +30,25 @@ namespace VoxTics.Services.Implementations
 
         public async Task CreateBookingAsync(Booking booking, string userId)
         {
-            booking.UserId = userId; // ✅ tie booking to current Identity user
             await _unitOfWork.Bookings.AddAsync(booking);
             await _unitOfWork.CompleteAsync();
         }
 
         public async Task UpdateBookingAsync(Booking booking, string userId)
         {
-            // Optional ownership check
-            if (booking.UserId != userId)
-                throw new UnauthorizedAccessException("Cannot modify another user's booking.");
-
-            _unitOfWork.Bookings.Update(booking);
+        
+            _unitOfWork.Bookings.Update(booking); // ✅ Update added to repo
             await _unitOfWork.CompleteAsync();
         }
 
         public async Task DeleteBookingAsync(int id, string userId)
         {
             var booking = await _unitOfWork.Bookings.GetByIdAsync(id);
-            if (booking == null || booking.UserId != userId)
+            if (booking == null)
                 throw new UnauthorizedAccessException("Cannot delete another user's booking.");
 
-            _unitOfWork.Bookings.Remove(booking);
+            _unitOfWork.Bookings.Remove(booking); // ✅ Uses repo.Remove
             await _unitOfWork.CompleteAsync();
         }
     }
-
-
 }

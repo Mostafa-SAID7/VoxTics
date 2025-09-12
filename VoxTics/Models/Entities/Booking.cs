@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using VoxTics.Areas.Identity.Models.Entities;
 using VoxTics.Models.Enums;
 
 namespace VoxTics.Models.Entities
@@ -64,8 +65,6 @@ namespace VoxTics.Models.Entities
         // -------------------------
         // Navigation properties
         // -------------------------
-        [ForeignKey("UserId")]
-        public virtual User User { get; set; } = null!;
 
         [ForeignKey("ShowtimeId")]
         public virtual Showtime Showtime { get; set; } = null!;
@@ -77,7 +76,12 @@ namespace VoxTics.Models.Entities
         // -------------------------
         [Column(TypeName = "decimal(18,2)")]
         public decimal TotalPrice { get; set; }  // repository expects this
+        // ✅ Foreign keys
+        public int MovieId { get; set; }
 
+        // ✅ Navigation props (fixes the error)
+        public virtual Movie Movie { get; set; } = null!;
+        public virtual ApplicationUser User { get; set; } = null!;
         // -------------------------
         // Computed / NotMapped
         // -------------------------

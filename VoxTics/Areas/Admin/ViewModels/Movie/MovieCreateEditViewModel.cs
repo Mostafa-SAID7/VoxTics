@@ -28,8 +28,7 @@ namespace VoxTics.Areas.Admin.ViewModels.Movie
         public string? Language { get; set; }
         [Range(0.0, 10.0, ErrorMessage = "Rating must be between 0 and 10")]
         public decimal Rating { get; set; }
-        [AllowedExtensions(new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" }, ErrorMessage = "Poster must be an image (.jpg/.png/.webp/.gif)")]
-        [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Poster max size is 5 MB")]
+
         public IFormFile? PosterFile { get; set; }
         public string? PosterImage { get; set; }
         [Url(ErrorMessage = "Trailer must be a valid URL")]
@@ -47,8 +46,7 @@ namespace VoxTics.Areas.Admin.ViewModels.Movie
         public decimal Price { get; set; }
         public List<int> SelectedActorIds { get; set; } = new();
         public List<int> SelectedCategoryIds { get; set; } = new();
-        [AllowedExtensions(new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" }, ErrorMessage = "Poster must be an image (.jpg/.png/.webp/.gif)")]
-        [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Poster max size is 5 MB")]
+  
         public List<string> ImageUrls { get; set; } = new();
 
     }

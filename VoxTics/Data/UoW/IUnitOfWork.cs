@@ -9,6 +9,8 @@ namespace VoxTics.Data.UoW
         ICinemasRepository Cinemas { get; }
         IMoviesRepository Movies { get; }
         IShowtimesRepository Showtimes { get; }
+        IDashboardRepository AdminDashboard { get; }
+        IHomeRepository Home { get; }
         Task<int> CompleteAsync();
     }
 

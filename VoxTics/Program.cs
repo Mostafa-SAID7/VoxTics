@@ -2,8 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using VoxTics;
-using VoxTics.Areas.Admin.MappingProfiles;
-using VoxTics.Areas.Admin.Repositories;
+
 using VoxTics.Areas.Identity.Models.Entities;
 using VoxTics.Data;
 

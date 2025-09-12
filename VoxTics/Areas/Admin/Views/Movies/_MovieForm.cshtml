@@ -1,5 +1,5 @@
 ﻿@using VoxTics.Areas.Admin.ViewModels.Movie
-@model MovieViewModel
+@model MovieCreateEditViewModel
 
 <form asp-action="@ViewContext.RouteData.Values["action"]" asp-controller="Movies" method="post" enctype="multipart/form-data" class="row g-3">
     @Html.AntiForgeryToken()
@@ -21,9 +21,9 @@
     </div>
 
     <div class="col-md-4">
-        <label asp-for="DurationInMinutes" class="form-label"></label>
-        <input asp-for="DurationInMinutes" class="form-control" />
-        <span asp-validation-for="DurationInMinutes" class="text-danger"></span>
+        <label asp-for="Duration" class="form-label"></label>
+        <input asp-for="Duration" class="form-control" />
+        <span asp-validation-for="Duration" class="text-danger"></span>
     </div>
 
     <div class="col-md-4">
@@ -33,9 +33,9 @@
     </div>
 
     <div class="col-md-4">
-        <label asp-for="BasePrice" class="form-label"></label>
-        <input asp-for="BasePrice" class="form-control" />
-        <span asp-validation-for="BasePrice" class="text-danger"></span>
+        <label asp-for="Price" class="form-label"></label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
     </div>
 
     <div class="col-md-6">
@@ -51,9 +51,9 @@
     </div>
 
     <div class="col-md-3">
-        <label asp-for="ImdbRating" class="form-label">IMDB</label>
-        <input asp-for="ImdbRating" class="form-control" />
-        <span asp-validation-for="ImdbRating" class="text-danger"></span>
+        <label asp-for="Rating" class="form-label">IMDB</label>
+        <input asp-for="Rating" class="form-control" />
+        <span asp-validation-for="Rating" class="text-danger"></span>
     </div>
 
     <div class="col-md-6">
@@ -64,27 +64,20 @@
 
     <div class="col-md-6">
         <label class="form-label">Poster Image</label>
-        @if (!string.IsNullOrWhiteSpace(Model.CurrentPosterImage))
+        @if (!string.IsNullOrWhiteSpace(Model.PosterImage))
         {
-            <div class="mb-2"><img src="@Model.CurrentPosterImage" class="img-fluid rounded" style="max-height:150px;" /></div>
+            <div class="mb-2"><img src="@Model.PosterImage" class="img-fluid rounded" style="max-height:150px;" /></div>
         }
-        <input asp-for="PosterImageFile" type="file" class="form-control" />
-        <span asp-validation-for="PosterImageFile" class="text-danger"></span>
+        <input asp-for="PosterFile" type="file" class="form-control" />
+        <span asp-validation-for="PosterFile" class="text-danger"></span>
     </div>
 
     <div class="col-md-6">
         <label class="form-label">Categories</label>
-        <select asp-for="SelectedCategoryIds" asp-items="Model.AvailableCategories" class="form-select" multiple></select>
     </div>
 
     <div class="col-md-3">
-        <label asp-for="Status" class="form-label"></label>
-        <select asp-for="Status" class="form-select">
-            @foreach (var s in Enum.GetValues(typeof(VoxTics.Models.Enums.MovieStatus)))
-            {
-                <option value="@s" selected="@(s.Equals(Model.Status) ? "selected" : "")">@s</option>
-            }
-        </select>
+       
     </div>
 
     <div class="col-12 text-end">

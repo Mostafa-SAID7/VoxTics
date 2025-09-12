@@ -8,4 +8,3 @@ global using VoxTics.Helpers;
 global using System.ComponentModel.DataAnnotations;
 global using VoxTics.Models;
 global using VoxTics.Utitlity;
-global using VoxTics.Areas.Admin.Repositories;

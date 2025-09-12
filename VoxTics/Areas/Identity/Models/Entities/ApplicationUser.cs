@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using VoxTics.Areas.Identity.Models.Enums;
+using VoxTics.Models.Entities;
 
 namespace VoxTics.Areas.Identity.Models.Entities
 {
@@ -13,13 +14,20 @@ namespace VoxTics.Areas.Identity.Models.Entities
         [DataType(DataType.Date)]
         public DateTime? DateOfBirth { get; set; }
 
-        [StringLength(200)]
+        [Url, StringLength(200)]
         public string? AvatarUrl { get; set; }
 
         // Address
+        [StringLength(100)]
         public string? State { get; set; }
+
+        [StringLength(100)]
         public string? City { get; set; }
+
+        [StringLength(200)]
         public string? Street { get; set; }
+
+        [StringLength(20)]
         public string? ZipCode { get; set; }
 
         // Account info
@@ -32,8 +40,15 @@ namespace VoxTics.Areas.Identity.Models.Entities
         [StringLength(250)]
         public string? BanReason { get; set; }
 
-        // Activity
+        // Activity tracking
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
         public DateTime? LastLoginDate { get; set; }
+
+        // Preferences and settings
+        [StringLength(2000)]
+        public string? PreferencesJson { get; set; }
+        public DateTime? LastPasswordResetRequest { get; set; }
 
         // Navigation properties
         public virtual ICollection<Booking> Bookings { get; set; } = new HashSet<Booking>();

@@ -1,11 +1,11 @@
 ﻿@using VoxTics.Areas.Admin.ViewModels.Movie
-@model MovieViewModel
+@model MovieCreateEditViewModel
 
 <div class="row">
     <div class="col-md-4">
-        @if (!string.IsNullOrWhiteSpace(Model.CurrentPosterImage))
+        @if (!string.IsNullOrWhiteSpace(Model.PosterImage))
         {
-            <img src="@Model.CurrentPosterImage" class="img-fluid rounded" alt="@Model.Title" />
+            <img src="@Model.PosterImage" class="img-fluid rounded" alt="@Model.Title" />
         }
     </div>
     <div class="col-md-8">
@@ -16,19 +16,18 @@
             <dt class="col-sm-4">Release</dt>
             <dd class="col-sm-8">@Model.ReleaseDate.ToString("yyyy-MM-dd")</dd>
             <dt class="col-sm-4">Duration</dt>
-            <dd class="col-sm-8">@Model.DurationInMinutes min</dd>
+            <dd class="col-sm-8">@Model.Duration min</dd>
             <dt class="col-sm-4">Director</dt>
             <dd class="col-sm-8">@Model.Director</dd>
             <dt class="col-sm-4">Language</dt>
             <dd class="col-sm-8">@Model.Language</dd>
             <dt class="col-sm-4">IMDB</dt>
-            <dd class="col-sm-8">@Model.ImdbRating</dd>
+            <dd class="col-sm-8">@Model.Rating</dd>
             <dt class="col-sm-4">Price</dt>
-            <dd class="col-sm-8">@Model.BasePrice.ToString("C")</dd>
+            <dd class="col-sm-8">@Model.Price.ToString("C")</dd>
             <dt class="col-sm-4">Status</dt>
-            <dd class="col-sm-8">@Model.Status</dd>
             <dt class="col-sm-4">Categories</dt>
-            <dd class="col-sm-8">@string.Join(", ", Model.MovieCategories)</dd>
+            <dd class="col-sm-8">@string.Join(", ", Model.SelectedCategoryIds)</dd>
         </dl>
 
         <div class="text-end">

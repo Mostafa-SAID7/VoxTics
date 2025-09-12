@@ -3,7 +3,7 @@ using VoxTics.Areas.Admin.ViewModels.Movie;
 using VoxTics.Areas.Identity.Models.ViewModels;
 using VoxTics.Models.Enums;
 
-namespace VoxTics.Areas.Admin.ViewModels
+namespace VoxTics.Areas.Admin.ViewModels.Admin
 {
     public class AdminDashboardViewModel
     {
@@ -31,7 +31,7 @@ namespace VoxTics.Areas.Admin.ViewModels
         public int CancelledBookings { get; set; }
 
         // Recent activities
-        public List<MovieViewModel> RecentMovies { get; set; } = new List<MovieViewModel>();
+        public List<MovieListItemViewModel> RecentMovies { get; set; } = new List<MovieListItemViewModel>();
         public List<BookingViewModel> RecentBookings { get; set; } = new List<BookingViewModel>();
         public List<UserViewModel> RecentUsers { get; set; } = new List<UserViewModel>();
 
@@ -45,7 +45,7 @@ namespace VoxTics.Areas.Admin.ViewModels
         public Dictionary<BookingStatus, int> BookingsByStatus { get; set; } = new Dictionary<BookingStatus, int>();
 
         // Popular items
-        public List<MovieViewModel> PopularMovies { get; set; } = new List<MovieViewModel>();
+        public List<MovieListItemViewModel> PopularMovies { get; set; } = new List<MovieListItemViewModel>();
         public List<CinemaViewModel> PopularCinemas { get; set; } = new List<CinemaViewModel>();
 
         // Display properties
