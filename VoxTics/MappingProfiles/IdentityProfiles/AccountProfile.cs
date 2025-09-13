@@ -5,9 +5,9 @@ using VoxTics.Models.ViewModels;
 
 namespace VoxTics.MappingProfiles.AdminProfiles
 {
-    public class UserAdminProfile : Profile
+    public class AccountProfile : Profile
     {
-        public UserAdminProfile()
+        public AccountProfile()
         {
       
         }
