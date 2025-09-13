@@ -3,11 +3,11 @@ using VoxTics.Models.Entities;
 using VoxTics.Models.ViewModels;
 using VoxTics.Areas.Admin.ViewModels;
 
-namespace VoxTics.MappingProfiles
+namespace VoxTics.MappingProfiles.AdminProfiles
 {
-    public class BookingProfile : Profile
+    public class BookingAdminProfile : Profile
     {
-        public BookingProfile()
+        public BookingAdminProfile()
         {
             // Entity -> VM
             CreateMap<Booking, BookingViewModel>()

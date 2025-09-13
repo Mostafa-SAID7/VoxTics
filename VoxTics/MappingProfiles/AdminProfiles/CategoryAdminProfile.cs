@@ -2,11 +2,11 @@
 using VoxTics.Areas.Admin.ViewModels;
 using VoxTics.Models.Entities;
 
-namespace VoxTics.MappingProfiles
+namespace VoxTics.MappingProfiles.AdminProfiles
 {
-    public class CategoryProfile : Profile
+    public class CategoryAdminProfile : Profile
     {
-        public CategoryProfile()
+        public CategoryAdminProfile()
         {
             // Entity to ViewModel mappings
             CreateMap<Category, CategoryVM>()

@@ -4,11 +4,11 @@ using VoxTics.Areas.Admin.ViewModels;
 using VoxTics.Areas.Admin.ViewModels.Movie;
 using VoxTics.Models.Entities;
 
-namespace VoxTics.MappingProfiles
+namespace VoxTics.MappingProfiles.AdminProfiles
 {
-    public class MovieProfile : Profile
+    public class MovieAdminProfile : Profile
     {
-        public MovieProfile()
+        public MovieAdminProfile()
         {
             // Movie -> MovieListItemViewModel
             CreateMap<Movie, MovieListItemViewModel>()
@@ -19,14 +19,7 @@ namespace VoxTics.MappingProfiles
                 .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Rating));
 
             // Movie -> MovieDetailViewModel
-            CreateMap<Movie, MovieDetailViewModel>()
-                .ForMember(d => d.Images, o => o.MapFrom(s =>
-                    s.MovieImages.Select(i => new MovieImageViewModel { Id = i.Id, ImageUrl = i.ImageUrl, AltText = i.AltText })))
-                .ForMember(d => d.Actors, o => o.MapFrom(s =>
-                    s.MovieActors.Select(ma => new ActorViewModel { Id = ma.Actor.Id, FullName = ma.Actor.FullName, Bio = ma.Actor.Bio, ImageUrl = ma.Actor.ImageUrl })))
-                .ForMember(d => d.Categories, o => o.MapFrom(s =>
-                    s.MovieCategories.Select(mc => new CategoryViewModel { Id = mc.Category.Id, Name = mc.Category.Name, Description = mc.Category.Description })));
-
+  
             // MovieCreateEditViewModel -> Movie (scalar properties)
             CreateMap<MovieCreateEditViewModel, Movie>()
                 .ForMember(m => m.Id, opt => opt.Ignore()) // Id handled by service

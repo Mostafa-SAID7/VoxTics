@@ -7,13 +7,11 @@
     }
     <div class="mb-3">
         <label asp-for="UserId" class="form-label">User</label>
-        <select asp-for="UserId" class="form-select" asp-items="Model.Users"></select>
         <span asp-validation-for="UserId" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
         <label asp-for="ShowtimeId" class="form-label">Showtime</label>
-        <select asp-for="ShowtimeId" class="form-select" asp-items="Model.Showtimes"></select>
         <span asp-validation-for="ShowtimeId" class="text-danger"></span>
     </div>
 

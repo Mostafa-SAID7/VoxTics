@@ -38,7 +38,7 @@ namespace VoxTics.Services.Implementations
             var category = await _unitOfWork.Categories.GetByIdAsync(id);
             if (category != null)
             {
-                _unitOfWork.Categories.Remove(category);
+                _unitOfWork.Categories.DeleteAsync(category);
                 await _unitOfWork.CompleteAsync();
             }
         }

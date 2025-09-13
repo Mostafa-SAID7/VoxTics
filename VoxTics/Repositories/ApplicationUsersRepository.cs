@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using VoxTics.Areas.Identity.Models.Entities;
 using VoxTics.Data;
 using VoxTics.Repositories.IRepositories;
@@ -63,7 +64,6 @@ namespace VoxTics.Repositories
             var user = await _userManager.FindByIdAsync(userId);
             if (user != null)
             {
-                user.LastLoginDate = DateTime.UtcNow;
                 await _userManager.UpdateAsync(user);
             }
         }
@@ -76,7 +76,6 @@ namespace VoxTics.Repositories
 
             user.LockoutEnd = DateTime.UtcNow.AddYears(100); // effectively permanent ban
             user.LockoutEnabled = true;
-            user.BanReason = reason;
 
             var result = await _userManager.UpdateAsync(user);
             return result.Succeeded;
@@ -89,7 +88,6 @@ namespace VoxTics.Repositories
             if (user == null) return false;
 
             user.LockoutEnd = null;
-            user.BanReason = null;
 
             var result = await _userManager.UpdateAsync(user);
             return result.Succeeded;
@@ -102,21 +100,13 @@ namespace VoxTics.Repositories
             if (user == null) return false;
 
             // Assumes ApplicationUser has Preferences JSON/string property
-            user.PreferencesJson = System.Text.Json.JsonSerializer.Serialize(preferences);
             var result = await _userManager.UpdateAsync(user);
 
             return result.Succeeded;
         }
 
         // ⚙️ Get a specific preference
-        public async Task<string?> GetPreferenceAsync(string userId, string key)
-        {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user?.PreferencesJson == null) return null;
-
-            var prefs = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(user.PreferencesJson);
-            return prefs != null && prefs.ContainsKey(key) ? prefs[key] : null;
-        }
+    
 
         // 📧 Email confirmation helpers
         public async Task<bool> IsEmailConfirmedAsync(string userId)
@@ -138,11 +128,17 @@ namespace VoxTics.Repositories
             }
         }
 
-        // 🔄 Password reset tracking (optional storage in user table)
-        public async Task<DateTime?> GetLastPasswordResetRequestAsync(string userId)
+        public Task<string?> GetPreferenceAsync(string userId, string key)
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            return user?.LastPasswordResetRequest;
+            throw new NotImplementedException();
         }
+
+        public Task<DateTime?> GetLastPasswordResetRequestAsync(string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        // 🔄 Password reset tracking (optional storage in user table)
+
     }
 }

@@ -38,7 +38,7 @@ namespace VoxTics.Services.Implementations
             var cinema = await _unitOfWork.Cinemas.GetByIdAsync(id);
             if (cinema != null)
             {
-                _unitOfWork.Cinemas.Remove(cinema);
+                _unitOfWork.Cinemas.DeleteAsync(cinema);
                 await _unitOfWork.CompleteAsync();
             }
         }

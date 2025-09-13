@@ -3,11 +3,11 @@ using VoxTics.Areas.Admin.ViewModels;
 using VoxTics.Models.Entities;
 using VoxTics.Models.ViewModels;
 
-namespace VoxTics.MappingProfiles
+namespace VoxTics.MappingProfiles.AdminProfiles
 {
-    public class CinemaProfile : Profile
+    public class CinemaAdminProfile : Profile
     {
-        public CinemaProfile()
+        public CinemaAdminProfile()
         {
             // Entity to ViewModel mappings
             CreateMap<Cinema, CinemaVM>()

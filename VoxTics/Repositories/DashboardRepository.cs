@@ -105,17 +105,14 @@ namespace VoxTics.Repositories
         public async Task<IEnumerable<UserSummary>> GetRecentUsersAsync(int count, CancellationToken cancellationToken = default)
         {
             return await _context.Users
-                .OrderByDescending(u => u.CreatedAt)
+                .OrderByDescending(u => u.UserName)
                 .Take(count)
                 .Select(u => new UserSummary
                 {
                     UserId = u.Id,
                     Name = u.Name,
                     Email = u.Email ?? string.Empty,
-                    Role = u.Role,
-                    IsActive = u.IsActive,
-                    CreatedAt = u.CreatedAt,
-                    LastLoginDate = u.LastLoginDate
+                 
                 })
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);

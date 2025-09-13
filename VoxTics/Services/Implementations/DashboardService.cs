@@ -48,15 +48,9 @@ namespace VoxTics.Services.Implementations
                 CreatedAt = b.CreatedAt
             }).ToList();
 
-            var userViewModels = recentUsersTask.Result.Select(u => new UserViewModel
+            var userViewModels = recentUsersTask.Result.Select(u => new PersonalInfoVM
             {
-                Id = u.UserId,
-                FirstName = u.Name,
-                Email = u.Email,
-                Role = u.Role.ToString(),
-                IsActive = u.IsActive,
-                CreatedAt = u.CreatedAt,
-                LastLoginDate = u.LastLoginDate
+    
             }).ToList();
 
             return new AdminDashboardViewModel
@@ -67,12 +61,10 @@ namespace VoxTics.Services.Implementations
                 TotalCategories = totalCategoriesTask.Result,
                 TotalRevenue = totalRevenueTask.Result,
 
-                MoviesByStatus = moviesByStatusTask.Result,
-                BookingsByStatus = bookingsByStatusTask.Result,
+         
 
                 //RecentMovies = recentMoviesTask.Result.ToList(), // if AdminDashboardViewModel expects List<MovieSummary>
-                RecentBookings = bookingViewModels,
-                RecentUsers = userViewModels
+            
             };
         }
     }

@@ -165,7 +165,6 @@ namespace VoxTics.Controllers
                     {
                         Id = ma.Actor.Id,
                         FirstName = ma.Actor.FullName,
-                        ImageUrl = ma.Actor.ImageUrl
                     }).ToList(),
 
                     // ? FIX: map images

@@ -41,7 +41,7 @@ namespace VoxTics.Services.Implementations
             var showtime = await _unitOfWork.Showtimes.GetByIdAsync(id);
             if (showtime != null)
             {
-                _unitOfWork.Showtimes.Remove(showtime);
+                _unitOfWork.Showtimes.DeleteAsync(showtime);
                 await _unitOfWork.CompleteAsync();
             }
         }

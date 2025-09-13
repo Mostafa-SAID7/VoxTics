@@ -47,7 +47,7 @@ namespace VoxTics.Services.Implementations
             var movie = await _unitOfWork.Movies.GetByIdAsync(id);
             if (movie != null)
             {
-                _unitOfWork.Movies.Remove(movie);
+                _unitOfWork.Movies.DeleteAsync(movie);
                 await _unitOfWork.CompleteAsync();
             }
         }

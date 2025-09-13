@@ -22,7 +22,6 @@ namespace VoxTics
             
             // Add AutoMapper
             
-            services.AddAutoMapper(typeof(MovieProfile).Assembly);
 
             // Add Helpers 
 
