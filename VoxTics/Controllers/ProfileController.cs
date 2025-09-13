@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace VoxTics.Areas.Identity.Controllers
+namespace VoxTics.Controllers
 {
-    [Area("Identity")]
-    public class HomeController : Controller
+    public class ProfileController : Controller
     {
         private readonly UserManager<IdentityUser> _userManager;
 
-        public HomeController(UserManager<IdentityUser> userManager)
+        public ProfileController(UserManager<IdentityUser> userManager)
         {
             _userManager = userManager;
         }

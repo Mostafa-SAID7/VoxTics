@@ -69,7 +69,7 @@ namespace VoxTics.Models.Entities
         [ForeignKey("ShowtimeId")]
         public virtual Showtime Showtime { get; set; } = null!;
 
-        public virtual ICollection<BookingSeat> BookingSeats { get; set; } = new List<BookingSeat>();
+        public virtual ICollection<BookingSeat> BookingSeats { get; } = new List<BookingSeat>();
 
         // -------------------------
         // Additional properties

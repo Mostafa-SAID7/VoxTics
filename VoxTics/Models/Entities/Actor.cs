@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VoxTics.Models.Entities
@@ -8,27 +10,34 @@ namespace VoxTics.Models.Entities
         [Required]
         [MaxLength(50)]
         public string FirstName { get; set; } = "";
+
         public string LastName { get; set; } = "";
 
         public string FullName
         {
-            get => $"{FirstName} {LastName}";
+            get => $"{FirstName} {LastName}".Trim();
             set
             {
-                var parts = value.Split(' ', 2);
-                FirstName = parts[0];
+                if (value == null)
+                    throw new ArgumentNullException(nameof(value), "FullName cannot be null.");
+
+                var parts = value.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+                FirstName = parts.Length > 0 ? parts[0] : "";
                 LastName = parts.Length > 1 ? parts[1] : "";
             }
         }
+
         [MaxLength(500)]
         public string? Bio { get; set; }
 
         [MaxLength(250)]
-        public string? ImageUrl { get; set; }
-        [MaxLength(100)]
-        public string? Nationality { get; set; }   // ✅ Added
+        public Uri? ImageUrl { get; set; }
 
-        public bool IsActive { get; set; } = true; // ✅ Added
+        [MaxLength(100)]
+        public string? Nationality { get; set; }
+
+        public bool IsActive { get; set; } = true;
+
         public DateTime? DateOfBirth { get; set; }
 
         [NotMapped]
@@ -44,9 +53,8 @@ namespace VoxTics.Models.Entities
             }
         }
 
-        public ICollection<MovieActor> MovieActors { get; set; } = new List<MovieActor>();
-        public ICollection<SocialMediaLink> SocialMediaLinks { get; set; } = new List<SocialMediaLink>();
-
+        // Read-only collections
+        public ICollection<MovieActor> MovieActors { get; } = new List<MovieActor>();
+        public ICollection<SocialMediaLink> SocialMediaLinks { get; } = new List<SocialMediaLink>();
     }
-
 }

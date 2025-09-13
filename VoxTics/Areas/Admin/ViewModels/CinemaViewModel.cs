@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using Microsoft.AspNetCore.Http;
 
 namespace VoxTics.Areas.Admin.ViewModels
 {
@@ -10,38 +12,49 @@ namespace VoxTics.Areas.Admin.ViewModels
         [StringLength(200, ErrorMessage = "Cinema name cannot exceed 200 characters")]
         [Display(Name = "Cinema Name")]
         public string Name { get; set; } = string.Empty;
+
         [Required(ErrorMessage = "Address is required")]
         [StringLength(500, ErrorMessage = "Address cannot exceed 500 characters")]
         [Display(Name = "Address")]
         public string Address { get; set; } = string.Empty;
+
         [Required(ErrorMessage = "City is required")]
         [StringLength(100, ErrorMessage = "City cannot exceed 100 characters")]
         [Display(Name = "City")]
         public string City { get; set; } = string.Empty;
+
         [Phone(ErrorMessage = "Invalid phone number format")]
         [StringLength(20, ErrorMessage = "Phone number cannot exceed 20 characters")]
         [Display(Name = "Phone Number")]
         public string? PhoneNumber { get; set; }
+
         [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters")]
         [Display(Name = "Description")]
         public string? Description { get; set; }
 
         [Display(Name = "Cinema Image")]
         public IFormFile? ImageFile { get; set; }
-        public string? ImageUrl { get; set; }
+
+        [Display(Name = "Image URL")]
+        public Uri? ImageUrl { get; set; }
+
         [Display(Name = "Is Active")]
         public bool IsActive { get; set; } = true;
+
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
         public int TotalSeats { get; set; }
+
         // Display properties
         public int HallCount { get; set; }
         public int ShowtimeCount { get; set; }
-        public string CreatedDateFormatted => CreatedDate.ToString("MMM dd, yyyy");
-        public string ModifiedDateFormatted => ModifiedDate.ToString("MMM dd, yyyy");
-        public bool HasImage => !string.IsNullOrEmpty(ImageUrl);
-        public string DefaultImage => "/images/default-cinema.jpg";
-        public string DisplayImage => HasImage ? ImageUrl! : DefaultImage;
 
+        public string CreatedDateFormatted => CreatedDate.ToString("MMM dd, yyyy", CultureInfo.InvariantCulture);
+        public string ModifiedDateFormatted => ModifiedDate.ToString("MMM dd, yyyy", CultureInfo.InvariantCulture);
+
+        public bool HasImage => ImageUrl != null;
+        public string DefaultImage => "/images/default-cinema.jpg";
+
+        public string DisplayImage => HasImage ? ImageUrl!.ToString() : DefaultImage;
     }
 }

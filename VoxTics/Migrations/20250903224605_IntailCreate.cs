@@ -11,6 +11,8 @@ namespace VoxTics.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            if (migrationBuilder == null)
+                throw new ArgumentNullException(nameof(migrationBuilder));
             migrationBuilder.CreateTable(
                 name: "Actors",
                 columns: table => new
@@ -333,6 +335,8 @@ namespace VoxTics.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            if (migrationBuilder == null)
+                throw new ArgumentNullException(nameof(migrationBuilder));
             migrationBuilder.DropTable(
                 name: "Bookings");
 

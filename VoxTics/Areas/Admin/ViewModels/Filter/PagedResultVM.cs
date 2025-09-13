@@ -1,4 +1,7 @@
-﻿namespace VoxTics.Areas.Admin.ViewModels.Filter
+﻿using System;
+using System.Collections.Generic;
+
+namespace VoxTics.Areas.Admin.ViewModels.Filter
 {
     public class PagedResultVM<T>
     {
@@ -10,10 +13,14 @@
         public bool HasPreviousPage => PageIndex > 1;
         public bool HasNextPage => PageIndex < TotalPages;
 
-        public List<int> PageNumbers { get; set; } = new();
+        // PageNumbers read-only now
+        public List<int> PageNumbers { get; }
 
         public PagedResultVM(PaginatedList<T> paginatedList)
         {
+            if (paginatedList == null)
+                throw new ArgumentNullException(nameof(paginatedList));
+
             Items = paginatedList.Items;
             PageIndex = paginatedList.PageIndex;
             PageSize = paginatedList.PageSize;
@@ -22,6 +29,9 @@
             PageNumbers = paginatedList.GetPageNumbers();
         }
 
-        public PagedResultVM() { }
+        public PagedResultVM()
+        {
+            PageNumbers = new List<int>();
+        }
     }
 }

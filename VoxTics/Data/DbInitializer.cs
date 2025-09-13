@@ -7,7 +7,9 @@ namespace VoxTics.Data
     {
         public static async Task InitializeAsync(MovieDbContext context)
         {
-            await context.Database.EnsureCreatedAsync();
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
+            await context.Database.EnsureCreatedAsync().ConfigureAwait(false);
 
             // Check if database has been seeded
             if (context.Movies.Any())
@@ -15,14 +17,16 @@ namespace VoxTics.Data
                 return; // Database has been seeded
             }
 
-            await SeedCinemasAndHallsAsync(context);
-            await SeedMoviesAsync(context);
-            await SeedShowtimesAsync(context);
-            await SeedUsersAsync(context);
+            await SeedCinemasAndHallsAsync(context).ConfigureAwait(false);
+            await SeedMoviesAsync(context).ConfigureAwait(false);
+            await SeedShowtimesAsync(context).ConfigureAwait(false);
+            await SeedUsersAsync(context).ConfigureAwait(false);
         }
 
         private static async Task SeedCinemasAndHallsAsync(MovieDbContext context)
         {
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
             var cinemas = new List<Cinema>
             {
                 new Cinema
@@ -38,9 +42,8 @@ namespace VoxTics.Data
             };
 
             context.Cinemas.AddRange(cinemas);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync().ConfigureAwait(false);
 
-            // Add halls for the cinema
             var cinema = context.Cinemas.First();
             var halls = new List<Hall>
             {
@@ -50,7 +53,7 @@ namespace VoxTics.Data
             };
 
             context.Halls.AddRange(halls);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync().ConfigureAwait(false);
 
             // Add seats for each hall
             foreach (var hall in halls)
@@ -76,17 +79,19 @@ namespace VoxTics.Data
                 }
                 context.Seats.AddRange(seats);
             }
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync().ConfigureAwait(false);
         }
 
         private static async Task SeedMoviesAsync(MovieDbContext context)
         {
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
             var movies = new List<Movie>
             {
                 new Movie
                 {
                     Title = "Avengers: Endgame",
-                    Description = "The grave course of events set in motion by Thanos that wiped out half the universe and fractured the Avengers ranks compels the remaining Avengers to take one final stand.",
+                    Description = "The grave course of events set in motion by Thanos that wiped out half the universe...",
                     Duration = 181,
                     ReleaseDate = new DateTime(2019, 4, 26),
                     Director = "Anthony Russo, Joe Russo",
@@ -100,8 +105,8 @@ namespace VoxTics.Data
                 new Movie
                 {
                     Title = "The Lion King",
-                    Description = "A young lion prince is cast out of his pride by his cruel uncle, who claims he killed his father so that he can become the new king.",
-                    Duration     = 118,
+                    Description = "A young lion prince is cast out of his pride by his cruel uncle...",
+                    Duration = 118,
                     ReleaseDate = new DateTime(2019, 7, 19),
                     Director = "Jon Favreau",
                     Language = "English",
@@ -114,7 +119,7 @@ namespace VoxTics.Data
             };
 
             context.Movies.AddRange(movies);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync().ConfigureAwait(false);
 
             // Link movies with categories and actors
             var actionCategory = context.Categories.First(c => c.Name == "Action");
@@ -127,22 +132,24 @@ namespace VoxTics.Data
             };
 
             context.MovieCategories.AddRange(movieCategories);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync().ConfigureAwait(false);
 
             var actors = context.Actors.ToList();
             var movieActors = new List<MovieActor>
             {
-                new MovieActor { MovieId = movies[0].Id, ActorId = actors[0].Id }, // Robert Downey Jr. in Avengers
-                new MovieActor { MovieId = movies[0].Id, ActorId = actors[1].Id }, // Scarlett Johansson in Avengers
-                new MovieActor { MovieId = movies[0].Id, ActorId = actors[2].Id }  // Chris Evans in Avengers
+                new MovieActor { MovieId = movies[0].Id, ActorId = actors[0].Id },
+                new MovieActor { MovieId = movies[0].Id, ActorId = actors[1].Id },
+                new MovieActor { MovieId = movies[0].Id, ActorId = actors[2].Id }
             };
 
             context.MovieActors.AddRange(movieActors);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync().ConfigureAwait(false);
         }
 
         private static async Task SeedShowtimesAsync(MovieDbContext context)
         {
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
             var movies = context.Movies.ToList();
             var cinemas = context.Cinemas.ToList();
             var halls = context.Halls.ToList();
@@ -156,7 +163,7 @@ namespace VoxTics.Data
                 {
                     var cinemaHalls = halls.Where(h => h.CinemaId == cinema.Id).ToList();
 
-                    for (int day = 0; day < 7; day++) // Next 7 days
+                    for (int day = 0; day < 7; day++)
                     {
                         var showDate = startDate.AddDays(day);
                         var showTimes = new[] { "10:00", "13:00", "16:00", "19:00", "22:00" };
@@ -171,7 +178,7 @@ namespace VoxTics.Data
                                     MovieId = movie.Id,
                                     HallId = hall.Id,
                                     StartTime = showDate.Add(time),
-                                    Price = 12.50m + (decimal)(new Random().NextDouble() * 5), // Random price between 12.50 and 17.50
+                                    Price = 12.50m + (decimal)(new Random().NextDouble() * 5),
                                     Status = ShowtimeStatus.Scheduled
                                 });
                             }
@@ -181,44 +188,40 @@ namespace VoxTics.Data
             }
 
             context.Showtimes.AddRange(showtimes);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync().ConfigureAwait(false);
         }
 
         private static async Task SeedUsersAsync(MovieDbContext context)
         {
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
             var users = new List<ApplicationUser>
             {
                 new ApplicationUser
                 {
                     Name = "John Doe",
                     Email = "john.doe@example.com",
-                    PasswordHash = "AQAAAAEAACcQAAAAEH3QhLhFhBpz9Kpx8qHiuZs1kJ2sNFKJCyKGXUwNdU9u6Vp8IJ1aGk3K3wIZl4M5QQ==", // Password123!
+                    PasswordHash = "AQAAAAEAACcQAAAAEH3QhLhFhBpz9Kpx8qHiuZs1kJ2sNFKJCyKGXUwNdU9u6Vp8IJ1aGk3K3wIZl4M5QQ==",
                     PhoneNumber = "555-0001",
-                    Role = UserRole.Customer,
-                    IsActive = true,
                 },
                 new ApplicationUser
                 {
                     Name = "Jane Smith",
                     Email = "jane.smith@example.com",
-                    PasswordHash = "AQAAAAEAACcQAAAAEH3QhLhFhBpz9Kpx8qHiuZs1kJ2sNFKJCyKGXUwNdU9u6Vp8IJ1aGk3K3wIZl4M5QQ==", // Password123!
+                    PasswordHash = "AQAAAAEAACcQAAAAEH3QhLhFhBpz9Kpx8qHiuZs1kJ2sNFKJCyKGXUwNdU9u6Vp8IJ1aGk3K3wIZl4M5QQ==",
                     PhoneNumber = "555-0002",
-                    Role = UserRole.Customer,
-                    IsActive = true,
                 },
                 new ApplicationUser
                 {
                     Name = "Mike Manager",
                     Email = "manager@cinema.com",
-                    PasswordHash = "AQAAAAEAACcQAAAAEH3QhLhFhBpz9Kpx8qHiuZs1kJ2sNFKJCyKGXUwNdU9u6Vp8IJ1aGk3K3wIZl4M5QQ==", // Password123!
+                    PasswordHash = "AQAAAAEAACcQAAAAEH3QhLhFhBpz9Kpx8qHiuZs1kJ2sNFKJCyKGXUwNdU9u6Vp8IJ1aGk3K3wIZl4M5QQ==",
                     PhoneNumber = "555-0003",
-                    Role = UserRole.Manager,
-                    IsActive = true,
                 }
             };
 
             context.Users.AddRange(users);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 }

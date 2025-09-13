@@ -25,54 +25,64 @@ namespace VoxTics.Areas.Admin.Controllers
             _showtimeService = showtimeService;
         }
 
+        // GET: /Admin/Showtimes
         public async Task<IActionResult> Index() =>
-            View(await _showtimeService.GetAllAsync());
+            View(await _showtimeService.GetAllAsync().ConfigureAwait(false));
 
+        // GET: /Admin/Showtimes/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var showtime = await _showtimeService.GetByIdAsync(id);
+            var showtime = await _showtimeService.GetByIdAsync(id).ConfigureAwait(false);
             if (showtime == null) return NotFound();
             return View(showtime);
         }
 
+        // GET: /Admin/Showtimes/Create
         public IActionResult Create() => View();
 
+        // POST: /Admin/Showtimes/Create
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Showtime showtime)
         {
             if (!ModelState.IsValid) return View(showtime);
-            await _showtimeService.CreateAsync(showtime);
+            await _showtimeService.CreateAsync(showtime).ConfigureAwait(false);
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: /Admin/Showtimes/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            var showtime = await _showtimeService.GetByIdAsync(id);
+            var showtime = await _showtimeService.GetByIdAsync(id).ConfigureAwait(false);
             if (showtime == null) return NotFound();
             return View(showtime);
         }
 
+        // POST: /Admin/Showtimes/Edit/5
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Showtime showtime)
         {
             if (!ModelState.IsValid) return View(showtime);
-            await _showtimeService.UpdateAsync(showtime);
+            await _showtimeService.UpdateAsync(showtime).ConfigureAwait(false);
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: /Admin/Showtimes/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            var showtime = await _showtimeService.GetByIdAsync(id);
+            var showtime = await _showtimeService.GetByIdAsync(id).ConfigureAwait(false);
             if (showtime == null) return NotFound();
             return View(showtime);
         }
 
+        // POST: /Admin/Showtimes/Delete/5
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _showtimeService.DeleteAsync(id);
+            await _showtimeService.DeleteAsync(id).ConfigureAwait(false);
             return RedirectToAction(nameof(Index));
         }
     }
-
 }

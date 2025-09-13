@@ -1,4 +1,5 @@
-﻿using VoxTics.Repositories.IRepositories;
+﻿using VoxTics.Areas.Identity.Models.Entities;
+using VoxTics.Repositories.IRepositories;
 
 namespace VoxTics.Data.UoW
 {
@@ -11,6 +12,8 @@ namespace VoxTics.Data.UoW
         IShowtimesRepository Showtimes { get; }
         IDashboardRepository AdminDashboard { get; }
         IHomeRepository Home { get; }
+        IBaseRepository<UserOTP> UserOTP { get; }
+        Task SaveAsync();
         Task<int> CompleteAsync();
     }
 

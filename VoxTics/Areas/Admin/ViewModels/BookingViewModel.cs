@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using VoxTics.Areas.Identity.Models.ViewModels;
 using VoxTics.Models.Enums;
 
 namespace VoxTics.Areas.Admin.ViewModels
@@ -39,11 +41,12 @@ namespace VoxTics.Areas.Admin.ViewModels
         public string HallName { get; set; } = string.Empty;
         public DateTime ShowDateTime { get; set; }
 
-        // Display properties
-        public string BookingDateFormatted => BookingDate.ToString("MMM dd, yyyy hh:mm tt");
-        public string ShowDateTimeFormatted => ShowDateTime.ToString("MMM dd, yyyy hh:mm tt");
-        public string FormattedTotalPrice => TotalPrice.ToString("C");
+        // Display properties with invariant culture
+        public string BookingDateFormatted => BookingDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        public string ShowDateTimeFormatted => ShowDateTime.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+        public string FormattedTotalPrice => TotalPrice.ToString("0.00", CultureInfo.InvariantCulture);
         public string BookingReference => $"BK{Id:D6}";
+
         [Required(ErrorMessage = "Status is required")]
         [Display(Name = "Booking Status")]
         public string StatusBadge => Status switch
@@ -54,11 +57,10 @@ namespace VoxTics.Areas.Admin.ViewModels
             _ => "badge bg-secondary"
         };
 
-   
-
-        // Dropdown lists
-        public List<SelectListItem> Users { get; set; } = new List<SelectListItem>();
-        public List<SelectListItem> Showtimes { get; set; } = new List<SelectListItem>();
+        // Read-only collections
+        public IReadOnlyList<PersonalInfoVM> Users { get; } = new List<PersonalInfoVM>();
+        public IReadOnlyList<ShowtimeViewModel> Showtimes { get; } = new List<ShowtimeViewModel>();
+        public IReadOnlyList<string> SeatNumbers { get; } = new List<string>();
 
         public string BookingNumber { get; set; } = string.Empty;
 
@@ -77,8 +79,6 @@ namespace VoxTics.Areas.Admin.ViewModels
         [Range(0, double.MaxValue, ErrorMessage = "Final amount must be a positive value")]
         [Display(Name = "Final Amount")]
         public decimal FinalAmount { get; set; }
-
-        
 
         [Required(ErrorMessage = "Payment status is required")]
         [Display(Name = "Payment Status")]
@@ -103,17 +103,12 @@ namespace VoxTics.Areas.Admin.ViewModels
         [Display(Name = "Cancellation Reason")]
         public string? CancellationReason { get; set; }
 
-        
-
-       
-
         public DateTime? CancellationDate { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        // Display Properties
+        // Display properties
         public DateTime ShowtimeStart { get; set; }
-        public List<string> SeatNumbers { get; set; } = new List<string>();
         public bool CanBeCancelled { get; set; }
         public decimal SavingsAmount { get; set; }
     }

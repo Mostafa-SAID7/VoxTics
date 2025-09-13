@@ -11,11 +11,12 @@ using VoxTics.Areas.Identity.Models.Entities;
 using VoxTics.Areas.Identity.Models.ViewModels;
 using VoxTics.Repositories.IRepositories;
 using VoxTics.Services.Interfaces;
+using VoxTics.Utility;
 using VoxTics.Utitlity;
 namespace VoxTics.Areas.Identity.Controllers
 
 {
-    [Area("Identity")]
+    [Area(SD.IdentityArea)]
     public class AccountController : Controller
     {
         private readonly IApplicationUsersService _usersService;
@@ -25,17 +26,6 @@ namespace VoxTics.Areas.Identity.Controllers
             _usersService = usersService;
         }
 
-        public async Task<IActionResult> ActiveUsers()
-        {
-            var users = await _usersService.GetActiveUsersAsync();
-            return View(users);
-        }
-
-        public async Task<IActionResult> Ban(string userId, string reason)
-        {
-            await _usersService.BanUserAsync(userId, reason);
-            return RedirectToAction("ActiveUsers");
-        }
-
+       
     }
 }

@@ -8,7 +8,7 @@ namespace VoxTics.Helpers
 {
     public static class ImageHelper
     {
-        public static readonly string[] AllowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
+        public static readonly string[] AllowedExtensions = { ".JPG", ".JPEG", ".PNG", ".GIF", ".BMP", ".WEBP" };
         public const long MaxFileSize = 5 * 1024 * 1024; // 5MB
         public const string DefaultImagePath = "/images/default.jpg";
 
@@ -20,7 +20,8 @@ namespace VoxTics.Helpers
             if (file == null || file.Length == 0) return false;
             if (file.Length > MaxFileSize) return false;
 
-            var extension = Path.GetExtension(file.FileName)?.ToLowerInvariant();
+            // Use ToUpperInvariant for consistent comparison
+            var extension = Path.GetExtension(file.FileName)?.ToUpperInvariant();
             return !string.IsNullOrEmpty(extension) && AllowedExtensions.Contains(extension);
         }
 
@@ -29,8 +30,11 @@ namespace VoxTics.Helpers
         /// </summary>
         public static async Task<string> SaveImageAsync(IFormFile file, string uploadPath, string? fileName = null)
         {
+            if (file == null)
+                throw new ArgumentNullException(nameof(file));
+
             if (!IsValidImageFile(file))
-                throw new ArgumentException("Invalid image file");
+                throw new ArgumentException("Invalid image file", nameof(file));
 
             if (!Directory.Exists(uploadPath))
                 Directory.CreateDirectory(uploadPath);
@@ -38,18 +42,18 @@ namespace VoxTics.Helpers
             fileName ??= $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
             var filePath = Path.Combine(uploadPath, fileName);
 
-            await using var stream = new FileStream(filePath, FileMode.Create);
-            await file.CopyToAsync(stream);
+            await using var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true);
+            await file.CopyToAsync(stream).ConfigureAwait(false);
 
             return fileName;
         }
 
         /// <summary>
-        /// Deletes the image file if exists.
+        /// Deletes the image file if it exists.
         /// </summary>
         public static bool DeleteImage(string imagePath)
         {
-            if (string.IsNullOrEmpty(imagePath)) return false;
+            if (string.IsNullOrWhiteSpace(imagePath)) return false;
 
             try
             {
@@ -59,20 +63,26 @@ namespace VoxTics.Helpers
                     return true;
                 }
             }
-            catch
+            catch (IOException ioEx)
             {
-                // Log exception if necessary
+                // Log warning if necessary
+                Console.WriteLine($"DeleteImage failed: {ioEx.Message}");
+            }
+            catch (UnauthorizedAccessException uaEx)
+            {
+                Console.WriteLine($"DeleteImage failed due to permissions: {uaEx.Message}");
             }
 
             return false;
         }
 
         /// <summary>
-        /// Returns the public URL of the image, or default image if null/empty.
+        /// Returns the public URL of the image as a Uri, or default image if null/empty.
         /// </summary>
-        public static string GetImageUrl(string? imageName, string? defaultImage = null)
+        public static Uri GetImageUrl(string? imageName, string? defaultImage = null)
         {
-            return string.IsNullOrEmpty(imageName) ? (defaultImage ?? DefaultImagePath) : $"/images/{imageName}";
+            var imagePath = string.IsNullOrEmpty(imageName) ? (defaultImage ?? DefaultImagePath) : $"/images/{imageName}";
+            return new Uri(imagePath, UriKind.RelativeOrAbsolute);
         }
 
         /// <summary>

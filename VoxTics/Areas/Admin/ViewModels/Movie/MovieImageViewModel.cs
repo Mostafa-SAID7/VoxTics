@@ -1,9 +1,14 @@
-﻿namespace VoxTics.Areas.Admin.ViewModels.Movie
+﻿using System;
+
+namespace VoxTics.Areas.Admin.ViewModels.Movie
 {
     public class MovieImageViewModel
     {
         public int Id { get; set; }
-        public string ImageUrl { get; set; } = string.Empty;
+
+        // Changed to System.Uri
+        public Uri ImageUrl { get; set; } = new Uri("about:blank");
+
         public string? AltText { get; set; }
     }
 }

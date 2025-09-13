@@ -1,57 +1,33 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations;
+using System;
+using System.Collections.Generic;
 using VoxTics.Areas.Identity.Models.Enums;
-using VoxTics.Models.Entities;
 
 namespace VoxTics.Areas.Identity.Models.Entities
 {
     public class ApplicationUser : IdentityUser
     {
-        // Basic info
-        [Required, StringLength(50)]
         public string Name { get; set; } = string.Empty;
-
-        [DataType(DataType.Date)]
         public DateTime? DateOfBirth { get; set; }
-
-        [Url, StringLength(200)]
-        public string? AvatarUrl { get; set; }
-
-        // Address
-        [StringLength(100)]
+        public Gender Gender { get; set; } = Gender.Male;
+        public string Address { get; set; } = string.Empty;
         public string? State { get; set; }
-
-        [StringLength(100)]
         public string? City { get; set; }
-
-        [StringLength(200)]
         public string? Street { get; set; }
-
-        [StringLength(20)]
         public string? ZipCode { get; set; }
 
-        // Account info
-        [Required]
-        public UserRole Role { get; set; } = UserRole.Customer;
+        // Read-only Skills
+        public List<string> Skills { get; } = new();
 
-        public bool IsActive { get; set; } = true;
-        public bool IsBanned { get; set; } = false;
+        // Changed to System.Uri
+        public Uri? AvatarUrl { get; set; }
 
-        [StringLength(250)]
-        public string? BanReason { get; set; }
+        // Read-only navigation properties
+        public ICollection<UserOTP> UserOTPs { get; } = new List<UserOTP>();
+        public ICollection<Booking> Bookings { get; } = new List<Booking>();
 
-        // Activity tracking
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime? UpdatedAt { get; set; }
-        public DateTime? LastLoginDate { get; set; }
+        public int Age => DateOfBirth.HasValue ? (int)((DateTime.UtcNow - DateOfBirth.Value).TotalDays / 365.25) : 0;
 
-        // Preferences and settings
-        [StringLength(2000)]
-        public string? PreferencesJson { get; set; }
-        public DateTime? LastPasswordResetRequest { get; set; }
-
-        // Navigation properties
-        public virtual ICollection<Booking> Bookings { get; set; } = new HashSet<Booking>();
-        public virtual ICollection<SocialMediaLink> SocialMediaLinks { get; set; } = new List<SocialMediaLink>();
+        public string FullAddress => $"{Street}, {City}, {State}, {ZipCode}".Trim(',', ' ');
     }
 }

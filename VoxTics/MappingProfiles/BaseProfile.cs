@@ -1,6 +1,6 @@
 ﻿namespace VoxTics.MappingProfiles
 {
-    public class BaseProfile
-    {
-    }
+    //public class BaseProfile
+    //{
+    //}
 }

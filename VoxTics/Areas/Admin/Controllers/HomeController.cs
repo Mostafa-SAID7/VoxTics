@@ -1,16 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using VoxTics.Areas.Admin.ViewModels;
-using VoxTics.Areas.Admin.ViewModels.Movie;
-using VoxTics.Areas.Identity.Models.ViewModels;
-using VoxTics.Data.UoW;
-using VoxTics.Models.Enums;
-using VoxTics.Repositories.IRepositories;
+using VoxTics.Areas.Admin.ViewModels.Admin;
 using VoxTics.Services.Interfaces;
 
 namespace VoxTics.Areas.Admin.Controllers
@@ -27,7 +18,7 @@ namespace VoxTics.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var vm = await _dashboardService.GetDashboardSummaryAsync();
+            var vm = await _dashboardService.GetDashboardSummaryAsync().ConfigureAwait(false);
             return View(vm);
         }
     }

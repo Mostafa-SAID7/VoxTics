@@ -1,4 +1,7 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace VoxTics.Helpers
 {
@@ -25,10 +28,7 @@ namespace VoxTics.Helpers
             if (string.IsNullOrWhiteSpace(phoneNumber))
                 return false;
 
-            // Remove all non-digit characters
             var digitsOnly = Regex.Replace(phoneNumber, @"\D", "");
-
-            // Check if it's between 10-15 digits (international format)
             return digitsOnly.Length >= 10 && digitsOnly.Length <= 15;
         }
 
@@ -40,13 +40,16 @@ namespace VoxTics.Helpers
             return password.Length >= minLength;
         }
 
-        public static bool IsValidUrl(string url)
-        {
-            if (string.IsNullOrWhiteSpace(url))
-                return false;
+        // Overload that accepts System.Uri
+        public static bool IsValidUrl(string url) => IsValidUrl(new Uri(url, UriKind.RelativeOrAbsolute));
 
-            return Uri.TryCreate(url, UriKind.Absolute, out var result) &&
-                   (result.Scheme == Uri.UriSchemeHttp || result.Scheme == Uri.UriSchemeHttps);
+        public static bool IsValidUrl(Uri url)
+        {
+            if (url == null)
+                throw new ArgumentNullException(nameof(url));
+
+            return url.IsAbsoluteUri &&
+                   (url.Scheme == Uri.UriSchemeHttp || url.Scheme == Uri.UriSchemeHttps);
         }
 
         public static bool IsValidAge(DateTime? birthDate, int minAge = 0, int maxAge = 120)
@@ -61,12 +64,10 @@ namespace VoxTics.Helpers
             return age >= minAge && age <= maxAge;
         }
 
-        public static bool IsValidDateRange(DateTime startDate, DateTime endDate)
-        {
-            return endDate >= startDate;
-        }
+        public static bool IsValidDateRange(DateTime startDate, DateTime endDate) =>
+            endDate >= startDate;
 
-        public static bool IsValidShowtime(DateTime showDateTime, int movieDuration)
+        public static bool IsValidShowtime(DateTime showDateTime)
         {
             // Show must be in the future
             if (showDateTime <= DateTime.Now)
@@ -79,20 +80,16 @@ namespace VoxTics.Helpers
             return true;
         }
 
-        public static bool IsValidSeatCount(int seatCount, int minSeats = 1, int maxSeats = 500)
-        {
-            return seatCount >= minSeats && seatCount <= maxSeats;
-        }
+        public static bool IsValidSeatCount(int seatCount, int minSeats = 1, int maxSeats = 500) =>
+            seatCount >= minSeats && seatCount <= maxSeats;
 
-        public static bool IsValidMovieDuration(int duration, int minMinutes = 1, int maxMinutes = 600)
-        {
-            return duration >= minMinutes && duration <= maxMinutes;
-        }
+        public static bool IsValidMovieDuration(int duration, int minMinutes = 1, int maxMinutes = 600) =>
+            duration >= minMinutes && duration <= maxMinutes;
 
         public static bool IsValidRating(double? rating)
         {
             if (!rating.HasValue)
-                return true; // Rating is optional
+                return true;
 
             return rating >= 0.0 && rating <= 10.0;
         }
@@ -103,10 +100,10 @@ namespace VoxTics.Helpers
                 return string.Empty;
 
             return input.Trim()
-                       .Replace("<script>", "")
-                       .Replace("</script>", "")
-                       .Replace("javascript:", "")
-                       .Replace("vbscript:", "");
+                        .Replace("<script>", "", StringComparison.OrdinalIgnoreCase)
+                        .Replace("</script>", "", StringComparison.OrdinalIgnoreCase)
+                        .Replace("javascript:", "", StringComparison.OrdinalIgnoreCase)
+                        .Replace("vbscript:", "", StringComparison.OrdinalIgnoreCase);
         }
 
         public static bool ContainsOnlyLetters(string input)
@@ -130,15 +127,13 @@ namespace VoxTics.Helpers
             if (string.IsNullOrWhiteSpace(fileName))
                 return false;
 
-            var validExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
-            var extension = Path.GetExtension(fileName).ToLowerInvariant();
+            var validExtensions = new[] { ".JPG", ".JPEG", ".PNG", ".GIF", ".BMP", ".WEBP" };
+            var extension = Path.GetExtension(fileName)?.ToUpperInvariant();
 
-            return validExtensions.Contains(extension);
+            return !string.IsNullOrEmpty(extension) && validExtensions.Contains(extension);
         }
 
-        public static bool IsValidFileSize(long fileSize, long maxSizeInBytes = 5 * 1024 * 1024) // 5MB default
-        {
-            return fileSize > 0 && fileSize <= maxSizeInBytes;
-        }
+        public static bool IsValidFileSize(long fileSize, long maxSizeInBytes = 5 * 1024 * 1024) =>
+            fileSize > 0 && fileSize <= maxSizeInBytes;
     }
 }

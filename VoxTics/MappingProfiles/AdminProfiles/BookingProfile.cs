@@ -22,7 +22,7 @@ namespace VoxTics.MappingProfiles
                 .ForMember(dest => dest.CinemaName, opt => opt.MapFrom(src => src.Showtime != null && src.Showtime.Hall != null && src.Showtime.Hall.Cinema != null ? src.Showtime.Hall.Cinema.Name : string.Empty))
                 .ForMember(dest => dest.HallName, opt => opt.MapFrom(src => src.Showtime != null && src.Showtime.Hall != null ? src.Showtime.Hall.Name : string.Empty))
                 .ForMember(dest => dest.ShowDateTime, opt => opt.MapFrom(src => src.Showtime != null ? src.Showtime.StartTime : default))
-                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User != null ? src.User.FullName : string.Empty))
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User != null ? src.User.Name : string.Empty))
                 .ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.User != null ? src.User.Email : string.Empty))
                 // Seats list
                 .ForMember(dest => dest.SeatNumbers, opt => opt.MapFrom(src => src.BookingSeats != null ? src.BookingSeats.Select(bs => bs.Seat != null ? bs.Seat.SeatNumber : string.Empty).ToList() : new List<string>()))
@@ -44,12 +44,12 @@ namespace VoxTics.MappingProfiles
 
             // Entity to ViewModel mappings
             CreateMap<Booking, BookingVM>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.User.FullName))
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.User.Name))
                 .ForMember(dest => dest.SeatNumbers, opt => opt.MapFrom(src =>
                     src.BookingSeats.Select(bs => bs.Seat.SeatNumber).ToList()));
 
             CreateMap<Booking, BookingViewModel>()
-                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.FullName))
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.Name))
                 .ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.User.Email))
                 .ForMember(dest => dest.MovieTitle, opt => opt.MapFrom(src => src.Showtime.Movie.Title))
                 .ForMember(dest => dest.CinemaName, opt => opt.MapFrom(src => src.Showtime.Cinema.Name))

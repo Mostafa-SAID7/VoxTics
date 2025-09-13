@@ -1,7 +1,5 @@
-﻿// Data/MovieDbContext.cs
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using VoxTics.Areas.Identity.Models.Entities;
-using VoxTics.Areas.Identity.Models.Enums;
 using VoxTics.Models.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
@@ -14,22 +12,25 @@ namespace VoxTics.Data
         }
 
         // DbSets
-        public DbSet<Actor> Actors { get; set; }
-        public DbSet<Booking> Bookings { get; set; }
-        public DbSet<BookingSeat> BookingSeats { get; set; }
-        public DbSet<Category> Categories { get; set; }
-        public DbSet<Cinema> Cinemas { get; set; }
-        public DbSet<Hall> Halls { get; set; }
-        public DbSet<Movie> Movies { get; set; }
-        public DbSet<MovieActor> MovieActors { get; set; }
-        public DbSet<MovieCategory> MovieCategories { get; set; }
-        public DbSet<MovieImg> MovieImages { get; set; }
-        public DbSet<Seat> Seats { get; set; }
-        public DbSet<Showtime> Showtimes { get; set; }
-        public DbSet<ApplicationUser> Users { get; set; }
-        public DbSet<UserOTP> UserOTPs { get; set; }
+        public DbSet<Actor> Actors { get; set; } = null!;
+        public DbSet<Booking> Bookings { get; set; } = null!;
+        public DbSet<BookingSeat> BookingSeats { get; set; } = null!;
+        public DbSet<Category> Categories { get; set; } = null!;
+        public DbSet<Cinema> Cinemas { get; set; } = null!;
+        public DbSet<Hall> Halls { get; set; } = null!;
+        public DbSet<Movie> Movies { get; set; } = null!;
+        public DbSet<MovieActor> MovieActors { get; set; } = null!;
+        public DbSet<MovieCategory> MovieCategories { get; set; } = null!;
+        public DbSet<MovieImg> MovieImages { get; set; } = null!;
+        public DbSet<Seat> Seats { get; set; } = null!;
+        public DbSet<Showtime> Showtimes { get; set; } = null!;
+        public DbSet<UserOTP> UserOTPs { get; set; } = null!;
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; } = null!;
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            if (modelBuilder == null) throw new ArgumentNullException(nameof(modelBuilder));
+
             base.OnModelCreating(modelBuilder);
 
             // Configure entity relationships and constraints
@@ -45,13 +46,9 @@ namespace VoxTics.Data
             ConfigureMovieActorEntity(modelBuilder);
             ConfigureMovieCategoryEntity(modelBuilder);
             ConfigureMovieImgEntity(modelBuilder);
-
-            // Seed initial data
-            SeedData(modelBuilder);
         }
 
-      
-        private void ConfigureCinemaEntity(ModelBuilder modelBuilder)
+        private static void ConfigureCinemaEntity(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Cinema>(entity =>
             {
@@ -63,7 +60,7 @@ namespace VoxTics.Data
             });
         }
 
-        private void ConfigureHallEntity(ModelBuilder modelBuilder)
+        private static void ConfigureHallEntity(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Hall>(entity =>
             {
@@ -74,7 +71,7 @@ namespace VoxTics.Data
             });
         }
 
-        private void ConfigureSeatEntity(ModelBuilder modelBuilder)
+        private static void ConfigureSeatEntity(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Seat>(entity =>
             {
@@ -85,7 +82,7 @@ namespace VoxTics.Data
             });
         }
 
-        private void ConfigureMovieEntity(ModelBuilder modelBuilder)
+        private static void ConfigureMovieEntity(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Movie>(entity =>
             {
@@ -98,7 +95,7 @@ namespace VoxTics.Data
             });
         }
 
-        private void ConfigureActorEntity(ModelBuilder modelBuilder)
+        private static void ConfigureActorEntity(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Actor>(entity =>
             {
@@ -107,7 +104,7 @@ namespace VoxTics.Data
             });
         }
 
-        private void ConfigureCategoryEntity(ModelBuilder modelBuilder)
+        private static void ConfigureCategoryEntity(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Category>(entity =>
             {
@@ -117,7 +114,7 @@ namespace VoxTics.Data
             });
         }
 
-        private void ConfigureShowtimeEntity(ModelBuilder modelBuilder)
+        private static void ConfigureShowtimeEntity(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Showtime>(entity =>
             {
@@ -125,11 +122,11 @@ namespace VoxTics.Data
                 entity.Property(e => e.Price).HasColumnType("decimal(8,2)");
                 entity.HasOne(e => e.Movie).WithMany(e => e.Showtimes).HasForeignKey(e => e.MovieId);
                 entity.HasOne(e => e.Cinema).WithMany(e => e.Showtimes).HasForeignKey(e => e.CinemaId).OnDelete(DeleteBehavior.Restrict);
-                entity.HasOne(e => e.Hall).WithMany(e => e.Showtimes).HasForeignKey(e => e.HallId).OnDelete(DeleteBehavior.Restrict); 
+                entity.HasOne(e => e.Hall).WithMany(e => e.Showtimes).HasForeignKey(e => e.HallId).OnDelete(DeleteBehavior.Restrict);
             });
         }
 
-        private void ConfigureBookingEntity(ModelBuilder modelBuilder)
+        private static void ConfigureBookingEntity(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Booking>(entity =>
             {
@@ -140,7 +137,7 @@ namespace VoxTics.Data
             });
         }
 
-        private void ConfigureBookingSeatEntity(ModelBuilder modelBuilder)
+        private static void ConfigureBookingSeatEntity(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<BookingSeat>(entity =>
             {
@@ -152,7 +149,7 @@ namespace VoxTics.Data
             });
         }
 
-        private void ConfigureMovieActorEntity(ModelBuilder modelBuilder)
+        private static void ConfigureMovieActorEntity(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<MovieActor>(entity =>
             {
@@ -163,7 +160,7 @@ namespace VoxTics.Data
             });
         }
 
-        private void ConfigureMovieCategoryEntity(ModelBuilder modelBuilder)
+        private static void ConfigureMovieCategoryEntity(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<MovieCategory>(entity =>
             {
@@ -174,7 +171,7 @@ namespace VoxTics.Data
             });
         }
 
-        private void ConfigureMovieImgEntity(ModelBuilder modelBuilder)
+        private static void ConfigureMovieImgEntity(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<MovieImg>(entity =>
             {
@@ -183,101 +180,5 @@ namespace VoxTics.Data
                 entity.HasOne(e => e.Movie).WithMany(e => e.MovieImages).HasForeignKey(e => e.MovieId);
             });
         }
-
-        private void SeedData(ModelBuilder modelBuilder)
-        {
-            // Seed Categories
-            modelBuilder.Entity<Category>().HasData(
-                new Category { Id = 1, Name = "Action", Description = "Action movies", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) },
-                new Category { Id = 2, Name = "Comedy", Description = "Comedy movies", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) },
-                new Category { Id = 3, Name = "Drama", Description = "Drama movies", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) },
-                new Category { Id = 4, Name = "Horror", Description = "Horror movies", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) },
-                new Category { Id = 5, Name = "Romance", Description = "Romance movies", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) },
-                new Category { Id = 6, Name = "Sci-Fi", Description = "Science Fiction movies", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) },
-                new Category { Id = 7, Name = "Thriller", Description = "Thriller movies", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) },
-                new Category { Id = 8, Name = "Animation", Description = "Animated movies", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) }
-            );
-
-            // Seed User Roles
-            modelBuilder.Entity<ApplicationUser>().HasData(
-                new ApplicationUser
-                {
-                    Name = "Admin",
-                    Email = "admin@cinema.com",
-                    PasswordHash = "AQAAAAEAACcQAAAAEH3QhLhFhBpz9Kpx8qHiuZs1kJ2sNFKJCyKGXUwNdU9u6Vp8IJ1aGk3K3wIZl4M5QQ==", // Password123!
-                    Role = UserRole.Admin,
-                    IsActive = true,
-                }
-            );
-
-            // Seed Cinemas
-            modelBuilder.Entity<Cinema>().HasData(
-                new Cinema
-                {
-                    Id = 1,
-                    Name = "Grand Cinema",
-                    Address = "123 Main Street",
-                    City = "Downtown",
-                    Phone = "555-0123",
-                    Email = "info@grandcinema.com",
-                    IsActive = true,
-                    CreatedAt = new DateTime(2025, 9, 7)
-                },
-                new Cinema
-                {
-                    Id = 2,
-                    Name = "City Center Cinema",
-                    Address = "456 Central Avenue",
-                    City = "City Center",
-                    Phone = "555-0456",
-                    Email = "info@citycentercinema.com",
-                    IsActive = true,
-                    CreatedAt = new DateTime(2025, 9, 7)
-                }
-            );
-
-            // Seed Actors
-            modelBuilder.Entity<Actor>().HasData(
-                new Actor { Id = 1, FirstName = "Robert Downey Jr.", Nationality = "American", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) },
-                new Actor { Id = 2, FirstName = "Scarlett Johansson", Nationality = "American", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) },
-                new Actor { Id = 3, FirstName = "Chris Evans", Nationality = "American", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) },
-                new Actor { Id = 4, FirstName = "Jennifer Lawrence", Nationality = "American", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) },
-                new Actor { Id = 5, FirstName = "Leonardo DiCaprio", Nationality = "American", IsActive = true, CreatedAt = new DateTime(2025, 9, 7) }
-            );
-            // ===================
-            // Halls
-            // ===================
-            modelBuilder.Entity<Hall>().HasData(
-                new Hall { Id = 1, Name = "Hall 1", CinemaId = 1, CreatedAt = new DateTime(2025, 9, 7) },
-                new Hall { Id = 2, Name = "Hall 2", CinemaId = 1, CreatedAt = new DateTime(2025, 9, 7) }
-            );
-
-            // ===================
-            // Showtimes (use static StartTime values - deterministic)
-            // ===================
-            modelBuilder.Entity<Showtime>().HasData(
-                new Showtime
-                {
-                    Id = 1,
-                    MovieId = 2,
-                    HallId = 1,
-                    StartTime = new DateTime(2025, 9, 8, 12, 00, 00, DateTimeKind.Utc),
-                    Price = 10.00m,
-                    CreatedAt = new DateTime(2025, 9, 7)
-                },
-                new Showtime
-                {
-                    Id = 2,
-                    MovieId = 2,
-                    HallId = 2,
-                    StartTime = new DateTime(2025, 9, 8, 14, 30, 00, DateTimeKind.Utc),
-                    Price = 12.00m,
-                    CreatedAt = new DateTime(2025, 9, 7)
-                }
-            );
-        }
-
-
-      
     }
 }

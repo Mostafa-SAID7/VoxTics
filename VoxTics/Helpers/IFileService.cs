@@ -1,4 +1,13 @@
-﻿namespace VoxTics.Helpers
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace VoxTics.Helpers
 {
     public interface IFileService
     {
@@ -23,25 +32,27 @@
         {
             if (file == null || file.Length == 0) return string.Empty;
 
-            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
-            if (!_allowed.Contains(ext)) throw new InvalidOperationException("Invalid image type.");
-            if (file.Length > MaxSizeBytes) throw new InvalidOperationException("Image too large.");
+            // Use ToUpperInvariant for consistency in comparisons
+            var ext = Path.GetExtension(file.FileName).ToUpperInvariant();
+            if (!_allowed.Contains(ext, StringComparer.OrdinalIgnoreCase))
+                throw new InvalidOperationException("Invalid image type.");
+            if (file.Length > MaxSizeBytes)
+                throw new InvalidOperationException("Image too large.");
 
             var filename = $"{Guid.NewGuid()}{ext}";
             var uploads = Path.Combine(_env.WebRootPath ?? Path.GetTempPath(), "uploads", folder);
-
             Directory.CreateDirectory(uploads);
 
             var full = Path.Combine(uploads, filename);
             try
             {
-                using var fs = new FileStream(full, FileMode.Create);
-                await file.CopyToAsync(fs, cancellationToken);
+                using var fs = new FileStream(full, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true);
+                await file.CopyToAsync(fs, cancellationToken).ConfigureAwait(false);
                 return $"/uploads/{folder}/{filename}";
             }
-            catch (Exception ex)
+            catch (IOException ioEx) // Catch specific exception type
             {
-                _logger.LogError(ex, "FileService SaveFileAsync failed for {FullPath}", full);
+                _logger.LogError(ioEx, "FileService SaveFileAsync failed for {FullPath}", full);
                 throw;
             }
         }
@@ -49,17 +60,25 @@
         public void DeleteFile(string relativePath)
         {
             if (string.IsNullOrWhiteSpace(relativePath)) return;
+
             var trimmed = relativePath.TrimStart('/');
             var full = Path.Combine(_env.WebRootPath ?? Path.GetTempPath(), trimmed.Replace('/', Path.DirectorySeparatorChar));
+
             try
             {
-                if (System.IO.File.Exists(full)) System.IO.File.Delete(full);
+                if (System.IO.File.Exists(full))
+                {
+                    System.IO.File.Delete(full);
+                }
             }
-            catch (Exception ex)
+            catch (IOException ioEx) // Catch specific exception type
             {
-                _logger.LogWarning(ex, "FileService DeleteFile failed for {FullPath}", full);
+                _logger.LogWarning(ioEx, "FileService DeleteFile failed for {FullPath}", full);
+            }
+            catch (UnauthorizedAccessException uaEx)
+            {
+                _logger.LogWarning(uaEx, "FileService DeleteFile failed due to permission for {FullPath}", full);
             }
         }
     }
-
 }

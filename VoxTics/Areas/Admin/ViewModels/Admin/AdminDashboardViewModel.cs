@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.VisualStudio.Web.CodeGeneration.DotNet;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
 using VoxTics.Areas.Admin.ViewModels.Movie;
 using VoxTics.Areas.Identity.Models.ViewModels;
 using VoxTics.Models.Enums;
@@ -15,10 +18,10 @@ namespace VoxTics.Areas.Admin.ViewModels.Admin
         public int TotalCategories { get; set; }
         public int TotalShowtimes { get; set; }
 
-        // Revenue (scalar values)
+        // Revenue
         public decimal TotalRevenue { get; set; }
-        public decimal MonthlyRevenue { get; set; }   // e.g. revenue for current month
-        public decimal DailyRevenue { get; set; }     // e.g. revenue for today
+        public decimal MonthlyRevenue { get; set; }
+        public decimal DailyRevenue { get; set; }
 
         // Movie statistics
         public int UpcomingMovies { get; set; }
@@ -30,27 +33,24 @@ namespace VoxTics.Areas.Admin.ViewModels.Admin
         public int ConfirmedBookings { get; set; }
         public int CancelledBookings { get; set; }
 
-        // Recent activities
-        public List<MovieListItemViewModel> RecentMovies { get; set; } = new List<MovieListItemViewModel>();
-        public List<BookingViewModel> RecentBookings { get; set; } = new List<BookingViewModel>();
-        public List<UserViewModel> RecentUsers { get; set; } = new List<UserViewModel>();
+        // Recent activities (Read-only)
+        public IReadOnlyList<MovieListItemViewModel> RecentMovies { get; } = new List<MovieListItemViewModel>();
+        public IReadOnlyList<BookingViewModel> RecentBookings { get; } = new List<BookingViewModel>();
+        public IReadOnlyList<ApplicationInfo> RecentUsers { get; } = new List<ApplicationInfo>();
 
-        // Charts data
-        public Dictionary<string, int> MonthlyBookings { get; set; } = new Dictionary<string, int>();
+        // Charts data (Read-only)
+        public IReadOnlyDictionary<string, int> MonthlyBookings { get; } = new Dictionary<string, int>();
+        public IReadOnlyDictionary<string, decimal> MonthlyRevenueSeries { get; } = new Dictionary<string, decimal>();
+        public IReadOnlyDictionary<MovieStatus, int> MoviesByStatus { get; } = new Dictionary<MovieStatus, int>();
+        public IReadOnlyDictionary<BookingStatus, int> BookingsByStatus { get; } = new Dictionary<BookingStatus, int>();
 
-        // RENAMED: previously had name collision with decimal MonthlyRevenue
-        public Dictionary<string, decimal> MonthlyRevenueSeries { get; set; } = new Dictionary<string, decimal>();
-
-        public Dictionary<MovieStatus, int> MoviesByStatus { get; set; } = new Dictionary<MovieStatus, int>();
-        public Dictionary<BookingStatus, int> BookingsByStatus { get; set; } = new Dictionary<BookingStatus, int>();
-
-        // Popular items
-        public List<MovieListItemViewModel> PopularMovies { get; set; } = new List<MovieListItemViewModel>();
-        public List<CinemaViewModel> PopularCinemas { get; set; } = new List<CinemaViewModel>();
+        // Popular items (Read-only)
+        public IReadOnlyList<MovieListItemViewModel> PopularMovies { get; } = new List<MovieListItemViewModel>();
+        public IReadOnlyList<CinemaViewModel> PopularCinemas { get; } = new List<CinemaViewModel>();
 
         // Display properties
-        public string FormattedTotalRevenue => TotalRevenue.ToString("C");
-        public string FormattedMonthlyRevenue => MonthlyRevenue.ToString("C");
-        public string FormattedDailyRevenue => DailyRevenue.ToString("C");
+        public string FormattedTotalRevenue => TotalRevenue.ToString("C", CultureInfo.InvariantCulture);
+        public string FormattedMonthlyRevenue => MonthlyRevenue.ToString("C", CultureInfo.InvariantCulture);
+        public string FormattedDailyRevenue => DailyRevenue.ToString("C", CultureInfo.InvariantCulture);
     }
 }
