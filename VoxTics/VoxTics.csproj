@@ -41,6 +41,9 @@
 
 	<ItemGroup>
 		<!-- Static files / libraries -->
+		<Folder Include="Areas\Admin\AdminProfile\" />
+		<Folder Include="Areas\Admin\Views\Shared\Components\" />
+		<Folder Include="Views\Shared\Components\" />
 		<Folder Include="wwwroot\lib\animate.css\" />
 		<Folder Include="wwwroot\lib\sweetalert2\" />
 		<Folder Include="wwwroot\lib\toastr\" />

@@ -10,7 +10,7 @@ namespace VoxTics.Repositories.IRepositories
 {
     public interface ICinemasRepository : IBaseRepository<Cinema>
     {
-        Task<IEnumerable<Cinema>> GetCinemasByCityAsync(string city);
+        Task<Cinema?> GetByNameAsync(string name);
     }
 
 }

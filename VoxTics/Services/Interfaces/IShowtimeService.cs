@@ -3,9 +3,9 @@
     public interface IShowtimeService
     {
         Task<IEnumerable<Showtime>> GetAllAsync();
+        Task<IEnumerable<Showtime>> GetWithDetailsAsync();
         Task<Showtime?> GetByIdAsync(int id);
-        Task<IEnumerable<Showtime>> GetByMovieAsync(int movieId);
-        Task<IEnumerable<Showtime>> GetByCinemaAsync(int cinemaId);
+        Task<Showtime?> GetWithMovieAsync(int id);
         Task CreateAsync(Showtime showtime);
         Task UpdateAsync(Showtime showtime);
         Task DeleteAsync(int id);

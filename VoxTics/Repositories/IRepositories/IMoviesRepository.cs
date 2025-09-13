@@ -11,8 +11,8 @@ namespace VoxTics.Repositories.IRepositories
 {
     public interface IMoviesRepository : IBaseRepository<Movie>
     {
-        Task<IEnumerable<Movie>> GetMoviesByCategoryAsync(int categoryId);
-        Task<IEnumerable<Movie>> GetUpcomingMoviesAsync(DateTime fromDate);
+        Task<Movie?> GetByTitleAsync(string title);
+        Task<IEnumerable<Movie>> GetWithCategoriesAsync();
     }
 
 }

@@ -6,49 +6,48 @@ namespace VoxTics.Services.Implementations
 {
     public class BookingService : IBookingService
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _uow;
+        public BookingService(IUnitOfWork uow) => _uow = uow;
 
-        public BookingService(IUnitOfWork unitOfWork)
+        public async Task<IEnumerable<Booking>> GetAllAsync() => await _uow.Bookings.GetAllWithDetailsAsync();
+        public async Task<Booking?> GetByIdAsync(int id) => await _uow.Bookings.GetByIdWithDetailsAsync(id);
+
+        public async Task CreateAsync(Booking booking)
         {
-            _unitOfWork = unitOfWork;
+            await _uow.Bookings.AddAsync(booking);
+            await _uow.SaveAsync();
         }
 
-        public async Task<IEnumerable<Booking>> GetAllBookingsAsync()
+        public async Task UpdateAsync(Booking booking)
         {
-            return await _unitOfWork.Bookings.GetAllAsync();
+            _uow.Bookings.Update(booking);
+            await _uow.SaveAsync();
         }
 
-        public async Task<IEnumerable<Booking>> GetBookingsByUserAsync(string userId)
+        public async Task DeleteAsync(int id)
         {
-            return await _unitOfWork.Bookings.GetBookingsByUserIdAsync(userId);
+            var booking = await _uow.Bookings.GetByIdAsync(id);
+            if (booking == null) return;
+            _uow.Bookings.DeleteAsync(booking);
+            await _uow.SaveAsync();
         }
 
-        public async Task<Booking?> GetBookingByIdAsync(int id)
+        public async Task UpdateStatusAsync(int id, BookingStatus status)
         {
-            return await _unitOfWork.Bookings.GetByIdAsync(id);
+            var booking = await _uow.Bookings.GetByIdAsync(id);
+            if (booking == null) return;
+            booking.Status = status;
+            await _uow.SaveAsync();
         }
 
-        public async Task CreateBookingAsync(Booking booking, string userId)
+        public async Task CancelAsync(int id, string reason)
         {
-            await _unitOfWork.Bookings.AddAsync(booking);
-            await _unitOfWork.CompleteAsync();
-        }
-
-        public async Task UpdateBookingAsync(Booking booking, string userId)
-        {
-        
-            _unitOfWork.Bookings.Update(booking); // ✅ Update added to repo
-            await _unitOfWork.CompleteAsync();
-        }
-
-        public async Task DeleteBookingAsync(int id, string userId)
-        {
-            var booking = await _unitOfWork.Bookings.GetByIdAsync(id);
-            if (booking == null)
-                throw new UnauthorizedAccessException("Cannot delete another user's booking.");
-
-            _unitOfWork.Bookings.Remove(booking); // ✅ Uses repo.Remove
-            await _unitOfWork.CompleteAsync();
+            var booking = await _uow.Bookings.GetByIdAsync(id);
+            if (booking == null) return;
+            booking.Status = BookingStatus.Cancelled;
+            booking.CancellationReason = reason;
+            booking.CancellationDate = DateTime.UtcNow;
+            await _uow.SaveAsync();
         }
     }
 }

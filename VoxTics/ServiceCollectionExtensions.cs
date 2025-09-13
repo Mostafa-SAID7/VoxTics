@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 using VoxTics.Data.UoW;
-using VoxTics.MappingProfiles;
 using VoxTics.Repositories;
 using VoxTics.Repositories.IRepositories;
 using VoxTics.Services.Implementations;
@@ -12,20 +12,42 @@ namespace VoxTics
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+        public static IServiceCollection AddApplicationServices(
+            this IServiceCollection services,
+            IConfiguration configuration)
         {
-            //Add services
+            services.AddDbContext<MovieDbContext>(options =>
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddRepositories();
+            services.AddBusinessServices();
             services.AddTransient<IEmailSender, EmailSender>();
+            return services;
+        }
 
-            // Repositories
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-            
-            // Add AutoMapper
-            
+        private static IServiceCollection AddRepositories(this IServiceCollection services)
+        {
+            services.AddScoped<IBookingsRepository, BookingsRepository>();
+            services.AddScoped<IMoviesRepository, MoviesRepository>();
+            services.AddScoped<ICategoriesRepository, CategoriesRepository>();
+            services.AddScoped<ICinemasRepository, CinemasRepository>();
+            services.AddScoped<IShowtimesRepository, ShowtimesRepository>();
 
-            // Add Helpers 
+
+            return services;
+        }
+
+        private static IServiceCollection AddBusinessServices(this IServiceCollection services)
+        {
+            services.AddScoped<IBookingService, BookingService>();
+            services.AddScoped<IMovieService, MovieService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ICinemaService, CinemaService>();
+            services.AddScoped<IShowtimeService, ShowtimeService>();
+
 
             return services;
         }
     }
+
 }

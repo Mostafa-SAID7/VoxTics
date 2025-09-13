@@ -1,54 +1,32 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using VoxTics.Models.Entities;
 using VoxTics.Models.ViewModels;
 using VoxTics.Repositories.IRepositories;
+using VoxTics.Services.Interfaces;
 
 namespace VoxTics.Controllers
 {
     public class CinemasController : Controller
     {
-        private readonly ICinemasRepository _cinemaRepository;
-        private readonly IShowtimesRepository _showtimeRepository;
-        private readonly ILogger<CinemasController> _logger;
+        private readonly ICinemaService _service;
+        public CinemasController(ICinemaService service) => _service = service;
 
-        public CinemasController(
-            ICinemasRepository cinemaRepository,
-            IShowtimesRepository showtimeRepository,
-            ILogger<CinemasController> logger)
+        public async Task<IActionResult> Index()
         {
-            _cinemaRepository = cinemaRepository ?? throw new ArgumentNullException(nameof(cinemaRepository));
-            _showtimeRepository = showtimeRepository ?? throw new ArgumentNullException(nameof(showtimeRepository));
-            _logger = logger;
+            var cinemas = await _service.GetAllAsync();
+            return View(cinemas);
         }
 
-        // GET: /Cinemas
-        public async Task<IActionResult> Index(string? searchTerm)
-        {
-            try
-            {
-                IEnumerable<Cinema> cinemas;
-
-             
-             
-                return View();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading cinemas");
-                TempData["Error"] = "Unable to load cinemas.";
-                return View(new List<CinemaVM>());
-            }
-        }
-
-        // GET: /Cinemas/Details/5
         public async Task<IActionResult> Details(int id)
         {
-          return View();
+            var cinema = await _service.GetByIdAsync(id);
+            if (cinema == null) return NotFound();
+            return View(cinema);
         }
     }
 }

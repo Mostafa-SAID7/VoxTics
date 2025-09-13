@@ -14,19 +14,26 @@ namespace VoxTics.Repositories
 {
     public class BookingsRepository : BaseRepository<Booking>, IBookingsRepository
     {
-        public BookingsRepository(MovieDbContext context) : base(context) { }
+        private readonly MovieDbContext _context;
+        public BookingsRepository(MovieDbContext context) : base(context) => _context = context;
 
-        public async Task<IEnumerable<Booking>> GetBookingsByUserIdAsync(string userId)
+        public async Task<IEnumerable<Booking>> GetAllWithDetailsAsync()
         {
             return await _context.Bookings
-                //.Where(b => b.UserId == userId)
                 .Include(b => b.Showtime)
+                .Include(b => b.Movie)
+                .Include(b => b.User)
+                .AsNoTracking()
                 .ToListAsync();
         }
 
-        public void Remove(Booking booking)
+        public async Task<Booking?> GetByIdWithDetailsAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Bookings
+                .Include(b => b.Showtime)
+                .Include(b => b.Movie)
+                .Include(b => b.User)
+                .FirstOrDefaultAsync(b => b.Id == id);
         }
     }
 

@@ -171,18 +171,19 @@ Common/
 │  ├─ Movies/
 │  │  ├─ Index.cshtml (with filter +search +pagination + card) with ajax live script
 │  │  ├─ _MovieCards.cshtml
-│  │  └─ _DetailsPartial.cshtml as modal
+│  │  └─ _Details.cshtml as modal
+		_BookingCards.cshtml as modal from user clicked book now
 │  ├─ Cinemas/
 │  │  ├─ Index.cshtml (with filter +search +pagination + card) with ajax live script
 │  │  ├─ _CinemaCards.cshtml
-│  │  └─ _DetailsPartial.cshtml as modal
+│  │  └─ _Details.cshtml as modal
 │  ├─ Categories/
 │  │  ├─ Index.cshtml (with filter +search +pagination + card) with ajax live script
 │  │  └─ Details.cshtml page Related Movies by only this category
 │  ├─ Showtimes/
 │  │  ├─ Index.cshtml (with filter +search +pagination + card) with ajax live script
 │  │  ├─ _ShowtimeCards.cshtml
-│  │  └─ _DetailsPartial.cshtml as modal
+│  │  └─ _Details.cshtml as modal
 │  ├─ Bookings/
 │  │  ├─ Index.cshtml (with filter +search +pagination + card) with ajax live script for user to book ticket
 │  │  ├─ _BookingCards.cshtml
@@ -222,7 +223,6 @@ Common/
 │  └─ lib/
 	images/
 		logo.png
-
 	uploads/
 	├─ movies/
 	├─ actors/

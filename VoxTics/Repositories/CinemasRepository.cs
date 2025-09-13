@@ -16,11 +16,11 @@ namespace VoxTics.Repositories
     {
         public CinemasRepository(MovieDbContext context) : base(context) { }
 
-        public async Task<IEnumerable<Cinema>> GetCinemasByCityAsync(string city)
+        public async Task<Cinema?> GetByNameAsync(string name)
         {
             return await _context.Cinemas
-                .Where(c => c.City == city)
-                .ToListAsync();
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Name.ToLower() == name.ToLower());
         }
     }
 

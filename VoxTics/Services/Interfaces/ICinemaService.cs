@@ -4,7 +4,7 @@
     {
         Task<IEnumerable<Cinema>> GetAllAsync();
         Task<Cinema?> GetByIdAsync(int id);
-        Task<IEnumerable<Cinema>> GetByCityAsync(string city);
+        Task<Cinema?> GetByNameAsync(string name);
         Task CreateAsync(Cinema cinema);
         Task UpdateAsync(Cinema cinema);
         Task DeleteAsync(int id);

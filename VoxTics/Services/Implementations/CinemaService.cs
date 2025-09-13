@@ -5,42 +5,31 @@ namespace VoxTics.Services.Implementations
 {
     public class CinemaService : ICinemaService
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _uow;
+        public CinemaService(IUnitOfWork uow) => _uow = uow;
 
-        public CinemaService(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
-
-        public async Task<IEnumerable<Cinema>> GetAllAsync() =>
-            await _unitOfWork.Cinemas.GetAllAsync();
-
-        public async Task<Cinema?> GetByIdAsync(int id) =>
-            await _unitOfWork.Cinemas.GetByIdAsync(id);
-
-        public async Task<IEnumerable<Cinema>> GetByCityAsync(string city) =>
-            await _unitOfWork.Cinemas.GetCinemasByCityAsync(city);
+        public async Task<IEnumerable<Cinema>> GetAllAsync() => await _uow.Cinemas.GetAllAsync();
+        public async Task<Cinema?> GetByIdAsync(int id) => await _uow.Cinemas.GetByIdAsync(id);
+        public async Task<Cinema?> GetByNameAsync(string name) => await _uow.Cinemas.GetByNameAsync(name);
 
         public async Task CreateAsync(Cinema cinema)
         {
-            await _unitOfWork.Cinemas.AddAsync(cinema);
-            await _unitOfWork.CompleteAsync();
+            await _uow.Cinemas.AddAsync(cinema);
+            await _uow.SaveAsync();
         }
 
         public async Task UpdateAsync(Cinema cinema)
         {
-            _unitOfWork.Cinemas.Update(cinema);
-            await _unitOfWork.CompleteAsync();
+            _uow.Cinemas.Update(cinema);
+            await _uow.SaveAsync();
         }
 
         public async Task DeleteAsync(int id)
         {
-            var cinema = await _unitOfWork.Cinemas.GetByIdAsync(id);
-            if (cinema != null)
-            {
-                _unitOfWork.Cinemas.DeleteAsync(cinema);
-                await _unitOfWork.CompleteAsync();
-            }
+            var cinema = await _uow.Cinemas.GetByIdAsync(id);
+            if (cinema == null) return;
+            _uow.Cinemas.DeleteAsync(cinema);
+            await _uow.SaveAsync();
         }
     }
 

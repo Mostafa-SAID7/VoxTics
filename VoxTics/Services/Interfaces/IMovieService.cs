@@ -8,8 +8,8 @@ namespace VoxTics.Services.Interfaces
     {
         Task<IEnumerable<Movie>> GetAllAsync();
         Task<Movie?> GetByIdAsync(int id);
-        Task<IEnumerable<Movie>> GetByCategoryAsync(int categoryId);
-        Task<IEnumerable<Movie>> GetUpcomingAsync(DateTime fromDate);
+        Task<Movie?> GetByTitleAsync(string title);
+        Task<IEnumerable<Movie>> GetWithCategoriesAsync();
         Task CreateAsync(Movie movie);
         Task UpdateAsync(Movie movie);
         Task DeleteAsync(int id);

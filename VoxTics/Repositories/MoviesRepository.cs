@@ -16,18 +16,20 @@ namespace VoxTics.Repositories
     {
         public MoviesRepository(MovieDbContext context) : base(context) { }
 
-        public async Task<IEnumerable<Movie>> GetMoviesByCategoryAsync(int categoryId)
+        public async Task<Movie?> GetByTitleAsync(string title)
         {
             return await _context.Movies
-                //.Where(m => m.CategoryId == categoryId)
-                .ToListAsync();
+                .Include(m => m.MovieCategories)
+                .ThenInclude(mc => mc.Category)
+                .FirstOrDefaultAsync(m => m.Title.ToLower() == title.ToLower());
         }
 
-        public async Task<IEnumerable<Movie>> GetUpcomingMoviesAsync(DateTime fromDate)
+        public async Task<IEnumerable<Movie>> GetWithCategoriesAsync()
         {
             return await _context.Movies
-                .Where(m => m.ReleaseDate >= fromDate)
-                .OrderBy(m => m.ReleaseDate)
+                .Include(m => m.MovieCategories)
+                .ThenInclude(mc => mc.Category)
+                .AsNoTracking()
                 .ToListAsync();
         }
     }

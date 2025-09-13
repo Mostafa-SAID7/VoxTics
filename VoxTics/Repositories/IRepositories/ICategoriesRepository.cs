@@ -9,7 +9,7 @@ namespace VoxTics.Repositories.IRepositories
 {
     public interface ICategoriesRepository : IBaseRepository<Category>
     {
-        Task<Category?> GetCategoryWithMoviesAsync(int categoryId);
+        Task<Category?> GetByNameAsync(string name);
     }
 
 }

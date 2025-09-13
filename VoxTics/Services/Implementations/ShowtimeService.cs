@@ -5,46 +5,32 @@ namespace VoxTics.Services.Implementations
 {
     public class ShowtimeService : IShowtimeService
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _uow;
+        public ShowtimeService(IUnitOfWork uow) => _uow = uow;
 
-        public ShowtimeService(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
-
-        public async Task<IEnumerable<Showtime>> GetAllAsync() =>
-            await _unitOfWork.Showtimes.GetAllAsync();
-
-        public async Task<Showtime?> GetByIdAsync(int id) =>
-            await _unitOfWork.Showtimes.GetByIdAsync(id);
-
-        public async Task<IEnumerable<Showtime>> GetByMovieAsync(int movieId) =>
-            await _unitOfWork.Showtimes.GetShowtimesForMovieAsync(movieId);
-
-        public async Task<IEnumerable<Showtime>> GetByCinemaAsync(int cinemaId) =>
-            await _unitOfWork.Showtimes.GetShowtimesByCinemaAsync(cinemaId);
+        public async Task<IEnumerable<Showtime>> GetAllAsync() => await _uow.Showtimes.GetAllAsync();
+        public async Task<IEnumerable<Showtime>> GetWithDetailsAsync() => await _uow.Showtimes.GetWithDetailsAsync();
+        public async Task<Showtime?> GetByIdAsync(int id) => await _uow.Showtimes.GetByIdAsync(id);
+        public async Task<Showtime?> GetWithMovieAsync(int id) => await _uow.Showtimes.GetWithMovieAsync(id);
 
         public async Task CreateAsync(Showtime showtime)
         {
-            await _unitOfWork.Showtimes.AddAsync(showtime);
-            await _unitOfWork.CompleteAsync();
+            await _uow.Showtimes.AddAsync(showtime);
+            await _uow.SaveAsync();
         }
 
         public async Task UpdateAsync(Showtime showtime)
         {
-            _unitOfWork.Showtimes.Update(showtime);
-            await _unitOfWork.CompleteAsync();
+            _uow.Showtimes.Update(showtime);
+            await _uow.SaveAsync();
         }
 
         public async Task DeleteAsync(int id)
         {
-            var showtime = await _unitOfWork.Showtimes.GetByIdAsync(id);
-            if (showtime != null)
-            {
-                _unitOfWork.Showtimes.DeleteAsync(showtime);
-                await _unitOfWork.CompleteAsync();
-            }
+            var showtime = await _uow.Showtimes.GetByIdAsync(id);
+            if (showtime == null) return;
+            _uow.Showtimes.DeleteAsync(showtime);
+            await _uow.SaveAsync();
         }
     }
-
 }

@@ -2,12 +2,13 @@
 {
     public interface IBookingService
     {
-        Task<IEnumerable<Booking>> GetAllBookingsAsync();
-        Task<IEnumerable<Booking>> GetBookingsByUserAsync(string userId); // ✅ updated for Identity
-        Task<Booking?> GetBookingByIdAsync(int id);
-        Task CreateBookingAsync(Booking booking, string userId);          // ✅ pass userId on creation
-        Task UpdateBookingAsync(Booking booking, string userId);          // ✅ ensure ownership check
-        Task DeleteBookingAsync(int id, string userId);                   // ✅ ensure ownership check
+        Task<IEnumerable<Booking>> GetAllAsync();
+        Task<Booking?> GetByIdAsync(int id);
+        Task CreateAsync(Booking booking);
+        Task UpdateAsync(Booking booking);
+        Task DeleteAsync(int id);
+        Task UpdateStatusAsync(int id, BookingStatus status);
+        Task CancelAsync(int id, string reason);
     }
 
 

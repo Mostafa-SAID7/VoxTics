@@ -1,6 +1,6 @@
-﻿namespace VoxTics.Repositories.IRepositories
+﻿namespace VoxTics.Services.Interfaces
 {
-    public interface IHomeRepository
+    public interface IHomeService
     {
         Task<IEnumerable<Movie>> GetNowShowingAsync();
         Task<IEnumerable<Movie>> GetComingSoonAsync();

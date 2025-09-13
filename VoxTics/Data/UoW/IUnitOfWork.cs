@@ -10,11 +10,11 @@ namespace VoxTics.Data.UoW
         ICinemasRepository Cinemas { get; }
         IMoviesRepository Movies { get; }
         IShowtimesRepository Showtimes { get; }
-        IDashboardRepository AdminDashboard { get; }
+        IDashboardRepository Dashboard { get; }
         IHomeRepository Home { get; }
         IBaseRepository<UserOTP> UserOTP { get; }
-        Task SaveAsync();
         Task<int> CompleteAsync();
+        Task SaveAsync();
     }
 
 }

@@ -14,13 +14,14 @@ namespace VoxTics.Repositories
 {
     public class CategoriesRepository : BaseRepository<Category>, ICategoriesRepository
     {
-        public CategoriesRepository(MovieDbContext context) : base(context) { }
+        private readonly MovieDbContext _context;
+        public CategoriesRepository(MovieDbContext context) : base(context) => _context = context;
 
-        public async Task<Category?> GetCategoryWithMoviesAsync(int categoryId)
+        public async Task<Category?> GetByNameAsync(string name)
         {
             return await _context.Categories
-                //.Include(c => c.Movies)
-                .FirstOrDefaultAsync(c => c.Id == categoryId);
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Name.ToLower() == name.ToLower());
         }
     }
 

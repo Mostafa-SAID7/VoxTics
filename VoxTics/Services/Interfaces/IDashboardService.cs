@@ -4,6 +4,9 @@ namespace VoxTics.Services.Interfaces
 {
     public interface IDashboardService
     {
-        Task<AdminDashboardViewModel> GetDashboardSummaryAsync(CancellationToken cancellationToken = default);
+        Task<int> GetTotalBookingsAsync();
+        Task<int> GetTotalMoviesAsync();
+        Task<int> GetTotalUsersAsync();
+        Task<decimal> GetTotalRevenueAsync();
     }
 }

@@ -11,8 +11,8 @@ namespace VoxTics.Repositories.IRepositories
 {
     public interface IShowtimesRepository : IBaseRepository<Showtime>
     {
-        Task<IEnumerable<Showtime>> GetShowtimesForMovieAsync(int movieId);
-        Task<IEnumerable<Showtime>> GetShowtimesByCinemaAsync(int cinemaId);
+        Task<IEnumerable<Showtime>> GetWithDetailsAsync();
+        Task<Showtime?> GetWithMovieAsync(int id);
     }
 
 }

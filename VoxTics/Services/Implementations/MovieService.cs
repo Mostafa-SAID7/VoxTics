@@ -11,45 +11,32 @@ namespace VoxTics.Services.Implementations
 {
     public class MovieService : IMovieService
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _uow;
+        public MovieService(IUnitOfWork uow) => _uow = uow;
 
-        public MovieService(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
-
-        public async Task<IEnumerable<Movie>> GetAllAsync() =>
-            await _unitOfWork.Movies.GetAllAsync();
-
-        public async Task<Movie?> GetByIdAsync(int id) =>
-            await _unitOfWork.Movies.GetByIdAsync(id);
-
-        public async Task<IEnumerable<Movie>> GetByCategoryAsync(int categoryId) =>
-            await _unitOfWork.Movies.GetMoviesByCategoryAsync(categoryId);
-
-        public async Task<IEnumerable<Movie>> GetUpcomingAsync(DateTime fromDate) =>
-            await _unitOfWork.Movies.GetUpcomingMoviesAsync(fromDate);
+        public async Task<IEnumerable<Movie>> GetAllAsync() => await _uow.Movies.GetAllAsync();
+        public async Task<Movie?> GetByIdAsync(int id) => await _uow.Movies.GetByIdAsync(id);
+        public async Task<Movie?> GetByTitleAsync(string title) => await _uow.Movies.GetByTitleAsync(title);
+        public async Task<IEnumerable<Movie>> GetWithCategoriesAsync() => await _uow.Movies.GetWithCategoriesAsync();
 
         public async Task CreateAsync(Movie movie)
         {
-            await _unitOfWork.Movies.AddAsync(movie);
-            await _unitOfWork.CompleteAsync();
+            await _uow.Movies.AddAsync(movie);
+            await _uow.SaveAsync();
         }
 
         public async Task UpdateAsync(Movie movie)
         {
-            _unitOfWork.Movies.Update(movie);
-            await _unitOfWork.CompleteAsync();
+            _uow.Movies.Update(movie);
+            await _uow.SaveAsync();
         }
 
         public async Task DeleteAsync(int id)
         {
-            var movie = await _unitOfWork.Movies.GetByIdAsync(id);
-            if (movie != null)
-            {
-                _unitOfWork.Movies.DeleteAsync(movie);
-                await _unitOfWork.CompleteAsync();
-            }
+            var movie = await _uow.Movies.GetByIdAsync(id);
+            if (movie == null) return;
+            _uow.Movies.DeleteAsync(movie);
+            await _uow.SaveAsync();
         }
     }
 

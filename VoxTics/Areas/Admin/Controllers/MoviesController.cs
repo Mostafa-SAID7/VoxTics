@@ -20,70 +20,62 @@ namespace VoxTics.Areas.Admin.Controllers
     [Area("Admin")]
     public class MoviesController : Controller
     {
-        private readonly IMovieService _movieService;
+        private readonly IMovieService _service;
+        public MoviesController(IMovieService service) => _service = service;
 
-        public MoviesController(IMovieService movieService)
+        public async Task<IActionResult> Index()
         {
-            _movieService = movieService;
+            var movies = await _service.GetAllAsync();
+            return View(movies);
         }
 
-        // GET: /Admin/Movies
-        public async Task<IActionResult> Index() =>
-            View(await _movieService.GetAllAsync().ConfigureAwait(false));
-
-        // GET: /Admin/Movies/Details/5
-        public async Task<IActionResult> Details(int id)
-        {
-            var movie = await _movieService.GetByIdAsync(id).ConfigureAwait(false);
-            if (movie == null) return NotFound();
-            return View(movie);
-        }
-
-        // GET: /Admin/Movies/Create
         public IActionResult Create() => View();
 
-        // POST: /Admin/Movies/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Movie movie)
         {
             if (!ModelState.IsValid) return View(movie);
-            await _movieService.CreateAsync(movie).ConfigureAwait(false);
+
+            var existing = await _service.GetByTitleAsync(movie.Title);
+            if (existing != null)
+            {
+                ModelState.AddModelError("Title", "Movie already exists.");
+                return View(movie);
+            }
+
+            await _service.CreateAsync(movie);
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: /Admin/Movies/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            var movie = await _movieService.GetByIdAsync(id).ConfigureAwait(false);
+            var movie = await _service.GetByIdAsync(id);
             if (movie == null) return NotFound();
             return View(movie);
         }
 
-        // POST: /Admin/Movies/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Movie movie)
         {
             if (!ModelState.IsValid) return View(movie);
-            await _movieService.UpdateAsync(movie).ConfigureAwait(false);
+            await _service.UpdateAsync(movie);
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: /Admin/Movies/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            var movie = await _movieService.GetByIdAsync(id).ConfigureAwait(false);
+            var movie = await _service.GetByIdAsync(id);
             if (movie == null) return NotFound();
             return View(movie);
         }
 
-        // POST: /Admin/Movies/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _movieService.DeleteAsync(id).ConfigureAwait(false);
+            await _service.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
     }

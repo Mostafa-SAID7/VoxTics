@@ -7,19 +7,22 @@ using VoxTics.Services.Interfaces;
 namespace VoxTics.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class DashboardController : Controller
+    public class HomeController : Controller
     {
         private readonly IDashboardService _dashboardService;
-
-        public DashboardController(IDashboardService dashboardService)
-        {
-            _dashboardService = dashboardService;
-        }
+        public HomeController(IDashboardService dashboardService) => _dashboardService = dashboardService;
 
         public async Task<IActionResult> Index()
         {
-            var vm = await _dashboardService.GetDashboardSummaryAsync().ConfigureAwait(false);
-            return View(vm);
+            var stats = new
+            {
+                TotalBookings = await _dashboardService.GetTotalBookingsAsync(),
+                TotalMovies = await _dashboardService.GetTotalMoviesAsync(),
+                TotalUsers = await _dashboardService.GetTotalUsersAsync(),
+                TotalRevenue = await _dashboardService.GetTotalRevenueAsync()
+            };
+
+            return View(stats);
         }
     }
 }

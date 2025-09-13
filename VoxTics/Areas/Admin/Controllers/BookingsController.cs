@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using VoxTics.Areas.Admin.ViewModels;
@@ -10,82 +11,48 @@ namespace VoxTics.Areas.Admin.Controllers
     [Area("Admin")]
     public class BookingsController : Controller
     {
-        private readonly IBookingService _bookingService;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IBookingService _service;
+        public BookingsController(IBookingService service) => _service = service;
 
-        public BookingsController(IBookingService bookingService, UserManager<IdentityUser> userManager)
-        {
-            _bookingService = bookingService;
-            _userManager = userManager;
-        }
+        public async Task<IActionResult> Index() =>
+            View(await _service.GetAllAsync());
 
-        // GET: Admin/Bookings
-        public async Task<IActionResult> Index()
-        {
-            var userId = _userManager.GetUserId(User);
-            var bookings = await _bookingService.GetBookingsByUserAsync(userId!).ConfigureAwait(false);
-            return View(bookings);
-        }
+        public async Task<IActionResult> Details(int id) =>
+            View(await _service.GetByIdAsync(id));
 
-        // GET: Admin/Bookings/Details/5
-        public async Task<IActionResult> Details(int id)
-        {
-            var booking = await _bookingService.GetBookingByIdAsync(id).ConfigureAwait(false);
-            if (booking == null) return NotFound();
-            return View(booking);
-        }
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id) =>
+            View(await _service.GetByIdAsync(id));
 
-        // GET: Admin/Bookings/Create
-        public IActionResult Create() => View();
-
-        // POST: Admin/Bookings/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Booking booking)
-        {
-            if (!ModelState.IsValid) return View(booking);
-
-            var userId = _userManager.GetUserId(User);
-            await _bookingService.CreateBookingAsync(booking, userId!).ConfigureAwait(false);
-            return RedirectToAction(nameof(Index));
-        }
-
-        // GET: Admin/Bookings/Edit/5
-        public async Task<IActionResult> Edit(int id)
-        {
-            var booking = await _bookingService.GetBookingByIdAsync(id).ConfigureAwait(false);
-            if (booking == null) return NotFound();
-            return View(booking);
-        }
-
-        // POST: Admin/Bookings/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Booking booking)
         {
             if (!ModelState.IsValid) return View(booking);
-
-            var userId = _userManager.GetUserId(User);
-            await _bookingService.UpdateBookingAsync(booking, userId!).ConfigureAwait(false);
+            await _service.UpdateAsync(booking);
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Admin/Bookings/Delete/5
+        [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            var booking = await _bookingService.GetBookingByIdAsync(id).ConfigureAwait(false);
-            if (booking == null) return NotFound();
-            return View(booking);
+            await _service.DeleteAsync(id);
+            return RedirectToAction(nameof(Index));
         }
 
-        // POST: Admin/Bookings/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [HttpPost]
+        public async Task<IActionResult> UpdateStatus(int id, BookingStatus status)
         {
-            var userId = _userManager.GetUserId(User);
-            await _bookingService.DeleteBookingAsync(id, userId!).ConfigureAwait(false);
+            await _service.UpdateStatusAsync(id, status);
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Cancel(int id, string reason)
+        {
+            await _service.CancelAsync(id, reason);
             return RedirectToAction(nameof(Index));
         }
     }
+
 }

@@ -17,7 +17,7 @@ namespace VoxTics.Data.UoW
         public ICinemasRepository Cinemas { get; }
         public IMoviesRepository Movies { get; }
         public IShowtimesRepository Showtimes { get; }
-        public IDashboardRepository AdminDashboard { get; }
+        public IDashboardRepository Dashboard { get; }
         public IApplicationUsersRepository ApplicationUsers { get; }
         public IHomeRepository Home { get; }
 
@@ -39,7 +39,7 @@ namespace VoxTics.Data.UoW
             Cinemas = cinemas ?? throw new ArgumentNullException(nameof(cinemas));
             Movies = movies ?? throw new ArgumentNullException(nameof(movies));
             Showtimes = showtimes ?? throw new ArgumentNullException(nameof(showtimes));
-            AdminDashboard = adminDashboard ?? throw new ArgumentNullException(nameof(adminDashboard));
+            Dashboard = adminDashboard ?? throw new ArgumentNullException(nameof(adminDashboard));
             Home = home ?? throw new ArgumentNullException(nameof(home));
             ApplicationUsers = applicationUsers ?? throw new ArgumentNullException(nameof(applicationUsers));
         }

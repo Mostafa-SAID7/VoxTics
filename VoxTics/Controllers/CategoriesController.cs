@@ -1,90 +1,32 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using VoxTics.Models.Entities;
 using VoxTics.Models.ViewModels;
 using VoxTics.Repositories.IRepositories;
+using VoxTics.Services.Interfaces;
 
 namespace VoxTics.Controllers
 {
     public class CategoriesController : Controller
     {
-        private readonly ICategoriesRepository _categoryRepository;
-        private readonly IMoviesRepository _movieRepository;
-        private readonly ILogger<CategoriesController> _logger;
+        private readonly ICategoryService _service;
+        public CategoriesController(ICategoryService service) => _service = service;
 
-        public CategoriesController(
-            ICategoriesRepository categoryRepository,
-            IMoviesRepository movieRepository,
-            ILogger<CategoriesController> logger)
+        public async Task<IActionResult> Index()
         {
-            _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
-            _movieRepository = movieRepository ?? throw new ArgumentNullException(nameof(movieRepository));
-            _logger = logger;
+            var categories = await _service.GetAllAsync();
+            return View(categories);
         }
 
-        // GET: /Categories
-        public async Task<IActionResult> Index(string? searchTerm)
-        {
-            try
-            {
-                IEnumerable<Category> categories;
-
-                if (!string.IsNullOrWhiteSpace(searchTerm)) ;
-                else
-                    categories = await _categoryRepository.GetAllAsync();
-
-
-
-                return View();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading categories");
-                TempData["Error"] = "Unable to load categories.";
-                return View(new List<CategoryVM>());
-            }
-        }
-
-        // GET: /Categories/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            try
-            {
-                var category = await _categoryRepository.GetCategoryWithMoviesAsync(id);
-                if (category == null) return NotFound();
-
-                var vm = new CategoryVM
-                {
-                    Id = category.Id,
-                    Name = category.Name,
-                    Description = category.Description,
-                    MovieCount = category.MovieCategories?.Count ?? 0,
-                    Movies = category.MovieCategories?
-                        .Select(mc => new MovieVM
-                        {
-                            Id = mc.Movie.Id,
-                            Title = mc.Movie.Title,
-                            Description = mc.Movie.Description,
-                            PosterImage = mc.Movie.ImageUrl,
-                            ReleaseDate = mc.Movie.ReleaseDate,
-                            DurationInMinutes = mc.Movie.Duration
-                        }).ToList() ?? new List<MovieVM>()
-                };
-
-                return View(vm);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading category {CategoryId}", id);
-                TempData["Error"] = "Unable to load category.";
-                return RedirectToAction(nameof(Index));
-            }
+            var category = await _service.GetByIdAsync(id);
+            if (category == null) return NotFound();
+            return View(category);
         }
-
-       
     }
 }

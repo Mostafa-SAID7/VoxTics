@@ -1,47 +1,38 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using VoxTics;
-
 using VoxTics.Areas.Identity.Models.Entities;
 using VoxTics.Data;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
-// --- Services -----------------------------
-
-// DbContext (SQL Server)
-builder.Services.AddDbContext<MovieDbContext>(option =>
+// Identity
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
-    option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
-
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(option =>
-{
-    option.Password.RequireNonAlphanumeric = false;
-    option.Password.RequiredLength = 8;
-    option.User.RequireUniqueEmail = true;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 8;
+    options.User.RequireUniqueEmail = true;
 })
-    .AddEntityFrameworkStores<MovieDbContext>()
-    .AddDefaultTokenProviders();
+.AddEntityFrameworkStores<MovieDbContext>()
+.AddDefaultTokenProviders();
+
 // MVC
 builder.Services.AddControllersWithViews()
-   .AddJsonOptions(opt => {
-        opt.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
-    }
-    );
-// Repositories (extension method you created in VoxTics.Repositories)
-builder.Services.AddApplicationServices();
+    .AddJsonOptions(opt =>
+    {
+        opt.JsonSerializerOptions.ReferenceHandler =
+            System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 
+// Repositories & Services
+builder.Services.AddApplicationServices(builder.Configuration);
 
-// Useful for services/controllers that need HttpContext
+// HttpContext
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-// --- Middleware pipeline ------------------
-
+// Middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -57,9 +48,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// If you add Identity later:
-// app.UseAuthentication();
-
+// Authentication - Authorization
+app.UseAuthentication();
 app.UseAuthorization();
 
 // Area route first

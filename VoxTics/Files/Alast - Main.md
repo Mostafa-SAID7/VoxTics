@@ -7,8 +7,14 @@
 │   │   ├── HomeController.cs
 │   │   ├── MoviesController.cs
 │   │   └── ShowtimesController.cs
-│   │
 │   ├── Views/
+│   │   └── Shared/
+│   │       └── Components/
+│   │           └── Movie/
+│   │               ├── Card.cshtml
+│   │               ├── Details.cshtml
+│   │               ├── Form.cshtml
+│   │               └── Table.cshtml
 │   ├── ViewModels/
 │   ├── Services/
 │   │   ├── Interfaces/
@@ -135,26 +141,43 @@
 
 /Views
 ├── Booking/
-│   ├── Index.cshtml
-│   └── Details.cshtml
+│   └── Index.cshtml
 ├── Cinema/
-│   ├── Index.cshtml
-│   └── Details.cshtml
+│   └── Index.cshtml
 ├── Home/
 │   ├── Index.cshtml
-│   └── About.cshtml
+│   ├── About.cshtml
+│   ├── Contact.cshtml
+│   ├── FAQ.cshtml
+│   ├── Terms.cshtml
+│   ├── News.cshtml
+│   ├── Privacy.cshtml
+│   └── RefoundPolicy.cshtml
 ├── Movie/
-│   ├── Index.cshtml
-│   └── Details.cshtml
+│   └── Index.cshtml
 ├── Showtime/
-│   ├── Index.cshtml
-│   └── Details.cshtml
+│   └── Index.cshtml
 ├── Profile/
 │   └── Index.cshtml
 ├── Categories/
 │   ├── Index.cshtml
-│   └── Details.cshtml
+│   └── Slug.cshtml
 └── Shared/
+    ├── Components/
+    │   ├── Booking/
+    │   │   ├── Card.cshtml
+    │   │   ├── Details.cshtml
+    │   │   ├── CreateBooking.cshtml
+    │   │   └── EditBooking.cshtml
+    │   ├── Movie/
+    │   │   ├── Card.cshtml
+    │   │   └── Details.cshtml
+    │   ├── Cinema/
+    │   │   ├── Card.cshtml
+    │   │   └── Details.cshtml
+    │   └── Showtime/
+    │       ├── Card.cshtml
+    │       └── Details.cshtml
     ├── _Layout.cshtml
     ├── _ValidationScriptsPartial.cshtml
     ├── Error.cshtml
@@ -164,6 +187,22 @@
     ├── _Loader.cshtml
     ├── _NotificationPartial.cshtml
     └── _Pagination.cshtml
+
+/Utility
+└── SD.cs
+
+/wwwroot
+├── css/
+├── js/
+├── lib/
+├── images/
+│   └── logo.png
+└── uploads/
+    ├── movies/
+    ├── actors/
+    ├── cinemas/
+    ├── users/
+    └── banners/
 
 /ServiceCollectionExtensions.cs
 /Program.cs

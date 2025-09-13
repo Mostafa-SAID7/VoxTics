@@ -95,8 +95,7 @@
     │   ├── MovieRepository.cs
     │   └── ShowtimeRepository.cs
     │
-    ├── MappingProfiles
-    │   └── AdminProfile/
+    ├──  AdminProfile/
     │       ├── BaseAdminProfile.cs
     │       ├── BookingAdminProfile.cs
     │       ├── CategoryAdminProfile.cs
