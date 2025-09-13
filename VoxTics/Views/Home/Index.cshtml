@@ -25,12 +25,12 @@
         <section id="now-showing" class="mb-5">
             <h2 class="mb-4 fw-bold border-bottom pb-2">🍿 Now Showing</h2>
             <div class="row row-cols-1 row-cols-md-4 g-4">
-                @foreach (var movie in Model.NowShowingMovies)
+                @foreach (var movie in Model.NowShowing)
                 {
                     <div class="col" data-aos="fade-up">
                         <div class="card movie-card h-100 shadow-sm">
                             <div class="poster-wrapper">
-                                <img src="@movie.PosterImage" class="card-img-top" alt="@movie.Title" />
+                                <img src="@movie.ImageUrl" class="card-img-top" alt="@movie.Title" />
                             </div>
                             <div class="card-body">
                                 <h5 class="card-title">@movie.Title</h5>
@@ -46,12 +46,12 @@
         <section class="mb-5">
             <h2 class="mb-4 fw-bold border-bottom pb-2">🚀 Upcoming Movies</h2>
             <div class="row row-cols-1 row-cols-md-4 g-4">
-                @foreach (var movie in Model.UpcomingMovies)
+                @foreach (var movie in Model.ComingSoon)
                 {
                     <div class="col" data-aos="fade-up" data-aos-delay="100">
                         <div class="card movie-card upcoming h-100 shadow-sm">
                             <div class="poster-wrapper">
-                                <img src="@movie.PosterImage" class="card-img-top" alt="@movie.Title" />
+                                <img src="@movie.ImageUrl" class="card-img-top" alt="@movie.Title" />
                             </div>
                             <div class="card-body">
                                 <h5 class="card-title">@movie.Title</h5>
@@ -86,61 +86,17 @@
                             <th>Time</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @if (Model.TodayShowtimes.Any())
-                        {
-                            @foreach (var show in Model.TodayShowtimes)
-                            {
-                                <tr data-aos="fade-up">
-                                    <td>@show.MovieTitle</td>
-                                    <td>@show.CinemaName</td>
-                                    <td>@show.HallName</td>
-                                    <td>@show.ShowDateTime.ToString("hh:mm tt")</td>
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="4" class="text-center text-muted">No showtimes today</td>
-                            </tr>
-                        }
-                    </tbody>
+                   
                 </table>
             </div>
         </section>
 
         <!-- Popular Categories -->
-        @if (Model.PopularCategories != null && Model.PopularCategories.Any())
-        {
-            <section class="mb-5">
-                <h2 class="mb-4 fw-bold border-bottom pb-2">🔥 Popular Categories</h2>
-                <div class="d-flex flex-wrap gap-2" data-aos="fade-up">
-                    @foreach (var category in Model.PopularCategories)
-                    {
-                        <span class="badge bg-info text-dark p-3 category-badge">
-                            @category.Name (@category.MovieCount)
-                        </span>
-                    }
-                </div>
-            </section>
-        }
-
+       
         <!-- Stats Footer with Counters -->
         <footer class="stats-footer bg-dark text-white text-center py-5 mt-5 rounded shadow-lg" data-aos="fade-up">
             <div class="row">
-                <div class="col">
-                    <h5>Total Movies</h5>
-                    <p class="fw-bold counter" data-count="@Model.TotalMovies">0</p>
-                </div>
-                <div class="col">
-                    <h5>Now Showing</h5>
-                    <p class="fw-bold counter" data-count="@Model.TotalNowShowing">0</p>
-                </div>
-                <div class="col">
-                    <h5>Upcoming</h5>
-                    <p class="fw-bold counter" data-count="@Model.TotalUpcoming">0</p>
-                </div>
+             
             </div>
         </footer>
 
