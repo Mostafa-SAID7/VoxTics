@@ -5,6 +5,9 @@ using VoxTics.Areas.Identity.Models.Entities;
 using VoxTics.Data;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<MovieDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>

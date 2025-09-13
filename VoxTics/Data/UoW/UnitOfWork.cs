@@ -8,7 +8,7 @@ namespace VoxTics.Data.UoW
     {
         private readonly MovieDbContext _context;
         private bool _disposed ;
-
+        private IApplicationUsersRepository? _applicationUsers;
         private IBaseRepository<UserOTP>? _userOTP;
 
         // Non-nullable properties must be initialized
@@ -41,10 +41,12 @@ namespace VoxTics.Data.UoW
             Showtimes = showtimes ?? throw new ArgumentNullException(nameof(showtimes));
             Dashboard = adminDashboard ?? throw new ArgumentNullException(nameof(adminDashboard));
             Home = home ?? throw new ArgumentNullException(nameof(home));
-            ApplicationUsers = applicationUsers ?? throw new ArgumentNullException(nameof(applicationUsers));
         }
 
-        public IBaseRepository<UserOTP> UserOTP => _userOTP ??= new BaseRepository<UserOTP>(_context);
+        public IBaseRepository<UserOTP> UserOTPs => _userOTP ??= new BaseRepository<UserOTP>(_context);
+        public IApplicationUsersRepository ApplicationUser
+          => _applicationUsers ??= new ApplicationUsersRepository(_context);
+
 
         public async Task SaveAsync()
         {
@@ -55,7 +57,10 @@ namespace VoxTics.Data.UoW
         {
             return await _context.SaveChangesAsync().ConfigureAwait(false);
         }
-
+        public async Task<int> CommitAsync()
+        {
+            return await _context.SaveChangesAsync();
+        }
         // Proper IDisposable pattern
         protected virtual void Dispose(bool disposing)
         {

@@ -35,7 +35,17 @@ namespace VoxTics.Repositories
         {
             return await _dbSet.Where(predicate).ToListAsync(cancellationToken).ConfigureAwait(false);
         }
+        public async Task<T?> FindAsync(params object[] keys)
+        {
+            return await _dbSet.FindAsync(keys);
+        }
 
+        public async Task<IEnumerable<T>> GetAsync(Func<T, bool>? predicate = null)
+        {
+            return predicate == null
+                ? await _dbSet.AsNoTracking().ToListAsync()
+                : _dbSet.AsNoTracking().Where(predicate).ToList();
+        }
         public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
         {
             return await _dbSet.AnyAsync(predicate, cancellationToken).ConfigureAwait(false);

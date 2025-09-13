@@ -12,7 +12,9 @@ namespace VoxTics.Data.UoW
         IShowtimesRepository Showtimes { get; }
         IDashboardRepository Dashboard { get; }
         IHomeRepository Home { get; }
-        IBaseRepository<UserOTP> UserOTP { get; }
+        IApplicationUsersRepository ApplicationUsers { get; }
+        IBaseRepository<UserOTP> UserOTPs { get; } 
+        Task<int> CommitAsync();
         Task<int> CompleteAsync();
         Task SaveAsync();
     }

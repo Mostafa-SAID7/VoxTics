@@ -41,7 +41,7 @@ namespace VoxTics.Areas.Identity.Models.ViewModels
 
         // Changed to System.Uri
         [Url(ErrorMessage = "Invalid URL format.")]
-        public Uri? AvatarUrl { get; set; }
+        public string? AvatarUrl { get; set; }
 
         // Computed property for convenience
         public int Age => DateOfBirth.HasValue ? (int)((DateTime.UtcNow - DateOfBirth.Value).TotalDays / 365.25) : 0;

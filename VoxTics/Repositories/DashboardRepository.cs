@@ -9,7 +9,8 @@ using VoxTics.Models.Enums;
 using VoxTics.Data;
 using VoxTics.Repositories.IRepositories;
 using VoxTics.Models.Entities;
-
+using Microsoft.EntityFrameworkCore;
+using VoxTics.Data;
 namespace VoxTics.Repositories
 {
     public class DashboardRepository : BaseRepository<Booking>, IDashboardRepository
@@ -17,19 +18,19 @@ namespace VoxTics.Repositories
 
         public DashboardRepository(MovieDbContext context) : base(context) { }
 
-        public async Task<int> GetTotalMoviesAsync(CancellationToken cancellationToken = default)
+        public async Task<int> GetTotalMoviesAsync()
         {
-            return await _context.Movies.CountAsync(cancellationToken).ConfigureAwait(false);
+            return await _context.Movies.CountAsync();
         }
 
-        public async Task<int> GetTotalUsersAsync(CancellationToken cancellationToken = default)
+        public async Task<int> GetTotalUsersAsync()
         {
-            return await _context.Users.CountAsync(cancellationToken).ConfigureAwait(false);
+            return await _context.Users.CountAsync();
         }
 
-        public async Task<int> GetTotalBookingsAsync(CancellationToken cancellationToken = default)
+        public async Task<int> GetTotalBookingsAsync()
         {
-            return await _context.Bookings.CountAsync(cancellationToken).ConfigureAwait(false);
+            return await _context.Bookings.CountAsync();
         }
 
         public async Task<int> GetTotalCategoriesAsync(CancellationToken cancellationToken = default)
@@ -37,9 +38,9 @@ namespace VoxTics.Repositories
             return await _context.Categories.CountAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<decimal> GetTotalRevenueAsync(CancellationToken cancellationToken = default)
+        public async Task<decimal> GetTotalRevenueAsync()
         {
-            return await _context.Bookings.SumAsync(b => b.TotalPrice, cancellationToken).ConfigureAwait(false);
+            return await _context.Bookings.SumAsync(b => b.TotalPrice);
         }
 
         public async Task<decimal> GetRevenueByDateRangeAsync(

@@ -1,15 +1,20 @@
-﻿using VoxTics.Data.UoW;
-using VoxTics.Services.Interfaces;
+﻿using VoxTics.Services.Interfaces;
+using VoxTics.Repositories.IRepositories;
 
 namespace VoxTics.Services.Implementations
 {
     public class HomeService : IHomeService
     {
-        private readonly IUnitOfWork _uow;
-        public HomeService(IUnitOfWork uow) => _uow = uow;
+        private readonly IHomeRepository _homeRepository;
 
-        public Task<IEnumerable<Movie>> GetNowShowingAsync() => _uow.Home.GetNowShowingAsync();
-        public Task<IEnumerable<Movie>> GetComingSoonAsync() => _uow.Home.GetComingSoonAsync();
-        public Task<IEnumerable<Cinema>> GetCinemasAsync() => _uow.Home.GetCinemasAsync();
+        public HomeService(IHomeRepository homeRepository)
+        {
+            _homeRepository = homeRepository;
+        }
+
+        public Task<IEnumerable<Movie>> GetNowShowingAsync() => _homeRepository.GetNowShowingAsync();
+        public Task<IEnumerable<Movie>> GetComingSoonAsync() => _homeRepository.GetComingSoonAsync();
+        public Task<IEnumerable<Cinema>> GetCinemasAsync() => _homeRepository.GetCinemasAsync();
+        public Task<IEnumerable<Movie>> GetFeaturedMoviesAsync() => _homeRepository.GetFeaturedMoviesAsync();
     }
 }

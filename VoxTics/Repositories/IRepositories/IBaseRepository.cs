@@ -22,11 +22,13 @@ namespace VoxTics.Repositories.IRepositories
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         void Update(T entity);
         Task<IEnumerable<T>> GetAllAsync();
-        Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> predicate);
+        Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>>? predicate=null);
         Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
         Task CreateAsync(T entity);
         Task UpdateAsync(T entity);
         Task DeleteAsync(T entity);
         Task CommitAsync();
+        
+        Task<T?> FindAsync(params object[] keys);
     }
 }

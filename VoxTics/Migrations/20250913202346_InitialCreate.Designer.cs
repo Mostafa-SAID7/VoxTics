@@ -12,8 +12,8 @@ using VoxTics.Data;
 namespace VoxTics.Migrations
 {
     [DbContext(typeof(MovieDbContext))]
-    [Migration("20250907160342_AddTrailerUrlToMovies")]
-    partial class AddTrailerUrlToMovies
+    [Migration("20250913202346_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,262 @@ namespace VoxTics.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("VoxTics.Areas.Identity.Models.Entities.ApplicationUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AvatarUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Gender")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("State")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Street")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("ZipCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("VoxTics.Areas.Identity.Models.Entities.UserOTP", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("OTPNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ValidTo")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("UserOTPs");
+                });
 
             modelBuilder.Entity("VoxTics.Models.Entities.Actor", b =>
                 {
@@ -80,63 +336,6 @@ namespace VoxTics.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Actors");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            FirstName = "Robert Downey Jr.",
-                            FullName = "Robert Downey Jr. ",
-                            IsActive = true,
-                            IsDeleted = false,
-                            LastName = "",
-                            Nationality = "American"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            FirstName = "Scarlett Johansson",
-                            FullName = "Scarlett Johansson ",
-                            IsActive = true,
-                            IsDeleted = false,
-                            LastName = "",
-                            Nationality = "American"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            FirstName = "Chris Evans",
-                            FullName = "Chris Evans ",
-                            IsActive = true,
-                            IsDeleted = false,
-                            LastName = "",
-                            Nationality = "American"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            FirstName = "Jennifer Lawrence",
-                            FullName = "Jennifer Lawrence ",
-                            IsActive = true,
-                            IsDeleted = false,
-                            LastName = "",
-                            Nationality = "American"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            FirstName = "Leonardo DiCaprio",
-                            FullName = "Leonardo DiCaprio ",
-                            IsActive = true,
-                            IsDeleted = false,
-                            LastName = "",
-                            Nationality = "American"
-                        });
                 });
 
             modelBuilder.Entity("VoxTics.Models.Entities.Booking", b =>
@@ -180,7 +379,7 @@ namespace VoxTics.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("MovieId")
+                    b.Property<int>("MovieId")
                         .HasColumnType("int");
 
                     b.Property<string>("Notes")
@@ -219,8 +418,9 @@ namespace VoxTics.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -317,88 +517,6 @@ namespace VoxTics.Migrations
                         .IsUnique();
 
                     b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Action movies",
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Action",
-                            Slug = ""
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Comedy movies",
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Comedy",
-                            Slug = ""
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Drama movies",
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Drama",
-                            Slug = ""
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Horror movies",
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Horror",
-                            Slug = ""
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Romance movies",
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Romance",
-                            Slug = ""
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Science Fiction movies",
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Sci-Fi",
-                            Slug = ""
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Thriller movies",
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Thriller",
-                            Slug = ""
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Animated movies",
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Animation",
-                            Slug = ""
-                        });
                 });
 
             modelBuilder.Entity("VoxTics.Models.Entities.Cinema", b =>
@@ -410,14 +528,12 @@ namespace VoxTics.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("City")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Country")
                         .HasMaxLength(100)
@@ -477,32 +593,6 @@ namespace VoxTics.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Cinemas");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Address = "123 Main Street",
-                            City = "Downtown",
-                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "info@grandcinema.com",
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Grand Cinema",
-                            Phone = "555-0123"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Address = "456 Central Avenue",
-                            City = "City Center",
-                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "info@citycentercinema.com",
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "City Center Cinema",
-                            Phone = "555-0456"
-                        });
                 });
 
             modelBuilder.Entity("VoxTics.Models.Entities.Hall", b =>
@@ -547,28 +637,6 @@ namespace VoxTics.Migrations
                     b.HasIndex("CinemaId");
 
                     b.ToTable("Halls");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CinemaId = 1,
-                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Hall 1",
-                            TotalSeats = 0
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CinemaId = 1,
-                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Hall 2",
-                            TotalSeats = 0
-                        });
                 });
 
             modelBuilder.Entity("VoxTics.Models.Entities.Movie", b =>
@@ -603,7 +671,7 @@ namespace VoxTics.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("DurationMinutes")
+                    b.Property<int>("Duration")
                         .HasColumnType("int");
 
                     b.Property<string>("ImageUrl")
@@ -628,6 +696,10 @@ namespace VoxTics.Migrations
 
                     b.Property<DateTime>("ReleaseDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("ShortDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -671,15 +743,8 @@ namespace VoxTics.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsMainRole")
-                        .HasColumnType("bit");
-
                     b.Property<int>("MovieId")
                         .HasColumnType("int");
-
-                    b.Property<string>("RoleName")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -711,13 +776,7 @@ namespace VoxTics.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsFeatured")
                         .HasColumnType("bit");
 
                     b.Property<int>("MovieId")
@@ -766,13 +825,7 @@ namespace VoxTics.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsPrimary")
-                        .HasColumnType("bit");
-
                     b.Property<int>("MovieId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SortOrder")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -902,42 +955,6 @@ namespace VoxTics.Migrations
                     b.HasIndex("MovieId");
 
                     b.ToTable("Showtimes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CinemaId = 0,
-                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Duration = 0,
-                            HallId = 1,
-                            Is3D = false,
-                            IsDeleted = false,
-                            Language = "EN",
-                            MovieId = 2,
-                            Price = 10.00m,
-                            ScreenType = "Standard",
-                            ShowDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StartTime = new DateTime(2025, 9, 8, 12, 0, 0, 0, DateTimeKind.Utc),
-                            Status = 0
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CinemaId = 0,
-                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Duration = 0,
-                            HallId = 2,
-                            Is3D = false,
-                            IsDeleted = false,
-                            Language = "EN",
-                            MovieId = 2,
-                            Price = 12.00m,
-                            ScreenType = "Standard",
-                            ShowDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StartTime = new DateTime(2025, 9, 8, 14, 30, 0, 0, DateTimeKind.Utc),
-                            Status = 0
-                        });
                 });
 
             modelBuilder.Entity("VoxTics.Models.Entities.SocialMediaLink", b =>
@@ -952,15 +969,6 @@ namespace VoxTics.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("CinemaId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MovieActorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MovieId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MovieImgId")
                         .HasColumnType("int");
 
                     b.Property<string>("Platform")
@@ -979,74 +987,79 @@ namespace VoxTics.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ActorId");
 
                     b.HasIndex("CinemaId");
 
-                    b.HasIndex("MovieActorId");
-
-                    b.HasIndex("MovieId");
-
-                    b.HasIndex("MovieImgId");
-
                     b.HasIndex("SeatId");
 
                     b.HasIndex("ShowtimeId");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("SocialMediaLink");
                 });
 
-            modelBuilder.Entity("VoxTics.Models.Entities.User", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("VoxTics.Areas.Identity.Models.Entities.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("VoxTics.Areas.Identity.Models.Entities.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.HasOne("VoxTics.Areas.Identity.Models.Entities.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("VoxTics.Areas.Identity.Models.Entities.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+            modelBuilder.Entity("VoxTics.Areas.Identity.Models.Entities.UserOTP", b =>
+                {
+                    b.HasOne("VoxTics.Areas.Identity.Models.Entities.ApplicationUser", "ApplicationUser")
+                        .WithMany("UserOTPs")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<int>("Role")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "admin@cinema.com",
-                            EmailConfirmed = false,
-                            PasswordHash = "AQAAAAEAACcQAAAAEH3QhLhFhBpz9Kpx8qHiuZs1kJ2sNFKJCyKGXUwNdU9u6Vp8IJ1aGk3K3wIZl4M5QQ==",
-                            Role = 4
-                        });
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("VoxTics.Models.Entities.Booking", b =>
@@ -1055,9 +1068,11 @@ namespace VoxTics.Migrations
                         .WithMany("Bookings")
                         .HasForeignKey("CinemaId");
 
-                    b.HasOne("VoxTics.Models.Entities.Movie", null)
+                    b.HasOne("VoxTics.Models.Entities.Movie", "Movie")
                         .WithMany("Bookings")
-                        .HasForeignKey("MovieId");
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("VoxTics.Models.Entities.Showtime", "Showtime")
                         .WithMany("Bookings")
@@ -1065,11 +1080,13 @@ namespace VoxTics.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("VoxTics.Models.Entities.User", "User")
+                    b.HasOne("VoxTics.Areas.Identity.Models.Entities.ApplicationUser", "User")
                         .WithMany("Bookings")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Movie");
 
                     b.Navigation("Showtime");
 
@@ -1087,7 +1104,7 @@ namespace VoxTics.Migrations
                     b.HasOne("VoxTics.Models.Entities.Seat", "Seat")
                         .WithMany("BookingSeats")
                         .HasForeignKey("SeatId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Booking");
@@ -1111,7 +1128,7 @@ namespace VoxTics.Migrations
                     b.HasOne("VoxTics.Models.Entities.Actor", "Actor")
                         .WithMany("MovieActors")
                         .HasForeignKey("ActorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("VoxTics.Models.Entities.Movie", "Movie")
@@ -1130,7 +1147,7 @@ namespace VoxTics.Migrations
                     b.HasOne("VoxTics.Models.Entities.Category", "Category")
                         .WithMany("MovieCategories")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("VoxTics.Models.Entities.Movie", "Movie")
@@ -1177,13 +1194,13 @@ namespace VoxTics.Migrations
                     b.HasOne("VoxTics.Models.Entities.Hall", "Hall")
                         .WithMany("Showtimes")
                         .HasForeignKey("HallId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("VoxTics.Models.Entities.Movie", "Movie")
                         .WithMany("Showtimes")
                         .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Cinema");
@@ -1205,18 +1222,6 @@ namespace VoxTics.Migrations
                         .WithMany("SocialMediaLinks")
                         .HasForeignKey("CinemaId");
 
-                    b.HasOne("VoxTics.Models.Entities.MovieActor", null)
-                        .WithMany("SocialMediaLinks")
-                        .HasForeignKey("MovieActorId");
-
-                    b.HasOne("VoxTics.Models.Entities.Movie", null)
-                        .WithMany("SocialMediaLinks")
-                        .HasForeignKey("MovieId");
-
-                    b.HasOne("VoxTics.Models.Entities.MovieImg", null)
-                        .WithMany("SocialMediaLinks")
-                        .HasForeignKey("MovieImgId");
-
                     b.HasOne("VoxTics.Models.Entities.Seat", null)
                         .WithMany("SocialMediaLinks")
                         .HasForeignKey("SeatId");
@@ -1225,13 +1230,16 @@ namespace VoxTics.Migrations
                         .WithMany("SocialMediaLinks")
                         .HasForeignKey("ShowtimeId");
 
-                    b.HasOne("VoxTics.Models.Entities.User", null)
-                        .WithMany("SocialMediaLinks")
-                        .HasForeignKey("UserId");
-
                     b.Navigation("Actor");
 
                     b.Navigation("Cinema");
+                });
+
+            modelBuilder.Entity("VoxTics.Areas.Identity.Models.Entities.ApplicationUser", b =>
+                {
+                    b.Navigation("Bookings");
+
+                    b.Navigation("UserOTPs");
                 });
 
             modelBuilder.Entity("VoxTics.Models.Entities.Actor", b =>
@@ -1280,18 +1288,6 @@ namespace VoxTics.Migrations
                     b.Navigation("MovieImages");
 
                     b.Navigation("Showtimes");
-
-                    b.Navigation("SocialMediaLinks");
-                });
-
-            modelBuilder.Entity("VoxTics.Models.Entities.MovieActor", b =>
-                {
-                    b.Navigation("SocialMediaLinks");
-                });
-
-            modelBuilder.Entity("VoxTics.Models.Entities.MovieImg", b =>
-                {
-                    b.Navigation("SocialMediaLinks");
                 });
 
             modelBuilder.Entity("VoxTics.Models.Entities.Seat", b =>
@@ -1302,13 +1298,6 @@ namespace VoxTics.Migrations
                 });
 
             modelBuilder.Entity("VoxTics.Models.Entities.Showtime", b =>
-                {
-                    b.Navigation("Bookings");
-
-                    b.Navigation("SocialMediaLinks");
-                });
-
-            modelBuilder.Entity("VoxTics.Models.Entities.User", b =>
                 {
                     b.Navigation("Bookings");
 

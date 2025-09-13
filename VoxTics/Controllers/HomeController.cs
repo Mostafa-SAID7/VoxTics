@@ -21,12 +21,14 @@ namespace VoxTics.Controllers
             var nowShowing = await _homeService.GetNowShowingAsync();
             var comingSoon = await _homeService.GetComingSoonAsync();
             var cinemas = await _homeService.GetCinemasAsync();
+            var featured = await _homeService.GetFeaturedMoviesAsync();
 
             var viewModel = new
             {
                 NowShowing = nowShowing,
                 ComingSoon = comingSoon,
-                Cinemas = cinemas
+                Cinemas = cinemas,
+                Featured = featured
             };
 
             return View(viewModel);
@@ -35,5 +37,6 @@ namespace VoxTics.Controllers
         public IActionResult Contact() => View();
         public IActionResult About() => View();
     }
+
 
 }

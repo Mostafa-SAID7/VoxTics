@@ -1,4 +1,6 @@
 ﻿using VoxTics.Repositories.IRepositories;
+using Microsoft.EntityFrameworkCore;
+using VoxTics.Data;
 
 namespace VoxTics.Repositories
 {
@@ -11,21 +13,30 @@ namespace VoxTics.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Movie>> GetNowShowingMoviesAsync(int count)
+        public async Task<IEnumerable<Movie>> GetNowShowingAsync()
         {
             return await _context.Movies
-                .Where(m => m.Status == Models.Enums.MovieStatus.NowShowing)
-                .OrderByDescending(m => m.ReleaseDate)
-                .Take(count)
+                .Where(m => m.ReleaseDate <= DateTime.Now)
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Movie>> GetUpcomingMoviesAsync(int count)
+        public async Task<IEnumerable<Movie>> GetComingSoonAsync()
         {
             return await _context.Movies
-                .Where(m => m.Status == Models.Enums.MovieStatus.Upcoming)
-                .OrderBy(m => m.ReleaseDate)
-                .Take(count)
+                .Where(m => m.ReleaseDate > DateTime.Now)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Cinema>> GetCinemasAsync()
+        {
+            return await _context.Cinemas.ToListAsync();
+        }
+
+        public async Task<IEnumerable<Movie>> GetFeaturedMoviesAsync()
+        {
+            // Example implementation: featured movies could be flagged in the DB
+            return await _context.Movies
+                .Where(m => m.IsFeatured) // adjust based on your schema
                 .ToListAsync();
         }
     }

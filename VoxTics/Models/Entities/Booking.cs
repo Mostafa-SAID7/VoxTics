@@ -12,8 +12,8 @@ namespace VoxTics.Models.Entities
         // -------------------------
         // Required fields
         // -------------------------
-        [Required(ErrorMessage = "User is required")]
-        public int UserId { get; set; }
+        
+   
 
         [Required(ErrorMessage = "Showtime is required")]
         public int ShowtimeId { get; set; }
@@ -65,6 +65,8 @@ namespace VoxTics.Models.Entities
         // -------------------------
         // Navigation properties
         // -------------------------
+        [Required(ErrorMessage = "User is required")]
+        public string UserId { get; set; } = default!;
 
         [ForeignKey("ShowtimeId")]
         public virtual Showtime Showtime { get; set; } = null!;
@@ -81,7 +83,7 @@ namespace VoxTics.Models.Entities
 
         // ✅ Navigation props (fixes the error)
         public virtual Movie Movie { get; set; } = null!;
-        public virtual ApplicationUser User { get; set; } = null!;
+        public ApplicationUser User { get; set; } = default!;        
         // -------------------------
         // Computed / NotMapped
         // -------------------------
