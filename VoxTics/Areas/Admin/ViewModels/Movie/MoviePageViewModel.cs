@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using VoxTics.Models.Enums.Sorting;
 using VoxTics.Models.ViewModels.Category;
+using VoxTics.Models.ViewModels.Movie;
 
-namespace VoxTics.Models.ViewModels.Movie
+namespace VoxTics.Areas.Admin.ViewModels.Movie
 {
-    public class MovieListVM
+    public class MoviePageViewModel
     {
         // Movies to display
-        public List<MovieVM> Movies { get; set; } = new List<MovieVM>();
+        public List<MovieListItemViewModel> Movies { get; set; } = new List<MovieListItemViewModel>();
 
         // Pagination
         public int PageNumber { get; set; } = 1;

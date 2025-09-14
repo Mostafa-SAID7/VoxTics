@@ -25,5 +25,11 @@ namespace VoxTics.Models.ViewModels.Filter
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
     }
+    public class Filter
+    {
+        public string? SearchTerm { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+    }
 
 }

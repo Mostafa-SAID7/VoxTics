@@ -14,8 +14,8 @@ namespace VoxTics.Models.ViewModels.Category
         public string Slug { get; set; } = string.Empty;
         // Read-only properties
         public int MovieCount { get; set; }
-        public List<MovieVM> Movies { get; set; } = new List<MovieVM>();
+        public List<MoviePreviewVM> FeaturedMovies { get; set; } = new List<MoviePreviewVM>();
 
-   
+
     }
 }

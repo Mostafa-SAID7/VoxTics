@@ -1,4 +1,4 @@
-﻿namespace VoxTics.Models.ViewModels
+﻿namespace VoxTics.Models.ViewModels.Filter
 {
     public class SocialMediaLinkVM
     {
