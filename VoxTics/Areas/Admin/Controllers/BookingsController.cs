@@ -14,43 +14,51 @@ namespace VoxTics.Areas.Admin.Controllers
         private readonly IBookingService _service;
         public BookingsController(IBookingService service) => _service = service;
 
-        public async Task<IActionResult> Index() =>
-            View(await _service.GetAllAsync());
-
-        public async Task<IActionResult> Details(int id) =>
-            View(await _service.GetByIdAsync(id));
-
+        public async Task<IActionResult> Index()
+        {
+            var bookings = await _service.GetAllAsync().ConfigureAwait(false);
+            return View(bookings);
+        }
+        public async Task<IActionResult> Details(int id)
+        {
+            var booking = await _service.GetByIdAsync(id).ConfigureAwait(false);
+            if (booking == null) return NotFound();
+            return View(booking);
+        }
         [HttpGet]
-        public async Task<IActionResult> Edit(int id) =>
-            View(await _service.GetByIdAsync(id));
-
+        public async Task<IActionResult> Edit(int id)
+        {
+            var booking = await _service.GetByIdAsync(id).ConfigureAwait(false);
+            if (booking == null) return NotFound();
+            return View(booking);
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Booking booking)
         {
             if (!ModelState.IsValid) return View(booking);
-            await _service.UpdateAsync(booking);
+            await _service.UpdateAsync(booking).ConfigureAwait(false);
             return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            await _service.DeleteAsync(id);
+            await _service.DeleteAsync(id).ConfigureAwait(false);
             return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
         public async Task<IActionResult> UpdateStatus(int id, BookingStatus status)
         {
-            await _service.UpdateStatusAsync(id, status);
+            await _service.UpdateStatusAsync(id, status).ConfigureAwait(false);
             return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
         public async Task<IActionResult> Cancel(int id, string reason)
         {
-            await _service.CancelAsync(id, reason);
+            await _service.CancelAsync(id, reason).ConfigureAwait(false);
             return RedirectToAction(nameof(Index));
         }
     }

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VoxTics.Areas.Identity.Models.Entities;
 using VoxTics.Data.UoW;
+using VoxTics.MappingProfiles;
 using VoxTics.MappingProfiles.AdminProfiles;
 using VoxTics.Repositories;
 using VoxTics.Repositories.IRepositories;
@@ -30,7 +31,9 @@ namespace VoxTics
 
             //AutoMapper and scan assembly for profiles
             services.AddAutoMapper(typeof(AccountProfile).Assembly);
-          
+            services.AddAutoMapper(typeof(BookingProfile));
+
+
             return services;
         }
 

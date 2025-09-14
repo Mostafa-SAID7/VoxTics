@@ -17,9 +17,9 @@ namespace VoxTics.Areas.Admin.ViewModels
         public string? Description { get; set; }
 
         [Display(Name = "Category Image")]
-        public IFormFile? ImageFile { get; set; }
 
-        public string? CurrentImage { get; set; }
+
+        public string Slug { get; set; } = string.Empty;
 
         [Display(Name = "Is Active")]
         public bool IsActive { get; set; } = true;

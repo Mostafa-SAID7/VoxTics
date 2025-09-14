@@ -1,52 +1,45 @@
-﻿@model VoxTics.Models.ViewModels.BookingVM
+﻿@model VoxTics.Models.ViewModels.BookingCreateVM
 
 @{
-    ViewData["Title"] = "Book Tickets";
-    var availableSeats = (List<dynamic>)ViewData["AvailableSeats"];
+    ViewData["Title"] = "Create Booking";
 }
 
-<h2>@ViewData["Title"] for @Model.MovieTitle</h2>
+<h2>Create Booking</h2>
 
-<div>
-    <p><strong>Cinema:</strong> @Model.CinemaName</p>
-    <p><strong>Hall:</strong> @Model.HallName</p>
-    <p><strong>Showtime:</strong> @Model.ShowtimeStart.ToString("g")</p>
-    <p><strong>Price per seat:</strong> @Model.TotalPrice.ToString("C")</p>
-</div>
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-<form id="bookingForm" method="post" asp-action="CreateBooking" asp-controller="Booking">
-    <input type="hidden" name="showtimeId" value="@Model.ShowtimeId" />
+    <input type="hidden" asp-for="ShowtimeId" />
 
     <div class="mb-3">
-        <label>Select Seats</label>
-        <div class="d-flex flex-wrap gap-2">
-            @foreach (var seat in availableSeats)
-            {
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="selectedSeatIds" value="@seat.id" id="seat_@seat.id">
-                    <label class="form-check-label" for="seat_@seat.id">@seat.number</label>
-                </div>
-            }
-        </div>
+        <label asp-for="NumberOfTickets" class="form-label"></label>
+        <input asp-for="NumberOfTickets" class="form-control" />
+        <span asp-validation-for="NumberOfTickets" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-success">Book Tickets</button>
-</form>
+    <div class="mb-3">
+        <label asp-for="PaymentMethod" class="form-label"></label>
+        <select asp-for="PaymentMethod" class="form-select">
+            <option value="CreditCard">Credit Card</option>
+            <option value="PayPal">PayPal</option>
+            <option value="Cash">Cash</option>
+        </select>
+        <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+    </div>
 
+    <div class="mb-3">
+        <label asp-for="Notes" class="form-label"></label>
+        <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Book Now</button>
+    <a asp-action="MyBookings" class="btn btn-secondary">Back</a>
+</form>
+<div class="container mt-3">
+    @await Html.PartialAsync("_NotificationPartial")
+</div>
 @section Scripts {
-    <script>
-        $("#bookingForm").on("submit", function (e) {
-            e.preventDefault();
-            var form = $(this);
-            $.post(form.attr("action"), form.serialize())
-                .done(function (data) {
-                    if (data.success) {
-                        alert("Booking successful! Booking # " + data.bookingNumber);
-                        window.location.href = '/Booking';
-                    } else {
-                        alert(data.message);
-                    }
-                });
-        });
-    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

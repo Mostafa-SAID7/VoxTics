@@ -1,18 +1,20 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace VoxTics.Models.ViewModels
 {
     public class CategoryVM
     {
         public int Id { get; set; }
+
+        [Required(ErrorMessage = "Category name is required.")]
+        [StringLength(50, ErrorMessage = "Category name cannot exceed 50 characters.")]
         public string Name { get; set; } = string.Empty;
-        public string? Description { get; set; }
-        public string? Image { get; set; }  // optional
+        public string Slug { get; set; } = string.Empty;
+        // Read-only properties
         public int MovieCount { get; set; }
         public List<MovieVM> Movies { get; set; } = new List<MovieVM>();
 
-        public string ShortDescription => string.IsNullOrEmpty(Description)
-            ? ""
-            : Description.Length > 100 ? Description[..100] + "..." : Description;
+   
     }
 }

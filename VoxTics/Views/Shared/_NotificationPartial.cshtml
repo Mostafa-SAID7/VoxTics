@@ -1,12 +1,24 @@
-﻿@if (@TempData["success-notification"] is not null)
+﻿@* Display TempData notifications *@
+@if (TempData["Success"] != null)
 {
-    <script>
-        toastr.success('@TempData["success-notification"]')
-    </script>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 }
-else if (TempData["error-notification"] is not null)
+
+@if (TempData["Error"] != null)
 {
-    <script>
-        toastr.error('@TempData["error-notification"]')
-    </script>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["Warning"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        @TempData["Warning"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 }

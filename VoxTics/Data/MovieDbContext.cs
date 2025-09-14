@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using VoxTics.Areas.Identity.Models.Entities;
 using VoxTics.Models.Entities;
+using VoxTics.Models.ViewModels;
 
 namespace VoxTics.Data
 {

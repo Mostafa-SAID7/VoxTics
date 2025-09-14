@@ -7,8 +7,9 @@ namespace VoxTics.Models.ViewModels
         // Core booking info
         public int Id { get; set; }
         public string BookingNumber { get; set; } = string.Empty;
-        public int Quantity => SeatNumbers.Count();
+
         public IEnumerable<string> SeatNumbers { get; set; } = Enumerable.Empty<string>();
+        public int Quantity => SeatNumbers.Count();
 
         // Pricing
         public decimal TotalPrice { get; set; }
@@ -36,10 +37,12 @@ namespace VoxTics.Models.ViewModels
         // Computed / formatted helpers
         public string FormattedTotalPrice => TotalPrice.ToString("C");
         public string FormattedFinalAmount => FinalAmount.ToString("C");
-        public string FormattedBookingDate => BookingDate.ToFullDateTimeString();  // using DateTimeExtensions
-        public string FormattedShowtime => ShowtimeStart.ToFullDateTimeString();
+        public string FormattedBookingDate => BookingDate.ToString("f");
+        public string FormattedShowtime => ShowtimeStart.ToString("f");
 
         public string StatusDisplay => Status.GetDisplayName();
         public string PaymentStatusDisplay => PaymentStatus.GetDisplayName();
+
     }
+
 }
