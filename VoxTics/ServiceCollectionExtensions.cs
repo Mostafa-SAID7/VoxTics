@@ -2,7 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using VoxTics.Areas.Admin.Repositories;
+using VoxTics.Areas.Admin.Repositories.IRepositories;
 using VoxTics.Areas.Identity.Models.Entities;
+using VoxTics.Areas.Identity.Repositories;
+using VoxTics.Areas.Identity.Repositories.IRepositories;
 using VoxTics.Data.UoW;
 using VoxTics.MappingProfiles;
 using VoxTics.MappingProfiles.AdminProfiles;

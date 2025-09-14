@@ -14,7 +14,7 @@ namespace VoxTics.MappingProfiles.AdminProfiles
                 .ForMember(dest => dest.MovieCount, opt => opt.MapFrom(src => src.MovieCategories.Count));
 
             CreateMap<Category, CategoryViewModel>()
-                .ForMember(dest => dest.MovieCount, opt => opt.MapFrom(src => src.MovieCategories.Count));
+                .ForMember(dest => dest.Movies, opt => opt.MapFrom(src => src.MovieCategories.Count));
 
             // ViewModel to Entity mappings
             CreateMap<CategoryViewModel, Category>()

@@ -16,7 +16,7 @@ namespace VoxTics.MappingProfiles
 
             // Public mapping
             CreateMap<Cinema, CinemaVM>()
-                .ForMember(dest => dest.HasImage, opt => opt.MapFrom(src => !string.IsNullOrEmpty(src.ImageUrl)))
+                .ForMember(dest => dest.DisplayImage, opt => opt.MapFrom(src => !string.IsNullOrEmpty(src.ImageUrl)))
                 .ForMember(dest => dest.DisplayImage, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.ImageUrl) ? "/images/default-cinema.jpg" : src.ImageUrl))
                 .ReverseMap();
         }

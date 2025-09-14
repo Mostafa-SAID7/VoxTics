@@ -8,21 +8,20 @@
 <h2>@Model.Name</h2>
 
 
-@if (Model.Movies == null || !Model.Movies.Any())
+@if (Model.MovieCount == null )
 {
     <p>No movies found in this category.</p>
 }
 else
 {
     <div class="row">
-        @foreach (var m in Model.Movies)
+        @foreach (var m in Model.FeaturedMovies)
         {
             <div class="col-md-3 mb-3">
                 <div class="card h-100">
                     <img src="@m.PosterImage" class="card-img-top" alt="@m.Title" />
                     <div class="card-body">
                         <h5 class="card-title">@m.Title</h5>
-                        <p class="card-text">@m.Description</p>
                         <a class="btn btn-primary" href="@Url.Action("Details", "Movies", new { id = m.Id })">View Movie</a>
                     </div>
                 </div>

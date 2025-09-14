@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Linq.Expressions;
 using VoxTics.Areas.Identity.Models.Entities;
+using VoxTics.Areas.Identity.Repositories.IRepositories;
 using VoxTics.Data;
-using VoxTics.Repositories.IRepositories;
 
-namespace VoxTics.Repositories
+namespace VoxTics.Areas.Identity.Repositories
 {
     public class ApplicationUsersRepository : IApplicationUsersRepository
     {

@@ -1,4 +1,13 @@
-﻿/Areas
+﻿ IDisposable for resource management + 
+		 IRepository pattern for abstraction + 
+		 Task-based async pattern for non-blocking operations + 
+		 IQueryable support for advanced querying + 
+		 Unit of Work pattern for transaction management + 
+		 caching support for performance optimization + 
+		 logging support for monitoring + 
+		 validation support for data integrity + 
+		 custom exceptions for error handling + 
+/Areas
 ├── Admin
 │   ├── Controllers/
 │   │   ├── BookingsController.cs

@@ -7,9 +7,23 @@ using VoxTics.Repositories;
 
 namespace VoxTics.Repositories.IRepositories
 {
+    /// <summary>
+    /// Repository interface for end-user category queries (read-only operations).
+    /// </summary>
     public interface ICategoriesRepository : IBaseRepository<Category>
     {
-        Task<Category?> GetByNameAsync(string name);
+        /// <summary>
+        /// Gets all active categories (used for filtering movies on the public site).
+        /// </summary>
+        Task<IEnumerable<Category>> GetActiveCategoriesAsync(
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Searches categories by name (case-insensitive).
+        /// </summary>
+        Task<IEnumerable<Category>> SearchCategoriesAsync(
+            string searchTerm,
+            CancellationToken cancellationToken = default);
     }
 
 }

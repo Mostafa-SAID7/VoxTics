@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using VoxTics.Models.ViewModels.Home;
 using VoxTics.Services.Implementations;
 using VoxTics.Services.Interfaces;
 
@@ -27,10 +28,10 @@ public async Task<IActionResult> Index()
 
         var viewModel = new HomeVM
         {
-            NowShowing = nowShowing,
-            ComingSoon = comingSoon,
-            Cinemas = cinemas,
-            Featured = featured
+            //NowShowing = nowShowing,
+            //ComingSoon = comingSoon,
+            //Cinemas = cinemas,
+            //Featured = featured
         };
 
         return View(viewModel);

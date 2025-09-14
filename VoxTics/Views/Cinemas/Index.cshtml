@@ -27,9 +27,9 @@ else
         {
             <div class="col-md-4 mb-3">
                 <div class="card h-100">
-                    @if (!string.IsNullOrWhiteSpace(cinema.ImageUrl))
+                    @if (!string.IsNullOrWhiteSpace(cinema.DisplayImage))
                     {
-                        <img src="@cinema.ImageUrl" class="card-img-top" alt="@cinema.Name" />
+                        <img src="@cinema.DisplayImage" class="card-img-top" alt="@cinema.Name" />
                     }
                     <div class="card-body">
                         <h5 class="card-title">@cinema.Name</h5>

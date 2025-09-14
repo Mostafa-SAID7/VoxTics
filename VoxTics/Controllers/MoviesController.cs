@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using VoxTics.Data;
 using VoxTics.Helpers; // for PaginatedList<T>
-using VoxTics.Models.Enums.Sorting;
+using VoxTics.Models.Enums;
 using VoxTics.Models.ViewModels;
 using VoxTics.Services.Interfaces;
 

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using VoxTics.Areas.Admin.ViewModels;
 using VoxTics.Models.Entities;
-using VoxTics.Models.Enums.Sorting;
+using VoxTics.Models.Enums;
 using VoxTics.Models.ViewModels;
 using VoxTics.Repositories.IRepositories;
 using VoxTics.Services.Interfaces;

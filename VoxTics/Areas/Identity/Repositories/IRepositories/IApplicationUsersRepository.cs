@@ -1,6 +1,7 @@
 ﻿using VoxTics.Areas.Identity.Models.Entities;
+using VoxTics.Repositories.IRepositories;
 
-namespace VoxTics.Repositories.IRepositories
+namespace VoxTics.Areas.Identity.Repositories.IRepositories
 {
     public interface IApplicationUsersRepository : IBaseRepository<ApplicationUser>
     {

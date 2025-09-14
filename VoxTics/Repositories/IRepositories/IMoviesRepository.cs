@@ -1,18 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
-using VoxTics.Areas.Admin.ViewModels;
-using VoxTics.Models.Entities;
-using VoxTics.Models.Enums;
-using VoxTics.Models.ViewModels;
-using VoxTics.Repositories;
+using VoxTics.Areas.Identity.Models.Entities;
 
 namespace VoxTics.Repositories.IRepositories
 {
+
     public interface IMoviesRepository : IBaseRepository<Movie>
     {
-        Task<Movie?> GetByTitleAsync(string title);
-        Task<IEnumerable<Movie>> GetWithCategoriesAsync();
-    }
+        Task<IEnumerable<Movie>> GetCurrentlyShowingAsync(CancellationToken cancellationToken = default);
 
+        Task<IEnumerable<Movie>> GetUpcomingMoviesAsync(DateTime nowUtc, CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<Movie>> GetTopRatedMoviesAsync(int count, CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<Movie>> SearchMoviesAsync(string keyword, CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<Movie>> GetRecommendedMoviesAsync(
+            string userId,
+            CancellationToken cancellationToken = default);
+    }
 }

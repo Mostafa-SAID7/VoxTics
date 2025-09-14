@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
+using VoxTics.Areas.Admin.Repositories.IRepositories;
 using VoxTics.Areas.Admin.ViewModels;
 using VoxTics.Areas.Admin.ViewModels.Admin;
 using VoxTics.Areas.Identity.Models.Entities;
 using VoxTics.Areas.Identity.Models.ViewModels;
 using VoxTics.Data.UoW;
-using VoxTics.Repositories.IRepositories;
 using VoxTics.Services.Interfaces;
 
 namespace VoxTics.Services.Implementations

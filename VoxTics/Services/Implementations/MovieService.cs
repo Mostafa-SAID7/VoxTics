@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
 using VoxTics.Areas.Admin.ViewModels;
-using VoxTics.Areas.Admin.ViewModels.Filter;
 using VoxTics.Areas.Admin.ViewModels.Movie;
 using VoxTics.Data.UoW;
 using VoxTics.Repositories.IRepositories;
 using VoxTics.Services.Interfaces;
-using MovieFilterVM = VoxTics.Areas.Admin.ViewModels.Filter.MoviesFilterVM;
 
 namespace VoxTics.Services.Implementations
 {
