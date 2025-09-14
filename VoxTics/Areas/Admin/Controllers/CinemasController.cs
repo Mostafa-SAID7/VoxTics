@@ -7,10 +7,14 @@ using VoxTics.Services.Interfaces;
 namespace VoxTics.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class CinemasController : Controller
+    public class CinemaController : Controller
     {
         private readonly ICinemaService _service;
-        public CinemasController(ICinemaService service) => _service = service;
+
+        public CinemaController(ICinemaService service)
+        {
+            _service = service;
+        }
 
         public async Task<IActionResult> Index()
         {
@@ -21,19 +25,11 @@ namespace VoxTics.Areas.Admin.Controllers
         public IActionResult Create() => View();
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Cinema cinema)
+        public async Task<IActionResult> Create(CinemaViewModel vm)
         {
-            if (!ModelState.IsValid) return View(cinema);
+            if (!ModelState.IsValid) return View(vm);
 
-            var existing = await _service.GetByNameAsync(cinema.Name);
-            if (existing != null)
-            {
-                ModelState.AddModelError("Name", "Cinema already exists.");
-                return View(cinema);
-            }
-
-            await _service.CreateAsync(cinema);
+            await _service.CreateAsync(vm);
             return RedirectToAction(nameof(Index));
         }
 
@@ -45,24 +41,15 @@ namespace VoxTics.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Cinema cinema)
+        public async Task<IActionResult> Edit(CinemaViewModel vm)
         {
-            if (!ModelState.IsValid) return View(cinema);
-            await _service.UpdateAsync(cinema);
+            if (!ModelState.IsValid) return View(vm);
+
+            await _service.UpdateAsync(vm);
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(int id)
-        {
-            var cinema = await _service.GetByIdAsync(id);
-            if (cinema == null) return NotFound();
-            return View(cinema);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _service.DeleteAsync(id);
             return RedirectToAction(nameof(Index));

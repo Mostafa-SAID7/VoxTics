@@ -6,18 +6,18 @@ namespace VoxTics.Models.ViewModels
     public class CinemaVM
     {
         public int Id { get; set; }
+
         public string Name { get; set; } = string.Empty;
 
-        // Description & Location
         public string? Description { get; set; }
-        public string Location { get; set; } = string.Empty;
 
-        // Contact info
-        public string? Email { get; set; }
-        public string? Phone { get; set; }
-        public string PhoneNumber => Phone ?? string.Empty;
+        public string? City { get; set; }
 
-        [NotMapped]
+        public string? State { get; set; }
+
+        public string? Country { get; set; }
+
+
         public string? Website { get; set; }
 
         // Social media links
@@ -28,7 +28,8 @@ namespace VoxTics.Models.ViewModels
         public bool HasImage => !string.IsNullOrEmpty(ImageUrl);
         public string DefaultImage => "/images/default-cinema.jpg";
         public string DisplayImage => HasImage ? ImageUrl! : DefaultImage;
-
+        [EmailAddress]
+        public string? Email { get; set; }
         // Halls & Showtimes
         public int HallCount { get; set; }
         public List<ShowtimeVM> Showtimes { get; set; } = new List<ShowtimeVM>();

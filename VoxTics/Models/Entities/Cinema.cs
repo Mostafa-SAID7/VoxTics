@@ -34,9 +34,7 @@ namespace VoxTics.Models.Entities
         [MaxLength(20)]
         public string? PostalCode { get; set; }
 
-        // Geolocation
-        public double? Latitude { get; set; }
-        public double? Longitude { get; set; }
+      
 
         [Url]
         public string? Website { get; set; }

@@ -12,21 +12,20 @@ namespace VoxTics.Areas.Admin.ViewModels
         [StringLength(200, ErrorMessage = "Cinema name cannot exceed 200 characters")]
         [Display(Name = "Cinema Name")]
         public string Name { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Address is required")]
+        [EmailAddress]
+        public string? Email { get; set; }
         [StringLength(500, ErrorMessage = "Address cannot exceed 500 characters")]
         [Display(Name = "Address")]
-        public string Address { get; set; } = string.Empty;
+        public string? Address { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "City is required")]
         [StringLength(100, ErrorMessage = "City cannot exceed 100 characters")]
         [Display(Name = "City")]
-        public string City { get; set; } = string.Empty;
+        public string? City { get; set; } = string.Empty;
 
         [Phone(ErrorMessage = "Invalid phone number format")]
         [StringLength(20, ErrorMessage = "Phone number cannot exceed 20 characters")]
         [Display(Name = "Phone Number")]
-        public string? PhoneNumber { get; set; }
+        public string? Phone { get; set; }
 
         [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters")]
         [Display(Name = "Description")]
@@ -51,10 +50,13 @@ namespace VoxTics.Areas.Admin.ViewModels
 
         public string CreatedDateFormatted => CreatedDate.ToString("MMM dd, yyyy", CultureInfo.InvariantCulture);
         public string ModifiedDateFormatted => ModifiedDate.ToString("MMM dd, yyyy", CultureInfo.InvariantCulture);
+        public List<ShowtimeVM> Showtimes { get; set; } = new List<ShowtimeVM>();
+        public List<SocialMediaLinkVM> SocialMediaLinks { get; set; } = new List<SocialMediaLinkVM>();
 
         public bool HasImage => ImageUrl != null;
         public string DefaultImage => "/images/default-cinema.jpg";
-
+        [Url(ErrorMessage = "Invalid website URL.")]
+        public string? Website { get; set; }
         public string DisplayImage => HasImage ? ImageUrl!.ToString() : DefaultImage;
     }
 }

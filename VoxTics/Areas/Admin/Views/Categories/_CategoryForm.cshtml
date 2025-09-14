@@ -20,14 +20,7 @@
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
 
-        <div class="mb-3">
-            <label asp-for="ImageFile" class="form-label"></label>
-            <input asp-for="ImageFile" type="file" class="form-control" />
-            @if (!string.IsNullOrEmpty(Model.CurrentImage))
-            {
-                <img src="@Model.CurrentImage" alt="Current Image" class="img-thumbnail mt-2" width="100" />
-            }
-        </div>
+  
 
         <div class="form-check mb-3">
             <input asp-for="IsActive" class="form-check-input" />

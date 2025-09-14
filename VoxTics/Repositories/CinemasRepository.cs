@@ -22,6 +22,23 @@ namespace VoxTics.Repositories
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Name.ToLower() == name.ToLower());
         }
+        public async Task<Cinema?> GetCinemaWithDetailsAsync(int id)
+        {
+            return await _context.Cinemas.AsNoTracking()
+                .Include(c => c.Halls)
+                .Include(c => c.Showtimes)
+                .Include(c => c.SocialMediaLinks)
+                .FirstOrDefaultAsync(c => c.Id == id);
+        }
+
+        public async Task<List<Cinema>> GetAllWithDetailsAsync()
+        {
+            return await _context.Cinemas
+                .Include(c => c.Halls)
+                .Include(c => c.Showtimes)
+                .Include(c => c.SocialMediaLinks)
+                .ToListAsync();
+        }
     }
 
 }

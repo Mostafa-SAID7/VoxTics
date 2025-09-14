@@ -11,6 +11,8 @@ namespace VoxTics.Repositories.IRepositories
     public interface ICinemasRepository : IBaseRepository<Cinema>
     {
         Task<Cinema?> GetByNameAsync(string name);
+        Task<Cinema?> GetCinemaWithDetailsAsync(int id);
+        Task<List<Cinema>> GetAllWithDetailsAsync();
     }
 
 }

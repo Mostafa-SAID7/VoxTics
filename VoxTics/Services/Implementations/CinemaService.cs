@@ -1,36 +1,107 @@
-﻿using VoxTics.Data.UoW;
+﻿using AutoMapper;
+using VoxTics.Areas.Admin.ViewModels;
+using VoxTics.Data.UoW;
+using VoxTics.Repositories.IRepositories;
 using VoxTics.Services.Interfaces;
 
 namespace VoxTics.Services.Implementations
 {
     public class CinemaService : ICinemaService
     {
-        private readonly IUnitOfWork _uow;
-        public CinemaService(IUnitOfWork uow) => _uow = uow;
+        private readonly ICinemasRepository _cinemaRepo;
+        private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public async Task<IEnumerable<Cinema>> GetAllAsync() => await _uow.Cinemas.GetAllAsync();
-        public async Task<Cinema?> GetByIdAsync(int id) => await _uow.Cinemas.GetByIdAsync(id);
-        public async Task<Cinema?> GetByNameAsync(string name) => await _uow.Cinemas.GetByNameAsync(name);
-
-        public async Task CreateAsync(Cinema cinema)
+        public CinemaService(ICinemasRepository cinemaRepo, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
-            await _uow.Cinemas.AddAsync(cinema);
-            await _uow.SaveAsync();
+            _cinemaRepo = cinemaRepo;
+            _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task UpdateAsync(Cinema cinema)
+        #region Admin CRUD
+        public async Task<List<CinemaViewModel>> GetAllAsync()
         {
-            _uow.Cinemas.Update(cinema);
-            await _uow.SaveAsync();
+            var cinemas = await _cinemaRepo.GetAllWithDetailsAsync();
+            return _mapper.Map<List<CinemaViewModel>>(cinemas);
+        }
+
+        public async Task<CinemaViewModel?> GetByIdAsync(int id)
+        {
+            var cinema = await _cinemaRepo.GetCinemaWithDetailsAsync(id);
+            return cinema == null ? null : _mapper.Map<CinemaViewModel>(cinema);
+        }
+
+        public async Task CreateAsync(CinemaViewModel vm)
+        {
+            var cinema = _mapper.Map<Cinema>(vm);
+
+            // Handle Image Upload
+            if (vm.ImageFile != null)
+            {
+                cinema.ImageUrl = await SaveImageAsync(vm.ImageFile);
+            }
+
+            
+
+            await _cinemaRepo.AddAsync(cinema);
+            await _cinemaRepo.SaveChangesAsync();
+        }
+
+        public async Task UpdateAsync(CinemaViewModel vm)
+        {
+            var cinema = await _cinemaRepo.GetByIdAsync(vm.Id);
+            if (cinema == null) return;
+
+            _mapper.Map(vm, cinema);
+            cinema.UpdatedAt = DateTime.UtcNow;
+
+            if (vm.ImageFile != null)
+            {
+                cinema.ImageUrl = await SaveImageAsync(vm.ImageFile);
+            }
+
+            _cinemaRepo.Update(cinema);
+            await _cinemaRepo.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)
         {
-            var cinema = await _uow.Cinemas.GetByIdAsync(id);
+            var cinema = await _cinemaRepo.GetByIdAsync(id);
             if (cinema == null) return;
-            _uow.Cinemas.DeleteAsync(cinema);
-            await _uow.SaveAsync();
+
+            _cinemaRepo.DeleteAsync(cinema);
+            await _cinemaRepo.SaveChangesAsync();
         }
+        #endregion
+
+        #region Public/Main
+        public async Task<List<CinemaVM>> GetAllPublicAsync()
+        {
+            var cinemas = await _cinemaRepo.GetAllWithDetailsAsync();
+            return _mapper.Map<List<CinemaVM>>(cinemas);
+        }
+
+        public async Task<CinemaVM?> GetByIdPublicAsync(int id)
+        {
+            var cinema = await _cinemaRepo.GetCinemaWithDetailsAsync(id);
+            return cinema == null ? null : _mapper.Map<CinemaVM>(cinema);
+        }
+        #endregion
+
+        #region Helpers
+        private async Task<string> SaveImageAsync(IFormFile file)
+        {
+            // Example: save to wwwroot/images/cinemas and return relative path
+            var fileName = $"{Guid.NewGuid()}_{file.FileName}";
+            var filePath = Path.Combine("wwwroot/images/cinemas", fileName);
+
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await file.CopyToAsync(stream);
+
+            return $"/images/cinemas/{fileName}";
+        }
+        #endregion
     }
 
 }
