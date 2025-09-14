@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace VoxTics.Models.Enums.TimeRange
+namespace VoxTics.Helpers.Filters.TimeRange
 {
     public enum TimeRange
     {

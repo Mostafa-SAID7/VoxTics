@@ -1,4 +1,4 @@
-﻿namespace VoxTics.Models.Enums.Sorting
+﻿namespace VoxTics.Helpers.Filters.Sorting
 {
     public enum ActorSortBy
     {

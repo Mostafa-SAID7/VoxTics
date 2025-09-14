@@ -1,4 +1,4 @@
-﻿using VoxTics.Models.Enums.Sorting;
+﻿using VoxTics.Helpers.Filters.Sorting;
 using VoxTics.Models.ViewModels.Movie;
 
 namespace VoxTics.Models.ViewModels.Category

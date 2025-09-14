@@ -1,4 +1,4 @@
-﻿namespace VoxTics.Models.Enums.TimeRange
+﻿namespace VoxTics.Helpers.Filters.TimeRange
 {
 
     public enum TimeOfDayRange

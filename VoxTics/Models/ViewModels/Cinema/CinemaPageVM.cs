@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using VoxTics.Models.Enums.Sorting;
+using VoxTics.Helpers.Filters.Sorting;
 
 namespace VoxTics.Models.ViewModels.Cinema
 {

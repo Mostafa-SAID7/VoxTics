@@ -1,5 +1,5 @@
 ﻿using VoxTics.Areas.Identity.Models.Enums;
-using VoxTics.Models.Enums.Sorting;
+using VoxTics.Helpers.Filters.Sorting;
 
 namespace VoxTics.Helpers.Filters
 {

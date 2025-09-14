@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
 
-namespace VoxTics.Helpers
+namespace VoxTics.Helpers.Filters
 {
     /// <summary>
     /// Generic filter base class to apply common filtering logic on any entity.
