@@ -1,20 +1,33 @@
-﻿namespace VoxTics.Models.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace VoxTics.Models.Entities
 {
     public class SocialMediaLink
     {
+        // -------------------------
+        // Primary Key
+        // -------------------------
         public int Id { get; set; }
 
-        [Required]
-        [MaxLength(50)]
-        public string Platform { get; set; } = string.Empty;  // مثال: Twitter, Instagram
+        // -------------------------
+        // Required fields
+        // -------------------------
+        [Required, MaxLength(50)]
+        public string Platform { get; set; } = string.Empty;  // Example: Twitter, Instagram
 
-        [Required]
-        [MaxLength(250)]
+        [Required, MaxLength(250)]
         public string Url { get; set; } = string.Empty;
-        // Foreign key to Cinema
+
+        // -------------------------
+        // Foreign keys
+        // -------------------------
+        public int ActorId { get; set; }
         public int? CinemaId { get; set; }
-        public Cinema? Cinema { get; set; }
-        public int ActorId { get; set; }  // Foreign key
-        public Actor Actor { get; set; } = null!;
+
+        // -------------------------
+        // Navigation properties
+        // -------------------------
+        public virtual Actor Actor { get; set; } = null!;
+        public virtual Cinema? Cinema { get; set; }
     }
 }

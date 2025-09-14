@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using VoxTics.Areas.Identity.Models.Entities;
-using VoxTics.Models.ViewModels;
+using VoxTics.Models.ViewModels.Booking;
 
 namespace VoxTics.Services.Interfaces
 {

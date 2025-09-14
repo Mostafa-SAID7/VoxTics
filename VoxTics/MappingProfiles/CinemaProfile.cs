@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using VoxTics.Areas.Admin.ViewModels;
+using VoxTics.Areas.Admin.ViewModels.Cinema;
 using VoxTics.Models.Entities;
-using VoxTics.Models.ViewModels;
+using VoxTics.Models.ViewModels.Cinema;
 
 namespace VoxTics.MappingProfiles
 {

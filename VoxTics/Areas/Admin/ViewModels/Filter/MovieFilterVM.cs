@@ -2,7 +2,7 @@
 
 namespace VoxTics.Areas.Admin.ViewModels.Filter
 {
-    public class MovieFilterVM
+    public class MoviesFilterVM
     {
         public int? Id { get; set; }
         public string? Search { get; set; }

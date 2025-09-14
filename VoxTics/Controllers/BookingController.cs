@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
-using VoxTics.Areas.Admin.ViewModels;
 using VoxTics.Services.Interfaces;
 using AutoMapper;
+using VoxTics.Areas.Admin.ViewModels.Booking;
 
 namespace VoxTics.Areas.Admin.Controllers
 {

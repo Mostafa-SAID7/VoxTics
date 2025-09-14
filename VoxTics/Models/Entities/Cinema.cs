@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace VoxTics.Models.Entities
 {
@@ -13,12 +13,10 @@ namespace VoxTics.Models.Entities
         [MaxLength(500)]
         public string? Description { get; set; }
 
-        [EmailAddress]
-        [StringLength(100)]
+        [EmailAddress, StringLength(100)]
         public string? Email { get; set; }
 
-        [Phone]
-        [StringLength(20)]
+        [Phone, StringLength(20)]
         public string? Phone { get; set; }
 
         [MaxLength(200)]
@@ -36,30 +34,24 @@ namespace VoxTics.Models.Entities
         [MaxLength(20)]
         public string? PostalCode { get; set; }
 
-        [Url]
-        [StringLength(200)]
+        [Url, StringLength(200)]
         public string? Website { get; set; }
 
-        [Url]
-        [StringLength(200)]
+        [Url, StringLength(200)]
         public string? ImageUrl { get; set; }
 
         // Status
         public bool IsActive { get; set; } = true;
 
-        // -------------------------
         // Navigation properties
-        // -------------------------
         public virtual ICollection<Hall> Halls { get; set; } = new List<Hall>();
         public virtual ICollection<Showtime> Showtimes { get; set; } = new List<Showtime>();
         public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
         public virtual ICollection<SocialMediaLink> SocialMediaLinks { get; set; } = new List<SocialMediaLink>();
 
-        // -------------------------
         // Computed properties
-        // -------------------------
         [NotMapped]
-        public int TotalSeats => Halls != null ? Halls.Sum(h => h.Seats.Count) : 0;
+        public int TotalSeats => Halls?.Sum(h => h.Seats.Count) ?? 0;
 
         [NotMapped]
         public int HallCount => Halls?.Count ?? 0;
@@ -68,6 +60,6 @@ namespace VoxTics.Models.Entities
         public int ShowtimeCount => Showtimes?.Count ?? 0;
 
         [NotMapped]
-        public string DisplayImage => !string.IsNullOrEmpty(ImageUrl) ? ImageUrl! : "/images/default-cinema.jpg";
+        public string DisplayImage => !string.IsNullOrEmpty(ImageUrl) ? ImageUrl : "/images/default-cinema.jpg";
     }
 }

@@ -32,6 +32,5 @@ namespace VoxTics.Models.Entities
 
         public virtual ICollection<BookingSeat> BookingSeats { get; set; } = new HashSet<BookingSeat>();
 
-        public virtual ICollection<SocialMediaLink> SocialMediaLinks { get; set; } = new List<SocialMediaLink>();
     }
 }

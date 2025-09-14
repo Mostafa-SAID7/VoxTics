@@ -1,6 +1,6 @@
 ﻿using VoxTics.Areas.Admin.ViewModels.Filter;
 using VoxTics.Areas.Admin.ViewModels.Movie;
-using MovieFilterVM = VoxTics.Areas.Admin.ViewModels.Filter.MovieFilterVM;
+using MovieFilterVM = VoxTics.Areas.Admin.ViewModels.Filter.MoviesFilterVM;
 
 namespace VoxTics.Services.Interfaces
 {

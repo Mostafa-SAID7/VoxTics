@@ -7,23 +7,23 @@ namespace VoxTics.Models.Entities
 {
     public class Actor : BaseEntity
     {
-        [Required]
+        [Required, MaxLength(50)]
+        public string FirstName { get; set; } = string.Empty;
+
         [MaxLength(50)]
-        public string FirstName { get; set; } = "";
+        public string LastName { get; set; } = string.Empty;
 
-        public string LastName { get; set; } = "";
-
+        [NotMapped]
         public string FullName
         {
             get => $"{FirstName} {LastName}".Trim();
             set
             {
-                if (value == null)
-                    throw new ArgumentNullException(nameof(value), "FullName cannot be null.");
+                if (value == null) throw new ArgumentNullException(nameof(value), "FullName cannot be null.");
 
                 var parts = value.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
-                FirstName = parts.Length > 0 ? parts[0] : "";
-                LastName = parts.Length > 1 ? parts[1] : "";
+                FirstName = parts.Length > 0 ? parts[0] : string.Empty;
+                LastName = parts.Length > 1 ? parts[1] : string.Empty;
             }
         }
 
@@ -31,7 +31,7 @@ namespace VoxTics.Models.Entities
         public string? Bio { get; set; }
 
         [MaxLength(250)]
-        public Uri? ImageUrl { get; set; }
+        public string? ImageUrl { get; set; } // Changed Uri? to string? for EF Core compatibility
 
         [MaxLength(100)]
         public string? Nationality { get; set; }
@@ -53,8 +53,8 @@ namespace VoxTics.Models.Entities
             }
         }
 
-        // Read-only collections
-        public ICollection<MovieActor> MovieActors { get; } = new List<MovieActor>();
-        public ICollection<SocialMediaLink> SocialMediaLinks { get; } = new List<SocialMediaLink>();
+        // Navigation properties
+        public virtual ICollection<MovieActor> MovieActors { get; set; } = new List<MovieActor>();
+        public virtual ICollection<SocialMediaLink> SocialMediaLinks { get; set; } = new List<SocialMediaLink>();
     }
 }

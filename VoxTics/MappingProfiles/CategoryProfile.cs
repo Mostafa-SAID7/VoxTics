@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using VoxTics.Areas.Admin.ViewModels;
 using VoxTics.Models.Entities;
+using VoxTics.Models.ViewModels.Category;
+using VoxTics.Models.ViewModels.Movie;
 
 namespace VoxTics.MappingProfiles
 {

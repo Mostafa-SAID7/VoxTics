@@ -60,7 +60,6 @@ namespace VoxTics.Models.Entities
         public virtual Cinema Cinema { get; set; } = null!;
 
         public virtual ICollection<Booking> Bookings { get; set; } = new HashSet<Booking>();
-        public virtual ICollection<SocialMediaLink> SocialMediaLinks { get; set; } = new List<SocialMediaLink>();
 
         // -------------------------
         // Computed / NotMapped

@@ -5,7 +5,7 @@ using AutoMapper;
 using VoxTics.Data.UoW;
 using VoxTics.Services.Interfaces;
 using VoxTics.Areas.Identity.Models.Entities;
-using VoxTics.Models.ViewModels;
+using VoxTics.Models.ViewModels.Booking;
 
 namespace VoxTics.Services.Implementations
 {

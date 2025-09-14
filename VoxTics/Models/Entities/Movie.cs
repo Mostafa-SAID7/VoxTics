@@ -8,36 +8,29 @@ namespace VoxTics.Models.Entities
 {
     public class Movie : BaseEntity
     {
-        [Required]
-        [MaxLength(100)]
+        [Required, MaxLength(100)]
         public string Title { get; set; } = string.Empty;
 
-        [Required]
-        [MaxLength(1000)]
+        [Required, MaxLength(1000)]
         public string Description { get; set; } = string.Empty;
 
-        [Required]
-        [StringLength(100)]
+        [Required, MaxLength(100)]
         public string Director { get; set; } = string.Empty;
 
-        [Required]
-        [DataType(DataType.Date)]
+        [Required, DataType(DataType.Date)]
         public DateTime ReleaseDate { get; set; }
 
-        [Required]
-        [Range(1, 600, ErrorMessage = "Duration must be between 1 and 600 minutes")]
-        public int Duration { get; set; } // match repo’s DurationMinutes usage
+        [Required, Range(1, 600, ErrorMessage = "Duration must be between 1 and 600 minutes")]
+        public int Duration { get; set; } // in minutes
 
-        [Required]
-        [Column(TypeName = "decimal(18,2)")]
+        [Required, Column(TypeName = "decimal(18,2)")]
         [Range(0, double.MaxValue, ErrorMessage = "Price must be positive")]
         public decimal Price { get; set; }
 
         [Range(0.0, 10.0)]
-        public decimal Rating { get; set; }  // repo expects decimal, not nullable double
+        public decimal Rating { get; set; }
 
-        [Required]
-        [StringLength(20)]
+        [Required, StringLength(20)]
         public string Language { get; set; } = "EN";
 
         [StringLength(50)]
@@ -46,21 +39,28 @@ namespace VoxTics.Models.Entities
         [StringLength(10)]
         public string? AgeRating { get; set; }
 
+        [Url]
         public string? ImageUrl { get; set; }
+
+        [Url]
         public string? TrailerImageUrl { get; set; }
 
-        public bool IsFeatured { get; set; } = false; // repo uses this for GetFeaturedMoviesAsync
+        [Url]
+        public string? TrailerUrl { get; set; }
+
+        public bool IsFeatured { get; set; } = false;
 
         [Required]
         public MovieStatus Status { get; set; } = MovieStatus.Upcoming;
-        public string? TrailerUrl { get; set; }
+
+        [MaxLength(500)]
         public string ShortDescription { get; set; } = string.Empty;
+
         // Navigation properties
         public virtual ICollection<MovieCategory> MovieCategories { get; set; } = new List<MovieCategory>();
         public virtual ICollection<MovieActor> MovieActors { get; set; } = new List<MovieActor>();
         public virtual ICollection<MovieImg> MovieImages { get; set; } = new List<MovieImg>();
         public virtual ICollection<Showtime> Showtimes { get; set; } = new List<Showtime>();
         public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
-
     }
 }

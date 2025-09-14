@@ -27,5 +27,6 @@ namespace VoxTics.Models.Entities
 
         [NotMapped]
         public decimal Total => Quantity * Price;
+        public ICollection<Seat> Seats { get; set; } = new List<Seat>();
     }
 }

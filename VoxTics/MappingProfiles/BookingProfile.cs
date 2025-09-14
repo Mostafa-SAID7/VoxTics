@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using VoxTics.Models.Entities;
-using VoxTics.Models.ViewModels;
 using VoxTics.Areas.Admin.ViewModels;
+using VoxTics.Models.ViewModels.Booking;
 
 namespace VoxTics.MappingProfiles
 {

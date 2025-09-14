@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VoxTics.Models.Entities
 {
@@ -13,12 +12,7 @@ namespace VoxTics.Models.Entities
         public int CategoryId { get; set; }
 
         // Navigation properties
-        [ForeignKey("MovieId")]
         public virtual Movie Movie { get; set; } = null!;
-
-        [ForeignKey("CategoryId")]
         public virtual Category Category { get; set; } = null!;
-
-     
     }
 }

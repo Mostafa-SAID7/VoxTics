@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.VisualStudio.Web.CodeGeneration.DotNet;
-using VoxTics.Areas.Admin.ViewModels;
+using VoxTics.Areas.Admin.ViewModels.Booking;
+using VoxTics.Areas.Admin.ViewModels.Cinema;
 using VoxTics.Areas.Admin.ViewModels.Movie;
 using VoxTics.Areas.Identity.Models.Entities;
 

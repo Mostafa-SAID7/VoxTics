@@ -1,4 +1,5 @@
-﻿using VoxTics.Areas.Admin.ViewModels;
+﻿using VoxTics.Areas.Admin.ViewModels.Cinema;
+using VoxTics.Models.ViewModels.Cinema;
 
 namespace VoxTics.Services.Interfaces
 {

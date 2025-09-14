@@ -12,13 +12,8 @@ namespace VoxTics.Models.Entities
         [Required]
         public int ActorId { get; set; }
 
-
         // Navigation properties
-        [ForeignKey("MovieId")]
         public virtual Movie Movie { get; set; } = null!;
-
-        [ForeignKey("ActorId")]
         public virtual Actor Actor { get; set; } = null!;
-
     }
 }

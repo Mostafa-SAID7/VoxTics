@@ -15,25 +15,19 @@ namespace VoxTics.Models.Entities
         [Required(ErrorMessage = "Showtime is required")]
         public int ShowtimeId { get; set; }
 
-        [Required(ErrorMessage = "Booking number is required")]
-        [StringLength(50, ErrorMessage = "Booking number cannot exceed 50 characters")]
+        [Required(ErrorMessage = "Booking number is required"), StringLength(50)]
         public string BookingNumber { get; set; } = string.Empty;
 
-        [Required]
-        [Range(1, 20, ErrorMessage = "Number of tickets must be between 1 and 20")]
+        [Required, Range(1, 20)]
         public int NumberOfTickets { get; set; }
 
-        [Required]
-        [Column(TypeName = "decimal(18,2)")]
-        [Range(0, double.MaxValue, ErrorMessage = "Total amount must be positive")]
+        [Required, Column(TypeName = "decimal(18,2)"), Range(0, double.MaxValue)]
         public decimal TotalAmount { get; set; }
 
-        [Range(0, double.MaxValue)]
-        [Column(TypeName = "decimal(18,2)")]
+        [Column(TypeName = "decimal(18,2)"), Range(0, double.MaxValue)]
         public decimal DiscountAmount { get; set; } = 0;
 
-        [Required]
-        [Column(TypeName = "decimal(18,2)")]
+        [Required, Column(TypeName = "decimal(18,2)")]
         public decimal FinalAmount { get; set; }
 
         [Required]
@@ -75,29 +69,23 @@ namespace VoxTics.Models.Entities
         // -------------------------
         // Navigation properties
         // -------------------------
-        [ForeignKey(nameof(UserId))]
         public virtual ApplicationUser User { get; set; } = default!;
-
-        [ForeignKey(nameof(MovieId))]
         public virtual Movie Movie { get; set; } = null!;
-
-        [ForeignKey(nameof(CinemaId))]
         public virtual Cinema Cinema { get; set; } = null!;
-
-        [ForeignKey(nameof(ShowtimeId))]
         public virtual Showtime Showtime { get; set; } = null!;
-
-        public virtual ICollection<BookingSeat> BookingSeats { get; } = new List<BookingSeat>();
+        public virtual ICollection<BookingSeat> BookingSeats { get; set; } = new List<BookingSeat>();
+        public virtual Payment Payment { get; set; } = null!;
 
         // -------------------------
         // Additional / computed
         // -------------------------
         [Column(TypeName = "decimal(18,2)")]
-        public decimal TotalPrice { get; set; }  // for repository or reporting
+        public decimal TotalPrice { get; set; } // for repository or reporting
 
         [NotMapped]
-        public bool CanBeCancelled => Status == BookingStatus.Confirmed &&
-                                     Showtime.EndTime > DateTime.UtcNow.AddHours(2);
+        public bool CanBeCancelled =>
+            Status == BookingStatus.Confirmed &&
+            Showtime.EndTime > DateTime.UtcNow.AddHours(2);
 
         [NotMapped]
         public decimal SavingsAmount => TotalAmount - FinalAmount;

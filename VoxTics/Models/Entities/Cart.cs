@@ -18,5 +18,7 @@ namespace VoxTics.Models.Entities
 
         [NotMapped]
         public int TotalTickets => CartItems?.Sum(ci => ci.Quantity) ?? 0;
+        public ICollection<BookingSeat> BookingSeats { get; set; } = new List<BookingSeat>();
+
     }
 }

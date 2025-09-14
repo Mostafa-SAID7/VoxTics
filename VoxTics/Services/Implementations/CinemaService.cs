@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
-using VoxTics.Areas.Admin.ViewModels;
+using VoxTics.Areas.Admin.ViewModels.Cinema;
 using VoxTics.Data.UoW;
+using VoxTics.Models.ViewModels.Cinema;
 using VoxTics.Repositories.IRepositories;
 using VoxTics.Services.Interfaces;
 

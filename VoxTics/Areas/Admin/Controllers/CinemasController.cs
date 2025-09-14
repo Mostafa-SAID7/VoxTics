@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using VoxTics.Areas.Admin.ViewModels;
+using VoxTics.Areas.Admin.ViewModels.Cinema;
 using VoxTics.Models.Entities;
 using VoxTics.Services.Interfaces;
 

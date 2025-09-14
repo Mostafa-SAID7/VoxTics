@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VoxTics.Models.Entities
 {
@@ -17,15 +16,7 @@ namespace VoxTics.Models.Entities
         [StringLength(200, ErrorMessage = "Alt text cannot exceed 200 characters")]
         public string? AltText { get; set; }
 
-    
-        [StringLength(100)]
-        public string? Caption { get; set; }
-
-
-
         // Navigation property
-        [ForeignKey("MovieId")]
         public virtual Movie Movie { get; set; } = null!;
-
     }
 }

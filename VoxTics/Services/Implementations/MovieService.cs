@@ -5,7 +5,7 @@ using VoxTics.Areas.Admin.ViewModels.Movie;
 using VoxTics.Data.UoW;
 using VoxTics.Repositories.IRepositories;
 using VoxTics.Services.Interfaces;
-using MovieFilterVM = VoxTics.Areas.Admin.ViewModels.Filter.MovieFilterVM;
+using MovieFilterVM = VoxTics.Areas.Admin.ViewModels.Filter.MoviesFilterVM;
 
 namespace VoxTics.Services.Implementations
 {

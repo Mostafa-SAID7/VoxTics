@@ -25,6 +25,8 @@ namespace VoxTics.Areas.Identity.Models.Entities
         // Read-only navigation properties
         public ICollection<UserOTP> UserOTPs { get; } = new List<UserOTP>();
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+        public ICollection<Cart> Carts { get; set; } = new List<Cart>();
+        public ICollection<UserMovieWatchlist> Watchlists { get; set; } = new List<UserMovieWatchlist>();
         public int Age => DateOfBirth.HasValue ? (int)((DateTime.UtcNow - DateOfBirth.Value).TotalDays / 365.25) : 0;
 
         public string FullAddress => $"{Street}, {City}, {State}, {ZipCode}".Trim(',', ' ');

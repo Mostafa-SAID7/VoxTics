@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
-using VoxTics.Areas.Admin.ViewModels;
+using VoxTics.Areas.Admin.ViewModels.Category;
 using VoxTics.Models.Entities;
+using VoxTics.Models.ViewModels.Category;
 
 namespace VoxTics.MappingProfiles.AdminProfiles
 {

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using VoxTics.Areas.Admin.ViewModels.Actor;
+using VoxTics.Areas.Admin.ViewModels.Category;
 using VoxTics.Models.Enums;
 
 namespace VoxTics.Areas.Admin.ViewModels.Movie

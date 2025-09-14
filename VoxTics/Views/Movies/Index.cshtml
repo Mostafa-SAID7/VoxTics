@@ -1,9 +1,11 @@
 ﻿@using VoxTics.Helpers
 @using VoxTics.Models.Enums
-@model VoxTics.Helpers.PaginatedList<VoxTics.Models.ViewModels.MovieVM>
+@using VoxTics.Models.ViewModels.Filter
+@using VoxTics.Models.ViewModels.Movie
+@model VoxTics.Helpers.PaginatedList<MovieVM>
 
 @{
-    var filter = ViewBag.Filter as VoxTics.Models.ViewModels.BasePaginatedFilterVM ?? new VoxTics.Models.ViewModels.BasePaginatedFilterVM();
+    var filter = ViewBag.Filter as PaginatedFilterVM ?? new VoxTics.Models.ViewModels.BasePaginatedFilterVM();
     var categories = ViewBag.Categories as List<VoxTics.Models.Entities.Category> ?? new List<VoxTics.Models.Entities.Category>();
     var selectedCategoryId = ViewBag.SelectedCategoryId as int? ?? 0;
 }
@@ -152,7 +154,7 @@
 }
 
 @functions {
-    private object RouteValuesForPage(int page, int pageSize, VoxTics.Models.ViewModels.BasePaginatedFilterVM filter, int categoryId)
+    private object RouteValuesForPage(int page, int pageSize, PaginatedFilterVM filter, int categoryId)
     {
         var dict = new Dictionary<string, object?>
         {

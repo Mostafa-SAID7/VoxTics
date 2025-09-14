@@ -1,8 +1,10 @@
-﻿namespace VoxTics.Areas.Admin.ViewModels.Filter
+﻿using VoxTics.Models.ViewModels.Movie;
+
+namespace VoxTics.Areas.Admin.ViewModels.Filter
 {
-    public class MovieAdminVM
+    public class MovieHomeVM
     {
-        public MovieFilterVM Filter { get; set; } = new MovieFilterVM();
+        public MoviesFilterVM Filter { get; set; } = new MoviesFilterVM();
         public PagedResultVM<MovieVM> Movies { get; set; } = new PagedResultVM<MovieVM>();
     }
 }
