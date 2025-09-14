@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using VoxTics.Areas.Identity.Models.Entities;
 using VoxTics.Models.Entities;
-using VoxTics.Models.ViewModels;
 
 namespace VoxTics.Data
 {
@@ -27,186 +26,222 @@ namespace VoxTics.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Always call the base first for Identity tables
             base.OnModelCreating(modelBuilder);
 
-            // ===== Booking & User =====
-            // Booking.User -> AspNetUsers (ApplicationUser)
+            ConfigureBooking(modelBuilder);
+            ConfigureCinema(modelBuilder);
+            ConfigureHall(modelBuilder);
+            ConfigureSeat(modelBuilder);
+            ConfigureMovie(modelBuilder);
+            ConfigureActor(modelBuilder);
+            ConfigureCategory(modelBuilder);
+            ConfigureShowtime(modelBuilder);
+            ConfigureBookingSeat(modelBuilder);
+            ConfigureMovieActor(modelBuilder);
+            ConfigureMovieCategory(modelBuilder);
+            ConfigureMovieImg(modelBuilder);
+            ConfigureUserOTP(modelBuilder);
+        }
+
+        private void ConfigureBooking(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<Booking>(b =>
             {
                 b.HasKey(x => x.Id);
                 b.Property(x => x.TotalAmount).HasColumnType("decimal(10,2)");
 
+                // Booking → User
                 b.HasOne(x => x.User)
                  .WithMany(u => u.Bookings)
                  .HasForeignKey(x => x.UserId)
                  .IsRequired()
-                 .OnDelete(DeleteBehavior.Restrict); // don't cascade delete users -> bookings
+                 .OnDelete(DeleteBehavior.Restrict);
 
-                // Booking -> BookingSeats is configured below in BookingSeat section
+                // Booking → Cinema
+                b.HasOne(x => x.Cinema)
+                 .WithMany(c => c.Bookings)
+                 .HasForeignKey(x => x.CinemaId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+                // Booking → Movie
+                b.HasOne(x => x.Movie)
+                 .WithMany(m => m.Bookings)
+                 .HasForeignKey(x => x.MovieId)
+                 .OnDelete(DeleteBehavior.Restrict);
             });
+        }
 
-            // ===== Cinema =====
-            modelBuilder.Entity<Cinema>(entity =>
+        private void ConfigureCinema(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Cinema>(c =>
             {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+                c.HasKey(e => e.Id);
+                c.Property(e => e.Name).IsRequired().HasMaxLength(100);
 
-                // When a Cinema is deleted, delete its Halls (cascade).
-                // This allows a single cascade path to Showtimes: Cinema -> Halls -> Showtimes
-                entity.HasMany(c => c.Halls)
-                      .WithOne(h => h.Cinema)
-                      .HasForeignKey(h => h.CinemaId)
-                      .OnDelete(DeleteBehavior.Cascade);
+                // Cinema → Halls (cascade delete allowed)
+                c.HasMany(c => c.Halls)
+                 .WithOne(h => h.Cinema)
+                 .HasForeignKey(h => h.CinemaId)
+                 .OnDelete(DeleteBehavior.Cascade);
+
+                // Cinema → Showtimes (restrict)
+                c.HasMany(c => c.Showtimes)
+                 .WithOne(s => s.Cinema)
+                 .HasForeignKey(s => s.CinemaId)
+                 .OnDelete(DeleteBehavior.Restrict);
             });
+        }
 
-            // ===== Hall =====
-            modelBuilder.Entity<Hall>(entity =>
+        private void ConfigureHall(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Hall>(h =>
             {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
+                h.HasKey(e => e.Id);
+                h.Property(e => e.Name).IsRequired().HasMaxLength(50);
 
-                // When a Hall is deleted, delete its Seats (cascade).
-                entity.HasMany(h => h.Seats)
-                      .WithOne(s => s.Hall)
-                      .HasForeignKey(s => s.HallId)
-                      .OnDelete(DeleteBehavior.Cascade);
+                h.HasMany(h => h.Seats)
+                 .WithOne(s => s.Hall)
+                 .HasForeignKey(s => s.HallId)
+                 .OnDelete(DeleteBehavior.Cascade);
 
-                // When a Hall is deleted, delete its Showtimes (cascade).
-                // This creates the single cascade path to Showtimes: Cinema -> Halls -> Showtimes
-                entity.HasMany(h => h.Showtimes)
-                      .WithOne(s => s.Hall)
-                      .HasForeignKey(s => s.HallId)
-                      .OnDelete(DeleteBehavior.Cascade);
+                h.HasMany(h => h.Showtimes)
+                 .WithOne(s => s.Hall)
+                 .HasForeignKey(s => s.HallId)
+                 .OnDelete(DeleteBehavior.Cascade);
             });
+        }
 
-            // ===== Seat =====
-            modelBuilder.Entity<Seat>(entity =>
+        private void ConfigureSeat(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Seat>(s =>
             {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.SeatNumber).IsRequired().HasMaxLength(10);
-                entity.HasIndex(e => new { e.HallId, e.SeatNumber }).IsUnique();
-
-                // If you want BookingSeats navigation on Seat, configure inverse:
-                // entity.HasMany(s => s.BookingSeats).WithOne(bs => bs.Seat).HasForeignKey(bs => bs.SeatId).OnDelete(DeleteBehavior.Restrict);
+                s.HasKey(e => e.Id);
+                s.Property(e => e.SeatNumber).IsRequired().HasMaxLength(10);
+                s.HasIndex(e => new { e.HallId, e.SeatNumber }).IsUnique();
             });
+        }
 
-            // ===== Movie =====
-            modelBuilder.Entity<Movie>(entity =>
+        private void ConfigureMovie(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Movie>(m =>
             {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Title).IsRequired().HasMaxLength(100);
+                m.HasKey(e => e.Id);
+                m.Property(e => e.Title).IsRequired().HasMaxLength(100);
 
-                // Make Movie -> Showtimes explicit to avoid accidental cascades.
-                entity.HasMany(m => m.Showtimes)
-                      .WithOne(s => s.Movie)
-                      .HasForeignKey(s => s.MovieId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                m.HasMany(m => m.Showtimes)
+                 .WithOne(s => s.Movie)
+                 .HasForeignKey(s => s.MovieId)
+                 .OnDelete(DeleteBehavior.Restrict);
             });
+        }
 
-            // ===== Actor =====
-            modelBuilder.Entity<Actor>(entity =>
+        private void ConfigureActor(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Actor>(a =>
             {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.FullName).IsRequired().HasMaxLength(100);
+                a.HasKey(e => e.Id);
+                a.Property(e => e.FullName).IsRequired().HasMaxLength(100);
             });
+        }
 
-            // ===== Category =====
-            modelBuilder.Entity<Category>(entity =>
+        private void ConfigureCategory(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Category>(c =>
             {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
-                entity.HasIndex(e => e.Name).IsUnique();
+                c.HasKey(e => e.Id);
+                c.Property(e => e.Name).IsRequired().HasMaxLength(50);
+                c.HasIndex(e => e.Name).IsUnique();
             });
+        }
 
-            // ===== Showtime =====
-            modelBuilder.Entity<Showtime>(entity =>
+        private void ConfigureShowtime(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Showtime>(s =>
             {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Price).HasColumnType("decimal(8,2)");
-
-                // Avoid direct cascade from Cinema to Showtimes to prevent multiple cascade paths.
-                entity.HasOne(s => s.Cinema)
-                      .WithMany(c => c.Showtimes)
-                      .HasForeignKey(s => s.CinemaId)
-                      .OnDelete(DeleteBehavior.Restrict);
-
-                // Hall -> Showtimes cascade is configured on Hall entity (see above).
-                // Movie -> Showtimes is configured on Movie entity (see above).
+                s.HasKey(e => e.Id);
+                s.Property(e => e.Price).HasColumnType("decimal(8,2)");
             });
+        }
 
-            // ===== BookingSeat =====
-            modelBuilder.Entity<BookingSeat>(entity =>
+        private void ConfigureBookingSeat(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<BookingSeat>(bs =>
             {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.SeatPrice).HasColumnType("decimal(8,2)");
+                bs.HasKey(e => e.Id);
+                bs.Property(e => e.SeatPrice).HasColumnType("decimal(8,2)");
 
-                entity.HasOne(bs => bs.Booking)
-                      .WithMany(b => b.BookingSeats)
-                      .HasForeignKey(bs => bs.BookingId)
-                      .IsRequired()
-                      .OnDelete(DeleteBehavior.Cascade); // delete booking -> delete its booking seats
+                bs.HasOne(b => b.Booking)
+                  .WithMany(bk => bk.BookingSeats)
+                  .HasForeignKey(b => b.BookingId)
+                  .OnDelete(DeleteBehavior.Cascade);
 
-                entity.HasOne(bs => bs.Seat)
-                      .WithMany(s => s.BookingSeats)
-                      .HasForeignKey(bs => bs.SeatId)
-                      .IsRequired()
-                      .OnDelete(DeleteBehavior.Restrict); // prevent cascading via Seat
+                bs.HasOne(b => b.Seat)
+                  .WithMany(s => s.BookingSeats)
+                  .HasForeignKey(b => b.SeatId)
+                  .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasIndex(e => new { e.BookingId, e.SeatId }).IsUnique();
+                bs.HasIndex(e => new { e.BookingId, e.SeatId }).IsUnique();
             });
+        }
 
-            // ===== MovieActor (join) =====
-            modelBuilder.Entity<MovieActor>(entity =>
+        private void ConfigureMovieActor(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<MovieActor>(ma =>
             {
-                entity.HasKey(e => e.Id);
-                entity.HasIndex(e => new { e.MovieId, e.ActorId }).IsUnique();
+                ma.HasKey(e => e.Id);
+                ma.HasIndex(e => new { e.MovieId, e.ActorId }).IsUnique();
 
-                entity.HasOne(ma => ma.Movie)
-                      .WithMany(m => m.MovieActors)
-                      .HasForeignKey(ma => ma.MovieId)
-                      .OnDelete(DeleteBehavior.Cascade);
+                ma.HasOne(ma => ma.Movie)
+                  .WithMany(m => m.MovieActors)
+                  .HasForeignKey(ma => ma.MovieId)
+                  .OnDelete(DeleteBehavior.Cascade);
 
-                entity.HasOne(ma => ma.Actor)
-                      .WithMany(a => a.MovieActors)
-                      .HasForeignKey(ma => ma.ActorId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                ma.HasOne(ma => ma.Actor)
+                  .WithMany(a => a.MovieActors)
+                  .HasForeignKey(ma => ma.ActorId)
+                  .OnDelete(DeleteBehavior.Restrict);
             });
+        }
 
-            // ===== MovieCategory (join) =====
-            modelBuilder.Entity<MovieCategory>(entity =>
+        private void ConfigureMovieCategory(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<MovieCategory>(mc =>
             {
-                entity.HasKey(e => e.Id);
-                entity.HasIndex(e => new { e.MovieId, e.CategoryId }).IsUnique();
+                mc.HasKey(e => e.Id);
+                mc.HasIndex(e => new { e.MovieId, e.CategoryId }).IsUnique();
 
-                entity.HasOne(mc => mc.Movie)
-                      .WithMany(m => m.MovieCategories)
-                      .HasForeignKey(mc => mc.MovieId)
-                      .OnDelete(DeleteBehavior.Cascade);
+                mc.HasOne(mc => mc.Movie)
+                  .WithMany(m => m.MovieCategories)
+                  .HasForeignKey(mc => mc.MovieId)
+                  .OnDelete(DeleteBehavior.Cascade);
 
-                entity.HasOne(mc => mc.Category)
-                      .WithMany(c => c.MovieCategories)
-                      .HasForeignKey(mc => mc.CategoryId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                mc.HasOne(mc => mc.Category)
+                  .WithMany(c => c.MovieCategories)
+                  .HasForeignKey(mc => mc.CategoryId)
+                  .OnDelete(DeleteBehavior.Restrict);
             });
+        }
 
-            // ===== MovieImg =====
-            modelBuilder.Entity<MovieImg>(entity =>
+        private void ConfigureMovieImg(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<MovieImg>(mi =>
             {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.ImageUrl).IsRequired().HasMaxLength(200);
+                mi.HasKey(e => e.Id);
+                mi.Property(e => e.ImageUrl).IsRequired().HasMaxLength(200);
 
-                entity.HasOne(mi => mi.Movie)
-                      .WithMany(m => m.MovieImages)
-                      .HasForeignKey(mi => mi.MovieId)
-                      .OnDelete(DeleteBehavior.Cascade);
+                mi.HasOne(mi => mi.Movie)
+                  .WithMany(m => m.MovieImages)
+                  .HasForeignKey(mi => mi.MovieId)
+                  .OnDelete(DeleteBehavior.Cascade);
             });
+        }
 
-            // ===== Optional: UserOTP =====
-            modelBuilder.Entity<UserOTP>(entity =>
+        private void ConfigureUserOTP(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<UserOTP>(u =>
             {
-                entity.HasKey(e => e.Id);
-                // configure fields as needed (expiration, code, user FK, etc.)
+                u.HasKey(e => e.Id);
+                // configure expiration, code, and user FK as needed
             });
         }
     }

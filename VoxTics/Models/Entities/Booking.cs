@@ -12,9 +12,6 @@ namespace VoxTics.Models.Entities
         // -------------------------
         // Required fields
         // -------------------------
-        
-   
-
         [Required(ErrorMessage = "Showtime is required")]
         public int ShowtimeId { get; set; }
 
@@ -32,6 +29,7 @@ namespace VoxTics.Models.Entities
         public decimal TotalAmount { get; set; }
 
         [Range(0, double.MaxValue)]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal DiscountAmount { get; set; } = 0;
 
         [Required]
@@ -63,30 +61,40 @@ namespace VoxTics.Models.Entities
         public string? CancellationReason { get; set; }
 
         // -------------------------
-        // Navigation properties
+        // Foreign keys
         // -------------------------
         [Required(ErrorMessage = "User is required")]
         public string UserId { get; set; } = default!;
 
-        [ForeignKey("ShowtimeId")]
+        [Required]
+        public int MovieId { get; set; }
+
+        [Required]
+        public int CinemaId { get; set; }
+
+        // -------------------------
+        // Navigation properties
+        // -------------------------
+        [ForeignKey(nameof(UserId))]
+        public virtual ApplicationUser User { get; set; } = default!;
+
+        [ForeignKey(nameof(MovieId))]
+        public virtual Movie Movie { get; set; } = null!;
+
+        [ForeignKey(nameof(CinemaId))]
+        public virtual Cinema Cinema { get; set; } = null!;
+
+        [ForeignKey(nameof(ShowtimeId))]
         public virtual Showtime Showtime { get; set; } = null!;
 
         public virtual ICollection<BookingSeat> BookingSeats { get; } = new List<BookingSeat>();
 
         // -------------------------
-        // Additional properties
+        // Additional / computed
         // -------------------------
         [Column(TypeName = "decimal(18,2)")]
-        public decimal TotalPrice { get; set; }  // repository expects this
-        // ✅ Foreign keys
-        public int MovieId { get; set; }
+        public decimal TotalPrice { get; set; }  // for repository or reporting
 
-        // ✅ Navigation props (fixes the error)
-        public virtual Movie Movie { get; set; } = null!;
-        public ApplicationUser User { get; set; } = default!;        
-        // -------------------------
-        // Computed / NotMapped
-        // -------------------------
         [NotMapped]
         public bool CanBeCancelled => Status == BookingStatus.Confirmed &&
                                      Showtime.EndTime > DateTime.UtcNow.AddHours(2);

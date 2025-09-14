@@ -30,8 +30,12 @@ namespace VoxTics
             services.AddTransient<IEmailSender, EmailSender>();
 
             //AutoMapper and scan assembly for profiles
-            services.AddAutoMapper(typeof(AccountProfile).Assembly);
-            services.AddAutoMapper(typeof(BookingProfile));
+
+            services.AddAutoMapper(
+           typeof(AccountProfile).Assembly,
+           typeof(BookingProfile).Assembly,
+           typeof(DashboardProfile).Assembly
+       );
 
 
             return services;

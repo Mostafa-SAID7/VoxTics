@@ -17,9 +17,11 @@ namespace VoxTics.Areas.Admin.ViewModels.Admin
         public int TotalCinemas { get; set; }
         public int TotalCategories { get; set; }
         public int TotalShowtimes { get; set; }
+        public int TotalHalls { get; set; }
+        public decimal TotalRevenue { get; set; }
+
 
         // Revenue
-        public decimal TotalRevenue { get; set; }
         public decimal MonthlyRevenue { get; set; }
         public decimal DailyRevenue { get; set; }
 

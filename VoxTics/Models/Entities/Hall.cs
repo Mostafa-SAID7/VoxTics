@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -19,11 +18,14 @@ namespace VoxTics.Models.Entities
         public int CinemaId { get; set; }
 
         public string? Description { get; set; }
+
         public bool IsActive { get; set; } = true;
-        [NotMapped] // EF won’t map this to the database
-        public int SeatCount => Seats?.Count ?? 0; 
+
+        [NotMapped]
+        public int SeatCount => Seats?.Count ?? 0;
+
         // Navigation properties
-        [ForeignKey("CinemaId")]
+        [ForeignKey(nameof(CinemaId))]
         public virtual Cinema Cinema { get; set; } = null!;
 
         public virtual ICollection<Seat> Seats { get; set; } = new List<Seat>();

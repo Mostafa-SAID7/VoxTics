@@ -1,193 +1,208 @@
-﻿@using VoxTics.Areas.Admin.ViewModels.Admin
-@model AdminDashboardViewModel
+﻿@model VoxTics.Areas.Admin.ViewModels.Admin.AdminDashboardViewModel
 
 @{
     ViewData["Title"] = "Admin Dashboard";
 }
 
-<div class="container-fluid">
-    <h1 class="mb-4">⚙ Admin Dashboard</h1>
+<!-- Container -->
+<div class="p-6 space-y-6 bg-gray-50 min-h-screen">
 
-    <!-- Top Stats Cards -->
-    <div class="row mb-4">
-        <div class="col-md-2">
-            <div class="card text-white bg-primary mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Movies</h5>
-                    <p class="card-text display-6">@Model.TotalMovies</p>
-                </div>
-            </div>
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div class="bg-white shadow rounded-lg p-5 flex flex-col items-center">
+            <h3 class="text-gray-500 text-sm">Total Movies</h3>
+            <span class="text-2xl font-bold text-gray-800">@Model.TotalMovies</span>
         </div>
-        <div class="col-md-2">
-            <div class="card text-white bg-success mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Users</h5>
-                    <p class="card-text display-6">@Model.TotalUsers</p>
-                </div>
-            </div>
+        <div class="bg-white shadow rounded-lg p-5 flex flex-col items-center">
+            <h3 class="text-gray-500 text-sm">Total Users</h3>
+            <span class="text-2xl font-bold text-gray-800">@Model.TotalUsers</span>
         </div>
-        <div class="col-md-2">
-            <div class="card text-white bg-warning mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Bookings</h5>
-                    <p class="card-text display-6">@Model.TotalBookings</p>
-                </div>
-            </div>
+        <div class="bg-white shadow rounded-lg p-5 flex flex-col items-center">
+            <h3 class="text-gray-500 text-sm">Total Bookings</h3>
+            <span class="text-2xl font-bold text-gray-800">@Model.TotalBookings</span>
         </div>
-        <div class="col-md-2">
-            <div class="card text-white bg-info mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Categories</h5>
-                    <p class="card-text display-6">@Model.TotalCategories</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="card text-white bg-secondary mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Cinemas</h5>
-                    <p class="card-text display-6">@Model.TotalCinemas</p>
-                </div>
-            </div>
+        <div class="bg-white shadow rounded-lg p-5 flex flex-col items-center">
+            <h3 class="text-gray-500 text-sm">Total Revenue</h3>
+            <span class="text-2xl font-bold text-green-600">@Model.FormattedTotalRevenue</span>
         </div>
     </div>
 
-    <!-- Revenue Cards -->
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="card border-success mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Total Revenue</h5>
-                    <p class="card-text display-6">@Model.FormattedTotalRevenue</p>
-                </div>
-            </div>
+    <!-- Revenue & Bookings Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        <div class="bg-white shadow rounded-lg p-5">
+            <h4 class="text-gray-700 font-semibold mb-4">Monthly Revenue</h4>
+            <canvas id="revenueChart" class="w-full h-64"></canvas>
         </div>
-        <div class="col-md-4">
-            <div class="card border-primary mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Monthly Revenue</h5>
-                    <p class="card-text display-6">@Model.FormattedMonthlyRevenue</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card border-warning mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Daily Revenue</h5>
-                    <p class="card-text display-6">@Model.FormattedDailyRevenue</p>
-                </div>
-            </div>
+        <div class="bg-white shadow rounded-lg p-5">
+            <h4 class="text-gray-700 font-semibold mb-4">Monthly Bookings</h4>
+            <canvas id="bookingsChart" class="w-full h-64"></canvas>
         </div>
     </div>
 
-    <!-- Movie Status -->
-    <div class="row mb-4">
-        @foreach (var kvp in Model.MoviesByStatus)
-        {
-            <div class="col-md-4">
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h6 class="card-title">@kvp.Key.ToString()</h6>
-                        <p class="card-text display-6">@kvp.Value</p>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-
-    <!-- Booking Status -->
-    <div class="row mb-4">
-        @foreach (var kvp in Model.BookingsByStatus)
-        {
-            <div class="col-md-4">
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h6 class="card-title">@kvp.Key.ToString()</h6>
-                        <p class="card-text display-6">@kvp.Value</p>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-
-    <!-- Recent Movies -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <h4>Recent Movies</h4>
-            <ul class="list-group">
-                @foreach (var movie in Model.RecentMovies)
+    <!-- Movies by Status & Bookings by Status -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        <div class="bg-white shadow rounded-lg p-5">
+            <h4 class="text-gray-700 font-semibold mb-4">Movies by Status</h4>
+            <ul class="space-y-2">
+                @foreach (var kv in Model.MoviesByStatus)
                 {
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        @movie.Title
-                        <span class="badge bg-primary">@movie.ReleaseDate.ToString("MMM dd, yyyy")</span>
+                    <li class="flex justify-between">
+                        <span>@kv.Key</span>
+                        <span>@kv.Value</span>
                     </li>
                 }
             </ul>
+        </div>
+        <div class="bg-white shadow rounded-lg p-5">
+            <h4 class="text-gray-700 font-semibold mb-4">Bookings by Status</h4>
+            <ul class="space-y-2">
+                @foreach (var kv in Model.BookingsByStatus)
+                {
+                    <li class="flex justify-between">
+                        <span>@kv.Key</span>
+                        <span>@kv.Value</span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        <!-- Recent Movies -->
+        <div class="bg-white shadow rounded-lg p-5 overflow-auto">
+            <h4 class="text-gray-700 font-semibold mb-4">Recent Movies</h4>
+            <table class="w-full text-left text-sm">
+                <thead>
+                    <tr class="border-b">
+                        <th class="p-2">Title</th>
+                        <th class="p-2">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var movie in Model.RecentMovies)
+                    {
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="p-2">@movie.Title</td>
+                            <td class="p-2">@movie.Status</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
 
         <!-- Recent Bookings -->
-        <div class="col-md-6">
-            <h4>Recent Bookings</h4>
-            <ul class="list-group">
-                @foreach (var booking in Model.RecentBookings)
-                {
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        @booking.BookingNumber
-                        <span class="badge bg-success">@booking.BookingDate.ToString("MMM dd, yyyy")</span>
-                    </li>
-                }
-            </ul>
+        <div class="bg-white shadow rounded-lg p-5 overflow-auto">
+            <h4 class="text-gray-700 font-semibold mb-4">Recent Bookings</h4>
+            <table class="w-full text-left text-sm">
+                <thead>
+                    <tr class="border-b">
+                        <th class="p-2">User</th>
+                        <th class="p-2">Cinema</th>
+                        <th class="p-2">Movie</th>
+                        <th class="p-2">Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var booking in Model.RecentBookings)
+                    {
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="p-2">@booking.UserName</td>
+                            <td class="p-2">@booking.CinemaName</td>
+                            <td class="p-2">@booking.MovieTitle</td>
+                            <td class="p-2">@booking.TotalPrice.ToString("C")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Recent Users -->
+        <div class="bg-white shadow rounded-lg p-5 overflow-auto">
+            <h4 class="text-gray-700 font-semibold mb-4">Recent Users</h4>
+            <table class="w-full text-left text-sm">
+                <thead>
+                    <tr class="border-b">
+                        <th class="p-2">Username</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.RecentUsers)
+                    {
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="p-2">@user.ApplicationName</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- Recent Users -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <h4>Recent Users</h4>
-            <ul class="list-group">
-                @foreach (var user in Model.RecentUsers)
+    <!-- Popular Movies & Cinemas -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        <div class="bg-white shadow rounded-lg p-5 overflow-auto">
+            <h4 class="text-gray-700 font-semibold mb-4">Popular Movies</h4>
+            <ul class="list-disc list-inside">
+                @foreach (var movie in Model.PopularMovies)
                 {
-                 
+                    <li>@movie.Title</li>
                 }
             </ul>
         </div>
-    </div>
-
-    <!-- Charts Placeholder -->
-    <div class="row">
-        <div class="col-md-12">
-            <h4>Monthly Bookings (Last 30 Days)</h4>
-            <canvas id="monthlyBookingsChart"></canvas>
+        <div class="bg-white shadow rounded-lg p-5 overflow-auto">
+            <h4 class="text-gray-700 font-semibold mb-4">Popular Cinemas</h4>
+            <ul class="list-disc list-inside">
+                @foreach (var cinema in Model.PopularCinemas)
+                {
+                    <li>@cinema.Name</li>
+                }
+            </ul>
         </div>
     </div>
 </div>
 
+<!-- Scripts -->
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const ctx = document.getElementById('monthlyBookingsChart').getContext('2d');
-        const labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyBookings.Keys));
-        const data = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyBookings.Values));
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        const bookingsCtx = document.getElementById('bookingsChart').getContext('2d');
 
-        new Chart(ctx, {
+        const revenueLabels = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.MonthlyRevenueSeries.Keys));
+        const revenueData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.MonthlyRevenueSeries.Values));
+
+        const bookingsLabels = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.MonthlyBookings.Keys));
+        const bookingsData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.MonthlyBookings.Values));
+
+        new Chart(revenueCtx, {
             type: 'line',
             data: {
-                labels: labels,
+                labels: revenueLabels,
                 datasets: [{
-                    label: 'Bookings',
-                    data: data,
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    tension: 0.3
+                    label: 'Revenue',
+                    data: revenueData,
+                    backgroundColor: 'rgba(34,197,94,0.2)',
+                    borderColor: 'rgba(34,197,94,1)',
+                    borderWidth: 2,
+                    fill: true
                 }]
             },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: true } },
-                scales: {
-                    y: { beginAtZero: true }
-                }
-            }
+            options: { responsive: true, plugins: { legend: { display: true } } }
+        });
+
+        new Chart(bookingsCtx, {
+            type: 'bar',
+            data: {
+                labels: bookingsLabels,
+                datasets: [{
+                    label: 'Bookings',
+                    data: bookingsData,
+                    backgroundColor: 'rgba(59,130,246,0.6)',
+                    borderColor: 'rgba(59,130,246,1)',
+                    borderWidth: 1
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { display: true } } }
         });
     </script>
 }

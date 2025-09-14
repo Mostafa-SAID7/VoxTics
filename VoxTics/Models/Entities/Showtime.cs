@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using VoxTics.Models.Enums;
 
 namespace VoxTics.Models.Entities
@@ -17,6 +18,9 @@ namespace VoxTics.Models.Entities
         [Required]
         public int HallId { get; set; }
 
+        [Required]
+        public int CinemaId { get; set; }  // <-- EF Core requires a setter
+
         // -------------------------
         // Showtime details
         // -------------------------
@@ -25,7 +29,7 @@ namespace VoxTics.Models.Entities
 
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "Duration must be positive")]
-        public int Duration { get; set; }  // in minutes
+        public int Duration { get; set; } // in minutes
 
         [Required]
         [Column(TypeName = "decimal(8,2)")]
@@ -35,15 +39,6 @@ namespace VoxTics.Models.Entities
         [Required]
         public ShowtimeStatus Status { get; set; } = ShowtimeStatus.Scheduled;
 
-        // -------------------------
-        // Computed property
-        // -------------------------
-        [NotMapped]
-        public DateTime EndTime => StartTime.AddMinutes(Duration);
-
-        // -------------------------
-        // Extended / Optional
-        // -------------------------
         public bool Is3D { get; set; } = false;
 
         [MaxLength(50)]
@@ -60,19 +55,23 @@ namespace VoxTics.Models.Entities
 
         [ForeignKey(nameof(HallId))]
         public virtual Hall Hall { get; set; } = null!;
-        public DateTime ShowDateTime { get; set; }   // <-- add this
+
+        [ForeignKey(nameof(CinemaId))]
+        public virtual Cinema Cinema { get; set; } = null!;
+
+        public virtual ICollection<Booking> Bookings { get; set; } = new HashSet<Booking>();
+        public virtual ICollection<SocialMediaLink> SocialMediaLinks { get; set; } = new List<SocialMediaLink>();
+
+        // -------------------------
+        // Computed / NotMapped
+        // -------------------------
         [NotMapped]
-        public int CinemaId { get; set; }
-        public virtual Cinema Cinema { get; set; } = null!;   // ✅ Reference
+        public DateTime EndTime => StartTime.AddMinutes(Duration);
+
         [NotMapped]
         public int TotalSeats => Hall?.Seats?.Count ?? 0;
 
         [NotMapped]
         public int AvailableSeats => TotalSeats - (Bookings?.SelectMany(b => b.BookingSeats).Count() ?? 0);
-
-        public virtual ICollection<Booking> Bookings { get; set; } = new HashSet<Booking>();
-
-        // Optional: marketing hooks
-        public virtual ICollection<SocialMediaLink> SocialMediaLinks { get; set; } = new List<SocialMediaLink>();
     }
 }
