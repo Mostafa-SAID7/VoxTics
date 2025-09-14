@@ -1,36 +1,57 @@
-﻿using VoxTics.Data.UoW;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using VoxTics.Data.UoW;
+using VoxTics.Helpers;
+using VoxTics.Models.Entities;
 using VoxTics.Services.Interfaces;
 
 namespace VoxTics.Services.Implementations
 {
     public class ShowtimeService : IShowtimeService
     {
-        private readonly IUnitOfWork _uow;
-        public ShowtimeService(IUnitOfWork uow) => _uow = uow;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public async Task<IEnumerable<Showtime>> GetAllAsync() => await _uow.Showtimes.GetAllAsync();
-        public async Task<IEnumerable<Showtime>> GetWithDetailsAsync() => await _uow.Showtimes.GetWithDetailsAsync();
-        public async Task<Showtime?> GetByIdAsync(int id) => await _uow.Showtimes.GetByIdAsync(id);
-        public async Task<Showtime?> GetWithMovieAsync(int id) => await _uow.Showtimes.GetWithMovieAsync(id);
-
-        public async Task CreateAsync(Showtime showtime)
+        public ShowtimeService(IUnitOfWork unitOfWork)
         {
-            await _uow.Showtimes.AddAsync(showtime);
-            await _uow.SaveAsync();
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task UpdateAsync(Showtime showtime)
+        public async Task<IEnumerable<Showtime>> GetUpcomingShowtimesAsync(
+            int movieId,
+            DateTime fromDate,
+            CancellationToken cancellationToken = default)
         {
-            _uow.Showtimes.Update(showtime);
-            await _uow.SaveAsync();
+            return await _unitOfWork.Showtimes
+                .Query()
+                .Where(s => s.MovieId == movieId && s.StartTime >= fromDate && s.Status == Models.Enums.ShowtimeStatus.Scheduled)
+                .OrderBy(s => s.StartTime)
+                .ToListAsyncSafe(cancellationToken);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<IEnumerable<Showtime>> GetAvailableShowtimesForCinemaAsync(
+            int cinemaId,
+            DateTime fromDate,
+            CancellationToken cancellationToken = default)
         {
-            var showtime = await _uow.Showtimes.GetByIdAsync(id);
-            if (showtime == null) return;
-            _uow.Showtimes.DeleteAsync(showtime);
-            await _uow.SaveAsync();
+            return await _unitOfWork.Showtimes
+                .Query()
+                .Where(s => s.CinemaId == cinemaId && s.StartTime >= fromDate && s.Status == Models.Enums.ShowtimeStatus.Scheduled)
+                .OrderBy(s => s.StartTime)
+                .ToListAsyncSafe(cancellationToken);
+        }
+
+        public async Task<Showtime?> GetShowtimeByIdAsync(int showtimeId, CancellationToken cancellationToken = default)
+        {
+            return await _unitOfWork.Showtimes.GetByIdAsync(showtimeId, cancellationToken);
+        }
+
+        public async Task<int> GetAvailableSeatsAsync(int showtimeId, CancellationToken cancellationToken = default)
+        {
+            var showtime = await _unitOfWork.Showtimes.GetByIdAsync(showtimeId, cancellationToken);
+            return showtime?.AvailableSeats ?? 0;
         }
     }
 }

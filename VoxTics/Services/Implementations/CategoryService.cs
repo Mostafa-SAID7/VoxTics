@@ -1,36 +1,58 @@
-﻿using VoxTics.Data.UoW;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using VoxTics.Areas.Identity.Models.Entities;
+using VoxTics.Data.UoW;
+using VoxTics.Helpers;
 using VoxTics.Services.Interfaces;
 
 namespace VoxTics.Services.Implementations
 {
+    /// <summary>
+    /// User-facing category service for browsing and retrieving categories.
+    /// </summary>
     public class CategoryService : ICategoryService
     {
-        private readonly IUnitOfWork _uow;
-        public CategoryService(IUnitOfWork uow) => _uow = uow;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public async Task<IEnumerable<Category>> GetAllAsync() => await _uow.Categories.GetAllAsync();
-        public async Task<Category?> GetByIdAsync(int id) => await _uow.Categories.GetByIdAsync(id);
-        public async Task<Category?> GetByNameAsync(string name) => await _uow.Categories.GetByNameAsync(name);
-
-        public async Task CreateAsync(Category category)
+        public CategoryService(IUnitOfWork unitOfWork)
         {
-            await _uow.Categories.AddAsync(category);
-            await _uow.SaveAsync();
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task UpdateAsync(Category category)
+        public async Task<IEnumerable<Category>> GetActiveCategoriesAsync(CancellationToken cancellationToken = default)
         {
-            _uow.Categories.Update(category);
-            await _uow.SaveAsync();
+            var categories = await _unitOfWork.Categories
+                .FindAsync(c => c.IsActive, cancellationToken)
+                .ConfigureAwait(false);
+
+            return categories.OrderBy(c => c.Name);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<PaginatedList<Category>> GetPagedCategoriesAsync(
+            int pageIndex,
+            int pageSize,
+            string? searchTerm = null,
+            string? sortOrder = null,
+            CancellationToken cancellationToken = default)
         {
-            var cat = await _uow.Categories.GetByIdAsync(id);
-            if (cat == null) return;
-            _uow.Categories.DeleteAsync(cat);
-            await _uow.SaveAsync();
+            var query = _unitOfWork.Categories.Query().Where(c => c.IsActive);
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var sanitized = ValidationHelpers.SanitizeInput(searchTerm);
+                query = query.Where(c => c.Name.Contains(sanitized));
+            }
+
+            query = query.ApplySorting(sortOrder, c => c.Name);
+
+            return await query.ToPaginatedListAsync(pageIndex, pageSize, cancellationToken)
+                              .ConfigureAwait(false);
         }
+
+        
     }
-
 }
+

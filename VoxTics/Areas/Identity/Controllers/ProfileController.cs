@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VoxTics.Areas.Identity.Models.ViewModels;
-using VoxTics.Services.Interfaces;
+using VoxTics.Areas.Identity.Services.Interfaces;
 
 namespace VoxTics.Areas.Identity.Controllers
 {

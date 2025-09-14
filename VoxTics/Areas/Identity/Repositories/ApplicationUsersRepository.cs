@@ -22,26 +22,26 @@ namespace VoxTics.Areas.Identity.Repositories
         // Create user
         public async Task CreateAsync(ApplicationUser entity)
         {
-            await _dbSet.AddAsync(entity);
+            await _dbSet.AddAsync(entity).ConfigureAwait(false);
         }
 
         // AddAsync with cancellation support
         public async Task AddAsync(ApplicationUser entity, CancellationToken cancellationToken = default)
         {
-            await _dbSet.AddAsync(entity, cancellationToken);
+            await _dbSet.AddAsync(entity, cancellationToken).ConfigureAwait(false);
         }
 
         // Commit changes (Unit of Work)
         public async Task CommitAsync()
         {
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync().ConfigureAwait(false);
         }
 
         // Update user
         public async Task UpdateAsync(ApplicationUser entity)
         {
             _dbSet.Update(entity);
-            await Task.CompletedTask; // no DB call here
+            await Task.CompletedTask.ConfigureAwait(false); // no DB call here
         }
 
         // Get filtered users
@@ -51,48 +51,48 @@ namespace VoxTics.Areas.Identity.Repositories
             if (predicate != null)
                 query = query.Where(predicate);
 
-            return await query.ToListAsync();
+            return await query.ToListAsync().ConfigureAwait(false);
         }
 
         // Get all users
         public async Task<IEnumerable<ApplicationUser>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            return await _dbSet.AsNoTracking().ToListAsync(cancellationToken);
+            return await _dbSet.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
         // Find by PK
         public async Task<ApplicationUser?> FindAsync(params object[] keys)
         {
-            return await _dbSet.FindAsync(keys);
+            return await _dbSet.FindAsync(keys).ConfigureAwait(false);
         }
 
         // Custom methods
         public async Task<ApplicationUser?> GetByEmailAsync(string email)
         {
-            return await _dbSet.FirstOrDefaultAsync(u => u.Email == email);
+            return await _dbSet.FirstOrDefaultAsync(u => u.Email == email).ConfigureAwait(false);
         }
 
         public async Task<ApplicationUser?> GetByIdAsync(string id)
         {
-            return await _dbSet.FirstOrDefaultAsync(u => u.Id == id);
+            return await _dbSet.FirstOrDefaultAsync(u => u.Id == id).ConfigureAwait(false);
         }
 
         public async Task<ApplicationUser?> GetByUserNameAsync(string userName)
         {
-            return await _dbSet.FirstOrDefaultAsync(u => u.UserName == userName);
+            return await _dbSet.FirstOrDefaultAsync(u => u.UserName == userName).ConfigureAwait(false);
         }
 
         public async Task<ApplicationUser?> GetByUserNameOrEmailAsync(string emailOrUserName)
         {
             return await _dbSet.FirstOrDefaultAsync(u =>
-                u.UserName == emailOrUserName || u.Email == emailOrUserName);
+                u.UserName == emailOrUserName || u.Email == emailOrUserName).ConfigureAwait(false);
         }
 
         public void Update(ApplicationUser entity) => _dbSet.Update(entity);
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            return await _context.SaveChangesAsync(cancellationToken);
+            return await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
         public Task<IEnumerable<ApplicationUser>> GetAllAsync()
@@ -156,6 +156,21 @@ namespace VoxTics.Areas.Identity.Repositories
         }
 
         public Task<IEnumerable<ApplicationUser>> GetAsync(Func<ApplicationUser, bool>? predicate = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IQueryable<ApplicationUser> Query()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ApplicationUser?> GetFirstOrDefaultAsync(Expression<Func<ApplicationUser, bool>> predicate, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ApplicationUser?> FindByKeysAsync(object[] keys, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

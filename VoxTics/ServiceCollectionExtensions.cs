@@ -7,6 +7,8 @@ using VoxTics.Areas.Admin.Repositories.IRepositories;
 using VoxTics.Areas.Identity.Models.Entities;
 using VoxTics.Areas.Identity.Repositories;
 using VoxTics.Areas.Identity.Repositories.IRepositories;
+using VoxTics.Areas.Identity.Services.Implementations;
+using VoxTics.Areas.Identity.Services.Interfaces;
 using VoxTics.Data.UoW;
 using VoxTics.MappingProfiles;
 using VoxTics.MappingProfiles.AdminProfiles;

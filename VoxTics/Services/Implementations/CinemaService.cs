@@ -1,108 +1,68 @@
-﻿using AutoMapper;
-using VoxTics.Areas.Admin.ViewModels.Cinema;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using VoxTics.Areas.Identity.Models.Entities;
 using VoxTics.Data.UoW;
-using VoxTics.Models.ViewModels.Cinema;
-using VoxTics.Repositories.IRepositories;
+using VoxTics.Helpers;
 using VoxTics.Services.Interfaces;
 
 namespace VoxTics.Services.Implementations
 {
     public class CinemaService : ICinemaService
     {
-        private readonly ICinemasRepository _cinemaRepo;
-        private readonly IMapper _mapper;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<CinemaService> _logger;
 
-        public CinemaService(ICinemasRepository cinemaRepo, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public CinemaService(IUnitOfWork unitOfWork, ILogger<CinemaService> logger)
         {
-            _cinemaRepo = cinemaRepo;
-            _mapper = mapper;
-            _httpContextAccessor = httpContextAccessor;
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        #region Admin CRUD
-        public async Task<List<CinemaViewModel>> GetAllAsync()
+        public async Task<IEnumerable<Cinema>> GetActiveCinemasAsync(CancellationToken cancellationToken = default)
         {
-            var cinemas = await _cinemaRepo.GetAllWithDetailsAsync();
-            return _mapper.Map<List<CinemaViewModel>>(cinemas);
+            return await _unitOfWork.Cinemas
+                .FindAsync(c => c.IsActive, cancellationToken)
+                .ConfigureAwait(false);
         }
 
-        public async Task<CinemaViewModel?> GetByIdAsync(int id)
+        public async Task<PaginatedList<Cinema>> GetPagedCinemasAsync(
+            int pageIndex,
+            int pageSize,
+            string? searchTerm = null,
+            string? sortOrder = null,
+            CancellationToken cancellationToken = default)
         {
-            var cinema = await _cinemaRepo.GetCinemaWithDetailsAsync(id);
-            return cinema == null ? null : _mapper.Map<CinemaViewModel>(cinema);
-        }
+            var query = _unitOfWork.Cinemas.Query().Where(c => c.IsActive);
 
-        public async Task CreateAsync(CinemaViewModel vm)
-        {
-            var cinema = _mapper.Map<Cinema>(vm);
-
-            // Handle Image Upload
-            if (vm.ImageFile != null)
+            if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                cinema.ImageUrl = await SaveImageAsync(vm.ImageFile);
+                string sanitized = ValidationHelpers.SanitizeInput(searchTerm);
+                query = query.Where(c => c.Name.Contains(sanitized) || c.City.Contains(sanitized));
             }
 
-            
+            query = query.ApplySorting(sortOrder ?? "Name", c => c.Name);
 
-            await _cinemaRepo.AddAsync(cinema);
-            await _cinemaRepo.SaveChangesAsync();
+            return await query.ToPaginatedListAsync(pageIndex, pageSize, cancellationToken);
         }
 
-        public async Task UpdateAsync(CinemaViewModel vm)
+        public async Task<Cinema?> GetCinemaDetailsAsync(int cinemaId, CancellationToken cancellationToken = default)
         {
-            var cinema = await _cinemaRepo.GetByIdAsync(vm.Id);
-            if (cinema == null) return;
-
-            _mapper.Map(vm, cinema);
-            cinema.UpdatedAt = DateTime.UtcNow;
-
-            if (vm.ImageFile != null)
-            {
-                cinema.ImageUrl = await SaveImageAsync(vm.ImageFile);
-            }
-
-            _cinemaRepo.Update(cinema);
-            await _cinemaRepo.SaveChangesAsync();
+            return await _unitOfWork.Cinemas.GetByIdAsync(cinemaId, cancellationToken);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<IEnumerable<Showtime>> GetUpcomingShowtimesAsync(
+            int cinemaId,
+            int daysAhead = 7,
+            CancellationToken cancellationToken = default)
         {
-            var cinema = await _cinemaRepo.GetByIdAsync(id);
-            if (cinema == null) return;
+            var startDate = DateTime.UtcNow;
+            var endDate = startDate.AddDays(daysAhead);
 
-            _cinemaRepo.DeleteAsync(cinema);
-            await _cinemaRepo.SaveChangesAsync();
+            return await _unitOfWork.Showtimes.GetByCinemaAndDateRangeAsync(cinemaId, startDate, endDate, cancellationToken);
         }
-        #endregion
-
-        #region Public/Main
-        public async Task<List<CinemaVM>> GetAllPublicAsync()
-        {
-            var cinemas = await _cinemaRepo.GetAllWithDetailsAsync();
-            return _mapper.Map<List<CinemaVM>>(cinemas);
-        }
-
-        public async Task<CinemaVM?> GetByIdPublicAsync(int id)
-        {
-            var cinema = await _cinemaRepo.GetCinemaWithDetailsAsync(id);
-            return cinema == null ? null : _mapper.Map<CinemaVM>(cinema);
-        }
-        #endregion
-
-        #region Helpers
-        private async Task<string> SaveImageAsync(IFormFile file)
-        {
-            // Example: save to wwwroot/images/cinemas and return relative path
-            var fileName = $"{Guid.NewGuid()}_{file.FileName}";
-            var filePath = Path.Combine("wwwroot/images/cinemas", fileName);
-
-            using var stream = new FileStream(filePath, FileMode.Create);
-            await file.CopyToAsync(stream);
-
-            return $"/images/cinemas/{fileName}";
-        }
-        #endregion
     }
-
 }

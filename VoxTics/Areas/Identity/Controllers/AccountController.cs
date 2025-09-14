@@ -7,7 +7,7 @@ using System.Security.Claims;
 using VoxTics.Areas.Identity.Models.Entities;
 using VoxTics.Areas.Identity.Models.Enums;
 using VoxTics.Areas.Identity.Models.ViewModels;
-using VoxTics.Services.Interfaces;
+using VoxTics.Areas.Identity.Services.Interfaces;
 using VoxTics.Utility;
 
 namespace VoxTics.Areas.Identity.Controllers

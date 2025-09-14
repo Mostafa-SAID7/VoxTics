@@ -135,5 +135,30 @@ namespace VoxTics.Helpers
 
         public static bool IsValidFileSize(long fileSize, long maxSizeInBytes = 5 * 1024 * 1024) =>
             fileSize > 0 && fileSize <= maxSizeInBytes;
+        /// <summary>
+        /// Validates a seat number format (e.g., "A10", "B5", "Z99").
+        /// </summary>
+        /// <param name="seatNumber">The seat number string.</param>
+        /// <param name="maxRow">Maximum allowed row letter (default Z).</param>
+        /// <param name="maxSeatPerRow">Maximum allowed seats per row.</param>
+        /// <returns>True if valid, otherwise false.</returns>
+        public static bool ValidateSeatNumber(string seatNumber, char maxRow = 'Z', int maxSeatPerRow = 100)
+        {
+            if (string.IsNullOrWhiteSpace(seatNumber))
+                return false;
+
+            // Example valid pattern: A10 or B5 or Z99
+            var match = Regex.Match(seatNumber.Trim().ToUpperInvariant(), @"^([A-Z])(\d{1,3})$");
+            if (!match.Success) return false;
+
+            var row = match.Groups[1].Value[0];
+            if (row > char.ToUpperInvariant(maxRow))
+                return false;
+
+            if (!int.TryParse(match.Groups[2].Value, out var seat) || seat < 1 || seat > maxSeatPerRow)
+                return false;
+
+            return true;
+        }
     }
 }

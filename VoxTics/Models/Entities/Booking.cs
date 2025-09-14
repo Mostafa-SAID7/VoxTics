@@ -92,5 +92,8 @@ namespace VoxTics.Models.Entities
 
         [NotMapped]
         public string BookingReference => $"BK{Id:D6}";
+
+        public string Seats { get; internal set; }
+        public bool IsCheckedIn { get; internal set; }
     }
 }

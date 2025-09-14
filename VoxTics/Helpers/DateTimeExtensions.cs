@@ -127,6 +127,11 @@ namespace VoxTics.Helpers
             return $"{age} years old";
         }
 
+        internal static DateTime UtcNowSafe()
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }
