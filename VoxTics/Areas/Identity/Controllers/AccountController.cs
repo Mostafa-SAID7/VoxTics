@@ -1,207 +1,234 @@
-﻿using AutoMapper;
+﻿// Areas/Identity/Controllers/AccountController.cs
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using VoxTics.Areas.Identity.Models.Entities;
-using VoxTics.Areas.Identity.Models.Enums;
 using VoxTics.Areas.Identity.Models.ViewModels;
 using VoxTics.Areas.Identity.Services.Interfaces;
-using VoxTics.Utility;
 
 namespace VoxTics.Areas.Identity.Controllers
 {
-    [Area(SD.IdentityArea)]
+    [Area("Identity")]
+    [Route("[area]/[controller]/[action]")]
     public class AccountController : Controller
     {
-        private readonly IApplicationUsersService _usersService;
-        private readonly IMapper _mapper;
-        public AccountController(IApplicationUsersService usersService, IMapper mapper)
+        private readonly IAccountService _accountService;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+
+        public AccountController(
+            IAccountService accountService,
+            SignInManager<ApplicationUser> signInManager)
         {
-            _usersService = usersService;
-            _mapper = mapper;
+            _accountService = accountService;
+            _signInManager = signInManager;
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Register()
+        public IActionResult Login(string returnUrl = null)
         {
-            if (User?.Identity?.IsAuthenticated == true)
-                return RedirectToAction("Index", "Home", new { area = "Customer" });
-
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(RegisterVM registerVM)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginVM model, string returnUrl = null)
         {
-            if (!ModelState.IsValid) return View(registerVM);
+            ViewData["ReturnUrl"] = returnUrl;
 
-            var result = await _usersService.RegisterAsync(registerVM, Request.Scheme);
-            if (!result.Succeeded)
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError(string.Empty, result.Message);
-                return View(registerVM);
+                var result = await _accountService.LoginUserAsync(model);
+                if (result.success)
+                {
+                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    {
+                        return Redirect(returnUrl);
+                    }
+                    return RedirectToAction("Index", "Home", new { area = "" });
+                }
+
+                ModelState.AddModelError(string.Empty, result.errorMessage);
             }
 
-            TempData["success-notification"] = result.Message;
-            return RedirectToAction("Login");
+            return View(model);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Register(string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterVM model, string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+
+            if (ModelState.IsValid)
+            {
+                var result = await _accountService.RegisterUserAsync(model);
+                if (result.success)
+                {
+                    // Don't sign in the user until email is confirmed
+                    TempData["Message"] = "Registration successful. Please check your email for confirmation instructions.";
+                    return RedirectToAction("Login");
+                }
+
+                ModelState.AddModelError(string.Empty, result.errorMessage);
+            }
+
+            return View(model);
         }
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
-            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
+            if (userId == null || token == null)
             {
-                TempData["error-notification"] = "Missing parameters.";
-                return RedirectToAction("Login");
+                return RedirectToAction("Index", "Home", new { area = "" });
             }
 
-            var (succeeded, message) = await _usersService.ConfirmEmailAsync(userId, token);
-            if (succeeded)
-                TempData["success-notification"] = message;
+            var result = await _accountService.ConfirmEmailAsync(userId, token);
+            if (result)
+            {
+                TempData["Message"] = "Email confirmed successfully. You can now log in.";
+            }
             else
-                TempData["error-notification"] = message;
+            {
+                TempData["Error"] = "Email confirmation failed. The link may have expired or is invalid.";
+            }
 
             return RedirectToAction("Login");
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Login()
+        public IActionResult ForgotPassword()
         {
-            if (User?.Identity?.IsAuthenticated == true)
-                return RedirectToAction("Index", "Home", new { area = "Customer" });
-
             return View();
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginVM loginVM)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordVM model)
         {
-            if (!ModelState.IsValid) return View(loginVM);
-
-            var (succeeded, message) = await _usersService.LoginAsync(loginVM);
-            if (!succeeded)
+            if (ModelState.IsValid)
             {
-                TempData["error-notification"] = message;
-                return View(loginVM);
+                var result = await _accountService.ForgotPasswordAsync(model.Email);
+                if (result.success)
+                {
+                    // Don't reveal that the user does not exist or is not confirmed
+                    TempData["Message"] = "If your email is registered, you will receive a password reset link.";
+                }
+                else
+                {
+                    TempData["Error"] = result.errorMessage;
+                }
+
+                return RedirectToAction("ForgotPasswordConfirmation");
             }
 
-            TempData["success-notification"] = message;
-            return RedirectToAction("Index", "Home", new { area = "Customer" });
+            return View(model);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPasswordConfirmation()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(string userId, string token)
+        {
+            if (userId == null || token == null)
+            {
+                return RedirectToAction("Index", "Home", new { area = "" });
+            }
+
+            var model = new NewPasswordVM
+            {
+                UserId = userId,
+                Token = token
+            };
+
+            return View(model);
         }
 
         [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(NewPasswordVM model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _accountService.ResetPasswordAsync(model);
+                if (result.success)
+                {
+                    TempData["Message"] = "Password reset successfully. You can now log in with your new password.";
+                    return RedirectToAction("Login");
+                }
+
+                ModelState.AddModelError(string.Empty, result.errorMessage);
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            await _usersService.LogoutAsync();
-            TempData["success-notification"] = "Logout Successfully";
-            return RedirectToAction("Index", "Home", new { area = "Customer" });
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home", new { area = "" });
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult ResendEmailConfirmation() => View();
-
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<IActionResult> ResendEmailConfirmation(ResendEmailConfirmationVM vm)
+        public IActionResult ResendEmailConfirmation()
         {
-            if (!ModelState.IsValid) return View(vm);
-
-            var (succeeded, message) = await _usersService.ResendEmailConfirmationAsync(vm);
-            if (!succeeded)
-            {
-                TempData["error-notification"] = message;
-                return View(vm);
-            }
-
-            TempData["success-notification"] = message;
-            return RedirectToAction("Login");
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult ForgetPassword() => View();
-
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<IActionResult> ForgetPassword(ForgetPasswordVM vm)
-        {
-            if (!ModelState.IsValid) return View(vm);
-
-            var (succeeded, message) = await _usersService.ForgetPasswordSendOtpAsync(vm);
-            if (!succeeded)
-            {
-                TempData["error-notification"] = message;
-                return View(vm);
-            }
-
-            TempData["success-notification"] = message;
-            // redirect to confirm OTP page (expected to accept userId)
-            var user = await _usersService.GetByIdAsync((await _usersService.GetByIdAsync(vm.EmailORUserName))?.Id ?? string.Empty);
-            // simpler approach: after sending OTP you normally know user id - but to avoid extra DB roundtrip we can search
-            var possibleUser = await _usersService.GetByIdAsync(vm.EmailORUserName);
-            return RedirectToAction("ConfirmOTP", "Account", new { area = "Identity", userId = possibleUser?.Id });
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult ConfirmOTP(string userId)
-        {
-            return View(new ConfirmOTPVM { ApplicationUserId = userId });
+            return View();
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> ConfirmOTP(ConfirmOTPVM vm)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResendEmailConfirmation(ResendEmailConfirmationVM model)
         {
-            if (!ModelState.IsValid) return View(vm);
-
-            var (succeeded, message) = await _usersService.ConfirmOtpAsync(vm);
-            if (!succeeded)
+            if (ModelState.IsValid)
             {
-                TempData["error-notification"] = message;
-                return RedirectToAction("ConfirmOTP", new { area = "Identity", userId = vm.ApplicationUserId });
-            }
-
-            TempData["success-notification"] = message;
-            return RedirectToAction("NewPassword", new { area = "Identity", userId = vm.ApplicationUserId });
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult NewPassword(string userId)
-        {
-            return View(new NewPasswordVM { ApplicationUserId = userId });
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<IActionResult> NewPassword(NewPasswordVM vm)
-        {
-            if (!ModelState.IsValid) return View(vm);
-
-            var (succeeded, message) = await _usersService.ResetPasswordAsync(vm);
-            if (!succeeded)
-            {
-                TempData["error-notification"] = message;
-                foreach (var err in message.Split('|'))
+                var result = await _accountService.ResendEmailConfirmationAsync(model.Email);
+                if (result)
                 {
-                    ModelState.AddModelError(string.Empty, err.Trim());
+                    TempData["Message"] = "Confirmation email sent. Please check your email.";
                 }
-                return View(vm);
+                else
+                {
+                    TempData["Error"] = "Unable to resend confirmation email. The email may already be confirmed or not registered.";
+                }
+
+                return RedirectToAction("Login");
             }
 
-            TempData["success-notification"] = message;
-            return RedirectToAction("Login");
+            return View(model);
         }
 
-        // External login endpoints can still be implemented similarly by injecting SignInManager in the service
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
     }
 }

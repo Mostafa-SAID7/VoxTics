@@ -1,8 +1,8 @@
-﻿using System;
+﻿// Models/Entities/Showtime.cs
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 using VoxTics.Models.Enums;
 
 namespace VoxTics.Models.Entities
@@ -19,7 +19,7 @@ namespace VoxTics.Models.Entities
         public int HallId { get; set; }
 
         [Required]
-        public int CinemaId { get; set; }  // <-- EF Core requires a setter
+        public int CinemaId { get; set; }
 
         // -------------------------
         // Showtime details
@@ -62,15 +62,28 @@ namespace VoxTics.Models.Entities
         public virtual ICollection<Booking> Bookings { get; set; } = new HashSet<Booking>();
 
         // -------------------------
-        // Computed / NotMapped
+        // Persistent fields
+        // -------------------------
+        /// <summary>
+        /// Persisted available seats counter. Keep in sync with bookings/reservations.
+        /// Make setter public so repositories can update the value.
+        /// </summary>
+        [Required]
+        public int AvailableSeats { get; set; }
+
+        // Optional concurrency token for optimistic concurrency
+        [Timestamp]
+        public byte[]? RowVersion { get; set; }
+
+        public bool IsCancelled { get; set; } = false;
+
+        // -------------------------
+        // Computed / NotMapped helpers
         // -------------------------
         [NotMapped]
         public DateTime EndTime => StartTime.AddMinutes(Duration);
 
         [NotMapped]
         public int TotalSeats => Hall?.Seats?.Count ?? 0;
-
-        [NotMapped]
-        public int AvailableSeats => TotalSeats - (Bookings?.SelectMany(b => b.BookingSeats).Count() ?? 0);
     }
 }

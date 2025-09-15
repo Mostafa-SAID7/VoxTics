@@ -4,7 +4,7 @@ using VoxTics.Areas.Admin.ViewModels;
 using VoxTics.Areas.Admin.ViewModels.Movie;
 using VoxTics.Models.Entities;
 
-namespace VoxTics.MappingProfiles.AdminProfiles
+namespace VoxTics.Areas.Admin.AdminProfiles
 {
     public class MovieAdminProfile : Profile
     {

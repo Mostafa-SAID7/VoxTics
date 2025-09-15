@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using VoxTics.Areas.Identity.Models.Entities;
 
 namespace VoxTics.Models.Entities
 {
@@ -23,8 +24,6 @@ namespace VoxTics.Models.Entities
         [Required, Column(TypeName = "decimal(18,2)")]
         public decimal Amount { get; set; }
 
-        [Required, StringLength(100)]
-        public string PaymentMethod { get; set; } = "Unknown";
 
         [Required]
         public PaymentStatus Status { get; set; } = PaymentStatus.Pending;
@@ -39,5 +38,12 @@ namespace VoxTics.Models.Entities
 
         [StringLength(1000)]
         public string? Notes { get; set; }
+        public string UserId { get; set; } = default!;
+        public ApplicationUser User { get; set; } = null!;
+        [Required, StringLength(100)]
+        public PaymentMethod Method { get; set; } 
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? PaidAt { get; set; }
+
     }
 }

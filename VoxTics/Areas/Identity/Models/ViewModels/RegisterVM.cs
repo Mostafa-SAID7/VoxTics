@@ -11,10 +11,7 @@ namespace VoxTics.Areas.Identity.Models.ViewModels
         [Display(Name = "Full Name")]
         public string Name { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Username is required.")]
-        [StringLength(50, ErrorMessage = "Username cannot exceed 50 characters.")]
-        [Display(Name = "Username")]
-        public string UserName { get; set; } = string.Empty;
+      
 
         [Required(ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage = "Invalid email address format.")]

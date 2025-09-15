@@ -37,7 +37,7 @@ namespace VoxTics.Models.Entities
         public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
 
         [StringLength(100)]
-        public string? PaymentMethod { get; set; }
+        public PaymentMethod PaymentMethod { get; set; }
 
         [StringLength(200)]
         public string? TransactionId { get; set; }
@@ -69,9 +69,9 @@ namespace VoxTics.Models.Entities
         // -------------------------
         // Navigation properties
         // -------------------------
-        public virtual ApplicationUser User { get; set; } = default!;
-        public virtual Movie Movie { get; set; } = null!;
-        public virtual Cinema Cinema { get; set; } = null!;
+        public virtual ApplicationUser? User { get; set; } = default!;
+        public virtual Movie? Movie { get; set; } = null!;
+        public virtual Cinema? Cinema { get; set; } = null!;
         public virtual Showtime Showtime { get; set; } = null!;
         public virtual ICollection<BookingSeat> BookingSeats { get; set; } = new List<BookingSeat>();
         public virtual Payment Payment { get; set; } = null!;

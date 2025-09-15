@@ -11,6 +11,7 @@ namespace VoxTics.Models.Entities
         // -------------------------
         [Required]
         public string UserId { get; set; } = default!;
+        public string Name { get; set; } = "Default";
 
         // -------------------------
         // Navigation properties

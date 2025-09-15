@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿// VoxTics.Areas.Identity.Models.Entities/ApplicationUser.cs
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using VoxTics.Areas.Identity.Models.Enums;
@@ -16,21 +17,23 @@ namespace VoxTics.Areas.Identity.Models.Entities
         public string? Street { get; set; }
         public string? ZipCode { get; set; }
 
-        // Read-only Skills
         public List<string> Skills { get; } = new();
-
-        // Changed to System.Uri
         public Uri? AvatarUrl { get; set; }
 
-        // Read-only navigation properties
+        // Navigation properties
         public ICollection<UserOTP> UserOTPs { get; } = new List<UserOTP>();
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
         public ICollection<Cart> Carts { get; set; } = new List<Cart>();
-        public ICollection<UserMovieWatchlist> Watchlists { get; set; } = new List<UserMovieWatchlist>();
-        public int Age => DateOfBirth.HasValue ? (int)((DateTime.UtcNow - DateOfBirth.Value).TotalDays / 365.25) : 0;
+        public ICollection<Watchlist> Watchlists { get; set; } = new List<Watchlist>();
+        public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+        public ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
+        // Backwards-compatibility collection (if you still use the simpler mapping)
+        public ICollection<UserMovieWatchlist> UserMovieWatchlists { get; set; } = new List<UserMovieWatchlist>();
+
+        public int Age => DateOfBirth.HasValue ? (int)((DateTime.UtcNow - DateOfBirth.Value).TotalDays / 365.25) : 0;
         public string FullAddress => $"{Street}, {City}, {State}, {ZipCode}".Trim(',', ' ');
 
-        public object CreatedAt { get; internal set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

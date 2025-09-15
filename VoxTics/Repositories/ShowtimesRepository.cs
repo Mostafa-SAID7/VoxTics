@@ -66,23 +66,39 @@ namespace VoxTics.Repositories
                 .FirstOrDefaultAsync(s => s.Id == showtimeId, cancellationToken)
                 .ConfigureAwait(false);
 
-        public async Task<bool> ReserveSeatAsync(
-            int showtimeId, int numberOfSeats, CancellationToken cancellationToken = default)
+        public async Task<bool> ReserveSeatAsync(int showtimeId, int numberOfSeats, CancellationToken cancellationToken = default)
         {
+            if (numberOfSeats <= 0) return false;
+
             var showtime = await _context.Showtimes
-                .FirstOrDefaultAsync(s => s.Id == showtimeId, cancellationToken)
+                .FirstOrDefaultAsync(s => s.Id == showtimeId && !s.IsCancelled, cancellationToken)
                 .ConfigureAwait(false);
 
-            if (showtime == null || showtime.AvailableSeats < numberOfSeats) return false;
+            if (showtime == null) return false;
 
+            // simple availability check
+            if (showtime.AvailableSeats < numberOfSeats) return false;
+
+            // decrement
             showtime.AvailableSeats -= numberOfSeats;
-            _context.Showtimes.Update(showtime);
-            return true; // Save handled by UnitOfWork
+
+            try
+            {
+                // Let UnitOfWork/DbContext track changes; we mark Update to be explicit.
+                _context.Showtimes.Update(showtime);
+                return true; // Commit/save will be handled by caller (UnitOfWork.CommitAsync)
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                // concurrency conflict — someone else modified seats. Caller should retry or return failure.
+                return false;
+            }
         }
 
-        public async Task<bool> ReleaseSeatsAsync(
-            int showtimeId, int numberOfSeats, CancellationToken cancellationToken = default)
+        public async Task<bool> ReleaseSeatsAsync(int showtimeId, int numberOfSeats, CancellationToken cancellationToken = default)
         {
+            if (numberOfSeats <= 0) return false;
+
             var showtime = await _context.Showtimes
                 .FirstOrDefaultAsync(s => s.Id == showtimeId, cancellationToken)
                 .ConfigureAwait(false);
@@ -90,8 +106,16 @@ namespace VoxTics.Repositories
             if (showtime == null) return false;
 
             showtime.AvailableSeats += numberOfSeats;
-            _context.Showtimes.Update(showtime);
-            return true;
+
+            try
+            {
+                _context.Showtimes.Update(showtime);
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return false;
+            }
         }
     }
 }

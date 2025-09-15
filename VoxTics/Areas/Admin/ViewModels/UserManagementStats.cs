@@ -1,4 +1,4 @@
-﻿namespace VoxTics.Areas.Identity.Models.Entities
+﻿namespace VoxTics.Areas.Admin.ViewModels
 {
     public class UserManagementStats
     {

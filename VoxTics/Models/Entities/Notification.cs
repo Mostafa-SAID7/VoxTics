@@ -24,5 +24,9 @@ namespace VoxTics.Models.Entities
         // Navigation property
         // -------------------------
         public virtual ApplicationUser? User { get; set; }
+
+        public string Title { get; set; } = string.Empty;
+
+       
     }
 }

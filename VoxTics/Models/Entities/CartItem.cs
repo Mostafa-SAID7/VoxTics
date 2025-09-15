@@ -6,6 +6,8 @@ namespace VoxTics.Models.Entities
     {
         [Required]
         public int CartId { get; set; }
+        public int MovieId { get; set; }
+        public virtual Movie Movie { get; set; } = null!;
 
         [ForeignKey(nameof(CartId))]
         public virtual Cart Cart { get; set; } = null!;

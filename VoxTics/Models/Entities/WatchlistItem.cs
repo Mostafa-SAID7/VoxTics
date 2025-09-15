@@ -18,5 +18,6 @@ namespace VoxTics.Models.Entities
         // -------------------------
         public virtual Watchlist Watchlist { get; set; } = null!;
         public virtual Movie Movie { get; set; } = null!;
+        public DateTime AddedAt { get; set; } = DateTime.UtcNow;
     }
 }

@@ -5,7 +5,7 @@ namespace VoxTics.Helpers
 {
     public interface IEmailService
     {
-        Task SendEmailAsync(string to, string subject, string body);
+        Task SendEmailAsync(string to, string subject, string htmlContent);
         Task SendBookingConfirmationAsync(string to, string userName, string movieTitle, DateTime showTimeUtc, string seatNumbers, decimal totalAmount);
         Task SendPasswordResetAsync(string to, string resetLink);
         Task SendWelcomeEmailAsync(string to, string userName);

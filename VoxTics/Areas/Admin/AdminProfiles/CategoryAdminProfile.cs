@@ -3,7 +3,7 @@ using VoxTics.Areas.Admin.ViewModels.Category;
 using VoxTics.Models.Entities;
 using VoxTics.Models.ViewModels.Category;
 
-namespace VoxTics.MappingProfiles.AdminProfiles
+namespace VoxTics.Areas.Admin.AdminProfiles
 {
     public class CategoryAdminProfile : Profile
     {

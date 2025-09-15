@@ -1,42 +1,81 @@
+// Program.cs
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System.Text.Json.Serialization;
 using VoxTics;
 using VoxTics.Areas.Identity.Models.Entities;
 using VoxTics.Data;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<MovieDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
+var configuration = builder.Configuration;
+var env = builder.Environment;
 
-// Identity
+
+builder.Services.AddApplicationServices(configuration); // registers MovieDbContext by default
+
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
-    options.Password.RequireNonAlphanumeric = false;
+    // Password policy
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false; // allow some simplicity; set true if you require symbols
     options.Password.RequiredLength = 8;
-    options.User.RequireUniqueEmail = true;
-})
-.AddEntityFrameworkStores<MovieDbContext>()
-.AddDefaultTokenProviders();
+    options.Password.RequiredUniqueChars = 1;
 
-// MVC
-builder.Services.AddControllersWithViews()
-    .AddJsonOptions(opt =>
+    // Lockout
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.AllowedForNewUsers = true;
+
+    // User
+    options.User.RequireUniqueEmail = true;
+    options.User.AllowedUserNameCharacters =
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+})
+    .AddEntityFrameworkStores<MovieDbContext>()
+    .AddDefaultTokenProviders();
+
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+    options.LoginPath = "/Identity/Account/Login";
+    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+    options.SlidingExpiration = true;
+});
+
+var mvcBuilder = builder.Services.AddControllersWithViews()
+    .AddJsonOptions(opts =>
     {
-        opt.JsonSerializerOptions.ReferenceHandler =
-            System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+        opts.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        opts.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     });
 
-// Repositories & Services
-builder.Services.AddApplicationServices(builder.Configuration);
 
-// HttpContext
-builder.Services.AddHttpContextAccessor();
+
 
 var app = builder.Build();
 
-// Middleware
-if (app.Environment.IsDevelopment())
+try
+{
+    using var scope = app.Services.CreateScope();
+    var services = scope.ServiceProvider;
+
+    var db = services.GetRequiredService<MovieDbContext>();
+
+    db.Database.Migrate();
+}
+catch (Exception ex)
+{
+    Console.WriteLine("An error occurred while migrating or initializing the database: " + ex.Message);
+}
+
+
+if (env.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }
@@ -51,15 +90,15 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// Authentication - Authorization
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Area route first
+// area-first routing
 app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
+// default route
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

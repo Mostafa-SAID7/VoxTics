@@ -57,10 +57,19 @@ namespace VoxTics.Models.Entities
         public string ShortDescription { get; set; } = string.Empty;
 
         // Navigation properties
-        public virtual ICollection<MovieCategory> MovieCategories { get; set; } = new List<MovieCategory>();
-        public virtual ICollection<MovieActor> MovieActors { get; set; } = new List<MovieActor>();
-        public virtual ICollection<MovieImg> MovieImages { get; set; } = new List<MovieImg>();
-        public virtual ICollection<Showtime> Showtimes { get; set; } = new List<Showtime>();
-        public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+        public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+        public ICollection<Showtime> Showtimes { get; set; } = new List<Showtime>();
+        public ICollection<MovieActor> MovieActors { get; set; } = new List<MovieActor>();
+        public ICollection<MovieCategory> MovieCategories { get; set; } = new List<MovieCategory>();
+        public ICollection<MovieImg> MovieImages { get; set; } = new List<MovieImg>();
+
+        // New relationships
+        public ICollection<WatchlistItem> WatchlistItems { get; set; } = new List<WatchlistItem>();
+        public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+
+        // If you're still using the old simple join entity:
+        public ICollection<UserMovieWatchlist>? UserMovieWatchlists { get; set; } = new List<UserMovieWatchlist>();
+        public int CategoryId { get; internal set; }
+        public object Category { get; internal set; }
     }
 }

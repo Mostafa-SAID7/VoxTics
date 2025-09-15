@@ -5,7 +5,7 @@ using VoxTics.Areas.Admin.ViewModels.Cinema;
 using VoxTics.Areas.Admin.ViewModels.Movie;
 using VoxTics.Areas.Identity.Models.Entities;
 
-namespace VoxTics.MappingProfiles.AdminProfiles
+namespace VoxTics.Areas.Admin.AdminProfiles
 {
     public class DashboardProfile : Profile
     {

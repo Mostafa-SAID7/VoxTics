@@ -26,8 +26,9 @@ namespace VoxTics.Repositories
                 .ConfigureAwait(false);
 
         public async Task<IEnumerable<Movie>> GetTrendingMoviesAsync(int count = 5,
-                                                                     CancellationToken cancellationToken = default) =>
-            await _context.Bookings
+                                                                     CancellationToken cancellationToken = default)
+        {
+            return await _context.Bookings
                 .AsNoTracking()
                 .GroupBy(b => b.Movie)
                 .OrderByDescending(g => g.Count())
@@ -35,6 +36,7 @@ namespace VoxTics.Repositories
                 .Take(count)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
+        }
 
         public async Task<IEnumerable<Movie>> GetUpcomingMoviesAsync(DateTime fromDate, int count = 10,
                                                                      CancellationToken cancellationToken = default) =>
@@ -49,7 +51,6 @@ namespace VoxTics.Repositories
         public async Task<IEnumerable<Movie>> GetRecommendedMoviesForUserAsync(
             string userId, int count = 5, CancellationToken cancellationToken = default)
         {
-            // مثال بسيط: التوصيات بناءً على الفئات الأكثر حجزًا من قِبل المستخدم.
             var favoriteCategories = await _context.Bookings
                 .Where(b => b.UserId == userId)
                 .GroupBy(b => b.Movie.CategoryId)
@@ -103,8 +104,7 @@ namespace VoxTics.Repositories
                 .AsNoTracking()
                 .Where(m =>
                     m.Title.ToLower().Contains(searchTerm) ||
-                    m.Description!.ToLower().Contains(searchTerm) ||
-                    m.Category.Name.ToLower().Contains(searchTerm))
+                    m.Description!.ToLower().Contains(searchTerm))
                 .OrderByDescending(m => m.Rating)
                 .Take(maxResults)
                 .ToListAsync(cancellationToken)
