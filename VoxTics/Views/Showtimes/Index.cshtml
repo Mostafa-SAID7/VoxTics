@@ -1,1 +1,911 @@
-﻿
+﻿@model IEnumerable<VoxTics.Models.Entities.Showtime>
+@{
+    ViewData["Title"] = "Showtimes";
+    var totalPages = (int)Math.Ceiling((double)ViewBag.TotalCount / ViewBag.PageSize);
+    var currentPage = ViewBag.Page;
+    var movieId = ViewBag.MovieId;
+    var cinemaId = ViewBag.CinemaId;
+}
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: #333;
+        line-height: 1.6;
+    }
+
+    .showtimes-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        animation: fadeInDown 0.8s ease-out;
+    }
+
+    .page-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: white;
+        text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        margin-bottom: 0.5rem;
+        background: linear-gradient(45deg, #fff, #f0f0f0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .page-subtitle {
+        font-size: 1.2rem;
+        color: rgba(255,255,255,0.9);
+        font-weight: 300;
+    }
+
+    .filters-section {
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(255,255,255,0.2);
+        animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+
+    .filters-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .filter-label {
+        color: white;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .filter-input, .filter-select {
+        padding: 0.8rem 1rem;
+        border: none;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(10px);
+        color: white;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+        .filter-input:focus, .filter-select:focus {
+            outline: none;
+            background: rgba(255,255,255,0.2);
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79,172,254,0.2);
+        }
+
+        .filter-input::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .filter-select option {
+            background: #333;
+            color: white;
+        }
+
+    .view-toggle {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+
+    .view-btn {
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 50px;
+        background: rgba(255,255,255,0.1);
+        color: rgba(255,255,255,0.7);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+        .view-btn.active, .view-btn:hover {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79,172,254,0.4);
+        }
+
+    .showtimes-content {
+        animation: fadeInUp 0.8s ease-out 0.4s both;
+    }
+
+    /* Card View Styles */
+    .showtimes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .showtime-card {
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(255,255,255,0.2);
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+        .showtime-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .showtime-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+            border-color: rgba(79,172,254,0.5);
+        }
+
+            .showtime-card:hover::before {
+                opacity: 1;
+            }
+
+    .movie-info {
+        margin-bottom: 1.5rem;
+    }
+
+    .movie-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.5rem;
+        line-height: 1.2;
+    }
+
+    .hall-info {
+        color: rgba(255,255,255,0.8);
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .time-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .time-block {
+        background: rgba(255,255,255,0.05);
+        border-radius: 10px;
+        padding: 1rem;
+        text-align: center;
+    }
+
+    .time-label {
+        color: rgba(255,255,255,0.7);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.3rem;
+    }
+
+    .time-value {
+        color: #4facfe;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .price-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .price {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #00f2fe;
+    }
+
+    .book-btn {
+        padding: 0.8rem 1.5rem;
+        background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .book-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255,107,107,0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+    /* Table View Styles */
+    .table-view {
+        display: none;
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.2);
+        margin-bottom: 2rem;
+    }
+
+        .table-view.active {
+            display: block;
+        }
+
+    .enhanced-table {
+        width: 100%;
+        border-collapse: collapse;
+        color: white;
+    }
+
+        .enhanced-table thead {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .enhanced-table th {
+            padding: 1.5rem 1rem;
+            text-align: left;
+            font-weight: 700;
+            color: white;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .enhanced-table td {
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .enhanced-table tbody tr {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+            .enhanced-table tbody tr:hover {
+                background: rgba(255,255,255,0.1);
+                transform: scale(1.01);
+            }
+
+    .movie-cell {
+        font-weight: 600;
+        color: #4facfe;
+    }
+
+    .hall-cell {
+        color: rgba(255,255,255,0.9);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .time-cell {
+        color: rgba(255,255,255,0.8);
+        font-weight: 500;
+    }
+
+    .price-cell {
+        font-weight: 700;
+        color: #00f2fe;
+        font-size: 1.1rem;
+    }
+
+    /* Pagination Styles */
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
+        animation: fadeInUp 0.8s ease-out 0.6s both;
+    }
+
+    .pagination {
+        display: flex;
+        gap: 0.5rem;
+        list-style: none;
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(20px);
+        padding: 1rem;
+        border-radius: 50px;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .page-item {
+        margin: 0;
+    }
+
+    .page-link {
+        padding: 0.8rem 1.2rem;
+        border: none;
+        background: transparent;
+        color: rgba(255,255,255,0.8);
+        text-decoration: none;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        min-width: 44px;
+        text-align: center;
+    }
+
+    .page-item.active .page-link {
+        background: linear-gradient(45deg, #4facfe, #00f2fe);
+        color: white;
+        box-shadow: 0 4px 15px rgba(79,172,254,0.4);
+    }
+
+    .page-link:hover {
+        background: rgba(255,255,255,0.1);
+        color: white;
+        text-decoration: none;
+        transform: translateY(-2px);
+    }
+
+    .no-results {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.2);
+        color: rgba(255,255,255,0.8);
+    }
+
+    .no-results-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .no-results h3 {
+        color: white;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+
+    .loading-skeleton {
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+        border-radius: 10px;
+        height: 20px;
+        margin-bottom: 10px;
+    }
+
+    @@keyframes loading {
+        0%
+
+    {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+
+    }
+
+    @@keyframes fadeInDown {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    @@keyframes fadeInUp {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    @@media (max-width: 1024px) {
+        .showtimes-grid
+
+    {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+
+    .filters-grid {
+        grid-template-columns: 1fr;
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        .showtimes-container
+
+    {
+        padding: 1rem;
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+    }
+
+    .showtimes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .time-info {
+        grid-template-columns: 1fr;
+    }
+
+    .price-section {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+
+    .enhanced-table {
+        font-size: 0.9rem;
+    }
+
+        .enhanced-table th,
+        .enhanced-table td {
+            padding: 1rem 0.5rem;
+        }
+
+    }
+</style>
+
+<div class="showtimes-container">
+    <div class="page-header">
+        <h1 class="page-title">🎬 Showtimes</h1>
+        <p class="page-subtitle">Find your perfect movie experience</p>
+    </div>
+
+    <div class="filters-section">
+        <div class="filters-grid">
+            <div class="filter-group">
+                <label class="filter-label">Search Movies</label>
+                <input type="text" class="filter-input" id="movieSearch" placeholder="Search by movie title...">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Filter by Hall</label>
+                <select class="filter-select" id="hallFilter">
+                    <option value="">All Halls</option>
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var hall in Model.Select(s => s.Hall.Name ?? "Unknown Hall").Distinct().OrderBy(h => h))
+                        {
+                            <option value="@hall">@hall</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Time Filter</label>
+                <select class="filter-select" id="timeFilter">
+                    <option value="">All Times</option>
+                    <option value="morning">Morning (6AM - 12PM)</option>
+                    <option value="afternoon">Afternoon (12PM - 6PM)</option>
+                    <option value="evening">Evening (6PM - 12AM)</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Sort By</label>
+                <select class="filter-select" id="sortFilter">
+                    <option value="time">Start Time</option>
+                    <option value="movie">Movie Title</option>
+                    <option value="price">Price</option>
+                    <option value="hall">Hall</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="view-toggle">
+            <button class="view-btn active" onclick="toggleView('card')">📱 Card View</button>
+            <button class="view-btn" onclick="toggleView('table')">📊 Table View</button>
+        </div>
+    </div>
+
+    <div class="showtimes-content">
+        @if (Model != null && Model.Any())
+        {
+            <!-- Card View -->
+            <div class="card-view active" id="cardView">
+                <div class="showtimes-grid" id="showtimesGrid">
+                    @foreach (var show in Model)
+                    {
+                        <div class="showtime-card"
+                             data-movie="@(show.Movie?.Title ?? " Unknown Movie").ToLower()"
+                             data-hall="@show.Hall.Name "
+                             data-time="@show.StartTime.Hour"
+                             data-price="@show.Price"
+                             onclick="selectShowtime('@show.Id')">
+                            <div class="movie-info">
+                                <h3 class="movie-title">@show.Movie?.Title ?? "Unknown Movie"</h3>
+                                <div class="hall-info">
+                                    🎭 @show.Hall.Name?? "Unknown Hall"
+                                </div>
+                            </div>
+
+                            <div class="time-info">
+                                <div class="time-block">
+                                    <div class="time-label">Start Time</div>
+                                    <div class="time-value">@show.StartTime.ToString("MMM dd")<br>@show.StartTime.ToString("h:mm tt")</div>
+                                </div>
+                                <div class="time-block">
+                                    <div class="time-label">End Time</div>
+                                    <div class="time-value">@show.EndTime.ToString("h:mm tt")</div>
+                                </div>
+                            </div>
+
+                            <div class="price-section">
+                                <div class="price">@show.Price.ToString("C")</div>
+                                <a href="@Url.Action("Book", new { id = show.Id })" class="book-btn">
+                                    🎫 Book Now
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Table View -->
+            <div class="table-view" id="tableView">
+                <table class="enhanced-table">
+                    <thead>
+                        <tr>
+                            <th>🎬 Movie</th>
+                            <th>🎭 Hall</th>
+                            <th>🕒 Start Time</th>
+                            <th>⏰ End Time</th>
+                            <th>💰 Price</th>
+                            <th>🎫 Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        @foreach (var show in Model)
+                        {
+                            <tr data-movie="@(@show.Movie?.Title ?? "Unknown Movie").ToLower()"
+                                data-hall="@show.Hall.Name"
+                                data-time="@show.StartTime.Hour"
+                                data-price="@show.Price"
+                                onclick="selectShowtime('@show.Id')">
+                                <td class="movie-cell">@show.Movie?.Title ?? "Unknown Movie"</td>
+                                <td class="hall-cell">
+                                    🎭 @show.Hall.Name ?? "Unknown Hall"
+                                </td>
+                                <td class="time-cell">@show.StartTime.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td class="time-cell">@show.EndTime.ToString("HH:mm")</td>
+                                <td class="price-cell">@show.Price.ToString("C")</td>
+                                <td>
+                                    <a href="@Url.Action("Book", new { id = show.Id })" class="book-btn" onclick="event.stopPropagation()">
+                                        🎫 Book
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (totalPages > 1)
+            {
+                <nav aria-label="Page navigation" class="pagination-container">
+                    <ul class="pagination">
+                        @if (currentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", new { movieId = movieId, cinemaId = cinemaId, page = currentPage - 1, pageSize = ViewBag.PageSize })">
+                                    ← Previous
+                                </a>
+                            </li>
+                        }
+
+                        @for (int i = 1; i <= totalPages; i++)
+                        {
+                            <li class="page-item @(i == currentPage ? "active" : "")">
+                                <a class="page-link"
+                                   href="@Url.Action("Index", new { movieId = movieId, cinemaId = cinemaId, page = i, pageSize = ViewBag.PageSize })">
+                                    @i
+                                </a>
+                            </li>
+                        }
+
+                        @if (currentPage < totalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", new { movieId = movieId, cinemaId = cinemaId, page = currentPage + 1, pageSize = ViewBag.PageSize })">
+                                    Next →
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        }
+        else
+        {
+            <div class="no-results">
+                <div class="no-results-icon">🎬</div>
+                <h3>No Showtimes Available</h3>
+                <p>There are currently no showtimes scheduled. Please check back later or contact the cinema for more information.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    // Global variables
+    let currentView = 'card';
+    let allShowtimes = [];
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeShowtimes();
+        setupEventListeners();
+        animateCards();
+    });
+
+    function initializeShowtimes() {
+        const cards = document.querySelectorAll('.showtime-card, .enhanced-table tbody tr');
+        allShowtimes = Array.from(cards);
+    }
+
+    function setupEventListeners() {
+        // Search functionality
+        document.getElementById('movieSearch').addEventListener('input', filterShowtimes);
+        document.getElementById('hallFilter').addEventListener('change', filterShowtimes);
+        document.getElementById('timeFilter').addEventListener('change', filterShowtimes);
+        document.getElementById('sortFilter').addEventListener('change', sortShowtimes);
+    }
+
+    function toggleView(view) {
+        currentView = view;
+
+        // Update button states
+        document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+
+        // Toggle views
+        const cardView = document.getElementById('cardView');
+        const tableView = document.getElementById('tableView');
+
+        if (view === 'card') {
+            cardView.style.display = 'block';
+            tableView.classList.remove('active');
+            setTimeout(() => animateCards(), 100);
+        } else {
+            cardView.style.display = 'none';
+            tableView.classList.add('active');
+        }
+
+        showNotification(`Switched to ${view} view`);
+    }
+
+    function filterShowtimes() {
+        const movieSearch = document.getElementById('movieSearch').value.toLowerCase();
+        const hallFilter = document.getElementById('hallFilter').value;
+        const timeFilter = document.getElementById('timeFilter').value;
+
+        let visibleCount = 0;
+
+        allShowtimes.forEach(item => {
+            const movieTitle = item.dataset.movie;
+            const hallName = item.dataset.hall;
+            const showTime = parseInt(item.dataset.time);
+
+            let showItem = true;
+
+            // Movie search filter
+            if (movieSearch && !movieTitle.includes(movieSearch)) {
+                showItem = false;
+            }
+
+            // Hall filter
+            if (hallFilter && hallName !== hallFilter) {
+                showItem = false;
+            }
+
+            // Time filter
+            if (timeFilter) {
+                const timeInRange = checkTimeRange(showTime, timeFilter);
+                if (!timeInRange) {
+                    showItem = false;
+                }
+            }
+
+            if (showItem) {
+                item.style.display = '';
+                item.style.animation = 'fadeInUp 0.5s ease-out';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        updateNoResultsMessage(visibleCount);
+    }
+
+    function checkTimeRange(hour, range) {
+        switch(range) {
+            case 'morning':
+                return hour >= 6 && hour < 12;
+            case 'afternoon':
+                return hour >= 12 && hour < 18;
+            case 'evening':
+                return hour >= 18 || hour < 6;
+            default:
+                return true;
+        }
+    }
+
+    function sortShowtimes() {
+        const sortBy = document.getElementById('sortFilter').value;
+        const container = currentView === 'card' ?
+            document.getElementById('showtimesGrid') :
+            document.querySelector('#tableBody');
+
+        const items = Array.from(container.children);
+
+        items.sort((a, b) => {
+            switch(sortBy) {
+                case 'movie':
+                    return a.dataset.movie.localeCompare(b.dataset.movie);
+                case 'price':
+                    return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+                case 'hall':
+                    return a.dataset.hall.localeCompare(b.dataset.hall);
+                case 'time':
+                default:
+                    return parseInt(a.dataset.time) - parseInt(b.dataset.time);
+            }
+        });
+
+        // Re-append sorted items
+        items.forEach(item => container.appendChild(item));
+
+        if (currentView === 'card') {
+            animateCards();
+        }
+
+        showNotification(`Sorted by ${sortBy}`);
+    }
+
+    function updateNoResultsMessage(count) {
+        let noResultsEl = document.querySelector('.no-results-filtered');
+
+        if (count === 0) {
+            if (!noResultsEl) {
+                noResultsEl = document.createElement('div');
+                noResultsEl.className = 'no-results no-results-filtered';
+                noResultsEl.innerHTML = `
+                    <div class="no-results-icon">🔍</div>
+                    <h3>No Matching Showtimes</h3>
+                    <p>Try adjusting your filters to see more results.</p>
+                `;
+                document.querySelector('.showtimes-content').appendChild(noResultsEl);
+            }
+            noResultsEl.style.display = 'block';
+        } else if (noResultsEl) {
+            noResultsEl.style.display = 'none';
+        }
+    }
+
+    function selectShowtime(showtimeId) {
+        showNotification(`Selected showtime ${showtimeId}`, 'success');
+
+        // Add visual feedback
+        const target = event.currentTarget;
+        target.style.transform = 'scale(0.98)';
+        setTimeout(() => {
+            target.style.transform = '';
+        }, 150);
+
+        // Here you could navigate to booking page or show details
+        // window.location.href = `/Booking/${showtimeId}`;
+    }
+
+    function animateCards() {
+        const cards = document.querySelectorAll('.showtime-card:not([style*="display: none"])');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s ease-out';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    }
+
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        const bgColor = type === 'success' ? 'rgba(46, 204, 113, 0.9)' :
+                        type === 'error' ? 'rgba(231, 76, 60, 0.9)' :
+                        'rgba(52, 152, 219, 0.9)';
+
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${bgColor};
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            z-index: 1000;
+            animation: slideInRight 0.3s ease-out;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            max-width: 400px;
+            font-weight: 500;
+        `;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.style.animation = 'slideOutRight 0.3s ease-in';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+</script>

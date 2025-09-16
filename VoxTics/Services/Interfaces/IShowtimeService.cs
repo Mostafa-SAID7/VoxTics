@@ -19,7 +19,17 @@ namespace VoxTics.Services.Interfaces
             CancellationToken cancellationToken = default);
 
         Task<Showtime?> GetShowtimeByIdAsync(int showtimeId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<Showtime>> GetShowtimesAsync(
+    int? movieId = null,
+    int? cinemaId = null,
+    int page = 1,
+    int pageSize = 10,
+    CancellationToken cancellationToken = default);
 
+        Task<int> CountShowtimesAsync(
+            int? movieId = null,
+            int? cinemaId = null,
+            CancellationToken cancellationToken = default);
         Task<int> GetAvailableSeatsAsync(int showtimeId, CancellationToken cancellationToken = default);
     }
 }

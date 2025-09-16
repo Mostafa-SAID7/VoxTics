@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading;
 using System.Threading.Tasks;
+using VoxTics.Models.ViewModels.Cinema;
+using VoxTics.Models.ViewModels.Home;
+using VoxTics.Models.ViewModels.Movie;
 using VoxTics.Services.Interfaces;
 
 namespace VoxTics.Controllers
@@ -19,17 +22,43 @@ namespace VoxTics.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(CancellationToken cancellationToken = default)
         {
+            // Fetch data from service
             var nowShowing = await _homeService.GetNowShowingAsync();
             var comingSoon = await _homeService.GetComingSoonAsync();
             var featured = await _homeService.GetFeaturedMoviesAsync();
             var cinemas = await _homeService.GetCinemasAsync();
 
-            var model = new
+            // Map entities to view models
+            var model = new HomeVM
             {
-                NowShowing = nowShowing,
-                ComingSoon = comingSoon,
-                Featured = featured,
-                Cinemas = cinemas
+                NowShowing = nowShowing.Select(m => new MovieVM
+                {
+                    Id = m.Id,
+                    Title = m.Title,
+                    PosterImage = m.MovieImages.FirstOrDefault()?.AltText
+                }).ToList(),
+
+                ComingSoon = comingSoon.Select(m => new MovieVM
+                {
+                    Id = m.Id,
+                    Title = m.Title,
+                    PosterImage = m.MovieImages.FirstOrDefault()?.AltText,
+                    ReleaseDate = m.Showtimes.Min(s => s.StartTime)
+                }).ToList(),
+
+                Featured = featured.Select(m => new MovieVM
+                {
+                    Id = m.Id,
+                    Title = m.Title,
+                    PosterImage = m.MovieImages.FirstOrDefault()?.AltText
+                }).ToList(),
+
+                Cinemas = cinemas.Select(c => new CinemaVM
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Country = c.City
+                }).ToList()
             };
 
             return View(model);

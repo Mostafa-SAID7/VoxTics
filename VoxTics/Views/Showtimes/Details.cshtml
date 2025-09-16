@@ -1,1 +1,24 @@
-﻿
+﻿@model VoxTics.Models.ViewModels.Showtime.ShowtimeDetailsVM
+
+<h1>Showtime Details</h1>
+
+@if (Model != null)
+{
+    <div>
+        <h2>@Model.MovieTitle</h2>
+        <img src="@Model.MoviePosterImage" alt="@Model.MovieTitle" style="max-width:150px;" />
+        <p><strong>Cinema:</strong> @Model.CinemaName</p>
+        <p><strong>Address:</strong> @Model.CinemaAddress</p>
+        <p><strong>Hall:</strong> @Model.HallName</p>
+        <p><strong>Date:</strong> @Model.ShowDateFormatted</p>
+        <p><strong>Time:</strong> @Model.ShowTimeFormatted</p>
+        <p><strong>Price:</strong> @Model.Price.ToString("C")</p>
+        <p><strong>Available Seats:</strong> @ViewBag.AvailableSeats ?? 0 / @Model.TotalSeats</p>
+        <p><strong>Status:</strong> @(Model.IsAvailable ? "Available" : Model.IsSoldOut ? "Sold Out" : "Not Scheduled")</p>
+        <p><strong>Occupancy:</strong> @Model.OccupancyPercentage.ToString("0.##")%</p>
+    </div>
+}
+else
+{
+    <p>Showtime details not available.</p>
+}

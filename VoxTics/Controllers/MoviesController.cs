@@ -20,7 +20,6 @@ namespace VoxTics.Controllers
         {
             _movieService = movieService;
         }
-
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Index(
@@ -31,9 +30,31 @@ namespace VoxTics.Controllers
             string? sort = null,
             CancellationToken cancellationToken = default)
         {
-            var movies = await _movieService.GetPagedMoviesAsync(page, pageSize, search, status, sort, cancellationToken).ConfigureAwait(false);
-            return View(movies);
+            // Fetch paginated list of Movie entities
+            var pagedMovies = await _movieService
+                .GetPagedMoviesAsync(page, pageSize, search, status, sort, cancellationToken)
+                .ConfigureAwait(false);
+
+            // Map to MovieVM
+            var movieVMList = pagedMovies.Select(m => new MovieVM
+            {
+                Id = m.Id,
+                Title = m.Title,
+                PosterImage = m.ImageUrl,
+                ReleaseDate = m.ReleaseDate,
+                Duration = m.Duration,
+                Price = m.Price,
+                Rating = m.Rating.ToString(),
+                Status = m.Status
+            }).ToList();
+
+            // Wrap in PaginatedList<MovieVM>
+            var model = PaginatedList<MovieVM>.CreateFromList(movieVMList, page, pageSize);
+
+            return View(model);
         }
+
+
 
         public async Task<IActionResult> Featured(CancellationToken cancellationToken)
         {

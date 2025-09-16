@@ -1,9 +1,9 @@
 ﻿@model IEnumerable<VoxTics.Models.ViewModels.Movie.MovieVM>
 @{
-    ViewData["Title"] = "Featured Movies";
+    ViewData["Title"] = "Top Rated Movies";
 }
 
-<h2>🎬 Featured Movies</h2>
+<h2>⭐ Top Rated Movies</h2>
 
 <div class="row">
     @foreach (var movie in Model)
@@ -11,9 +11,10 @@
         <div class="col-md-3 mb-4">
             <div class="card h-100 shadow-sm">
                 <img src="@movie.PosterImage ?? " /images/default-movie.jpg"" class="card-img-top" alt="@movie.Title" />
-                <div class="card-body">
+                <div class="card-body d-flex flex-column">
                     <h5 class="card-title">@movie.Title</h5>
-                    <span class="@movie.StatusBadgeClass">@movie.Status</span>
+                    <p>Rating: @movie.Rating</p>
+                    <a class="btn btn-sm btn-primary mt-auto" href="@Url.Action("Details", "Movies", new { id = movie.Id })">View</a>
                 </div>
             </div>
         </div>

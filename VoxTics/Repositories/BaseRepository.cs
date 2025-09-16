@@ -11,7 +11,6 @@ namespace VoxTics.Repositories
 {
     public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
-        // Make _context protected so derived repositories can access it
         protected readonly MovieDbContext _context;
         private readonly DbSet<T> _dbSet;
 
@@ -25,47 +24,83 @@ namespace VoxTics.Repositories
 
         public IQueryable<T> Query() => _dbSet.AsQueryable();
 
-        public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default) =>
-            await _dbSet.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
-
-        public async Task<IEnumerable<T>> FindAsync(
-            Expression<Func<T, bool>> predicate,
-            CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
-            return await _dbSet.AsNoTracking()
-                .Where(predicate)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+            try
+            {
+                return await _dbSet.AsNoTracking().ToListAsync(cancellationToken);
+            }
+            catch (TaskCanceledException)
+            {
+                // المهمة أُلغيّت، إرجاع قائمة فارغة بدلًا من رفع استثناء
+                return Enumerable.Empty<T>();
+            }
         }
 
-        public async Task<T?> GetByIdAsync(int id, CancellationToken cancellationToken = default) =>
-            await _dbSet.FindAsync(new object?[] { id }, cancellationToken).ConfigureAwait(false);
-
-        public async Task<T?> GetFirstOrDefaultAsync(
-            Expression<Func<T, bool>> predicate,
-            CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
         {
             if (predicate == null) throw new ArgumentNullException(nameof(predicate));
-            return await _dbSet.AsNoTracking()
-                .FirstOrDefaultAsync(predicate, cancellationToken)
-                .ConfigureAwait(false);
+            try
+            {
+                return await _dbSet.AsNoTracking().Where(predicate).ToListAsync(cancellationToken);
+            }
+            catch (TaskCanceledException)
+            {
+                return Enumerable.Empty<T>();
+            }
         }
 
-        public async Task<bool> AnyAsync(
-            Expression<Func<T, bool>> predicate,
-            CancellationToken cancellationToken = default)
+        public async Task<T?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await _dbSet.FindAsync(new object?[] { id }, cancellationToken);
+            }
+            catch (TaskCanceledException)
+            {
+                return null;
+            }
+        }
+
+        public async Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
         {
             if (predicate == null) throw new ArgumentNullException(nameof(predicate));
-            return await _dbSet.AnyAsync(predicate, cancellationToken).ConfigureAwait(false);
+            try
+            {
+                return await _dbSet.AsNoTracking().FirstOrDefaultAsync(predicate, cancellationToken);
+            }
+            catch (TaskCanceledException)
+            {
+                return null;
+            }
         }
 
-        public async Task<int> CountAsync(
-            Expression<Func<T, bool>>? predicate = null,
-            CancellationToken cancellationToken = default) =>
-            predicate == null
-                ? await _dbSet.CountAsync(cancellationToken).ConfigureAwait(false)
-                : await _dbSet.CountAsync(predicate, cancellationToken).ConfigureAwait(false);
+        public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+        {
+            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+            try
+            {
+                return await _dbSet.AnyAsync(predicate, cancellationToken);
+            }
+            catch (TaskCanceledException)
+            {
+                return false;
+            }
+        }
+
+        public async Task<int> CountAsync(Expression<Func<T, bool>>? predicate = null, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return predicate == null
+                    ? await _dbSet.CountAsync(cancellationToken)
+                    : await _dbSet.CountAsync(predicate, cancellationToken);
+            }
+            catch (TaskCanceledException)
+            {
+                return 0;
+            }
+        }
 
         #endregion
 
@@ -74,13 +109,21 @@ namespace VoxTics.Repositories
         public async Task AddAsync(T entity, CancellationToken cancellationToken = default)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
-            await _dbSet.AddAsync(entity, cancellationToken).ConfigureAwait(false);
+            try
+            {
+                await _dbSet.AddAsync(entity, cancellationToken);
+            }
+            catch (TaskCanceledException) { /* يمكن تسجيل الحدث إذا أحببت */ }
         }
 
         public async Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
         {
             if (entities == null) throw new ArgumentNullException(nameof(entities));
-            await _dbSet.AddRangeAsync(entities, cancellationToken).ConfigureAwait(false);
+            try
+            {
+                await _dbSet.AddRangeAsync(entities, cancellationToken);
+            }
+            catch (TaskCanceledException) { }
         }
 
         public async Task UpdateAsync(T entity, CancellationToken cancellationToken = default)
@@ -116,11 +159,15 @@ namespace VoxTics.Repositories
             if (keys == null || keys.Length == 0)
                 throw new ArgumentException("Keys must not be null or empty.", nameof(keys));
 
-            // DbSet.FindAsync accepts an array of key values and a cancellation token
-            var entity = await _dbSet.FindAsync(keys, cancellationToken).ConfigureAwait(false);
-            return entity;
+            try
+            {
+                return await _dbSet.FindAsync(keys, cancellationToken);
+            }
+            catch (TaskCanceledException)
+            {
+                return null;
+            }
         }
-
 
         #endregion
     }

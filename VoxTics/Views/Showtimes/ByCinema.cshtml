@@ -1,0 +1,34 @@
+﻿@model IEnumerable<VoxTics.Models.ViewModels.Showtime.ShowtimeVM>
+
+<h1>Showtimes for Selected Cinema</h1>
+
+@if (Model != null && Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Movie</th>
+                <th>Hall</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var show in Model)
+            {
+                <tr>
+                    <td>@show.MovieTitle</td>
+                    <td>@show.HallName</td>
+                    <td>@show.StartTimeFormatted</td>
+                    <td>@show.EndTimeFormatted</td>
+                    <td>@show.Price.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No showtimes available for this cinema.</p>
+}
