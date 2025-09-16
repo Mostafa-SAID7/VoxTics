@@ -1,1 +1,1181 @@
-﻿
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@removeTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model IEnumerable<VoxTics.Areas.Admin.ViewModels.Cinema.CinemaTableViewModel>
+@{
+    ViewData["Title"] = "Cinemas";
+    var searchTerm = ViewData["searchTerm"]?.ToString() ?? "";
+    var cityFilter = ViewData["city"]?.ToString() ?? "";
+    var isActiveFilter = ViewData["isActive"]?.ToString() ?? "";
+    string hallCount = ViewData["hallCount"]?.ToString() ?? "";
+    string sortBy = ViewData["sortBy"]?.ToString() ?? "";
+    int pageSize = ViewBag.PageSize ?? 10;
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="fas fa-building me-2"></i>Cinema Management
+        </h2>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-primary" id="refreshBtn">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#statisticsModal">
+                <i class="fas fa-chart-bar"></i> Statistics
+            </button>
+            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#bulkActionsModal">
+                <i class="fas fa-tasks"></i> Bulk Actions
+            </button>
+            <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#exportModal">
+                <i class="fas fa-download"></i> Export
+            </button>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Cinema
+            </a>
+        </div>
+    </div>
+
+    <!-- Enhanced Search and Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form id="searchForm" class="row g-3" method="get" asp-action="Index">
+                @Html.AntiForgeryToken()
+                <div class="col-md-3">
+                    <label for="searchInput" class="form-label">Search Cinemas</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" id="searchInput" name="searchTerm" value="@searchTerm" 
+                               placeholder="Search by name, address..." class="form-control" />
+                        <button type="button" id="clearSearch" class="btn btn-outline-secondary">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="col-md-2">
+                    <label for="cityFilter" class="form-label">City</label>
+                    <input type="text" id="cityFilter" name="city" value="@cityFilter" 
+                           class="form-control" placeholder="Filter by city..." />
+                </div>
+
+                <div class="col-md-2">
+                    <label for="statusFilter" class="form-label">Status</label>
+                    <select id="statusFilter" name="isActive" class="form-select">
+                        <option value="">All Status</option>
+                        <option value="true" @(isActiveFilter == "true" ? "selected" : "")>Active</option>
+                        <option value="false" @(isActiveFilter == "false" ? "selected" : "")>Inactive</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-2">
+                    <label for="hallCountFilter" class="form-label">Hall Count</label>
+                    <select name="hallCount" id="hallCountFilter" class="form-select">
+                        <option value="" @(hallCount == "" ? "selected" : "")>All</option>
+                        <option value="1-5" @(hallCount == "1-5" ? "selected" : "")>1-5 Halls</option>
+                        <option value="6-10" @(hallCount == "6-10" ? "selected" : "")>6-10 Halls</option>
+                        <option value="11+" @(hallCount == "11+" ? "selected" : "")>11+ Halls</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-2">
+                    <label for="sortBy" class="form-label">Sort By</label>
+                    <select name="sortBy" id="sortBy" class="form-select">
+                        <option value="name" @(sortBy == "name" ? "selected" : "")>Name</option>
+                        <option value="city" @(sortBy == "city" ? "selected" : "")>City</option>
+                        <option value="hallCount" @(sortBy == "hallCount" ? "selected" : "")>Hall Count</option>
+                        <option value="totalSeats" @(sortBy == "totalSeats" ? "selected" : "")>Total Seats</option>
+                        <option value="showtimes" @(sortBy == "showtimes" ? "selected" : "")>Showtimes</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Summary and Controls -->
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="d-flex align-items-center">
+                <span class="text-muted me-2">Show:</span>
+               
+                    <select id="pageSizeSelect" class="form-select form-select-sm" style="width: auto;">
+                        <option value="10" @(pageSize == 10 ? "selected" : "")>10</option>
+                        <option value="25" @(pageSize == 25 ? "selected" : "")>25</option>
+                        <option value="50" @(pageSize == 50 ? "selected" : "")>50</option>
+                        <option value="100" @(pageSize == 100 ? "selected" : "")>100</option>
+                    </select>
+                <span class="text-muted ms-2">entries</span>
+            </div>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="d-flex align-items-center justify-content-end gap-3">
+                <span class="text-muted">
+                    Showing @((ViewBag.PageIndex * ViewBag.PageSize) + 1) to 
+                    @(Math.Min((ViewBag.PageIndex + 1) * ViewBag.PageSize, ViewBag.TotalCount)) 
+                    of @ViewBag.TotalCount entries
+                </span>
+                <div class="btn-group btn-group-sm" role="group">
+                    <input type="radio" class="btn-check" name="viewMode" id="tableView" checked>
+                    <label class="btn btn-outline-secondary" for="tableView" title="Table View">
+                        <i class="fas fa-table"></i>
+                    </label>
+                    <input type="radio" class="btn-check" name="viewMode" id="cardView">
+                    <label class="btn btn-outline-secondary" for="cardView" title="Card View">
+                        <i class="fas fa-th-large"></i>
+                    </label>
+                    <input type="radio" class="btn-check" name="viewMode" id="mapView">
+                    <label class="btn btn-outline-secondary" for="mapView" title="Map View">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="text-center py-5" style="display: none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="mt-2">Loading cinemas...</div>
+    </div>
+
+    <!-- Cinemas Table View -->
+    <div id="tableViewContainer" class="position-relative">
+        <div class="card">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th style="width: 50px;">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="selectAll">
+                                    </div>
+                                </th>
+                                <th>
+                                    <a href="#" class="text-white text-decoration-none sort-link" data-sort="name">
+                                        Name <i class="fas fa-sort"></i>
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="#" class="text-white text-decoration-none sort-link" data-sort="city">
+                                        City <i class="fas fa-sort"></i>
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="#" class="text-white text-decoration-none sort-link" data-sort="status">
+                                        Status <i class="fas fa-sort"></i>
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="#" class="text-white text-decoration-none sort-link" data-sort="hallCount">
+                                        Halls <i class="fas fa-sort"></i>
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="#" class="text-white text-decoration-none sort-link" data-sort="totalSeats">
+                                        Total Seats <i class="fas fa-sort"></i>
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="#" class="text-white text-decoration-none sort-link" data-sort="showtimes">
+                                        Showtimes <i class="fas fa-sort"></i>
+                                    </a>
+                                </th>
+                                <th style="width: 220px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cinemasTableBody">
+                            @foreach (var cinema in Model)
+                            {
+                                <tr id="cinemaRow_@cinema.Id" class="cinema-row">
+                                    <td>
+                                        <div class="form-check">
+                                            <input class="form-check-input cinema-checkbox" type="checkbox" value="@cinema.Id">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-building text-muted me-2"></i>
+                                            <div>
+                                                <div class="fw-medium">@cinema.Name</div>
+                                                @if (!string.IsNullOrEmpty(cinema.Country))
+                                                {
+                                                    <small class="text-muted">@cinema.Country</small>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark">
+                                            <i class="fas fa-map-marker-alt me-1"></i>@cinema.City
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge @(cinema.IsActive ? "bg-success" : "bg-secondary")">
+                                            <i class="fas @(cinema.IsActive ? "fa-check-circle" : "fa-times-circle") me-1"></i>
+                                            @(cinema.IsActive ? "Active" : "Inactive")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-door-open text-muted me-2"></i>
+                                            <span class="badge bg-primary rounded-pill">@cinema.HallCount</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-chair text-muted me-2"></i>
+                                            <span class="fw-medium">@cinema.TotalSeats.ToString("N0")</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-clock text-muted me-2"></i>
+                                            <span class="badge bg-info rounded-pill">@cinema.ShowtimeCount</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a asp-action="Details" asp-route-id="@cinema.Id" 
+                                               class="btn btn-outline-info" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@cinema.Id" 
+                                               class="btn btn-outline-warning" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-danger delete-cinema" 
+                                                    data-id="@cinema.Id" data-name="@cinema.Name" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary toggle-status" 
+                                                    data-id="@cinema.Id" data-active="@cinema.IsActive.ToString().ToLower()" 
+                                                    title="@(cinema.IsActive ? "Deactivate" : "Activate")">
+                                                <i class="fas @(cinema.IsActive ? "fa-pause" : "fa-play")"></i>
+                                            </button>
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" 
+                                                        data-bs-toggle="dropdown" aria-expanded="false" title="More Actions">
+                                                    <i class="fas fa-ellipsis-v"></i>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li><a class="dropdown-item" asp-action="Halls" asp-route-id="@cinema.Id">
+                                                        <i class="fas fa-door-open me-2"></i>Manage Halls
+                                                    </a></li>
+                                                    <li><a class="dropdown-item" asp-action="Showtimes" asp-route-cinemaId="@cinema.Id">
+                                                        <i class="fas fa-clock me-2"></i>View Showtimes
+                                                    </a></li>
+                                                    <li><a class="dropdown-item" href="#" onclick="duplicateCinema(@cinema.Id)">
+                                                        <i class="fas fa-copy me-2"></i>Duplicate
+                                                    </a></li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li><a class="dropdown-item" href="#" onclick="viewOnMap('@cinema.Id')">
+                                                        <i class="fas fa-map me-2"></i>View on Map
+                                                    </a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cinemas Card View -->
+    <div id="cardViewContainer" class="position-relative" style="display: none;">
+        <div class="row" id="cinemasCardContainer">
+            @foreach (var cinema in Model)
+            {
+                <div class="col-md-6 col-lg-4 col-xl-3 mb-4 cinema-card" id="cinemaCard_@cinema.Id">
+                    <div class="card h-100 shadow-sm @(cinema.IsActive ? "border-success" : "border-secondary")">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div class="form-check">
+                                <input class="form-check-input cinema-checkbox" type="checkbox" value="@cinema.Id">
+                            </div>
+                            <span class="badge @(cinema.IsActive ? "bg-success" : "bg-secondary")">
+                                @(cinema.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title d-flex align-items-center">
+                                <i class="fas fa-building text-primary me-2"></i>
+                                @cinema.Name
+                            </h5>
+                            <p class="card-text">
+                                <small class="text-muted d-flex align-items-center mb-1">
+                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                    @cinema.City
+                                </small>
+                                @if (!string.IsNullOrEmpty(cinema.Country))
+                                {
+                                    <small class="text-muted">@cinema.Country</small>
+                                }
+                            </p>
+                            <div class="row text-center mt-3">
+                                <div class="col-4">
+                                    <div class="text-primary fw-bold">@cinema.HallCount</div>
+                                    <small class="text-muted">Halls</small>
+                                </div>
+                                <div class="col-4">
+                                    <div class="text-success fw-bold">@cinema.TotalSeats.ToString("N0")</div>
+                                    <small class="text-muted">Seats</small>
+                                </div>
+                                <div class="col-4">
+                                    <div class="text-info fw-bold">@cinema.ShowtimeCount</div>
+                                    <small class="text-muted">Shows</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <div class="btn-group w-100 mb-2" role="group">
+                                <a asp-action="Details" asp-route-id="@cinema.Id" class="btn btn-outline-info btn-sm">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@cinema.Id" class="btn btn-outline-warning btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" class="btn btn-outline-danger btn-sm delete-cinema" 
+                                        data-id="@cinema.Id" data-name="@cinema.Name">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm toggle-status" 
+                                        data-id="@cinema.Id" data-active="@cinema.IsActive.ToString().ToLower()">
+                                    <i class="fas @(cinema.IsActive ? "fa-pause" : "fa-play")"></i>
+                                </button>
+                            </div>
+                            <div class="btn-group w-100" role="group">
+                                <a asp-action="Halls" asp-route-id="@cinema.Id" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-door-open me-1"></i>Halls
+                                </a>
+                                <a asp-action="Showtimes" asp-route-cinemaId="@cinema.Id" class="btn btn-outline-success btn-sm">
+                                    <i class="fas fa-clock me-1"></i>Shows
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Map View -->
+    <div id="mapViewContainer" class="position-relative" style="display: none;">
+        <div class="card">
+            <div class="card-body p-0">
+                <div id="cinemasMap" style="height: 500px; width: 100%;"></div>
+            </div>
+            <div class="card-footer">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-info-circle text-info me-2"></i>
+                        Click on markers to view cinema details
+                    </div>
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="centerMapBtn">
+                        <i class="fas fa-crosshairs"></i> Center Map
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Pagination -->
+    <div id="pagination" class="d-flex justify-content-between align-items-center mt-4">
+        <div class="pagination-info text-muted">
+            <!-- Auto-populated by JavaScript -->
+        </div>
+        <nav aria-label="Cinemas pagination">
+            <ul class="pagination pagination-sm mb-0">
+                @{
+                    int totalPages = (int)Math.Ceiling((double)ViewBag.TotalCount / ViewBag.PageSize);
+                    int currentPage = ViewBag.PageIndex;
+                    int startPage = Math.Max(0, currentPage - 2);
+                    int endPage = Math.Min(totalPages - 1, currentPage + 2);
+                }
+                
+                @if (currentPage > 0)
+                {
+                    <li class="page-item">
+                        <a class="page-link page-link-nav" href="#" data-page="0" aria-label="First">
+                            <i class="fas fa-angle-double-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link page-link-nav" href="#" data-page="@(currentPage - 1)" aria-label="Previous">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                    </li>
+                }
+                
+                @if (startPage > 0)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+                
+                @for (int i = startPage; i <= endPage; i++)
+                {
+                    <li class="page-item @(i == currentPage ? "active" : "")">
+                        <a class="page-link page-link-num" href="#" data-page="@i">@(i + 1)</a>
+                    </li>
+                }
+                
+                @if (endPage < totalPages - 1)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+                
+                @if (currentPage < totalPages - 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link page-link-nav" href="#" data-page="@(currentPage + 1)" aria-label="Next">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link page-link-nav" href="#" data-page="@(totalPages - 1)" aria-label="Last">
+                            <i class="fas fa-angle-double-right"></i>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- Statistics Modal -->
+<div class="modal fade" id="statisticsModal" tabindex="-1" aria-labelledby="statisticsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="statisticsModalLabel">Cinema Statistics</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body text-center">
+                                <h3 id="totalCinemas">@ViewBag.TotalCount</h3>
+                                <div>Total Cinemas</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-success text-white">
+                            <div class="card-body text-center">
+                                <h3 id="activeCinemas">@Model.Count(c => c.IsActive)</h3>
+                                <div>Active Cinemas</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-info text-white">
+                            <div class="card-body text-center">
+                                <h3 id="totalHalls">@Model.Sum(c => c.HallCount)</h3>
+                                <div>Total Halls</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-warning text-white">
+                            <div class="card-body text-center">
+                                <h3 id="totalSeats">@Model.Sum(c => c.TotalSeats).ToString("N0")</h3>
+                                <div>Total Seats</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <h6>Cities Distribution</h6>
+                    <div id="citiesChart" style="height: 300px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Actions Modal -->
+<div class="modal fade" id="bulkActionsModal" tabindex="-1" aria-labelledby="bulkActionsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bulkActionsModalLabel">Bulk Actions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <div class="alert alert-info">
+                        <span id="selectedCount">0</span> cinemas selected
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Choose Action</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="bulkAction" id="bulkActivate" value="activate">
+                        <label class="form-check-label" for="bulkActivate">Activate Selected</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="bulkAction" id="bulkDeactivate" value="deactivate">
+                        <label class="form-check-label" for="bulkDeactivate">Deactivate Selected</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="bulkAction" id="bulkDelete" value="delete">
+                        <label class="form-check-label" for="bulkDelete">Delete Selected</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="executeBulkAction">Execute Action</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Modal -->
+<div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportModalLabel">Export Cinemas</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Export Format</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="exportFormat" id="exportExcel" value="excel" checked>
+                        <label class="form-check-label" for="exportExcel">Excel (.xlsx)</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="exportFormat" id="exportCsv" value="csv">
+                        <label class="form-check-label" for="exportCsv">CSV (.csv)</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="exportFormat" id="exportPdf" value="pdf">
+                        <label class="form-check-label" for="exportPdf">PDF (.pdf)</label>
+                    </div>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="exportFiltered" checked>
+                    <label class="form-check-label" for="exportFiltered">Export only filtered results</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="includeHallDetails">
+                    <label class="form-check-label" for="includeHallDetails">Include hall details</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="exportBtn">
+                    <i class="fas fa-download"></i> Export
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notifications -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-success text-white">
+            <i class="fas fa-check-circle me-2"></i>
+            <strong class="me-auto">Success</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body"></div>
+    </div>
+    <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-danger text-white">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong class="me-auto">Error</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body"></div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .table-hover tbody tr:hover {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+        
+        .cinema-card .card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .cinema-card .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sort-link:hover {
+            text-decoration: underline !important;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .search-highlight {
+            background-color: yellow;
+            font-weight: bold;
+        }
+        
+        .btn-group .dropdown-toggle-split {
+            padding-left: 0.375rem;
+            padding-right: 0.375rem;
+        }
+        
+        .cinema-row.inactive {
+            opacity: 0.7;
+        }
+        
+        .map-marker {
+            color: #007bff;
+            font-size: 1.2em;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places"></script>
+    <script>
+        $(document).ready(function() {
+            let searchTimeout;
+            let sortDirection = 'asc';
+            let map;
+            let markers = [];
+            
+            // Show toast notifications
+            function showToast(type, message) {
+                const toast = $(`#${type}Toast`);
+                toast.find('.toast-body').text(message);
+                const bsToast = new bootstrap.Toast(toast[0]);
+                bsToast.show();
+            }
+            
+            // Show/hide loading spinner
+            function toggleLoading(show) {
+                if (show) {
+                    $('#loadingSpinner').show();
+                    $('#tableViewContainer, #cardViewContainer, #mapViewContainer').css('opacity', '0.5');
+                } else {
+                    $('#loadingSpinner').hide();
+                    $('#tableViewContainer, #cardViewContainer, #mapViewContainer').css('opacity', '1').addClass('fade-in');
+                }
+            }
+            
+            // Update pagination info
+            function updatePaginationInfo() {
+                const pageIndex = @ViewBag.PageIndex;
+                const pageSize = @ViewBag.PageSize;
+                const totalCount = @ViewBag.TotalCount;
+                const start = (pageIndex * pageSize) + 1;
+                const end = Math.min((pageIndex + 1) * pageSize, totalCount);
+                $('.pagination-info').text(`Showing ${start} to ${end} of ${totalCount} entries`);
+            }
+            
+            // Load data with AJAX
+            function loadData(params = {}) {
+                toggleLoading(true);
+                
+                const defaultParams = {
+                    pageIndex: 0,
+                    pageSize: $('#pageSizeSelect').val() || @ViewBag.PageSize,
+                    searchTerm: $('#searchInput').val(),
+                    city: $('#cityFilter').val(),
+                    isActive: $('#statusFilter').val(),
+                    hallCount: $('#hallCountFilter').val(),
+                    sortBy: $('#sortBy').val()
+                };
+                
+                const finalParams = { ...defaultParams, ...params };
+                
+                $.ajax({
+                    url: '@Url.Action("Index")',
+                    type: 'GET',
+                    data: finalParams,
+                    success: function(data) {
+                        const $data = $(data);
+                        $('#cinemasTableBody').html($data.find('#cinemasTableBody').html());
+                        $('#cinemasCardContainer').html($data.find('#cinemasCardContainer').html());
+                        $('#pagination').html($data.find('#pagination').html());
+                        updatePaginationInfo();
+                        updateSelectedCount();
+                        updateMapMarkers();
+                        showToast('success', 'Data loaded successfully');
+                    },
+                    error: function(xhr) {
+                        showToast('error', 'Failed to load data: ' + xhr.responseText);
+                    },
+                    complete: function() {
+                        toggleLoading(false);
+                    }
+                });
+            }
+            
+            // View mode toggle
+            $('input[name="viewMode"]').change(function() {
+                const viewMode = $(this).attr('id');
+                
+                // Hide all containers
+                $('#tableViewContainer, #cardViewContainer, #mapViewContainer').hide();
+                
+                // Show selected container
+                if (viewMode === 'cardView') {
+                    $('#cardViewContainer').show();
+                } else if (viewMode === 'mapView') {
+                    $('#mapViewContainer').show();
+                    if (!map) {
+                        initializeMap();
+                    }
+                } else {
+                    $('#tableViewContainer').show();
+                }
+            });
+            
+            // Initialize Google Map
+            function initializeMap() {
+                const mapOptions = {
+                    zoom: 10,
+                    center: { lat: 30.0444, lng: 31.2357 }, // Cairo coordinates - adjust as needed
+                    styles: [
+                        {
+                            "featureType": "poi",
+                            "elementType": "labels",
+                            "stylers": [{ "visibility": "off" }]
+                        }
+                    ]
+                };
+                
+                map = new google.maps.Map(document.getElementById('cinemasMap'), mapOptions);
+                updateMapMarkers();
+            }
+            
+            // Update map markers
+            function updateMapMarkers() {
+                if (!map) return;
+                
+                // Clear existing markers
+                markers.forEach(marker => marker.setMap(null));
+                markers = [];
+                
+                // Add markers for each cinema
+                $('.cinema-row').each(function() {
+                    const cinemaId = $(this).attr('id').replace('cinemaRow_', '');
+                    const cinemaName = $(this).find('td:nth-child(2) .fw-medium').text();
+                    const city = $(this).find('td:nth-child(3) .badge').text().replace('📍 ', '');
+                    const isActive = $(this).find('td:nth-child(4) .badge').hasClass('bg-success');
+                    
+                    // In a real application, you would get lat/lng from your data
+                    // For demo purposes, we'll use random coordinates around Cairo
+                    const lat = 30.0444 + (Math.random() - 0.5) * 0.2;
+                    const lng = 31.2357 + (Math.random() - 0.5) * 0.2;
+                    
+                    const marker = new google.maps.Marker({
+                        position: { lat: lat, lng: lng },
+                        map: map,
+                        title: cinemaName,
+                        icon: {
+                            path: google.maps.SymbolPath.CIRCLE,
+                            scale: 8,
+                            fillColor: isActive ? '#28a745' : '#6c757d',
+                            fillOpacity: 1,
+                            strokeColor: '#ffffff',
+                            strokeWeight: 2
+                        }
+                    });
+                    
+                    const infoWindow = new google.maps.InfoWindow({
+                        content: `
+                            <div style="padding: 10px;">
+                                <h6>${cinemaName}</h6>
+                                <p class="mb-1"><strong>City:</strong> ${city}</p>
+                                <p class="mb-2"><strong>Status:</strong> ${isActive ? 'Active' : 'Inactive'}</p>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="@Url.Action("Details")?id=${cinemaId}" class="btn btn-primary btn-sm">Details</a>
+                                    <a href="@Url.Action("Edit")?id=${cinemaId}" class="btn btn-warning btn-sm">Edit</a>
+                                </div>
+                            </div>
+                        `
+                    });
+                    
+                    marker.addListener('click', () => {
+                        infoWindow.open(map, marker);
+                    });
+                    
+                    markers.push(marker);
+                });
+            }
+            
+            // Center map on all markers
+            $('#centerMapBtn').click(function() {
+                if (markers.length === 0) return;
+                
+                const bounds = new google.maps.LatLngBounds();
+                markers.forEach(marker => bounds.extend(marker.getPosition()));
+                map.fitBounds(bounds);
+            });
+            
+            // Select all checkbox
+            $('#selectAll').change(function() {
+                $('.cinema-checkbox').prop('checked', $(this).prop('checked'));
+                updateSelectedCount();
+            });
+            
+            // Individual checkboxes
+            $(document).on('change', '.cinema-checkbox', function() {
+                updateSelectedCount();
+                const totalChecked = $('.cinema-checkbox:checked').length;
+                const totalCheckboxes = $('.cinema-checkbox').length;
+                $('#selectAll').prop('indeterminate', totalChecked > 0 && totalChecked < totalCheckboxes);
+                $('#selectAll').prop('checked', totalChecked === totalCheckboxes);
+            });
+            
+            // Update selected count
+            function updateSelectedCount() {
+                const count = $('.cinema-checkbox:checked').length;
+                $('#selectedCount').text(count);
+            }
+            
+            // Delete cinema with confirmation
+            $(document).on('click', '.delete-cinema', function() {
+                const cinemaId = $(this).data('id');
+                const cinemaName = $(this).data('name');
+                
+                if (!confirm(`Are you sure you want to delete "${cinemaName}"?`)) return;
+                
+                const $btn = $(this);
+                const originalHtml = $btn.html();
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+                
+                $.ajax({
+                    url: '@Url.Action("Delete")',
+                    type: 'POST',
+                    data: { id: cinemaId },
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(response) {
+                        showToast('success', `Cinema "${cinemaName}" deleted successfully`);
+                        $(`#cinemaRow_${cinemaId}, #cinemaCard_${cinemaId}`).fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                        setTimeout(() => {
+                            loadData({ pageIndex: @ViewBag.PageIndex });
+                        }, 300);
+                    },
+                    error: function(xhr) {
+                        showToast('error', 'Failed to delete cinema: ' + xhr.responseText);
+                        $btn.prop('disabled', false).html(originalHtml);
+                    }
+                });
+            });
+            
+            // Toggle status
+            $(document).on('click', '.toggle-status', function() {
+                const cinemaId = $(this).data('id');
+                const isActive = $(this).data('active') === 'true';
+                const action = isActive ? 'deactivate' : 'activate';
+                
+                const $btn = $(this);
+                const originalHtml = $btn.html();
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+                
+                $.ajax({
+                    url: '@Url.Action("ToggleStatus")',
+                    type: 'POST',
+                    data: { id: cinemaId },
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(response) {
+                        showToast('success', `Cinema ${action}d successfully`);
+                        loadData({ pageIndex: @ViewBag.PageIndex });
+                    },
+                    error: function(xhr) {
+                        showToast('error', `Failed to ${action} cinema: ` + xhr.responseText);
+                        $btn.prop('disabled', false).html(originalHtml);
+                    }
+                });
+            });
+            
+            // Sorting
+            $('.sort-link').click(function(e) {
+                e.preventDefault();
+                const sortBy = $(this).data('sort');
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+                loadData({ sortBy: sortBy, sortDirection: sortDirection, pageIndex: 0 });
+            });
+            
+            // Real-time search with debouncing
+            $('#searchInput').on('input', function() {
+                clearTimeout(searchTimeout);
+                const searchTerm = $(this).val();
+                
+                searchTimeout = setTimeout(() => {
+                    loadData({ pageIndex: 0, searchTerm: searchTerm });
+                }, 500);
+            });
+            
+            // Clear search
+            $('#clearSearch').click(function() {
+                $('#searchInput').val('');
+                loadData({ pageIndex: 0, searchTerm: '' });
+            });
+            
+            // Form submission
+            $("#searchForm").submit(function(e) {
+                e.preventDefault();
+                loadData({ pageIndex: 0 });
+            });
+            
+            // Page size change
+            $('#pageSizeSelect').change(function() {
+                loadData({ pageIndex: 0, pageSize: $(this).val() });
+            });
+            
+            // Filter changes
+            $('#cityFilter, #statusFilter, #hallCountFilter, #sortBy').change(function() {
+                loadData({ pageIndex: 0 });
+            });
+            
+            // Pagination
+            $(document).on("click", ".page-link-num, .page-link-nav", function(e) {
+                e.preventDefault();
+                const pageIndex = $(this).data("page");
+                loadData({ pageIndex: pageIndex });
+            });
+            
+            // Refresh button
+            $('#refreshBtn').click(function() {
+                loadData({ pageIndex: @ViewBag.PageIndex });
+            });
+            
+            // Bulk actions
+            $('#executeBulkAction').click(function() {
+                const selectedIds = $('.cinema-checkbox:checked').map(function() {
+                    return $(this).val();
+                }).get();
+                
+                if (selectedIds.length === 0) {
+                    showToast('error', 'Please select at least one cinema');
+                    return;
+                }
+                
+                const action = $('input[name="bulkAction"]:checked').val();
+                if (!action) {
+                    showToast('error', 'Please select an action');
+                    return;
+                }
+                
+                if (action === 'delete' && !confirm(`Are you sure you want to delete ${selectedIds.length} cinemas?`)) {
+                    return;
+                }
+                
+                const $btn = $(this);
+                const originalText = $btn.text();
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+                
+                $.ajax({
+                    url: '@Url.Action("BulkAction")',
+                    type: 'POST',
+                    data: { 
+                        action: action, 
+                        cinemaIds: selectedIds 
+                    },
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(response) {
+                        showToast('success', `Bulk ${action} completed successfully`);
+                        $('#bulkActionsModal').modal('hide');
+                        loadData({ pageIndex: @ViewBag.PageIndex });
+                        $('.cinema-checkbox').prop('checked', false);
+                        $('#selectAll').prop('checked', false);
+                        updateSelectedCount();
+                    },
+                    error: function(xhr) {
+                        showToast('error', 'Bulk action failed: ' + xhr.responseText);
+                    },
+                    complete: function() {
+                        $btn.prop('disabled', false).text(originalText);
+                    }
+                });
+            });
+            
+            // Export functionality
+            $('#exportBtn').click(function() {
+                const format = $('input[name="exportFormat"]:checked').val();
+                const filtered = $('#exportFiltered').is(':checked');
+                const includeHalls = $('#includeHallDetails').is(':checked');
+                
+                let params = { 
+                    format: format,
+                    includeHallDetails: includeHalls 
+                };
+                
+                if (filtered) {
+                    params = {
+                        ...params,
+                        searchTerm: $('#searchInput').val(),
+                        city: $('#cityFilter').val(),
+                        isActive: $('#statusFilter').val(),
+                        hallCount: $('#hallCountFilter').val(),
+                        sortBy: $('#sortBy').val()
+                    };
+                }
+                
+                // Create a form and submit it to trigger download
+                const form = $('<form>', {
+                    method: 'POST',
+                    action: '@Url.Action("Export")'
+                });
+                
+                $.each(params, function(key, value) {
+                    if (value !== undefined && value !== '') {
+                        form.append($('<input>', {
+                            type: 'hidden',
+                            name: key,
+                            value: value
+                        }));
+                    }
+                });
+                
+                // Add anti-forgery token
+                form.append($('input[name="__RequestVerificationToken"]').clone());
+                
+                $('body').append(form);
+                form.submit();
+                form.remove();
+                
+                $('#exportModal').modal('hide');
+                showToast('success', 'Export started. Download will begin shortly.');
+            });
+            
+            // Initialize statistics chart
+            $('#statisticsModal').on('shown.bs.modal', function() {
+                loadStatisticsChart();
+            });
+            
+            function loadStatisticsChart() {
+                // Sample data - in real app, this would come from the server
+                const cityData = @Html.Raw(Json.Serialize(Model.GroupBy(c => c.City).Select(g => new { City = g.Key, Count = g.Count() }).ToArray()));
+                
+                const ctx = document.getElementById('citiesChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: cityData.map(d => d.City),
+                        datasets: [{
+                            data: cityData.map(d => d.Count),
+                            backgroundColor: [
+                                '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+                                '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Keyboard shortcuts
+            $(document).keydown(function(e) {
+                // Ctrl/Cmd + F for search focus
+                if ((e.ctrlKey || e.metaKey) && e.keyCode === 70) {
+                    e.preventDefault();
+                    $('#searchInput').focus();
+                }
+                
+                // Escape to clear search
+                if (e.keyCode === 27 && $('#searchInput').is(':focus')) {
+                    $('#clearSearch').click();
+                }
+                
+                // Ctrl/Cmd + A to select all (when not in input)
+                if ((e.ctrlKey || e.metaKey) && e.keyCode === 65 && !$(e.target).is('input, textarea')) {
+                    e.preventDefault();
+                    $('#selectAll').prop('checked', true).trigger('change');
+                }
+                
+                // Delete key to open bulk actions if items selected
+                if (e.keyCode === 46 && $('.cinema-checkbox:checked').length > 0) {
+                    e.preventDefault();
+                    $('#bulkActionsModal').modal('show');
+                }
+            });
+            
+            // Initialize pagination info
+            updatePaginationInfo();
+        });
+        
+        // Global functions for dropdown actions
+        function duplicateCinema(cinemaId) {
+            $.ajax({
+                url: '@Url.Action("Duplicate")',
+                type: 'POST',
+                data: { id: cinemaId },
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(response) {
+                    showToast('success', 'Cinema duplicated successfully');
+                    loadData({ pageIndex: @ViewBag.PageIndex });
+                },
+                error: function(xhr) {
+                    showToast('error', 'Failed to duplicate cinema: ' + xhr.responseText);
+                }
+            });
+        }
+        
+        function viewOnMap(cinemaId, lat, lng) {
+            // Switch to map view and center on specific cinema
+            $('#mapView').prop('checked', true).trigger('change');
+            
+            setTimeout(() => {
+                if (map && lat && lng) {
+                    map.setCenter({ lat: parseFloat(lat), lng: parseFloat(lng) });
+                    map.setZoom(15);
+                }
+            }, 500);
+        }
+        
+        function showToast(type, message) {
+            const toast = $(`#${type}Toast`);
+            toast.find('.toast-body').text(message);
+            const bsToast = new bootstrap.Toast(toast[0]);
+            bsToast.show();
+        }
+    </script>
+}

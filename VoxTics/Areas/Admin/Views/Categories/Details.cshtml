@@ -1,0 +1,36 @@
+﻿@model VoxTics.Areas.Admin.ViewModels.Category.CategoryDetailsViewModel
+
+@{
+    ViewData["Title"] = "Category Details";
+}
+
+<h2>Category Details</h2>
+
+<div class="card">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Name</dt>
+            <dd class="col-sm-9">@Model.Name</dd>
+
+            <dt class="col-sm-3">Slug</dt>
+            <dd class="col-sm-9">@Model.Slug</dd>
+
+            <dt class="col-sm-3">Description</dt>
+            <dd class="col-sm-9">@Model.Description</dd>
+
+            
+
+            <dt class="col-sm-3">Movies Count</dt>
+            <dd class="col-sm-9">@Model.MovieCount</dd>
+
+            <dt class="col-sm-3">Created At</dt>
+            <dd class="col-sm-9">@Model.CreatedAtFormatted</dd>
+
+            <dt class="col-sm-3">Updated At</dt>
+            <dd class="col-sm-9">@Model.UpdatedAtFormatted ?? "N/A"</dd>
+        </dl>
+
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+        <a asp-action="Index" class="btn btn-secondary">Back</a>
+    </div>
+</div>

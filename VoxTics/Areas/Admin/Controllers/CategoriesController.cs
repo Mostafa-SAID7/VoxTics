@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading;
 using System.Threading.Tasks;
+using VoxTics.Areas.Admin.ViewModels.Category;
 using VoxTics.Models.Entities;
 using VoxTics.Services.Interfaces;
 
@@ -18,43 +19,68 @@ namespace VoxTics.Areas.Admin.Controllers
 
         // GET: Admin/Categories
         public async Task<IActionResult> Index(
-            int pageIndex = 0,
-            int pageSize = 10,
-            string? search = null,
-            CancellationToken cancellationToken = default)
+     int pageIndex = 0,
+     int pageSize = 10,
+     string? search = null,
+     CancellationToken cancellationToken = default)
         {
             var (categories, totalCount) = await _categoryService
                 .GetPagedCategoriesAsync(pageIndex, pageSize, search, cancellationToken)
                 .ConfigureAwait(false);
+
+            categories ??= new List<Category>();
+
+            var tableViewModels = categories.Select(c => new CategoryTableViewModel
+            {
+                Id = c.Id,
+                Name = c.Name ?? "",
+                Slug = c.Slug ?? "",
+                IsActive = c.IsActive,
+                MovieCount = c.Movies?.Count ?? 0
+            }).ToList();
 
             ViewBag.PageIndex = pageIndex;
             ViewBag.PageSize = pageSize;
             ViewBag.TotalCount = totalCount;
             ViewBag.Search = search;
 
-            return View(categories);
+            return View(tableViewModels);
         }
+
 
         // GET: Admin/Categories/Create
         public IActionResult Create()
         {
-            return View();
+            // Pass a new ViewModel instance to the view
+            var model = new CategoryCreateEditViewModel();
+            return View(model);
         }
 
         // POST: Admin/Categories/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Category category, CancellationToken cancellationToken)
+        public async Task<IActionResult> Create(CategoryCreateEditViewModel model, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid) return View(category);
+            if (!ModelState.IsValid) return View(model);
 
-            if (await _categoryService.CategoryNameExistsAsync(category.Name, null, cancellationToken))
+            // Check if category name exists
+            if (await _categoryService.CategoryNameExistsAsync(model.Name, null, cancellationToken))
             {
-                ModelState.AddModelError(nameof(category.Name), "Category name already exists.");
-                return View(category);
+                ModelState.AddModelError(nameof(model.Name), "Category name already exists.");
+                return View(model);
             }
 
+            // Map ViewModel → Entity
+            var category = new Category
+            {
+                Name = model.Name,
+                Slug = model.Slug,
+                Description = model.Description,
+                IsActive = model.IsActive
+            };
+
             await _categoryService.AddCategoryAsync(category, cancellationToken).ConfigureAwait(false);
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -65,28 +91,50 @@ namespace VoxTics.Areas.Admin.Controllers
                 .ConfigureAwait(false);
 
             if (category == null) return NotFound();
-            return View(category);
+
+            // Map Entity → ViewModel
+            var model = new CategoryCreateEditViewModel
+            {
+                Id = category.Id,
+                Name = category.Name,
+                Slug = category.Slug,
+                Description = category.Description,
+                IsActive = category.IsActive
+            };
+
+            return View(model);
         }
 
         // POST: Admin/Categories/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Category category, CancellationToken cancellationToken)
+        public async Task<IActionResult> Edit(int id, CategoryCreateEditViewModel model, CancellationToken cancellationToken)
         {
-            if (id != category.Id) return BadRequest();
+            if (id != model.Id) return BadRequest();
 
-            if (!ModelState.IsValid) return View(category);
+            if (!ModelState.IsValid) return View(model);
 
-            if (await _categoryService.CategoryNameExistsAsync(category.Name, category.Id, cancellationToken))
+            // Check if another category with the same name exists
+            if (await _categoryService.CategoryNameExistsAsync(model.Name, model.Id, cancellationToken))
             {
-                ModelState.AddModelError(nameof(category.Name), "Category name already exists.");
-                return View(category);
+                ModelState.AddModelError(nameof(model.Name), "Category name already exists.");
+                return View(model);
             }
 
+            // Map ViewModel → Entity
+            var category = new Category
+            {
+                Id = model.Id,
+                Name = model.Name,
+                Slug = model.Slug,
+                Description = model.Description,
+                IsActive = model.IsActive
+            };
+
             await _categoryService.UpdateCategoryAsync(category, cancellationToken).ConfigureAwait(false);
+
             return RedirectToAction(nameof(Index));
         }
-
         // POST: Admin/Categories/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]

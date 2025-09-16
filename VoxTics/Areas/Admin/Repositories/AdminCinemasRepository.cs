@@ -11,13 +11,14 @@ namespace VoxTics.Areas.Admin.Repositories
     {
         private readonly MovieDbContext _context;
         private readonly ILogger<AdminCinemasRepository> _logger;
-      
+
         public AdminCinemasRepository(MovieDbContext context, ILogger<AdminCinemasRepository> logger) : base(context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger)); // assign logger
         }
 
-     
+
 
         public async Task<(IEnumerable<Cinema> Cinemas, int TotalCount)> GetPagedCinemasAsync(
             int pageIndex,

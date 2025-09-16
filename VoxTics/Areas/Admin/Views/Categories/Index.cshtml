@@ -1,1 +1,844 @@
-﻿
+﻿@model IEnumerable<VoxTics.Areas.Admin.ViewModels.Category.CategoryTableViewModel>
+@{
+    ViewData["Title"] = "Categories";
+    var pageSize = ViewBag.PageSize ?? 10;
+    var pageIndex = ViewBag.PageIndex ?? 0;
+    var totalCount = ViewBag.TotalCount ?? 0;
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="fas fa-tags me-2"></i>Categories Management
+        </h2>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-primary" id="refreshBtn">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#bulkActionsModal">
+                <i class="fas fa-tasks"></i> Bulk Actions
+            </button>
+            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exportModal">
+                <i class="fas fa-download"></i> Export
+            </button>
+            <a asp-action="Create" class="btn btn-success">
+                <i class="fas fa-plus"></i> Create Category
+            </a>
+        </div>
+    </div>
+
+    <!-- Enhanced Search and Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form id="searchForm" class="row g-3" method="get" asp-action="Index">
+                <div class="col-md-4">
+                    <label for="searchInput" class="form-label">Search Categories</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" id="searchInput" name="search" value="@ViewBag.Search" 
+                               placeholder="Search by name, slug..." class="form-control" />
+                        <button type="button" id="clearSearch" class="btn btn-outline-secondary">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="col-md-2">
+                    <label for="statusFilter" class="form-label">Status</label>
+                    <select name="status" id="statusFilter" class="form-select">
+                        <option value="">All Statuses</option>
+                        <option value="active" selected="@(ViewBag.Status == "active" ? "selected" : null)">Active</option>
+                        <option value="inactive" selected="@(ViewBag.Status == "inactive" ? "selected" : null)">Inactive</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-2">
+                    <label for="movieCountFilter" class="form-label">Movie Count</label>
+                    <select name="movieCount" id="movieCountFilter" class="form-select">
+                        <option value="">All</option>
+                        <option value="0" selected="@(ViewBag.MovieCount == "0" ? "selected" : null)">No Movies</option>
+                        <option value="1-10" selected="@(ViewBag.MovieCount == "1-10" ? "selected" : null)">1-10 Movies</option>
+                        <option value="11-50" selected="@(ViewBag.MovieCount == "11-50" ? "selected" : null)">11-50 Movies</option>
+                        <option value="50+" selected="@(ViewBag.MovieCount == "50+" ? "selected" : null)">50+ Movies</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-2">
+                    <label for="sortBy" class="form-label">Sort By</label>
+                    <select name="sortBy" id="sortBy" class="form-select">
+                        <option value="name" selected="@(ViewBag.SortBy == "name" ? "selected" : null)">Name</option>
+                        <option value="movieCount" selected="@(ViewBag.SortBy == "movieCount" ? "selected" : null)">Movie Count</option>
+                        <option value="status" selected="@(ViewBag.SortBy == "status" ? "selected" : null)">Status</option>
+                        <option value="created" selected="@(ViewBag.SortBy == "created" ? "selected" : null)">Created Date</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Summary and Controls -->
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="d-flex align-items-center">
+                <span class="text-muted me-2">Show:</span>
+                <select id="pageSizeSelect" class="form-select form-select-sm" style="width: auto;">
+                    <option value="10" selected="@(pageSize == 10 ? "selected" : null)">10</option>
+                    <option value="25" selected="@(pageSize == 25 ? "selected" : null)">25</option>
+                    <option value="50" selected="@(pageSize == 50 ? "selected" : null)">50</option>
+                    <option value="100" selected="@(pageSize == 100 ? "selected" : null)">100</option>
+                </select>
+                <span class="text-muted ms-2">entries</span>
+            </div>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="d-flex align-items-center justify-content-end gap-3">
+                <span class="text-muted">
+                    Showing @((ViewBag.PageIndex * ViewBag.PageSize) + 1) to 
+                    @(Math.Min((ViewBag.PageIndex + 1) * ViewBag.PageSize, ViewBag.TotalCount)) 
+                    of @ViewBag.TotalCount entries
+                </span>
+                <div class="btn-group btn-group-sm" role="group">
+                    <input type="radio" class="btn-check" name="viewMode" id="tableView" checked>
+                    <label class="btn btn-outline-secondary" for="tableView">
+                        <i class="fas fa-table"></i>
+                    </label>
+                    <input type="radio" class="btn-check" name="viewMode" id="cardView">
+                    <label class="btn btn-outline-secondary" for="cardView">
+                        <i class="fas fa-th-large"></i>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="text-center py-5" style="display: none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="mt-2">Loading categories...</div>
+    </div>
+
+    <!-- Categories Table View -->
+    <div id="tableViewContainer" class="position-relative">
+        <div class="card">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th style="width: 50px;">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="selectAll">
+                                    </div>
+                                </th>
+                                <th>
+                                    <a href="#" class="text-white text-decoration-none sort-link" data-sort="name">
+                                        Name <i class="fas fa-sort"></i>
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="#" class="text-white text-decoration-none sort-link" data-sort="slug">
+                                        Slug <i class="fas fa-sort"></i>
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="#" class="text-white text-decoration-none sort-link" data-sort="status">
+                                        Status <i class="fas fa-sort"></i>
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="#" class="text-white text-decoration-none sort-link" data-sort="movieCount">
+                                        Movies <i class="fas fa-sort"></i>
+                                    </a>
+                                </th>
+                                <th style="width: 200px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categoriesTableBody">
+                            @foreach (var category in Model)
+                            {
+                                <tr id="categoryRow_@category.Id" class="category-row">
+                                    <td>
+                                        <div class="form-check">
+                                            <input class="form-check-input category-checkbox" type="checkbox" value="@category.Id">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-tag text-muted me-2"></i>
+                                            <span class="fw-medium">@category.Name</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <code class="text-muted">@category.Slug</code>
+                                    </td>
+                                    <td>
+                                        <span class="badge @(category.StatusBadge.Contains("success") ? "bg-success" : "bg-secondary")">
+                                            @category.StatusBadge.Replace("badge ", "").Replace("bg-success", "Active").Replace("bg-secondary", "Inactive")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary rounded-pill">@category.MovieCount</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a asp-action="Details" asp-route-id="@category.Id" 
+                                               class="btn btn-outline-info" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@category.Id" 
+                                               class="btn btn-outline-warning" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-danger delete-category" 
+                                                    data-id="@category.Id" data-name="@category.Name" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" 
+                                                        data-bs-toggle="dropdown" aria-expanded="false" title="More Actions">
+                                                    <i class="fas fa-ellipsis-v"></i>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li><a class="dropdown-item" href="#" data-id="@category.Id" onclick="duplicateCategory(@category.Id)">
+                                                        <i class="fas fa-copy me-2"></i>Duplicate
+                                                    </a></li>
+                                                    <li><a class="dropdown-item" href="#" data-id="@category.Id" onclick="toggleStatus(@category.Id)">
+                                                        <i class="fas fa-toggle-on me-2"></i>Toggle Status
+                                                    </a></li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li><a class="dropdown-item" asp-action="Movies" asp-route-categoryId="@category.Id">
+                                                        <i class="fas fa-film me-2"></i>View Movies
+                                                    </a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories Card View -->
+    <div id="cardViewContainer" class="position-relative" style="display: none;">
+        <div class="row" id="categoriesCardContainer">
+            @foreach (var category in Model)
+            {
+                <div class="col-md-6 col-lg-4 col-xl-3 mb-4 category-card" id="categoryCard_@category.Id">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div class="form-check">
+                                <input class="form-check-input category-checkbox" type="checkbox" value="@category.Id">
+                            </div>
+                            <span class="badge @(category.StatusBadge.Contains("success") ? "bg-success" : "bg-secondary")">
+                                @category.StatusBadge.Replace("badge ", "").Replace("bg-success", "Active").Replace("bg-secondary", "Inactive")
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-tag text-muted me-2"></i>@category.Name
+                            </h5>
+                            <p class="card-text">
+                                <small class="text-muted">Slug: <code>@category.Slug</code></small>
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-primary rounded-pill">@category.MovieCount Movies</span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <div class="btn-group w-100" role="group">
+                                <a asp-action="Details" asp-route-id="@category.Id" class="btn btn-outline-info btn-sm">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@category.Id" class="btn btn-outline-warning btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" class="btn btn-outline-danger btn-sm delete-category" 
+                                        data-id="@category.Id" data-name="@category.Name">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Enhanced Pagination -->
+    <div id="pagination" class="d-flex justify-content-between align-items-center mt-4">
+        <div class="pagination-info text-muted">
+            <!-- Auto-populated by JavaScript -->
+        </div>
+        <nav aria-label="Categories pagination">
+            <ul class="pagination pagination-sm mb-0">
+                @{
+                    int totalPages = (int)Math.Ceiling((double)ViewBag.TotalCount / ViewBag.PageSize);
+                    int currentPage = ViewBag.PageIndex;
+                    int startPage = Math.Max(0, currentPage - 2);
+                    int endPage = Math.Min(totalPages - 1, currentPage + 2);
+                }
+                
+                @if (currentPage > 0)
+                {
+                    <li class="page-item">
+                        <a class="page-link page-link-nav" href="#" data-page="0" aria-label="First">
+                            <i class="fas fa-angle-double-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link page-link-nav" href="#" data-page="@(currentPage - 1)" aria-label="Previous">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                    </li>
+                }
+                
+                @if (startPage > 0)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+                
+                @for (int i = startPage; i <= endPage; i++)
+                {
+                    <li class="page-item @(i == currentPage ? "active" : "")">
+                        <a class="page-link page-link-num" href="#" data-page="@i">@(i + 1)</a>
+                    </li>
+                }
+                
+                @if (endPage < totalPages - 1)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+                
+                @if (currentPage < totalPages - 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link page-link-nav" href="#" data-page="@(currentPage + 1)" aria-label="Next">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link page-link-nav" href="#" data-page="@(totalPages - 1)" aria-label="Last">
+                            <i class="fas fa-angle-double-right"></i>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- Bulk Actions Modal -->
+<div class="modal fade" id="bulkActionsModal" tabindex="-1" aria-labelledby="bulkActionsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bulkActionsModalLabel">Bulk Actions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <div class="alert alert-info">
+                        <span id="selectedCount">0</span> categories selected
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Choose Action</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="bulkAction" id="bulkActivate" value="activate">
+                        <label class="form-check-label" for="bulkActivate">Activate Selected</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="bulkAction" id="bulkDeactivate" value="deactivate">
+                        <label class="form-check-label" for="bulkDeactivate">Deactivate Selected</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="bulkAction" id="bulkDelete" value="delete">
+                        <label class="form-check-label" for="bulkDelete">Delete Selected</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="executeBulkAction">Execute Action</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Modal -->
+<div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportModalLabel">Export Categories</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Export Format</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="exportFormat" id="exportExcel" value="excel" checked>
+                        <label class="form-check-label" for="exportExcel">Excel (.xlsx)</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="exportFormat" id="exportCsv" value="csv">
+                        <label class="form-check-label" for="exportCsv">CSV (.csv)</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="exportFormat" id="exportPdf" value="pdf">
+                        <label class="form-check-label" for="exportPdf">PDF (.pdf)</label>
+                    </div>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="exportFiltered" checked>
+                    <label class="form-check-label" for="exportFiltered">Export only filtered results</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="exportBtn">
+                    <i class="fas fa-download"></i> Export
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notifications -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-success text-white">
+            <i class="fas fa-check-circle me-2"></i>
+            <strong class="me-auto">Success</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body"></div>
+    </div>
+    <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-danger text-white">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong class="me-auto">Error</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body"></div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .table-hover tbody tr:hover {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+        
+        .category-card .card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .category-card .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sort-link:hover {
+            text-decoration: underline !important;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .search-highlight {
+            background-color: yellow;
+            font-weight: bold;
+        }
+        
+        .btn-group .dropdown-toggle-split {
+            padding-left: 0.375rem;
+            padding-right: 0.375rem;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            let searchTimeout;
+            let sortDirection = 'asc';
+            
+            // Show toast notifications
+            function showToast(type, message) {
+                const toast = $(`#${type}Toast`);
+                toast.find('.toast-body').text(message);
+                const bsToast = new bootstrap.Toast(toast[0]);
+                bsToast.show();
+            }
+            
+            // Show/hide loading spinner
+            function toggleLoading(show) {
+                if (show) {
+                    $('#loadingSpinner').show();
+                    $('#tableViewContainer, #cardViewContainer').css('opacity', '0.5');
+                } else {
+                    $('#loadingSpinner').hide();
+                    $('#tableViewContainer, #cardViewContainer').css('opacity', '1').addClass('fade-in');
+                }
+            }
+            
+            // Update pagination info
+            function updatePaginationInfo() {
+                const pageIndex = @ViewBag.PageIndex;
+                const pageSize = @ViewBag.PageSize;
+                const totalCount = @ViewBag.TotalCount;
+                const start = (pageIndex * pageSize) + 1;
+                const end = Math.Min((pageIndex + 1) * pageSize, totalCount);
+                $('.pagination-info').text(`Showing ${start} to ${end} of ${totalCount} entries`);
+            }
+            
+            // Load data with AJAX
+            function loadData(params = {}) {
+                toggleLoading(true);
+                
+                const defaultParams = {
+                    pageIndex: 0,
+                    pageSize: $('#pageSizeSelect').val() || @ViewBag.PageSize,
+                    search: $('#searchInput').val(),
+                    status: $('#statusFilter').val(),
+                    movieCount: $('#movieCountFilter').val(),
+                    sortBy: $('#sortBy').val()
+                };
+                
+                const finalParams = { ...defaultParams, ...params };
+                
+                $.ajax({
+                    url: '@Url.Action("Index")',
+                    type: 'GET',
+                    data: finalParams,
+                    success: function(data) {
+                        const $data = $(data);
+                        $('#categoriesTableBody').html($data.find('#categoriesTableBody').html());
+                        $('#categoriesCardContainer').html($data.find('#categoriesCardContainer').html());
+                        $('#pagination').html($data.find('#pagination').html());
+                        updatePaginationInfo();
+                        updateSelectedCount();
+                        showToast('success', 'Data loaded successfully');
+                    },
+                    error: function(xhr) {
+                        showToast('error', 'Failed to load data: ' + xhr.responseText);
+                    },
+                    complete: function() {
+                        toggleLoading(false);
+                    }
+                });
+            }
+            
+            // View mode toggle
+            $('input[name="viewMode"]').change(function() {
+                if ($(this).attr('id') === 'cardView') {
+                    $('#tableViewContainer').hide();
+                    $('#cardViewContainer').show();
+                } else {
+                    $('#cardViewContainer').hide();
+                    $('#tableViewContainer').show();
+                }
+            });
+            
+            // Select all checkbox
+            $('#selectAll').change(function() {
+                $('.category-checkbox').prop('checked', $(this).prop('checked'));
+                updateSelectedCount();
+            });
+            
+            // Individual checkboxes
+            $(document).on('change', '.category-checkbox', function() {
+                updateSelectedCount();
+                const totalChecked = $('.category-checkbox:checked').length;
+                const totalCheckboxes = $('.category-checkbox').length;
+                $('#selectAll').prop('indeterminate', totalChecked > 0 && totalChecked < totalCheckboxes);
+                $('#selectAll').prop('checked', totalChecked === totalCheckboxes);
+            });
+            
+            // Update selected count
+            function updateSelectedCount() {
+                const count = $('.category-checkbox:checked').length;
+                $('#selectedCount').text(count);
+            }
+            
+            // Delete category with confirmation
+            $(document).on('click', '.delete-category', function() {
+                const categoryId = $(this).data('id');
+                const categoryName = $(this).data('name');
+                
+                if (!confirm(`Are you sure you want to delete "${categoryName}"?`)) return;
+                
+                const $btn = $(this);
+                const originalHtml = $btn.html();
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+                
+                $.ajax({
+                    url: '@Url.Action("Delete")',
+                    type: 'POST',
+                    data: { id: categoryId },
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(response) {
+                        showToast('success', `Category "${categoryName}" deleted successfully`);
+                        $(`#categoryRow_${categoryId}, #categoryCard_${categoryId}`).fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                        setTimeout(() => {
+                            loadData({ pageIndex: @ViewBag.PageIndex });
+                        }, 300);
+                    },
+                    error: function(xhr) {
+                        showToast('error', 'Failed to delete category: ' + xhr.responseText);
+                        $btn.prop('disabled', false).html(originalHtml);
+                    }
+                });
+            });
+            
+            // Sorting
+            $('.sort-link').click(function(e) {
+                e.preventDefault();
+                const sortBy = $(this).data('sort');
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+                loadData({ sortBy: sortBy, sortDirection: sortDirection, pageIndex: 0 });
+            });
+            
+            // Real-time search with debouncing
+            $('#searchInput').on('input', function() {
+                clearTimeout(searchTimeout);
+                const searchTerm = $(this).val();
+                
+                searchTimeout = setTimeout(() => {
+                    loadData({ pageIndex: 0, search: searchTerm });
+                }, 500);
+            });
+            
+            // Clear search
+            $('#clearSearch').click(function() {
+                $('#searchInput').val('');
+                loadData({ pageIndex: 0, search: '' });
+            });
+            
+            // Form submission
+            $("#searchForm").submit(function(e) {
+                e.preventDefault();
+                loadData({ pageIndex: 0 });
+            });
+            
+            // Page size change
+            $('#pageSizeSelect').change(function() {
+                loadData({ pageIndex: 0, pageSize: $(this).val() });
+            });
+            
+            // Filter changes
+            $('#statusFilter, #movieCountFilter, #sortBy').change(function() {
+                loadData({ pageIndex: 0 });
+            });
+            
+            // Pagination
+            $(document).on("click", ".page-link-num, .page-link-nav", function(e) {
+                e.preventDefault();
+                const pageIndex = $(this).data("page");
+                loadData({ pageIndex: pageIndex });
+            });
+            
+            // Refresh button
+            $('#refreshBtn').click(function() {
+                loadData({ pageIndex: @ViewBag.PageIndex });
+            });
+            
+            // Bulk actions
+            $('#executeBulkAction').click(function() {
+                const selectedIds = $('.category-checkbox:checked').map(function() {
+                    return $(this).val();
+                }).get();
+                
+                if (selectedIds.length === 0) {
+                    showToast('error', 'Please select at least one category');
+                    return;
+                }
+                
+                const action = $('input[name="bulkAction"]:checked').val();
+                if (!action) {
+                    showToast('error', 'Please select an action');
+                    return;
+                }
+                
+                if (action === 'delete' && !confirm(`Are you sure you want to delete ${selectedIds.length} categories?`)) {
+                    return;
+                }
+                
+                const $btn = $(this);
+                const originalText = $btn.text();
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+                
+                $.ajax({
+                    url: '@Url.Action("BulkAction")',
+                    type: 'POST',
+                    data: { 
+                        action: action, 
+                        categoryIds: selectedIds 
+                    },
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(response) {
+                        showToast('success', `Bulk ${action} completed successfully`);
+                        $('#bulkActionsModal').modal('hide');
+                        loadData({ pageIndex: @ViewBag.PageIndex });
+                        $('.category-checkbox').prop('checked', false);
+                        $('#selectAll').prop('checked', false);
+                        updateSelectedCount();
+                    },
+                    error: function(xhr) {
+                        showToast('error', 'Bulk action failed: ' + xhr.responseText);
+                    },
+                    complete: function() {
+                        $btn.prop('disabled', false).text(originalText);
+                    }
+                });
+            });
+            
+            // Export functionality
+            $('#exportBtn').click(function() {
+                const format = $('input[name="exportFormat"]:checked').val();
+                const filtered = $('#exportFiltered').is(':checked');
+                
+                let params = { format: format };
+                
+                if (filtered) {
+                    params = {
+                        ...params,
+                        search: $('#searchInput').val(),
+                        status: $('#statusFilter').val(),
+                        movieCount: $('#movieCountFilter').val(),
+                        sortBy: $('#sortBy').val()
+                    };
+                }
+                
+                // Create a form and submit it to trigger download
+                const form = $('<form>', {
+                    method: 'POST',
+                    action: '@Url.Action("Export")'
+                });
+                
+                $.each(params, function(key, value) {
+                    if (value) {
+                        form.append($('<input>', {
+                            type: 'hidden',
+                            name: key,
+                            value: value
+                        }));
+                    }
+                });
+                
+                // Add anti-forgery token
+                form.append($('input[name="__RequestVerificationToken"]').clone());
+                
+                $('body').append(form);
+                form.submit();
+                form.remove();
+                
+                $('#exportModal').modal('hide');
+                showToast('success', 'Export started. Download will begin shortly.');
+            });
+            
+            // Keyboard shortcuts
+            $(document).keydown(function(e) {
+                // Ctrl/Cmd + F for search focus
+                if ((e.ctrlKey || e.metaKey) && e.keyCode === 70) {
+                    e.preventDefault();
+                    $('#searchInput').focus();
+                }
+                
+                // Escape to clear search
+                if (e.keyCode === 27 && $('#searchInput').is(':focus')) {
+                    $('#clearSearch').click();
+                }
+                
+                // Ctrl/Cmd + A to select all (when not in input)
+                if ((e.ctrlKey || e.metaKey) && e.keyCode === 65 && !$(e.target).is('input, textarea')) {
+                    e.preventDefault();
+                    $('#selectAll').prop('checked', true).trigger('change');
+                }
+                
+                // Delete key to open bulk actions if items selected
+                if (e.keyCode === 46 && $('.category-checkbox:checked').length > 0) {
+                    e.preventDefault();
+                    $('#bulkActionsModal').modal('show');
+                }
+            });
+            
+            // Initialize pagination info
+            updatePaginationInfo();
+        });
+        
+        // Global functions for dropdown actions
+        function duplicateCategory(categoryId) {
+            $.ajax({
+                url: '@Url.Action("Duplicate")',
+                type: 'POST',
+                data: { id: categoryId },
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(response) {
+                    showToast('success', 'Category duplicated successfully');
+                    loadData({ pageIndex: @ViewBag.PageIndex });
+                },
+                error: function(xhr) {
+                    showToast('error', 'Failed to duplicate category: ' + xhr.responseText);
+                }
+            });
+        }
+        
+        function toggleStatus(categoryId) {
+            $.ajax({
+                url: '@Url.Action("ToggleStatus")',
+                type: 'POST',
+                data: { id: categoryId },
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(response) {
+                    showToast('success', 'Category status updated successfully');
+                    loadData({ pageIndex: @ViewBag.PageIndex });
+                },
+                error: function(xhr) {
+                    showToast('error', 'Failed to update status: ' + xhr.responseText);
+                }
+            });
+        }
+        
+        function showToast(type, message) {
+            const toast = $(`#${type}Toast`);
+            toast.find('.toast-body').text(message);
+            const bsToast = new bootstrap.Toast(toast[0]);
+            bsToast.show();
+        }
+    </script>
+}

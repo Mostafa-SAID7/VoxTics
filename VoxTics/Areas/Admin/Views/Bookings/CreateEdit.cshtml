@@ -1,0 +1,78 @@
+﻿@model VoxTics.Areas.Admin.ViewModels.Booking.BookingCreateEditViewModel
+
+@{
+    ViewData["Title"] = Model.Id > 0 ? "Edit Booking" : "Create Booking";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="@(Model.Id > 0 ? "Edit" : "Create")" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="UserId" class="form-label"></label>
+        <input asp-for="UserId" class="form-control" />
+        <span asp-validation-for="UserId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="MovieId" class="form-label"></label>
+        <input asp-for="MovieId" class="form-control" />
+        <span asp-validation-for="MovieId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CinemaId" class="form-label"></label>
+        <input asp-for="CinemaId" class="form-control" />
+        <span asp-validation-for="CinemaId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ShowtimeId" class="form-label"></label>
+        <input asp-for="ShowtimeId" class="form-control" />
+        <span asp-validation-for="ShowtimeId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="NumberOfTickets" class="form-label"></label>
+        <input asp-for="NumberOfTickets" class="form-control" />
+        <span asp-validation-for="NumberOfTickets" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="TotalAmount" class="form-label"></label>
+        <input asp-for="TotalAmount" class="form-control" />
+        <span asp-validation-for="TotalAmount" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DiscountAmount" class="form-label"></label>
+        <input asp-for="DiscountAmount" class="form-control" />
+        <span asp-validation-for="DiscountAmount" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="FinalAmount" class="form-label"></label>
+        <input asp-for="FinalAmount" class="form-control" />
+        <span asp-validation-for="FinalAmount" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Status" class="form-label"></label>
+        <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<VoxTics.Models.Enums.BookingStatus>()"></select>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="PaymentStatus" class="form-label"></label>
+        <select asp-for="PaymentStatus" class="form-select" asp-items="Html.GetEnumSelectList<VoxTics.Models.Enums.PaymentStatus>()"></select>
+        <span asp-validation-for="PaymentStatus" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

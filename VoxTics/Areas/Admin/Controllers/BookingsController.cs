@@ -21,17 +21,46 @@ namespace VoxTics.Areas.Admin.Controllers
         // GET: Admin/Bookings/Index?pageIndex=0&pageSize=10&search=
         public async Task<IActionResult> Index(int pageIndex = 0, int pageSize = 10, string? search = null, CancellationToken cancellationToken = default)
         {
+            // Get raw bookings (entities)
             var (bookings, totalCount) = await _bookingService
                 .GetPagedBookingsAsync(pageIndex, pageSize, search, cancellationToken)
                 .ConfigureAwait(false);
 
+            // Map to BookingViewModel
+            var bookingViewModels = bookings.Select(b => new VoxTics.Areas.Admin.ViewModels.Booking.BookingViewModel(b)
+            {
+                Id = b.Id,
+                BookingNumber = $"BK{b.Id:D6}",
+                UserName = b.User?.Name ?? "",
+                UserEmail = b.User?.Email ?? "",
+                MovieTitle = b.Movie?.Title ?? "",
+                CinemaName = b.Cinema?.Name ?? "",
+                ShowtimeDisplay = b.Showtime != null ? b.Showtime.StartTime.ToString("yyyy-MM-dd HH:mm") : "",
+                NumberOfTickets = b.NumberOfTickets,
+                TotalAmount = b.TotalAmount,
+                DiscountAmount = b.DiscountAmount,
+                FinalAmount = b.FinalAmount,
+                Status = b.Status,
+                PaymentStatus = b.PaymentStatus,
+                PaymentMethod = b.PaymentMethod,
+                TransactionId = b.TransactionId,
+                PaymentDate = b.PaymentDate,
+                Notes = b.Notes,
+                BookingDate = b.BookingDate,
+                CancellationDate = b.CancellationDate,
+                CancellationReason = b.CancellationReason,
+                Seats = b.Seats?.Select(s => s.SeatNumber).ToList() ?? new List<string>()
+            }).ToList();
+
+            // Pass ViewBag info for paging/search
             ViewBag.PageIndex = pageIndex;
             ViewBag.PageSize = pageSize;
             ViewBag.TotalCount = totalCount;
             ViewBag.Search = search;
 
-            return View(bookings);
+            return View(bookingViewModels);
         }
+
 
         // GET: Admin/Bookings/Stats
         public async Task<IActionResult> Stats(CancellationToken cancellationToken = default)

@@ -1,0 +1,31 @@
+﻿@model IEnumerable<VoxTics.Areas.Admin.ViewModels.Category.CategoryTableViewModel>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Slug</th>
+            <th>Status</th>
+            <th>Movies</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in Model)
+        {
+            <tr>
+                <td>@category.Name</td>
+                <td>@category.Slug</td>
+                <td><span class="@category.StatusBadge">@category.StatusBadge.Replace("badge ", "")</span></td>
+                <td>@category.MovieCount</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@category.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Details" asp-route-id="@category.Id" class="btn btn-sm btn-info">Details</a>
+                    <form asp-action="Delete" asp-route-id="@category.Id" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?');">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,38 @@
+﻿@model IEnumerable<VoxTics.Areas.Admin.ViewModels.Booking.BookingViewModel>
+
+<table class="table table-striped" id="bookingTable">
+    <thead>
+        <tr>
+            <th>Booking #</th>
+            <th>User</th>
+            <th>Movie</th>
+            <th>Cinema</th>
+            <th>Date</th>
+            <th>Tickets</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Payment</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var booking in Model)
+        {
+            <tr id="bookingRow_@booking.Id">
+                <td>@booking.BookingNumber</td>
+                <td>@booking.UserName</td>
+                <td>@booking.MovieTitle</td>
+                <td>@booking.CinemaName</td>
+                <td>@booking.BookingDate.ToString("yyyy-MM-dd")</td>
+                <td>@booking.NumberOfTickets</td>
+                <td>@booking.TotalAmount.ToString("C")</td>
+                <td>@booking.Status</td>
+                <td>@booking.PaymentStatus</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@booking.Id" class="btn btn-sm btn-info">View</a>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
