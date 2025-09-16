@@ -1,1 +1,1079 @@
-﻿
+﻿@using VoxTics.Models.Enums
+
+@model VoxTics.Areas.Admin.ViewModels.Admin.AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-tachometer-alt me-2"></i>Dashboard Overview
+            </h1>
+            <p class="text-muted mb-0">Welcome back! Here's what's happening with your cinema.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-primary" id="refreshDashboard">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                <i class="fas fa-cog"></i> Settings
+            </button>
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-download"></i> Export
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#" onclick="exportDashboard('pdf')"><i class="fas fa-file-pdf me-2"></i>PDF Report</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="exportDashboard('excel')"><i class="fas fa-file-excel me-2"></i>Excel Report</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="exportDashboard('csv')"><i class="fas fa-file-csv me-2"></i>CSV Data</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Metrics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 card-hover">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="icon-circle bg-primary">
+                                <i class="fas fa-film text-white"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Movies</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalMoviesCount">@Model.TotalMovies</div>
+                            <div class="text-xs text-muted mt-1">
+                                <i class="fas fa-arrow-up text-success"></i> 12% from last month
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 card-hover">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="icon-circle bg-success">
+                                <i class="fas fa-users text-white"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Users</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalUsersCount">@Model.TotalUsers</div>
+                            <div class="text-xs text-muted mt-1">
+                                <i class="fas fa-arrow-up text-success"></i> 8% from last month
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 card-hover">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="icon-circle bg-warning">
+                                <i class="fas fa-ticket-alt text-white"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Total Bookings</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalBookingsCount">@Model.TotalBookings</div>
+                            <div class="text-xs text-muted mt-1">
+                                <i class="fas fa-arrow-up text-success"></i> 15% from last month
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 card-hover">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="icon-circle bg-danger">
+                                <i class="fas fa-dollar-sign text-white"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Total Revenue</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalRevenueAmount">@Model.FormattedTotalRevenue</div>
+                            <div class="text-xs text-muted mt-1">
+                                <i class="fas fa-arrow-up text-success"></i> 22% from last month
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-8">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Revenue & Bookings Trends</h6>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            Last 12 Months
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="updateChartPeriod('7days')">Last 7 Days</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="updateChartPeriod('30days')">Last 30 Days</a></li>
+                            <li><a class="dropdown-item active" href="#" onclick="updateChartPeriod('12months')">Last 12 Months</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="dashboardChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0">
+                    <h6 class="m-0 font-weight-bold text-primary">Quick Stats</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="p-3 border-bottom">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="text-xs text-muted">Today's Revenue</div>
+                                <div class="h6 mb-0">@Model.FormattedDailyRevenue</div>
+                            </div>
+                            <div class="text-success">
+                                <i class="fas fa-arrow-up"></i> 5.2%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-3 border-bottom">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="text-xs text-muted">This Month</div>
+                                <div class="h6 mb-0">@Model.FormattedMonthlyRevenue</div>
+                            </div>
+                            <div class="text-success">
+                                <i class="fas fa-arrow-up"></i> 12.8%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-3 border-bottom">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="text-xs text-muted">Avg. Booking Value</div>
+                                <div class="h6 mb-0">@Model.AverageBookingValueFormatted</div>
+                            </div>
+                            <div class="text-warning">
+                                <i class="fas fa-minus"></i> 2.1%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="text-xs text-muted">Occupancy Rate</div>
+                                <div class="h6 mb-0">78.5%</div>
+                            </div>
+                            <div class="text-success">
+                                <i class="fas fa-arrow-up"></i> 3.4%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Cards Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Movies by Status</h6>
+                    <canvas id="movieStatusChart" width="60" height="60"></canvas>
+                </div>
+                <div class="card-body pt-2">
+                    @foreach (var kvp in Model.MoviesByStatus)
+                    {
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="d-flex align-items-center">
+                                <div class="status-indicator status-@kvp.Key"></div>
+                                <span class="text-sm">@kvp.Key</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-light text-dark me-2">@kvp.Value</span>
+                                <div class="progress" style="width: 50px; height: 4px;">
+                                    <div class="progress-bar bg-primary" style="width: @(Math.Min(100, (kvp.Value * 100.0 / Model.TotalMovies)))%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Bookings by Status</h6>
+                    <canvas id="bookingStatusChart" width="60" height="60"></canvas>
+                </div>
+                <div class="card-body pt-2">
+                    @foreach (var kvp in Model.BookingsByStatus)
+                    {
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="d-flex align-items-center">
+                                <div class="status-indicator status-@kvp.Key"></div>
+                                <span class="text-sm">@kvp.Key</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-light text-dark me-2">@kvp.Value</span>
+                                <div class="progress" style="width: 50px; height: 4px;">
+                                    <div class="progress-bar bg-success" style="width: @(Math.Min(100, (kvp.Value * 100.0 / Model.TotalBookings)))%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0">
+                    <h6 class="m-0 font-weight-bold text-primary">Performance Metrics</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="text-sm">Customer Satisfaction</span>
+                            <span class="text-sm font-weight-bold">92%</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-success" style="width: 92%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="text-sm">Booking Conversion</span>
+                            <span class="text-sm font-weight-bold">67%</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-warning" style="width: 67%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="text-sm">System Uptime</span>
+                            <span class="text-sm font-weight-bold">99.8%</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-info" style="width: 99.8%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="text-sm">Mobile Usage</span>
+                            <span class="text-sm font-weight-bold">84%</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-primary" style="width: 84%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Movies -->
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Movies</h6>
+                    <a href="@Url.Action("Index", "Movies")" class="btn btn-sm btn-outline-primary">
+                        View All <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        @foreach (var movie in Model.RecentMovies)
+                        {
+                            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+                                <div class="movie-card position-relative">
+                                    <div class="movie-poster-wrapper">
+                                        @if (!string.IsNullOrEmpty(movie.PosterImage))
+                                        {
+                                            <img src="@movie.PosterImage" class="movie-poster" alt="@movie.Title" />
+                                        }
+                                        else
+                                        {
+                                            <div class="movie-poster-placeholder">
+                                                <i class="fas fa-film"></i>
+                                            </div>
+                                        }
+                                        <div class="movie-overlay">
+                                            <div class="movie-actions">
+                                                <a href="@Url.Action("Details", "Movies", new { id = movie.Id })" class="btn btn-sm btn-light">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="@Url.Action("Edit", "Movies", new { id = movie.Id })" class="btn btn-sm btn-light">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="movie-info">
+                                        <h6 class="movie-title">@movie.Title</h6>
+                                        <p class="movie-year text-muted">@movie.ReleaseDate.ToString("yyyy")</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Bookings</h6>
+                    <a href="@Url.Action("Index", "Bookings")" class="btn btn-sm btn-outline-primary">
+                        View All <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="border-0">Booking ID</th>
+                                    <th class="border-0">User</th>
+                                    <th class="border-0">Movie</th>
+                                    <th class="border-0">Amount</th>
+                                    <th class="border-0">Status</th>
+                                    <th class="border-0">Date</th>
+                                    <th class="border-0">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var booking in Model.RecentBookings)
+                                {
+                                    <tr>
+                                        <td class="fw-bold">#@booking.Id</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-sm me-2">
+                                                    <div class="avatar-title bg-soft-primary text-primary rounded-circle">
+                                                        @booking.UserName.Substring(0, 1).ToUpper()
+                                                    </div>
+                                                </div>
+                                                @booking.UserName
+                                            </div>
+                                        </td>
+                                        <td class="fw-bold text-success">@booking.TotalAmount.ToString("C")</td>
+                                        <td>
+                                            @foreach (var bookings in Model.RecentBookings)
+                                            {
+                                                var badgeClass = booking.Status switch
+                                                {
+                                                    BookingStatus.Confirmed => "bg-success",
+                                                    BookingStatus.Pending => "bg-warning",
+                                                    BookingStatus.Cancelled => "bg-danger",
+                                                    _ => "bg-secondary"
+                                                };
+
+                                        <tr>
+                                            <td>@booking.Id</td>
+                                            <td>@booking.UserName</td>
+                                            <td>@booking.MovieTitle</td>
+                                            <td>@booking.FinalAmount.ToString("C")</td>
+                                            <td><span class="badge @badgeClass">@booking.Status</span></td>
+                                        </tr>
+                                    }
+                                    </td>
+                                    <td class="text-muted">@booking.BookingDate.ToString("MMM dd, yyyy")</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="@Url.Action("Details", "Bookings", new { id = booking.Id })" class="btn btn-outline-info">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Popular Cinemas</h6>
+                    <a href="@Url.Action("Index", "Cinemas")" class="btn btn-sm btn-outline-primary">
+                        View All <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    @foreach (var cinema in Model.PopularCinemas)
+                    {
+                        <div class="d-flex align-items-center p-3 @(cinema != Model.PopularCinemas.Last() ? "border-bottom" : "")">
+                            <div class="flex-shrink-0">
+                                <div class="icon-circle bg-info">
+                                    <i class="fas fa-building text-white"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-1">@cinema.Name</h6>
+                                <div class="text-xs text-muted">
+                                    <i class="fas fa-chair me-1"></i>@cinema.TotalSeats seats •
+                                    <i class="fas fa-calendar me-1"></i>@cinema.ShowtimeCount shows
+                                </div>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <div class="text-success">
+                                    <i class="fas fa-arrow-up"></i>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal fade" id="settingsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Dashboard Settings</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Auto-refresh interval</label>
+                    <select class="form-select" id="refreshInterval">
+                        <option value="0">Disabled</option>
+                        <option value="30">30 seconds</option>
+                        <option value="60">1 minute</option>
+                        <option value="300" selected>5 minutes</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="enableNotifications" checked>
+                        <label class="form-check-label">Enable notifications</label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="enableAnimations" checked>
+                        <label class="form-check-label">Enable animations</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveSettings()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card-hover {
+        transition: all 0.3s ease;
+    }
+
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+        }
+
+    .icon-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .status-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 8px;
+    }
+
+    .status-active {
+        background-color: #28a745;
+    }
+
+    .status-inactive {
+        background-color: #dc3545;
+    }
+
+    .status-coming-soon {
+        background-color: #ffc107;
+    }
+
+    .status-now-showing {
+        background-color: #007bff;
+    }
+
+    .status-confirmed {
+        background-color: #28a745;
+    }
+
+    .status-pending {
+        background-color: #ffc107;
+    }
+
+    .status-cancelled {
+        background-color: #dc3545;
+    }
+
+    .movie-card {
+        transition: transform 0.3s ease;
+    }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+        }
+
+    .movie-poster-wrapper {
+        position: relative;
+        overflow: hidden;
+        border-radius: 8px;
+        aspect-ratio: 2/3;
+    }
+
+    .movie-poster {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .movie-poster-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-size: 2rem;
+    }
+
+    .movie-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .movie-card:hover .movie-overlay {
+        opacity: 1;
+    }
+
+    .movie-card:hover .movie-poster {
+        transform: scale(1.05);
+    }
+
+    .movie-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .movie-info {
+        padding: 12px 0;
+        text-align: center;
+    }
+
+    .movie-title {
+        margin-bottom: 4px;
+        font-weight: 600;
+        line-height: 1.2;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .movie-year {
+        margin-bottom: 0;
+        font-size: 0.875rem;
+    }
+
+    .avatar-sm {
+        width: 32px;
+        height: 32px;
+    }
+
+    .avatar-title {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    .bg-soft-primary {
+        background-color: rgba(13, 110, 253, 0.1) !important;
+    }
+
+    .text-xs {
+        font-size: 0.75rem;
+    }
+
+    .text-sm {
+        font-size: 0.875rem;
+    }
+
+    @@keyframes fadeInUp {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.5s ease-out;
+    }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let dashboardChart;
+        let movieStatusChart;
+        let bookingStatusChart;
+        let refreshInterval;
+
+        $(document).ready(function() {
+            initializeDashboard();
+            setupAutoRefresh();
+        });
+
+        function initializeDashboard() {
+            loadMainChart();
+            loadStatusCharts();
+            animateCounters();
+        }
+
+        function loadMainChart() {
+            fetch('@Url.Action("ChartData")')
+                .then(res => res.json())
+                .then(data => {
+                    const ctx = document.getElementById('dashboardChart').getContext('2d');
+
+                    if (dashboardChart) {
+                        dashboardChart.destroy();
+                    }
+
+                    dashboardChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: Object.keys(data.MonthlyBookings),
+                            datasets: [
+                                {
+                                    label: 'Bookings',
+                                    data: Object.values(data.MonthlyBookings),
+                                    borderColor: '#007bff',
+                                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointRadius: 6,
+                                    pointHoverRadius: 8,
+                                    yAxisID: 'y'
+                                },
+                                {
+                                    label: 'Revenue',
+                                    data: Object.values(data.MonthlyRevenue),
+                                    borderColor: '#28a745',
+                                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointRadius: 6,
+                                    pointHoverRadius: 8,
+                                    yAxisID: 'y1'
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: {
+                                mode: 'index',
+                                intersect: false,
+                            },
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                    labels: {
+                                        usePointStyle: true,
+                                        padding: 20
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    titleColor: 'white',
+                                    bodyColor: 'white',
+                                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                                    borderWidth: 1,
+                                    cornerRadius: 8,
+                                    displayColors: true
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    display: true,
+                                    grid: {
+                                        display: false
+                                    }
+                                },
+                                y: {
+                                    type: 'linear',
+                                    position: 'left',
+                                    title: {
+                                        display: true,
+                                        text: 'Bookings',
+                                        color: '#007bff'
+                                    },
+                                    grid: {
+                                        color: 'rgba(0, 0, 0, 0.05)'
+                                    }
+                                },
+                                y1: {
+                                    type: 'linear',
+                                    position: 'right',
+                                    title: {
+                                        display: true,
+                                        text: 'Revenue ($)',
+                                        color: '#28a745'
+                                    },
+                                    grid: {
+                                        drawOnChartArea: false,
+                                    }
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading chart data:', error);
+                });
+        }
+
+        function loadStatusCharts() {
+            // Movie Status Doughnut Chart
+            const movieStatusData = @Html.Raw(Json.Serialize(Model.MoviesByStatus));
+            createDoughnutChart('movieStatusChart', movieStatusData, [
+                '#007bff', '#28a745', '#ffc107', '#dc3545', '#6c757d'
+            ]);
+
+            // Booking Status Doughnut Chart
+            const bookingStatusData = @Html.Raw(Json.Serialize(Model.BookingsByStatus));
+            createDoughnutChart('bookingStatusChart', bookingStatusData, [
+                '#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6c757d'
+            ]);
+        }
+
+        function createDoughnutChart(canvasId, data, colors) {
+            const ctx = document.getElementById(canvasId);
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(data),
+                        datasets: [{
+                            data: Object.values(data),
+                            backgroundColor: colors,
+                            borderWidth: 2,
+                            borderColor: '#fff',
+                            hoverBorderWidth: 3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: 'white',
+                                bodyColor: 'white',
+                                cornerRadius: 8
+                            }
+                        },
+                        cutout: '70%'
+                    }
+                });
+            }
+        }
+
+        function animateCounters() {
+            $('.card-hover').each(function(index) {
+                $(this).css('animation-delay', (index * 0.1) + 's').addClass('fade-in-up');
+            });
+
+            // Animate counter numbers
+            $('[id$="Count"], [id$="Amount"]').each(function() {
+                const $this = $(this);
+                const countTo = parseInt($this.text().replace(/[^0-9]/g, ''));
+                const counter = $({ countNum: 0 });
+
+                counter.animate({
+                    countNum: countTo
+                }, {
+                    duration: 2000,
+                    easing: 'easeOutQuad',
+                    step: function() {
+                        const formatted = Math.floor(this.countNum).toLocaleString();
+                        if ($this.attr('id').includes('Amount')) {
+                            $this.text(' + formatted);
+                        } else {
+                            $this.text(formatted);
+                        }
+                    },
+                    complete: function() {
+                        const formatted = countTo.toLocaleString();
+                        if ($this.attr('id').includes('Amount')) {
+                            $this.text(' + formatted);
+                        } else {
+                            $this.text(formatted);
+                        }
+                    }
+                });
+            });
+        }
+
+        function setupAutoRefresh() {
+            const interval = localStorage.getItem('dashboardRefreshInterval') || 300; // 5 minutes default
+            if (interval > 0) {
+                refreshInterval = setInterval(refreshDashboardData, interval * 1000);
+            }
+        }
+
+        function refreshDashboardData() {
+            $('#refreshDashboard').addClass('fa-spin');
+
+            fetch('@Url.Action("GetDashboardData")')
+                .then(res => res.json())
+                .then(data => {
+                    updateDashboardData(data);
+                    showNotification('Dashboard data updated', 'success');
+                })
+                .catch(error => {
+                    console.error('Error refreshing dashboard:', error);
+                    showNotification('Failed to refresh dashboard', 'error');
+                })
+                .finally(() => {
+                    $('#refreshDashboard').removeClass('fa-spin');
+                });
+        }
+
+        function updateDashboardData(data) {
+            // Update counters
+            $('#totalMoviesCount').text(data.TotalMovies);
+            $('#totalUsersCount').text(data.TotalUsers);
+            $('#totalBookingsCount').text(data.TotalBookings);
+            $('#totalRevenueAmount').text(data.FormattedTotalRevenue);
+
+            // Reload charts
+            loadMainChart();
+            loadStatusCharts();
+        }
+
+        function updateChartPeriod(period) {
+            $('#dashboardChart').parent().find('.dropdown-toggle').text(
+                period === '7days' ? 'Last 7 Days' :
+                period === '30days' ? 'Last 30 Days' :
+                'Last 12 Months'
+            );
+
+            fetch(`@Url.Action("ChartData")?period=${period}`)
+                .then(res => res.json())
+                .then(data => {
+                    dashboardChart.data.labels = Object.keys(data.MonthlyBookings);
+                    dashboardChart.data.datasets[0].data = Object.values(data.MonthlyBookings);
+                    dashboardChart.data.datasets[1].data = Object.values(data.MonthlyRevenue);
+                    dashboardChart.update('active');
+                });
+        }
+
+        function exportDashboard(format) {
+            const form = $('<form>', {
+                method: 'POST',
+                action: '@Url.Action("ExportDashboard")',
+                target: '_blank'
+            });
+
+            form.append($('<input>', {
+                type: 'hidden',
+                name: 'format',
+                value: format
+            }));
+
+            // Add anti-forgery token
+            form.append($('input[name="__RequestVerificationToken"]').clone());
+
+            $('body').append(form);
+            form.submit();
+            form.remove();
+
+            showNotification(`${format.toUpperCase()} export started`, 'info');
+        }
+
+        function saveSettings() {
+            const refreshInterval = $('#refreshInterval').val();
+            const enableNotifications = $('#enableNotifications').is(':checked');
+            const enableAnimations = $('#enableAnimations').is(':checked');
+
+            // Save to localStorage
+            localStorage.setItem('dashboardRefreshInterval', refreshInterval);
+            localStorage.setItem('dashboardNotifications', enableNotifications);
+            localStorage.setItem('dashboardAnimations', enableAnimations);
+
+            // Apply settings
+            if (window.refreshInterval) {
+                clearInterval(window.refreshInterval);
+            }
+
+            if (refreshInterval > 0) {
+                window.refreshInterval = setInterval(refreshDashboardData, refreshInterval * 1000);
+            }
+
+            // Toggle animations
+            if (enableAnimations) {
+                $('body').removeClass('no-animations');
+            } else {
+                $('body').addClass('no-animations');
+            }
+
+            $('#settingsModal').modal('hide');
+            showNotification('Settings saved successfully', 'success');
+        }
+
+        function showNotification(message, type = 'info') {
+            if (localStorage.getItem('dashboardNotifications') === 'false') return;
+
+            const notification = $(`
+                <div class="alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed"
+                     style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' :
+                                        type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `);
+
+            $('body').append(notification);
+
+            setTimeout(() => {
+                notification.alert('close');
+            }, 5000);
+        }
+
+        // Event Listeners
+        $('#refreshDashboard').click(function() {
+            refreshDashboardData();
+        });
+
+        // Load saved settings on page load
+        $(document).ready(function() {
+            const savedRefreshInterval = localStorage.getItem('dashboardRefreshInterval');
+            const savedNotifications = localStorage.getItem('dashboardNotifications');
+            const savedAnimations = localStorage.getItem('dashboardAnimations');
+
+            if (savedRefreshInterval) {
+                $('#refreshInterval').val(savedRefreshInterval);
+            }
+
+            if (savedNotifications === 'false') {
+                $('#enableNotifications').prop('checked', false);
+            }
+
+            if (savedAnimations === 'false') {
+                $('#enableAnimations').prop('checked', false);
+                $('body').addClass('no-animations');
+            }
+        });
+
+        // Real-time updates (if you have SignalR)
+        if (typeof signalR !== 'undefined') {
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/dashboardHub")
+                .build();
+
+            connection.start().then(function () {
+                console.log('Dashboard SignalR connected');
+            }).catch(function (err) {
+                console.error('SignalR connection error:', err);
+            });
+
+            connection.on("UpdateDashboard", function (data) {
+                updateDashboardData(data);
+                showNotification('Dashboard updated in real-time', 'info');
+            });
+        }
+    </script>
+
+    <style>
+        .no-animations * {
+            animation-duration: 0s !important;
+            transition-duration: 0s !important;
+        }
+
+        .alert {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+}

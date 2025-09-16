@@ -1,0 +1,10 @@
+﻿@model VoxTics.Models.Entities.Showtime
+
+<h1>Delete Showtime</h1>
+<p>Are you sure you want to delete the showtime for <strong>@Model.Movie.Title</strong> at <strong>@Model.Cinema.Name</strong>?</p>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

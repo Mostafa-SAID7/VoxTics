@@ -1,13 +1,20 @@
-﻿@* Views/Shared/_Layout.cshtml *@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>@ViewData["Title"] - MovieTickets</title>
+    <title>@ViewData["Title"] - VoxTics Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="VoxTics Cinema Management System - Admin Panel">
+    <meta name="theme-color" content="#667eea">
 
-    @* CSS libs *@
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    @* Preload critical resources *@
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+    @* CSS libraries *@
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="~/lib/animate.css/animate.min.css" />
@@ -16,19 +23,48 @@
     <link rel="stylesheet" href="~/css/site.css" />
 
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success-gradient: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            --warning-gradient: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            --danger-gradient: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --sidebar-width: 280px;
+            --sidebar-collapsed-width: 72px;
+            --header-height: 70px;
+            --border-radius: 16px;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --blur: blur(20px);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--primary-gradient);
+            background-attachment: fixed;
+            color: var(--text-primary);
             line-height: 1.6;
             overflow-x: hidden;
+            font-feature-settings: 'kern' 1, 'liga' 1;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .admin-wrapper {
@@ -39,106 +75,163 @@
 
         /* Enhanced Sidebar */
         .admin-sidebar {
-            width: 280px;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(255,255,255,0.2);
-            padding: 2rem 1.5rem;
+            width: var(--sidebar-width);
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border-right: 1px solid var(--glass-border);
             position: fixed;
+            top: 0;
+            left: 0;
             height: 100vh;
-            overflow-y: auto;
-            z-index: 1000;
-            transition: all 0.3s ease;
+            overflow: hidden;
+            z-index: 1050;
+            transition: var(--transition);
+            box-shadow: var(--shadow-lg);
         }
 
             .admin-sidebar.collapsed {
-                width: 80px;
+                width: var(--sidebar-collapsed-width);
             }
 
-            .admin-sidebar::-webkit-scrollbar {
+            .admin-sidebar.mobile-hidden {
+                transform: translateX(-100%);
+            }
+
+            .admin-sidebar.mobile-open {
+                transform: translateX(0);
+                width: var(--sidebar-width);
+                box-shadow: var(--shadow-lg), 0 0 0 100vmax rgba(0, 0, 0, 0.5);
+            }
+
+        /* Sidebar Content */
+        .sidebar-content {
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 1.5rem 1rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--glass-border) transparent;
+        }
+
+            .sidebar-content::-webkit-scrollbar {
                 width: 6px;
             }
 
-            .admin-sidebar::-webkit-scrollbar-track {
-                background: rgba(255,255,255,0.1);
-                border-radius: 10px;
+            .sidebar-content::-webkit-scrollbar-track {
+                background: transparent;
             }
 
-            .admin-sidebar::-webkit-scrollbar-thumb {
-                background: rgba(255,255,255,0.3);
-                border-radius: 10px;
+            .sidebar-content::-webkit-scrollbar-thumb {
+                background: var(--glass-border);
+                border-radius: 3px;
             }
 
-                .admin-sidebar::-webkit-scrollbar-thumb:hover {
-                    background: rgba(255,255,255,0.5);
+                .sidebar-content::-webkit-scrollbar-thumb:hover {
+                    background: rgba(255, 255, 255, 0.3);
                 }
 
         /* Logo Section */
         .admin-logo {
             display: flex;
             align-items: center;
-            margin-bottom: 2rem;
             padding: 1rem;
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
-            color: white;
+            margin-bottom: 2rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            color: var(--text-primary);
             text-decoration: none;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-            .admin-logo:hover {
-                background: rgba(255,255,255,0.15);
-                transform: translateY(-2px);
-                color: white;
-                text-decoration: none;
-            }
-
-            .admin-logo .logo-icon {
-                font-size: 1.8rem;
-                margin-right: 1rem;
-                transition: all 0.3s ease;
-            }
-
-            .admin-logo .logo-text {
-                font-size: 1.5rem;
-                font-weight: 700;
-                transition: all 0.3s ease;
-            }
-
-        .sidebar-collapsed .logo-text,
-        .sidebar-collapsed .nav-text {
-            opacity: 0;
-            width: 0;
+            transition: var(--transition);
+            position: relative;
             overflow: hidden;
         }
 
-        /* Sidebar Toggle Button */
+            .admin-logo::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+                transition: var(--transition);
+            }
+
+            .admin-logo:hover {
+                background: rgba(255, 255, 255, 0.15);
+                transform: translateY(-2px);
+                box-shadow: var(--shadow-md);
+                color: var(--text-primary);
+                text-decoration: none;
+            }
+
+                .admin-logo:hover::before {
+                    left: 100%;
+                }
+
+        .logo-icon {
+            font-size: 1.75rem;
+            margin-right: 0.875rem;
+            background: var(--secondary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            transition: var(--transition);
+            min-width: 28px;
+            text-align: center;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .collapsed .logo-text,
+        .collapsed .nav-text,
+        .collapsed .nav-section-title,
+        .collapsed .nav-badge {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Sidebar Toggle */
         .sidebar-toggle {
             position: absolute;
-            top: 1rem;
-            right: -15px;
-            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            top: 1.5rem;
+            right: -18px;
+            width: 36px;
+            height: 36px;
+            background: var(--secondary-gradient);
             border: none;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 1001;
-            box-shadow: 0 4px 15px rgba(79,172,254,0.4);
+            transition: var(--transition);
+            z-index: 1051;
+            box-shadow: var(--shadow-md);
+            font-size: 0.875rem;
         }
 
             .sidebar-toggle:hover {
                 transform: scale(1.1);
-                box-shadow: 0 6px 20px rgba(79,172,254,0.6);
+                box-shadow: var(--shadow-lg);
             }
 
-        /* Navigation Styles */
+            .sidebar-toggle:active {
+                transform: scale(0.95);
+            }
+
+        /* Navigation */
         .admin-nav {
             list-style: none;
             padding: 0;
@@ -150,151 +243,268 @@
         }
 
         .nav-section-title {
-            color: rgba(255,255,255,0.6);
-            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 1rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
             padding: 0 1rem;
+            transition: var(--transition);
         }
 
         .nav-item {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
         }
 
         .nav-link {
             display: flex;
             align-items: center;
-            padding: 1rem 1.2rem;
-            color: rgba(255,255,255,0.8);
+            padding: 0.875rem 1rem;
+            color: var(--text-secondary);
             text-decoration: none;
             border-radius: 12px;
-            transition: all 0.3s ease;
+            transition: var(--transition);
             position: relative;
             font-weight: 500;
-            border: 1px solid transparent;
+            font-size: 0.875rem;
+            overflow: hidden;
         }
 
-            .nav-link:hover {
-                color: white;
-                background: rgba(255,255,255,0.1);
-                transform: translateX(5px);
-                border-color: rgba(255,255,255,0.2);
-                text-decoration: none;
+            .nav-link::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+                transition: var(--transition);
             }
+
+            .nav-link:hover {
+                color: var(--text-primary);
+                background: var(--glass-bg);
+                transform: translateX(4px);
+                text-decoration: none;
+                box-shadow: var(--shadow-sm);
+            }
+
+                .nav-link:hover::before {
+                    left: 100%;
+                }
 
             .nav-link.active {
-                background: linear-gradient(45deg, #4facfe, #00f2fe);
+                background: var(--secondary-gradient);
                 color: white;
-                box-shadow: 0 8px 25px rgba(79,172,254,0.4);
-                transform: translateX(5px);
+                box-shadow: var(--shadow-md);
+                transform: translateX(4px);
             }
 
-            .nav-link .nav-icon {
-                font-size: 1.2rem;
-                margin-right: 1rem;
-                min-width: 24px;
-                text-align: center;
-                transition: all 0.3s ease;
-            }
+                .nav-link.active::before {
+                    display: none;
+                }
 
-            .nav-link .nav-text {
-                transition: all 0.3s ease;
-                white-space: nowrap;
-            }
+        .nav-icon {
+            font-size: 1.125rem;
+            margin-right: 0.875rem;
+            min-width: 20px;
+            text-align: center;
+            transition: var(--transition);
+        }
 
-            .nav-link .nav-badge {
-                margin-left: auto;
-                background: rgba(255,107,107,0.2);
-                color: #ff6b6b;
-                padding: 0.2rem 0.6rem;
-                border-radius: 12px;
-                font-size: 0.7rem;
-                font-weight: 600;
-            }
+        .nav-text {
+            transition: var(--transition);
+            white-space: nowrap;
+        }
 
-        /* Special styling for back to site link */
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger-gradient);
+            color: white;
+            padding: 0.125rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        /* Back to site special styling */
         .back-to-site {
-            margin-top: 2rem;
+            margin-top: auto;
             padding-top: 2rem;
-            border-top: 1px solid rgba(255,255,255,0.2);
+            border-top: 1px solid var(--glass-border);
         }
 
             .back-to-site .nav-link {
-                background: rgba(255,193,7,0.1);
-                border-color: rgba(255,193,7,0.3);
-                color: #ffc107;
+                background: var(--warning-gradient);
+                color: white;
+                font-weight: 600;
             }
 
                 .back-to-site .nav-link:hover {
-                    background: rgba(255,193,7,0.2);
-                    color: #fff;
+                    background: var(--warning-gradient);
+                    filter: brightness(1.1);
+                    color: white;
                 }
 
-        /* Main Content Area */
+        /* Mobile Toggle */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            width: 48px;
+            height: 48px;
+            background: var(--secondary-gradient);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+            z-index: 1052;
+            box-shadow: var(--shadow-md);
+            font-size: 1.125rem;
+        }
+
+            .mobile-toggle:hover {
+                transform: scale(1.05);
+                box-shadow: var(--shadow-lg);
+            }
+
+            .mobile-toggle:active {
+                transform: scale(0.95);
+            }
+
+        /* Main Content */
         .admin-main {
             flex: 1;
-            margin-left: 280px;
-            padding: 2rem;
-            transition: all 0.3s ease;
+            margin-left: var(--sidebar-width);
             min-height: 100vh;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
         }
 
             .admin-main.expanded {
-                margin-left: 80px;
+                margin-left: var(--sidebar-collapsed-width);
             }
 
-        /* Header Styles */
-        .admin-header {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            border: 1px solid rgba(255,255,255,0.2);
-            animation: fadeInDown 0.8s ease-out;
+        /* Top Bar */
+        .admin-topbar {
+            height: var(--header-height);
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1040;
+            box-shadow: var(--shadow-sm);
         }
 
-            .admin-header h2 {
-                color: white;
-                font-size: 2.5rem;
-                font-weight: 700;
-                margin: 0;
-                text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-                background: linear-gradient(45deg, #fff, #f0f0f0);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
+        .breadcrumb-section h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            background: var(--secondary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .breadcrumb {
+            background: none;
+            padding: 0;
+            margin: 0.25rem 0 0 0;
+            font-size: 0.875rem;
+        }
+
+        .breadcrumb-item {
+            color: var(--text-muted);
+        }
+
+            .breadcrumb-item.active {
+                color: var(--text-secondary);
             }
 
-            .admin-header .breadcrumb {
-                background: none;
-                padding: 0;
-                margin: 0.5rem 0 0 0;
+            .breadcrumb-item + .breadcrumb-item::before {
+                color: var(--text-muted);
             }
 
-            .admin-header .breadcrumb-item {
-                color: rgba(255,255,255,0.7);
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .topbar-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+            .topbar-btn:hover {
+                background: var(--glass-border);
+                color: var(--text-primary);
+                transform: translateY(-1px);
+                box-shadow: var(--shadow-sm);
             }
 
-                .admin-header .breadcrumb-item.active {
-                    color: rgba(255,255,255,0.9);
-                }
+        .user-menu {
+            position: relative;
+        }
 
-                .admin-header .breadcrumb-item + .breadcrumb-item::before {
-                    color: rgba(255,255,255,0.5);
-                }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--secondary-gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
 
-        /* Content Container */
+            .user-avatar:hover {
+                transform: scale(1.05);
+                box-shadow: var(--shadow-md);
+            }
+
+        /* Content Area */
         .admin-content {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
+            flex: 1;
             padding: 2rem;
-            border: 1px solid rgba(255,255,255,0.2);
-            animation: fadeInUp 0.8s ease-out 0.2s both;
-            min-height: calc(100vh - 200px);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .content-wrapper {
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            min-height: calc(100vh - var(--header-height) - 4rem);
+            box-shadow: var(--shadow-sm);
         }
 
         /* Enhanced Loader */
@@ -305,47 +515,51 @@
             width: 100%;
             height: 100%;
             background: rgba(102, 126, 234, 0.9);
-            backdrop-filter: blur(10px);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+            #page-loader.show {
+                opacity: 1;
+            }
+
+        .loader-content {
+            text-align: center;
+            color: white;
         }
 
         .spinner {
             width: 60px;
             height: 60px;
-            border: 4px solid rgba(255,255,255,0.3);
+            border: 4px solid rgba(255, 255, 255, 0.2);
             border-top: 4px solid white;
             border-radius: 50%;
             animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
         }
 
+        .loader-text {
+            font-size: 1rem;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+        /* Animations */
         @@keyframes spin {
-            0%
+            from
 
         {
             transform: rotate(0deg);
         }
 
-        100% {
-            transform: rotate(360deg);
-        }
-
-        }
-
-        /* Animations */
-        @@keyframes fadeInDown {
-            from
-
-        {
-            opacity: 0;
-            transform: translateY(-30px);
-        }
-
         to {
-            opacity: 1;
-            transform: translateY(0);
+            transform: rotate(360deg);
         }
 
         }
@@ -355,7 +569,7 @@
 
         {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(20px);
         }
 
         to {
@@ -365,136 +579,234 @@
 
         }
 
+        @@keyframes slideInRight {
+            from
+
+        {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        }
+
+        /* Status Indicators */
+        .status-online {
+            position: relative;
+        }
+
+            .status-online::after {
+                content: '';
+                position: absolute;
+                top: -2px;
+                right: -2px;
+                width: 8px;
+                height: 8px;
+                background: #10b981;
+                border-radius: 50%;
+                border: 2px solid white;
+            }
+
         /* Responsive Design */
-        @@media (max-width: 1024px) {
+        @@media (max-width: 1200px) {
+            .admin-content
+
+        {
+            padding: 1.5rem;
+        }
+
+        .content-wrapper {
+            padding: 1.5rem;
+        }
+
+        }
+
+        @@media (max-width: 992px) {
             .admin-sidebar
 
         {
-            width: 80px;
+            width: var(--sidebar-collapsed-width);
         }
 
-        .admin-sidebar .logo-text,
-        .admin-sidebar .nav-text {
+        .admin-main {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+
+        .collapsed .logo-text,
+        .collapsed .nav-text,
+        .collapsed .nav-section-title,
+        .collapsed .nav-badge {
             opacity: 0;
             width: 0;
             overflow: hidden;
         }
 
-        .admin-main {
-            margin-left: 80px;
         }
-
-        }
-
-        @@media (max-width: 768px) {
-            .admin-sidebar
-
-        {
-            transform: translateX(-100%);
-            width: 280px;
-        }
-
-        .admin-sidebar.mobile-open {
-            transform: translateX(0);
-        }
-
-        .admin-main {
-            margin-left: 0;
-            padding: 1rem;
-        }
-
-        .admin-header h2 {
-            font-size: 2rem;
-        }
-
-        }
-
-        /* Mobile Toggle Button */
-        .mobile-toggle {
-            display: none;
-            position: fixed;
-            top: 1rem;
-            left: 1rem;
-            z-index: 1002;
-            background: linear-gradient(45deg, #4facfe, #00f2fe);
-            border: none;
-            border-radius: 12px;
-            padding: 0.8rem;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(79,172,254,0.4);
-        }
-
-            .mobile-toggle:hover {
-                transform: scale(1.05);
-                box-shadow: 0 6px 20px rgba(79,172,254,0.6);
-            }
 
         @@media (max-width: 768px) {
             .mobile-toggle
 
         {
-            display: block;
+            display: flex;
+        }
+
+        .admin-sidebar {
+            transform: translateX(-100%);
+            width: var(--sidebar-width);
+        }
+
+        .admin-main {
+            margin-left: 0;
+        }
+
+        .admin-content {
+            padding: 1rem;
+        }
+
+        .content-wrapper {
+            padding: 1rem;
+        }
+
+        .admin-topbar {
+            padding: 0 1rem;
+        }
+
+        .breadcrumb-section h1 {
+            font-size: 1.25rem;
+        }
+
+        .topbar-actions {
+            gap: 0.5rem;
         }
 
         }
 
-        /* Custom Scrollbar for Main Content */
-        .admin-main::-webkit-scrollbar {
-            width: 8px;
+        @@media (max-width: 576px) {
+            .admin-content
+
+        {
+            padding: 0.75rem;
         }
 
-        .admin-main::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
+        .content-wrapper {
+            padding: 1rem;
+            border-radius: 12px;
         }
 
-        .admin-main::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.3);
-            border-radius: 10px;
+        .breadcrumb-section h1 {
+            font-size: 1.125rem;
         }
 
-            .admin-main::-webkit-scrollbar-thumb:hover {
-                background: rgba(255,255,255,0.5);
+        .topbar-actions .topbar-btn:not(.user-avatar) {
+            display: none;
+        }
+
+        }
+
+        /* Dark mode support */
+        @@media (prefers-color-scheme: dark) {
+            : root
+
+        {
+            --glass-bg: rgba(0, 0, 0, 0.2);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        }
+
+        /* Reduced motion */
+        @@media (prefers-reduced-motion: reduce) {
+            *
+
+        {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+
+        }
+
+        /* High contrast mode */
+        @@media (prefers-contrast: high) {
+            : root
+
+        {
+            --glass-bg: rgba(0, 0, 0, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.8);
+        }
+
+        }
+
+        /* Print styles */
+        @@media print {
+            .admin-sidebar, .admin-topbar, .mobile-toggle, .sidebar-toggle, #page-loader
+
+        {
+            display: none !important;
+        }
+
+        .admin-main {
+            margin-left: 0 !important;
+        }
+
+        .content-wrapper {
+            background: white;
+            color: black;
+            box-shadow: none;
+            border: 1px solid #ccc;
+        }
+
+        }
+
+        /* Focus styles for accessibility */
+        .nav-link:focus,
+        .topbar-btn:focus,
+        .sidebar-toggle:focus,
+        .mobile-toggle:focus {
+            outline: 2px solid #4facfe;
+            outline-offset: 2px;
+        }
+
+        /* Loading states */
+        .loading {
+            position: relative;
+            pointer-events: none;
+        }
+
+            .loading::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: var(--glass-bg);
+                backdrop-filter: var(--blur);
+                -webkit-backdrop-filter: var(--blur);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10;
+                border-radius: inherit;
             }
 
-        /* Notification Enhancements */
-        .toastr-container {
-            backdrop-filter: blur(10px);
+        /* Notification improvements */
+        .toast-container {
+            z-index: 9998;
         }
 
         .toast {
-            background: rgba(255,255,255,0.1) !important;
-            backdrop-filter: blur(20px) !important;
-            border: 1px solid rgba(255,255,255,0.2) !important;
-            border-radius: 15px !important;
+            background: var(--glass-bg) !important;
+            backdrop-filter: var(--blur) !important;
+            -webkit-backdrop-filter: var(--blur) !important;
+            border: 1px solid var(--glass-border) !important;
+            border-radius: 12px !important;
             color: white !important;
-        }
-
-        /* Loading States */
-        .loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 20px;
-            z-index: 100;
-        }
-
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-top: 3px solid #4facfe;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+            box-shadow: var(--shadow-lg) !important;
         }
     </style>
 
@@ -503,139 +815,335 @@
 <body>
     <!-- Enhanced Page Loader -->
     <div id="page-loader">
-        <div class="spinner"></div>
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <div class="loader-text">Loading...</div>
+        </div>
     </div>
 
     <!-- Mobile Toggle Button -->
-    <button class="mobile-toggle" id="mobileToggle">
+    <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle sidebar">
         <i class="bi bi-list"></i>
     </button>
 
     <div class="admin-wrapper">
         <!-- Enhanced Sidebar -->
-        <nav class="admin-sidebar" id="adminSidebar">
+        <nav class="admin-sidebar" id="adminSidebar" role="navigation" aria-label="Main navigation">
             <!-- Sidebar Toggle -->
-            <button class="sidebar-toggle" id="sidebarToggle">
+            <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
                 <i class="bi bi-chevron-left"></i>
             </button>
 
-            <!-- Admin Logo / Title -->
-            <a class="admin-logo" asp-area="Admin" asp-controller="Home" asp-action="Index">
-                <span class="logo-icon">⚙️</span>
-                <span class="logo-text">Admin Panel</span>
-            </a>
+            <div class="sidebar-content">
+                <!-- Admin Logo -->
+                <a class="admin-logo" asp-area="Admin" asp-controller="Home" asp-action="Index">
+                    <span class="logo-icon">
+                        <i class="fas fa-clapperboard"></i>
+                    </span>
+                    <span class="logo-text">VoxTics Admin</span>
+                </a>
 
-            <ul class="admin-nav">
-                <!-- Main Section -->
-                <div class="nav-section">
-                    <div class="nav-section-title">Main</div>
+                <ul class="admin-nav">
+                    <!-- Dashboard Section -->
+                    <div class="nav-section">
+                        <div class="nav-section-title">Dashboard</div>
+                    <li class="nav-item">
+                        <a asp-area="Admin" asp-controller="Home" asp-action="Index"
+                           class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")"
+                           data-page="dashboard">
+                            <i class="bi bi-speedometer2 nav-icon"></i>
+                            <span class="nav-text">Overview</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-area="Admin" asp-controller="Analytics" asp-action="Index"
+                           class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Analytics" ? "active" : "")"
+                           data-page="analytics">
+                            <i class="bi bi-bar-chart nav-icon"></i>
+                            <span class="nav-text">Analytics</span>
+                        </a>
+                    </li>
+            </div>
 
+            <!-- Content Management -->
+            <div class="nav-section">
+                <div class="nav-section-title">Content</div>
                 <li class="nav-item">
-                    <a asp-area="Admin" asp-controller="Home" asp-action="Index"
-                       class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")">
-                        <i class="bi bi-speedometer2 nav-icon"></i>
-                        <span class="nav-text">Dashboard</span>
+                    <a asp-area="Admin" asp-controller="Movies" asp-action="Index"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Movies" ? "active" : "")"
+                       data-page="movies">
+                        <i class="bi bi-film nav-icon"></i>
+                        <span class="nav-text">Movies</span>
+                        <span class="nav-badge" id="moviesBadge">24</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a asp-area="Admin" asp-controller="Categories" asp-action="Index"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Categories" ? "active" : "")"
+                       data-page="categories">
+                        <i class="bi bi-tags nav-icon"></i>
+                        <span class="nav-text">Categories</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-area="Admin" asp-controller="Cinemas" asp-action="Index"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Cinemas" ? "active" : "")"
+                       data-page="cinemas">
+                        <i class="bi bi-building nav-icon"></i>
+                        <span class="nav-text">Cinemas</span>
+                    </a>
+                </li>
+            </div>
+
+            <!-- Operations -->
+            <div class="nav-section">
+                <div class="nav-section-title">Operations</div>
+                <li class="nav-item">
+                    <a asp-area="Admin" asp-controller="Showtimes" asp-action="Index"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Showtimes" ? "active" : "")"
+                       data-page="showtimes">
+                        <i class="bi bi-calendar-event nav-icon"></i>
+                        <span class="nav-text">Showtimes</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-area="Admin" asp-controller="Bookings" asp-action="Index"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Bookings" ? "active" : "")"
+                       data-page="bookings">
+                        <i class="bi bi-ticket-perforated nav-icon"></i>
+                        <span class="nav-text">Bookings</span>
+                        <span class="nav-badge" id="bookingsBadge">12</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-area="Admin" asp-controller="Reports" asp-action="Index"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Reports" ? "active" : "")"
+                       data-page="reports">
+                        <i class="bi bi-file-earmark-text nav-icon"></i>
+                        <span class="nav-text">Reports</span>
+                    </a>
+                </li>
+            </div>
+
+            <!-- User Management -->
+            <div class="nav-section">
+                <div class="nav-section-title">Users</div>
+                <li class="nav-item">
+                    <a asp-area="Admin" asp-controller="Users" asp-action="Index"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Users" ? "active" : "")"
+                       data-page="users">
+                        <i class="bi bi-people nav-icon"></i>
+                        <span class="nav-text">Manage Users</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-area="Admin" asp-controller="Roles" asp-action="Index"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Roles" ? "active" : "")"
+                       data-page="roles">
+                        <i class="bi bi-shield-check nav-icon"></i>
+                        <span class="nav-text">Roles & Permissions</span>
+                    </a>
+                </li>
+            </div>
+
+            <!-- System -->
+            <div class="nav-section">
+                <div class="nav-section-title">System</div>
+                <li class="nav-item">
+                    <a asp-area="Admin" asp-controller="Settings" asp-action="Index"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Settings" ? "active" : "")"
+                       data-page="settings">
+                        <i class="bi bi-gear nav-icon"></i>
+                        <span class="nav-text">Settings</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-area="Admin" asp-controller="Logs" asp-action="Index"
+                       class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Logs" ? "active" : "")"
+                       data-page="logs">
+                        <i class="bi bi-file-text nav-icon"></i>
+                        <span class="nav-text">System Logs</span>
+                    </a>
+                </li>
+            </div>
+
+            <!-- Back to Site -->
+            <div class="back-to-site">
+                <li class="nav-item">
+                    <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link" target="_blank">
+                        <i class="bi bi-arrow-left nav-icon"></i>
+                        <span class="nav-text">Back to Site</span>
+                        <i class="bi bi-box-arrow-up-right ms-auto" style="font-size: 0.75rem;"></i>
+                    </a>
+                </li>
+            </div>
+            </ul>
     </div>
-
-    <!-- Content Management -->
-    <div class="nav-section">
-        <div class="nav-section-title">Content</div>
-
-        <li class="nav-item">
-            <a asp-area="Admin" asp-controller="Movies" asp-action="Index"
-               class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Movies" ? "active" : "")">
-                <i class="bi bi-film nav-icon"></i>
-                <span class="nav-text">Movies</span>
-            </a>
-        </li>
-
-        <li class="nav-item">
-            <a asp-area="Admin" asp-controller="Categories" asp-action="Index"
-               class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Categories" ? "active" : "")">
-                <i class="bi bi-tags nav-icon"></i>
-                <span class="nav-text">Categories</span>
-            </a>
-        </li>
-
-        <li class="nav-item">
-            <a asp-area="Admin" asp-controller="Cinemas" asp-action="Index"
-               class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Cinemas" ? "active" : "")">
-                <i class="bi bi-building nav-icon"></i>
-                <span class="nav-text">Cinemas</span>
-            </a>
-        </li>
-    </div>
-
-    <!-- Operations -->
-    <div class="nav-section">
-        <div class="nav-section-title">Operations</div>
-
-        <li class="nav-item">
-            <a asp-area="Admin" asp-controller="Showtimes" asp-action="Index"
-               class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Showtimes" ? "active" : "")">
-                <i class="bi bi-calendar-event nav-icon"></i>
-                <span class="nav-text">Showtimes</span>
-            </a>
-        </li>
-
-        <li class="nav-item">
-            <a asp-area="Admin" asp-controller="Bookings" asp-action="Index"
-               class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Bookings" ? "active" : "")">
-                <i class="bi bi-ticket-perforated nav-icon"></i>
-                <span class="nav-text">Bookings</span>
-                <span class="nav-badge">12</span>
-            </a>
-        </li>
-    </div>
-
-    <!-- User Management -->
-    <div class="nav-section">
-        <div class="nav-section-title">Users</div>
-
-        <li class="nav-item">
-            <a asp-area="Admin" asp-controller="Users" asp-action="Index"
-               class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Users" ? "active" : "")">
-                <i class="bi bi-people nav-icon"></i>
-                <span class="nav-text">Manage Users</span>
-            </a>
-        </li>
-    </div>
-
-    <!-- Back to Site -->
-    <div class="back-to-site">
-        <li class="nav-item">
-            <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link">
-                <i class="bi bi-arrow-left nav-icon"></i>
-                <span class="nav-text">Back to Site</span>
-            </a>
-        </li>
-    </div>
-    </ul>
     </nav>
 
-    <!-- Main Content -->
+    <!-- Main Content Area -->
     <div class="admin-main" id="adminMain">
-        <!-- Header -->
-        <header class="admin-header">
-            <h2>@ViewData["Title"]</h2>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="#" style="color: rgba(255,255,255,0.7)">Admin</a></li>
-                    <li class="breadcrumb-item active">@ViewContext.RouteData.Values["Controller"]</li>
-                </ol>
-            </nav>
+        <!-- Top Bar -->
+        <header class="admin-topbar">
+            <div class="breadcrumb-section">
+                <h1>@ViewData["Title"]</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="#" style="color: var(--text-muted); text-decoration: none;">Admin</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            @ViewContext.RouteData.Values["Controller"]
+                        </li>
+                        @if (ViewContext.RouteData.Values["Action"]?.ToString() != "Index")
+                        {
+                            <li class="breadcrumb-item active">
+                                @ViewContext.RouteData.Values["Action"]
+                            </li>
+                        }
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="topbar-actions">
+                <!-- Search -->
+                <button class="topbar-btn" id="globalSearch" title="Global Search" data-bs-toggle="modal" data-bs-target="#searchModal">
+                    <i class="bi bi-search"></i>
+                </button>
+
+                <!-- Notifications -->
+                <div class="dropdown">
+                    <button class="topbar-btn position-relative" id="notificationsToggle" data-bs-toggle="dropdown" aria-expanded="false" title="Notifications">
+                        <i class="bi bi-bell"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6em;">
+                            3
+                            <span class="visually-hidden">unread messages</span>
+                        </span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end p-0" style="width: 320px; max-height: 400px; overflow-y: auto;">
+                        <div class="dropdown-header d-flex justify-content-between align-items-center">
+                            <span class="fw-semibold">Notifications</span>
+                            <button class="btn btn-sm btn-link p-0" id="markAllRead">Mark all as read</button>
+                        </div>
+                        <div class="dropdown-divider m-0"></div>
+                        <div id="notificationsList">
+                            <a href="#" class="dropdown-item d-flex align-items-start py-3">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                        <i class="bi bi-ticket-perforated text-white" style="font-size: 0.875rem;"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-semibold text-dark">New booking received</div>
+                                    <div class="text-muted small">User John Doe booked Avengers movie</div>
+                                    <div class="text-muted small">2 minutes ago</div>
+                                </div>
+                            </a>
+                            <a href="#" class="dropdown-item d-flex align-items-start py-3">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="rounded-circle bg-success d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                        <i class="bi bi-check-circle text-white" style="font-size: 0.875rem;"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-semibold text-dark">Payment confirmed</div>
+                                    <div class="text-muted small">Booking #1234 payment processed</div>
+                                    <div class="text-muted small">5 minutes ago</div>
+                                </div>
+                            </a>
+                            <a href="#" class="dropdown-item d-flex align-items-start py-3">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                        <i class="bi bi-exclamation-triangle text-white" style="font-size: 0.875rem;"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-semibold text-dark">System maintenance</div>
+                                    <div class="text-muted small">Scheduled maintenance in 2 hours</div>
+                                    <div class="text-muted small">1 hour ago</div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="dropdown-divider m-0"></div>
+                        <a href="@Url.Action("Index", "Notifications", new { area = "Admin" })" class="dropdown-item text-center py-2">
+                            <small>View all notifications</small>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Theme Toggle -->
+                <button class="topbar-btn" id="themeToggle" title="Toggle theme">
+                    <i class="bi bi-moon"></i>
+                </button>
+
+                <!-- Fullscreen -->
+                <button class="topbar-btn" id="fullscreenToggle" title="Toggle fullscreen">
+                    <i class="bi bi-arrows-fullscreen"></i>
+                </button>
+
+                <!-- User Menu -->
+                <div class="dropdown user-menu">
+                    <div class="user-avatar status-online" data-bs-toggle="dropdown" aria-expanded="false" title="User menu">
+                        A
+                    </div>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <div class="dropdown-header">
+                            <div class="fw-semibold">Admin User</div>
+                            <div class="text-muted small">admin@voxtics.com</div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="@Url.Action("Profile", "Account", new { area = "Admin" })">
+                            <i class="bi bi-person me-2"></i>Profile
+                        </a>
+                        <a class="dropdown-item" href="@Url.Action("Settings", "Account", new { area = "Admin" })">
+                            <i class="bi bi-gear me-2"></i>Account Settings
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item text-danger" href="@Url.Action("Logout", "Account", new { area = "Admin" })">
+                            <i class="bi bi-box-arrow-right me-2"></i>Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
         </header>
 
-        <!-- Content -->
-        <div class="admin-content">
-            @RenderBody()
-        </div>
+        <!-- Content Area -->
+        <main class="admin-content">
+            <div class="content-wrapper">
+                @RenderBody()
+            </div>
+        </main>
     </div>
     </div>
 
-    @* JS libs *@
+    <!-- Global Search Modal -->
+    <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="background: var(--glass-bg); backdrop-filter: var(--blur); border: 1px solid var(--glass-border);">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="searchModalLabel" style="color: var(--text-primary);">Global Search</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-secondary);">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" class="form-control" id="globalSearchInput" placeholder="Search movies, users, bookings..."
+                               style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary);">
+                    </div>
+                    <div id="searchResults" class="mt-3">
+                        <div class="text-muted text-center py-4">
+                            <i class="bi bi-search display-6 opacity-50"></i>
+                            <div class="mt-2">Start typing to search...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script src="~/lib/jquery/jquery.min.js"></script>
     <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
@@ -645,149 +1153,483 @@
     <script src="~/js/site.js"></script>
 
     <script>
-        // Global helpers to show/hide loader
-        window.showLoader = () => {
-            document.getElementById('page-loader').style.display = 'flex';
-        };
-        window.hideLoader = () => {
-            setTimeout(() => {
-                document.getElementById('page-loader').style.display = 'none';
-            }, 300);
-        };
+        // Enhanced admin layout functionality
+        class AdminLayout {
+            constructor() {
+                this.sidebar = document.getElementById('adminSidebar');
+                this.main = document.getElementById('adminMain');
+                this.sidebarToggle = document.getElementById('sidebarToggle');
+                this.mobileToggle = document.getElementById('mobileToggle');
+                this.loader = document.getElementById('page-loader');
+                this.searchInput = document.getElementById('globalSearchInput');
 
-        // Enhanced loader for AJAX calls
-        $(document).ajaxStart(showLoader).ajaxStop(hideLoader);
-
-        // Sidebar functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const sidebar = document.getElementById('adminSidebar');
-            const main = document.getElementById('adminMain');
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            const mobileToggle = document.getElementById('mobileToggle');
-            const toggleIcon = sidebarToggle.querySelector('i');
-
-            // Desktop sidebar toggle
-            sidebarToggle.addEventListener('click', function() {
-                sidebar.classList.toggle('collapsed');
-                main.classList.toggle('expanded');
-
-                if (sidebar.classList.contains('collapsed')) {
-                    toggleIcon.classList.replace('bi-chevron-left', 'bi-chevron-right');
-                } else {
-                    toggleIcon.classList.replace('bi-chevron-right', 'bi-chevron-left');
-                }
-            });
-
-            // Mobile sidebar toggle
-            mobileToggle.addEventListener('click', function() {
-                sidebar.classList.toggle('mobile-open');
-                const icon = this.querySelector('i');
-
-                if (sidebar.classList.contains('mobile-open')) {
-                    icon.classList.replace('bi-list', 'bi-x-lg');
-                } else {
-                    icon.classList.replace('bi-x-lg', 'bi-list');
-                }
-            });
-
-            // Close mobile sidebar when clicking outside
-            document.addEventListener('click', function(e) {
-                if (window.innerWidth <= 768) {
-                    if (!sidebar.contains(e.target) && !mobileToggle.contains(e.target)) {
-                        sidebar.classList.remove('mobile-open');
-                        mobileToggle.querySelector('i').classList.replace('bi-x-lg', 'bi-list');
-                    }
-                }
-            });
-
-            // Handle window resize
-            window.addEventListener('resize', function() {
-                if (window.innerWidth > 768) {
-                    sidebar.classList.remove('mobile-open');
-                    mobileToggle.querySelector('i').classList.replace('bi-x-lg', 'bi-list');
-                }
-
-                if (window.innerWidth <= 1024) {
-                    sidebar.classList.add('collapsed');
-                    main.classList.add('expanded');
-                    toggleIcon.classList.replace('bi-chevron-left', 'bi-chevron-right');
-                } else if (!sidebar.classList.contains('collapsed')) {
-                    sidebar.classList.remove('collapsed');
-                    main.classList.remove('expanded');
-                    toggleIcon.classList.replace('bi-chevron-right', 'bi-chevron-left');
-                }
-            });
-
-            // Initialize responsive behavior
-            if (window.innerWidth <= 1024) {
-                sidebar.classList.add('collapsed');
-                main.classList.add('expanded');
-                toggleIcon.classList.replace('bi-chevron-left', 'bi-chevron-right');
+                this.init();
             }
 
-            // Add loading states for nav links
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    // Don't show loader for external links
-                    if (!this.getAttribute('asp-area') && !this.getAttribute('href')?.startsWith('#')) {
-                        return;
-                    }
+            init() {
+                this.setupEventListeners();
+                this.setupResponsive();
+                this.setupLoader();
+                this.setupSearch();
+                this.setupNotifications();
+                this.setupThemeToggle();
+                this.setupFullscreen();
+                this.loadUserPreferences();
+                this.initializeTooltips();
+            }
 
-                    // Add loading state
-                    const icon = this.querySelector('.nav-icon');
+            setupEventListeners() {
+                // Desktop sidebar toggle
+                this.sidebarToggle?.addEventListener('click', () => this.toggleSidebar());
+
+                // Mobile sidebar toggle
+                this.mobileToggle?.addEventListener('click', () => this.toggleMobileSidebar());
+
+                // Close mobile sidebar on outside click
+                document.addEventListener('click', (e) => this.handleOutsideClick(e));
+
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => this.handleKeyboardShortcuts(e));
+
+                // Navigation link loading states
+                document.querySelectorAll('.nav-link[data-page]').forEach(link => {
+                    link.addEventListener('click', (e) => this.handleNavClick(e));
+                });
+
+                // Window resize handler
+                window.addEventListener('resize', () => this.handleResize());
+
+                // Page visibility change
+                document.addEventListener('visibilitychange', () => this.handleVisibilityChange());
+            }
+
+            toggleSidebar() {
+                const isCollapsed = this.sidebar.classList.toggle('collapsed');
+                this.main.classList.toggle('expanded', isCollapsed);
+
+                const icon = this.sidebarToggle.querySelector('i');
+                icon.classList.toggle('bi-chevron-left', !isCollapsed);
+                icon.classList.toggle('bi-chevron-right', isCollapsed);
+
+                // Save preference
+                localStorage.setItem('sidebarCollapsed', isCollapsed);
+
+                // Trigger custom event
+                document.dispatchEvent(new CustomEvent('sidebarToggle', { detail: { collapsed: isCollapsed } }));
+            }
+
+            toggleMobileSidebar() {
+                const isOpen = this.sidebar.classList.toggle('mobile-open');
+                const icon = this.mobileToggle.querySelector('i');
+
+                icon.classList.toggle('bi-list', !isOpen);
+                icon.classList.toggle('bi-x-lg', isOpen);
+
+                // Prevent body scroll when sidebar is open
+                document.body.style.overflow = isOpen ? 'hidden' : '';
+            }
+
+            handleOutsideClick(e) {
+                if (window.innerWidth <= 768) {
+                    if (!this.sidebar.contains(e.target) && !this.mobileToggle.contains(e.target)) {
+                        this.sidebar.classList.remove('mobile-open');
+                        this.mobileToggle.querySelector('i').classList.replace('bi-x-lg', 'bi-list');
+                        document.body.style.overflow = '';
+                    }
+                }
+            }
+
+            handleKeyboardShortcuts(e) {
+                // Ctrl/Cmd + K for search
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    const searchModal = new bootstrap.Modal(document.getElementById('searchModal'));
+                    searchModal.show();
+                    setTimeout(() => this.searchInput?.focus(), 300);
+                }
+
+                // Ctrl/Cmd + B for sidebar toggle
+                if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+                    e.preventDefault();
+                    if (window.innerWidth > 768) {
+                        this.toggleSidebar();
+                    } else {
+                        this.toggleMobileSidebar();
+                    }
+                }
+
+                // Escape key to close mobile sidebar
+                if (e.key === 'Escape' && this.sidebar.classList.contains('mobile-open')) {
+                    this.toggleMobileSidebar();
+                }
+            }
+
+            handleNavClick(e) {
+                const link = e.currentTarget;
+                const icon = link.querySelector('.nav-icon');
+
+                if (icon && !link.getAttribute('href')?.startsWith('#')) {
                     const originalClass = icon.className;
-                    icon.className = 'bi bi-arrow-clockwise nav-icon';
+                    icon.className = icon.className.replace(/bi-[\w-]+/, 'bi-arrow-clockwise');
                     icon.style.animation = 'spin 1s linear infinite';
 
-                    // Reset after delay (in case navigation is fast)
+                    // Reset after navigation or timeout
                     setTimeout(() => {
                         icon.className = originalClass;
                         icon.style.animation = '';
                     }, 2000);
+                }
+            }
+
+            handleResize() {
+                const width = window.innerWidth;
+
+                if (width <= 768) {
+                    // Mobile
+                    this.sidebar.classList.remove('collapsed');
+                    this.main.classList.remove('expanded');
+                    if (!this.sidebar.classList.contains('mobile-open')) {
+                        this.sidebar.classList.add('mobile-hidden');
+                    }
+                } else if (width <= 992) {
+                    // Tablet
+                    this.sidebar.classList.remove('mobile-open', 'mobile-hidden');
+                    this.sidebar.classList.add('collapsed');
+                    this.main.classList.add('expanded');
+                    document.body.style.overflow = '';
+                } else {
+                    // Desktop
+                    this.sidebar.classList.remove('mobile-open', 'mobile-hidden');
+                    document.body.style.overflow = '';
+
+                    // Restore saved preference
+                    const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                    this.sidebar.classList.toggle('collapsed', isCollapsed);
+                    this.main.classList.toggle('expanded', isCollapsed);
+                }
+            }
+
+            handleVisibilityChange() {
+                if (document.visibilityState === 'visible') {
+                    // Refresh notifications when page becomes visible
+                    this.refreshNotifications();
+                }
+            }
+
+            setupResponsive() {
+                // Initialize responsive behavior
+                this.handleResize();
+
+                // Setup viewport meta for better mobile experience
+                let viewport = document.querySelector("meta[name=viewport]");
+                if (viewport) {
+                    viewport.setAttribute('content',
+                        'width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover');
+                }
+            }
+
+            setupLoader() {
+                // Enhanced loader functionality
+                window.showLoader = (message = 'Loading...') => {
+                    const loader = document.getElementById('page-loader');
+                    const loaderText = loader.querySelector('.loader-text');
+                    if (loaderText) loaderText.textContent = message;
+
+                    loader.style.display = 'flex';
+                    // Force reflow
+                    loader.offsetHeight;
+                    loader.classList.add('show');
+                };
+
+                window.hideLoader = () => {
+                    const loader = document.getElementById('page-loader');
+                    loader.classList.remove('show');
+                    setTimeout(() => {
+                        loader.style.display = 'none';
+                    }, 300);
+                };
+
+                // AJAX loader integration
+                if (typeof $ !== 'undefined') {
+                    $(document).ajaxStart(() => window.showLoader('Loading data...'));
+                    $(document).ajaxStop(() => window.hideLoader());
+                    $(document).ajaxError(() => {
+                        window.hideLoader();
+                        this.showToast('An error occurred while loading data', 'error');
+                    });
+                }
+            }
+
+            setupSearch() {
+                if (!this.searchInput) return;
+
+                let searchTimeout;
+                this.searchInput.addEventListener('input', (e) => {
+                    clearTimeout(searchTimeout);
+                    const query = e.target.value.trim();
+
+                    if (query.length < 2) {
+                        this.showSearchPlaceholder();
+                        return;
+                    }
+
+                    searchTimeout = setTimeout(() => this.performSearch(query), 300);
                 });
-            });
+            }
 
-            // Enhanced toastr configuration
-            toastr.options = {
-                "closeButton": true,
-                "debug": false,
-                "newestOnTop": true,
-                "progressBar": true,
-                "positionClass": "toast-top-right",
-                "preventDuplicates": false,
-                "onclick": null,
-                "showDuration": "300",
-                "hideDuration": "1000",
-                "timeOut": "5000",
-                "extendedTimeOut": "1000",
-                "showEasing": "swing",
-                "hideEasing": "linear",
-                "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
-            };
-        });
+            async performSearch(query) {
+                const resultsContainer = document.getElementById('searchResults');
+                resultsContainer.innerHTML = '<div class="text-center py-4"><div class="spinner-border spinner-border-sm"></div><div class="mt-2">Searching...</div></div>';
 
-        // Enhanced SweetAlert2 defaults
-        if (typeof Swal !== 'undefined') {
-            Swal.mixin({
-                customClass: {
-                    popup: 'swal2-backdrop-blur'
-                },
-                background: 'rgba(255,255,255,0.1)',
-                backdrop: 'rgba(102, 126, 234, 0.8)',
-                color: '#333'
-            });
+                try {
+                    const response = await fetch('/Admin/Search', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({ query })
+                    });
+
+                    if (!response.ok) throw new Error('Search failed');
+
+                    const results = await response.json();
+                    this.displaySearchResults(results);
+                } catch (error) {
+                    resultsContainer.innerHTML = '<div class="text-center py-4 text-danger"><i class="bi bi-exclamation-triangle"></i><div class="mt-2">Search failed. Please try again.</div></div>';
+                }
+            }
+
+            displaySearchResults(results) {
+                const resultsContainer = document.getElementById('searchResults');
+
+                if (!results || results.length === 0) {
+                    resultsContainer.innerHTML = '<div class="text-center py-4 text-muted"><i class="bi bi-search"></i><div class="mt-2">No results found</div></div>';
+                    return;
+                }
+
+                const html = results.map(item => `
+                    <a href="${item.url}" class="d-flex align-items-center p-2 rounded text-decoration-none" style="color: var(--text-primary); background: var(--glass-bg);">
+                        <div class="flex-shrink-0 me-3">
+                            <i class="bi ${item.icon} fs-5"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-medium">${item.title}</div>
+                            <div class="text-muted small">${item.description}</div>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <span class="badge bg-secondary">${item.type}</span>
+                        </div>
+                    </a>
+                `).join('');
+
+                resultsContainer.innerHTML = html;
+            }
+
+            showSearchPlaceholder() {
+                const resultsContainer = document.getElementById('searchResults');
+                resultsContainer.innerHTML = '<div class="text-muted text-center py-4"><i class="bi bi-search display-6 opacity-50"></i><div class="mt-2">Start typing to search...</div></div>';
+            }
+
+            setupNotifications() {
+                // Real-time notifications setup
+                this.refreshNotifications();
+
+                // Auto-refresh notifications every 30 seconds
+                setInterval(() => this.refreshNotifications(), 30000);
+
+                // Mark all as read functionality
+                document.getElementById('markAllRead')?.addEventListener('click', () => {
+                    this.markAllNotificationsRead();
+                });
+            }
+
+            async refreshNotifications() {
+                try {
+                    const response = await fetch('/Admin/Notifications/GetLatest');
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.updateNotificationBadge(data.unreadCount);
+                        this.updateNotificationsList(data.notifications);
+                    }
+                } catch (error) {
+                    console.warn('Failed to refresh notifications:', error);
+                }
+            }
+
+            updateNotificationBadge(count) {
+                const badge = document.querySelector('#notificationsToggle .badge');
+                if (badge) {
+                    badge.textContent = count;
+                    badge.style.display = count > 0 ? 'block' : 'none';
+                }
+            }
+
+            updateNotificationsList(notifications) {
+                const container = document.getElementById('notificationsList');
+                if (!container || !notifications) return;
+
+                // Update with new notifications (implementation depends on your data structure)
+                // This is a placeholder - you'll need to implement based on your notification system
+            }
+
+            async markAllNotificationsRead() {
+                try {
+                    const response = await fetch('/Admin/Notifications/MarkAllRead', { method: 'POST' });
+                    if (response.ok) {
+                        this.updateNotificationBadge(0);
+                        this.showToast('All notifications marked as read', 'success');
+                    }
+                } catch (error) {
+                    this.showToast('Failed to mark notifications as read', 'error');
+                }
+            }
+
+            setupThemeToggle() {
+                const themeToggle = document.getElementById('themeToggle');
+                const icon = themeToggle?.querySelector('i');
+
+                themeToggle?.addEventListener('click', () => {
+                    const isDark = document.body.classList.toggle('dark-theme');
+                    icon?.classList.toggle('bi-moon', !isDark);
+                    icon?.classList.toggle('bi-sun', isDark);
+
+                    localStorage.setItem('darkTheme', isDark);
+                    this.showToast(`${isDark ? 'Dark' : 'Light'} theme activated`, 'info');
+                });
+
+                // Apply saved theme
+                if (localStorage.getItem('darkTheme') === 'true') {
+                    document.body.classList.add('dark-theme');
+                    icon?.classList.replace('bi-moon', 'bi-sun');
+                }
+            }
+
+            setupFullscreen() {
+                const fullscreenToggle = document.getElementById('fullscreenToggle');
+                const icon = fullscreenToggle?.querySelector('i');
+
+                fullscreenToggle?.addEventListener('click', () => {
+                    if (document.fullscreenElement) {
+                        document.exitFullscreen();
+                        icon?.classList.replace('bi-fullscreen-exit', 'bi-arrows-fullscreen');
+                    } else {
+                        document.documentElement.requestFullscreen();
+                        icon?.classList.replace('bi-arrows-fullscreen', 'bi-fullscreen-exit');
+                    }
+                });
+
+                document.addEventListener('fullscreenchange', () => {
+                    const isFullscreen = !!document.fullscreenElement;
+                    icon?.classList.toggle('bi-arrows-fullscreen', !isFullscreen);
+                    icon?.classList.toggle('bi-fullscreen-exit', isFullscreen);
+                });
+            }
+
+            loadUserPreferences() {
+                // Load saved sidebar state
+                const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                if (window.innerWidth > 992 && sidebarCollapsed) {
+                    this.sidebar.classList.add('collapsed');
+                    this.main.classList.add('expanded');
+                    const icon = this.sidebarToggle.querySelector('i');
+                    icon?.classList.replace('bi-chevron-left', 'bi-chevron-right');
+                }
+            }
+
+            initializeTooltips() {
+                // Initialize Bootstrap tooltips
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]:not([data-bs-toggle])'));
+                tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl, {
+                        delay: { show: 500, hide: 100 }
+                    });
+                });
+            }
+
+            showToast(message, type = 'info') {
+                if (typeof toastr !== 'undefined') {
+                    toastr.options.positionClass = 'toast-top-right';
+                    toastr.options.timeOut = 3000;
+                    toastr[type](message);
+                }
+            }
+
+            // Public API methods
+            showLoader(message) { window.showLoader(message); }
+            hideLoader() { window.hideLoader(); }
+
+            addNotification(notification) {
+                // Add new notification to the list
+                this.refreshNotifications();
+            }
+
+            updateBadge(elementId, count) {
+                const badge = document.getElementById(elementId);
+                if (badge) {
+                    badge.textContent = count;
+                    badge.style.display = count > 0 ? 'inline' : 'none';
+                }
+            }
         }
 
-        // Add page transition effects
-        window.addEventListener('beforeunload', function() {
-            showLoader();
+        // Initialize admin layout when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            window.adminLayout = new AdminLayout();
+
+            // Configure enhanced toastr
+            if (typeof toastr !== 'undefined') {
+                toastr.options = {
+                    closeButton: true,
+                    debug: false,
+                    newestOnTop: true,
+                    progressBar: true,
+                    positionClass: 'toast-top-right',
+                    preventDuplicates: false,
+                    showDuration: 300,
+                    hideDuration: 1000,
+                    timeOut: 5000,
+                    extendedTimeOut: 1000,
+                    showEasing: 'swing',
+                    hideEasing: 'linear',
+                    showMethod: 'fadeIn',
+                    hideMethod: 'fadeOut'
+                };
+            }
+
+            // Configure SweetAlert2 defaults
+            if (typeof Swal !== 'undefined') {
+                Swal.mixin({
+                    customClass: {
+                        popup: 'swal2-backdrop-blur',
+                        confirmButton: 'btn btn-primary me-2',
+                        cancelButton: 'btn btn-secondary'
+                    },
+                    buttonsStyling: false,
+                    background: 'var(--glass-bg)',
+                    backdrop: 'rgba(102, 126, 234, 0.8)',
+                    color: 'var(--text-primary)'
+                });
+            }
+
+            // Hide loader when page is fully loaded
+            window.addEventListener('load', () => {
+                setTimeout(() => window.hideLoader(), 500);
+            });
         });
 
-        // Hide loader when page is fully loaded
-        window.addEventListener('load', function() {
-            hideLoader();
-        });
+        // Service Worker registration for PWA support
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
     </script>
 
     @RenderSection("Scripts", required: false)

@@ -18,7 +18,7 @@ namespace VoxTics.Areas.Admin.ViewModels.Movie
         public decimal Rating { get; set; }
         public int Duration { get; set; }
         public decimal Price { get; set; }
-
+        public string? TrailerUrl { get; set; }
         public MovieStatus Status { get; set; } 
         public bool IsFeatured { get; set; }
         public string Categories { get; set; } = string.Empty;
