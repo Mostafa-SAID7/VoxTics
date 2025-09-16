@@ -70,6 +70,6 @@ namespace VoxTics.Models.Entities
         // If you're still using the old simple join entity:
         public ICollection<UserMovieWatchlist>? UserMovieWatchlists { get; set; } = new List<UserMovieWatchlist>();
         public int CategoryId { get; internal set; }
-        public object Category { get; internal set; }
+        public Category Category { get; set; }
     }
 }

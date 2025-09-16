@@ -10,13 +10,12 @@ namespace VoxTics.Models.Entities
         // -------------------------
         // Foreign key
         // -------------------------
-        [Required]
-        public int BookingId { get; set; }
+        public int? BookingId { get; set; }
 
         // -------------------------
         // Navigation property
         // -------------------------
-        public virtual Booking Booking { get; set; } = null!;
+        public virtual Booking? Booking { get; set; } = null!;
 
         // -------------------------
         // Required fields
@@ -44,6 +43,9 @@ namespace VoxTics.Models.Entities
         public PaymentMethod Method { get; set; } 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? PaidAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
+        public bool IsDeleted { get; set; }
+
 
     }
 }

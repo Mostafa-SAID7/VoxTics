@@ -4,6 +4,10 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using VoxTics.Models.Enums;
+using VoxTics.Models.ViewModels.Actor;
+using VoxTics.Models.ViewModels.Category;
+using VoxTics.Models.ViewModels.Movie;
+using VoxTics.Models.ViewModels.Showtime;
 using VoxTics.Services.Interfaces;
 
 namespace VoxTics.Controllers
@@ -27,32 +31,72 @@ namespace VoxTics.Controllers
             string? sort = null,
             CancellationToken cancellationToken = default)
         {
-            var movies = await _movieService.GetPagedMoviesAsync(page, pageSize, search, status, sort, cancellationToken);
+            var movies = await _movieService.GetPagedMoviesAsync(page, pageSize, search, status, sort, cancellationToken).ConfigureAwait(false);
             return View(movies);
         }
 
-        [HttpGet]
-        [AllowAnonymous]
         public async Task<IActionResult> Featured(CancellationToken cancellationToken)
         {
-            var featured = await _movieService.GetFeaturedMoviesAsync(cancellationToken);
+            var featured = await _movieService.GetFeaturedMoviesAsync(cancellationToken).ConfigureAwait(false);
             return View(featured);
         }
 
-        [HttpGet]
-        [AllowAnonymous]
+   
         public async Task<IActionResult> Details(int id, CancellationToken cancellationToken)
         {
-            var movie = await _movieService.GetMovieDetailsAsync(id, cancellationToken);
+            var movie = await _movieService.GetMovieDetailsAsync(id, cancellationToken).ConfigureAwait(false);
             if (movie == null) return NotFound();
-            return View(movie);
+
+            var vm = new MovieDetailsVM
+            {
+                Id = movie.Id,
+                Title = movie.Title,
+                ShortDescription = movie.ShortDescription,
+                Description = movie.Description,
+                Director = movie.Director,
+                Country = movie.Country,
+                Language = movie.Language,
+                AgeRating = movie.AgeRating,
+                ImageUrl = movie.ImageUrl,
+                TrailerImageUrl = movie.TrailerImageUrl,
+                TrailerUrl = movie.TrailerUrl,
+                IsFeatured = movie.IsFeatured,
+                Status = movie.Status,
+                ReleaseDate = movie.ReleaseDate,
+                Duration = movie.Duration,
+                Price = movie.Price,
+                Rating = movie.Rating,
+                Cast = movie.MovieActors.Select(a => new ActorVM
+                {
+                    Id = a.Actor.Id,
+                    FullName = a.Actor.FullName,
+                    ImageUrl = a.Actor.ImageUrl
+                }).ToList(),
+                Categories = movie.MovieCategories.Select(c => new CategoryVM
+                {
+                    Id = c.Category.Id,
+                    Name = c.Category.Name
+                }).ToList(),
+                GalleryImages = movie.MovieImages.Select(i => i.ImageUrl).ToList(),
+                Showtimes = movie.Showtimes.Select(s => new ShowtimeVM
+                {
+                    Id = s.Id,
+                    StartTime = s.StartTime,
+                    HallName = s.Hall.Name,
+                    Price = s.Price
+                }).ToList()
+            };
+
+            return View(vm);
         }
+
+
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> ByCategory(int categoryId, CancellationToken cancellationToken)
         {
-            var movies = await _movieService.GetMoviesByCategoryAsync(categoryId, cancellationToken);
+            var movies = await _movieService.GetMoviesByCategoryAsync(categoryId, cancellationToken).ConfigureAwait(false);
             return View(movies);
         }
 
@@ -68,7 +112,7 @@ namespace VoxTics.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Search(string keyword, CancellationToken cancellationToken)
         {
-            var movies = await _movieService.SearchMoviesAsync(keyword, cancellationToken);
+            var movies = await _movieService.SearchMoviesAsync(keyword, cancellationToken).ConfigureAwait(false);
             return View(movies);
         }
 
@@ -76,7 +120,7 @@ namespace VoxTics.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> TopRated(int count = 10, CancellationToken cancellationToken = default)
         {
-            var movies = await _movieService.GetTopRatedMoviesAsync(count, cancellationToken);
+            var movies = await _movieService.GetTopRatedMoviesAsync(count, cancellationToken).ConfigureAwait(false);
             return View(movies);
         }
     }

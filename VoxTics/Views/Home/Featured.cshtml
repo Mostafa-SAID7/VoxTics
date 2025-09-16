@@ -1,0 +1,19 @@
+﻿@model IEnumerable<VoxTics.Models.Entities.Movie>
+@{
+    ViewData["Title"] = "Featured Movies";
+}
+<h2>Featured Movies</h2>
+<div class="row">
+    @foreach (var movie in Model)
+    {
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <img src="@movie.ImageUrl" class="card-img-top" alt="@movie.Title" />
+                <div class="card-body">
+                    <h5>@movie.Title</h5>
+                    <p>@movie.ShortDescription</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>

@@ -77,16 +77,16 @@ namespace VoxTics.Models.Entities
 
         public bool IsCancelled { get; set; } = false;
 
-        // -------------------------
-        // Computed / NotMapped helpers
-        // -------------------------
-        [NotMapped]
-        public DateTime EndTime => StartTime.AddMinutes(Duration);
+
+
+        public DateTime EndTime { get; set; }
 
         [NotMapped]
         public int TotalSeats => Hall?.Seats?.Count ?? 0;
-
-        public object CinemaHall { get; internal set; }
+        public int CinemaHallId { get; set; } // required
+        public Hall CinemaHall { get; set; }  // Navigation property
         public int PricePerSeat { get; internal set; }
+        public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+
     }
 }

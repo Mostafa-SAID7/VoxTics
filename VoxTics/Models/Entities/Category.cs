@@ -17,6 +17,8 @@ namespace VoxTics.Models.Entities
         public bool IsActive { get; set; } = true;
 
         // Navigation properties
+        public ICollection<Movie> Movies { get; set; } = new List<Movie>();
+
         public virtual ICollection<MovieCategory> MovieCategories { get; set; } = new List<MovieCategory>();
     }
 }

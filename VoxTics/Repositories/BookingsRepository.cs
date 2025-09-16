@@ -44,11 +44,11 @@ namespace VoxTics.Repositories
 
             if (!string.IsNullOrEmpty(couponCode))
             {
-                var coupon = await _context.Coupons
-                    .FirstOrDefaultAsync(c => c.Code == couponCode && c.ExpiryDate >= DateTime.UtcNow, cancellationToken)
-                    .ConfigureAwait(false);
-                if (coupon != null)
-                    discount = basePrice * (coupon.DiscountPercentage / 100m);
+                //var coupon = await _context.Coupons
+                //    .FirstOrDefaultAsync(c => c.Code == couponCode && c.ExpiryDate >= DateTime.UtcNow, cancellationToken)
+                //    .ConfigureAwait(false);
+                //if (coupon != null)
+                //    discount = basePrice * (coupon.DiscountPercentage / 100m);
             }
 
             return basePrice - discount;

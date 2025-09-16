@@ -19,7 +19,6 @@ namespace VoxTics.Areas.Admin.AdminProfiles
                 {
                     Id = st.Id,
                     MovieTitle = st.Movie.Title,
-                    ShowDateTime = st.StartTime
                 })))
                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.ImageUrl) ? "/images/default-cinema.jpg" : src.ImageUrl));
 

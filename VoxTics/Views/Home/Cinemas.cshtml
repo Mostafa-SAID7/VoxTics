@@ -1,0 +1,24 @@
+﻿@model IEnumerable<VoxTics.Models.Entities.Cinema>
+@{
+    ViewData["Title"] = "Cinemas";
+}
+<h2>Cinemas</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>City</th>
+            <th>Address</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var cinema in Model)
+        {
+            <tr>
+                <td>@cinema.Name</td>
+                <td>@cinema.City</td>
+                <td>@cinema.Address</td>
+            </tr>
+        }
+    </tbody>
+</table>

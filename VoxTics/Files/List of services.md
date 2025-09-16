@@ -140,3 +140,46 @@
 		 documentation generation support for technical docs + 
 		 code generation tools support for productivity + 
 		 static code analysis tools support for code quality 
+
+		                         ┌───────────────┐
+                        │  MovieRepo    │
+                        │ IMovieRepository│
+                        └──────┬────────┘
+                               │
+           ┌───────────────────┴───────────────────┐
+           │                                       │
+   ┌───────▼────────┐                     ┌────────▼─────────┐
+   │  IBaseRepository│                     │ Movie-specific   │             Services\
+   │      CRUD       │                     │    Methods       │                 MovieService.cs
+   └───────┬────────┘                     └────────┬─────────┘              
+           │                                       │                        Helpers\
+ ┌─────────┴─────────┐          ┌─────────────────┴─────────────────┐           PaginatedList
+ │ GetByIdAsync(id)  │          │ GetMovieCountByStatusAsync(status)│           SearchHelper
+ │ GetAllAsync(term) │          │ GetMoviesForAdminAsync(includeDel)│           ImageHelper
+ │ AddAsync(entity)  │          │ GetFeaturedMoviesAsync(take)      │           FilterBase
+ │ UpdateAsync(entity)│         │ GetAllWithIncludesAsync(includeDel)   │       ValidationHelpers
+ │ DeleteAsync(id)   │          │ GetPagedMoviesAsync(search,sort,...)  │
+ │ DeleteAsync(entity)│         │ GetAllCategories()                    │   MappingProfiles\
+ └─────────┬─────────┘          └─────────────────┬─────────────────┘           BaseProfile
+           │                                       │                            MovieProfile
+           ▼                                       ▼
+   ┌──────────────┐                       ┌───────────────┐                 models\
+   │ Query(),      │                       │ IncludeOps    │                    Movie.cs
+   │ FindAsync(...)│                       │ GetByIdWithIncludesAsync(...) │    MovieImg.cs    
+   │ FirstOrDefault│                       │ FindWithIncludesAsync(...)   │     MovieCategory.cs
+   └──────────────┘                       └───────────────┘                     MovieActor.cs
+           │                                       │                            BaseEntity.cs
+           ▼                                       ▼                            IAuditable.cs
+   ┌──────────────┐                       ┌───────────────┐                  Enums\
+   │ CountAsync() │                       │ BulkOps       │                      MovieStatus.cs   
+   │ ExistsAsync()│                       │ AddRangeAsync │                      SortOrder.cs
+   └──────────────┘                       │ UpdateRangeAsync │                   MovieSortBy.cs
+                                          │ DeleteRangeAsync │                   PageSize.cs
+                                           │ Update(entity)   │                  SearchOptions.cs
+                                          │ Remove(entity)   │   Area\Admin\ViewModels\
+                                          │ SaveChangesAsync │                   MovieCreateEditViewModel.cs
+                                          └───────────────┘                      MovieListItemViewModel.cs
+                                                                                 MovieCategoryViewModel.cs
+                                                                                 MovieActorViewModel.cs
+                                                                                 MovieImgViewModel.cs
+                                                                                 

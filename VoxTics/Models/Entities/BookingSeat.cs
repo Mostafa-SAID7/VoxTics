@@ -20,7 +20,9 @@ namespace VoxTics.Models.Entities
         // Navigation properties
         public virtual Booking Booking { get; set; } = null!;
         public virtual Seat Seat { get; set; } = null!;
-        public string SeatNumber { get; internal set; }
+        [NotMapped]
+        public string SeatNumber { get; set; }
+
         public int ShowtimeId { get; internal set; }
     }
 }

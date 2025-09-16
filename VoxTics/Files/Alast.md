@@ -1,234 +1,258 @@
-﻿
-VoxTics/
-├─ Areas/
-│  └─ Admin/
-│     ├─ Controllers/
-			BookingController
-			CinemasController
-│     │  └─ MoviesController.cs
-	  │  └─ CategoriesController.cs
-			HomeController.cs
-			UsersController
-			ShowtimesController
-│     └─ ViewModels/
-			add validation attribute
-			AdminDashboardVM
-			BookingViewModel
-			CinemaViewModel
-│        └─ MovieViewModel.cs
-			ShowtimeViewModel
-			UserViewModel
-│        └─ CategoryViewModel.cs
-		views/
-			Categories/
-				  ├─ _CategoryForm.cshtml
-				  ├─ _CategoriesTable.cshtml
-				  ├─ Index.cshtml
-				  ├─ Create.cshtml
-				  ├─ Edit.cshtml
-				  └─ Delete.cshtml
-			Booking/
-				_BookingsTable.cshtml
-				Index.cshtml + (filter +search +pagination + card) with ajax live script for admin mangage approval,reject
-			Categories/
-			_CategoryForm.cshtml
-			_CategoriesTable.cshtml
-			Index.cshtml + (filter +search +pagination + card) with ajax live script
-			Create.cshtml as modal
-			Edit.cshtml as modal
-			Delete.cshtml as modal
-			Cinemas/
-				_CinemaForm.cshtml
-				_CinemasTable.cshtml
-				Index.cshtml + (filter +search +pagination + card) with ajax live script 
-				Create.cshtml as modal
-				Edit.cshtml as modal
-				Delete.cshtml as modal
-			Home/
-			AdminDashboard.cshtml
-			Users/
-				_UsersTable.cshtml
-				Index.cshtml + (filter +search +pagination + card) with ajax live script for admin mangage active,deactive,role
-			Movies (include in scripts + styles css in the same file page)
-				_MovieForm
-				_MoviesTable
-				Index.cshtml + (filter +search +pagination + card) with ajax live script 
-				_Create.cshtml as modal
-				_Edit.cshtml as modal
-				_Delete.cshtml as modal
-			shared/
-				_AdminLayout.cshtml
-				add scripts lib+ styles lib like animation.css +sweetalert2 +toastr +bootstrap +jquery +bt icons+ jquery validation +ajax
-				_ValidationScriptsPartial
-				Error
-			Users/
-				_UserForm.cshtml
-				_UsersTable.cshtml
-				Index.cshtml + (filter +search +pagination + card) with ajax live script for admin mangage active,deactive,role
-				Create.cshtml as modal
-				Edit.cshtml as modal
-				Delete.cshtml as modal
-			_ViewImports.cshtml
-			_ViewStart
-├─ Controllers/
-	  BookingController
-	  CategoriesController.cs
-	  CinemasController
-	  HomeController.cs
-│  └─ MoviesController.cs           # Public-facing controller
-	  ShowtimesController
-	  UsersController
-├─ Data/
-│  └─ MovieDbContext.cs
-├─ Helpers/
-│  └─ PaginatedList.cs
-├─ MappingProfiles/
-	  BookingProfile
-	  CategoryProfile
-	  CinemaProfile
-│  └─ MovieProfile.cs               # AutoMapper profile
-	  ShowtimeProfile
-	  UserProfile
-	  ServiceCollectionExtensions
-
-
-Models/
- ├─ Entities/
- │  ├─ Actor.cs
- │  ├─ Booking.cs
- │  ├─ BookingSeat.cs
- │  ├─ Category.cs
- │  ├─ Cinema.cs
- │  ├─ Hall.cs
- │  ├─ Movie.cs
- │  ├─ MovieActor.cs
- │  ├─ MovieCategory.cs
- │  ├─ MovieImg.cs
- │  ├─ Seat.cs
- │  ├─ Showtime.cs
- │  └─ User.cs
- └─ Enums/
-    ├─ MovieStatus.cs
-    ├─ BookingStatus.cs
-    ├─ NotificationType.cs
-    ├─ PaymentStatus.cs
-    ├─ SeatType.cs
-    ├─ ShowtimeStatus.cs
-    ├─ MovieSortBy.cs
-    ├─ SortOrder.cs
-    ├─ BookingSortBy.cs
-    ├─ TimeRange.cs
-    └─ UserRole.cs
-ViewModels/
- ├─ ActorVM.cs
- ├─ BookingVM.cs
- ├─ CategoryVM.cs
- ├─ CinemaVM.cs
- ├─ ErrorViewModel.cs
- ├─ HomeVM.cs
- ├─ MovieVM.cs
- ├─ MovieDetailVM.cs
- ├─ MovieImageVM.cs
- ├─ MovieListVM.cs
- ├─ SearchResultVM.cs
- ├─ ShowtimeVM.cs
- └─ UserVM.cs
-
-├─ Repositories or Services/
-│  ├─ Interfaces/
-		IBaseRepository.cs
-		IBookingRepository
-│  │  ├─ ICategoryRepository.cs
-│  │  ├─ ICinemaRepository.cs
-│  │  ├─ IMovieRepository.cs
-		IShowtimeRepository
-│  │  └─ IUserRepository.cs
-│  └─ Implementations/
-		BaseRepository.cs
-		BookingRepository
-│     ├─ CategoryRepository.cs
-│     ├─ CinemaRepository.cs
-│     ├─ MovieRepository.cs
-		ShowtimeRepository
-│     └─ UserRepository.cs
-		ServiceCollectionExtensions.cs
-	  
-Infrastructure/
- ├─ Logging/
- │   └─ Logger.cs
- ├─ Notifications/
- │   └─ NotificationService.cs
- └─ Email/
-     └─ EmailService.cs
-Common/
- ├─ Constants.cs
- ├─ EnumsExtensions.cs   # reusable methods for enums
- └─ Validators/          # FluentValidation or custom attributes		
-
-├── Utility
-│   └── SD.cs                # Static details (constants, roles, etc.)
-├─ Views/(include in scripts + styles css in the same file page)
-│  ├─ Movies/
-│  │  ├─ Index.cshtml (with filter +search +pagination + card) with ajax live script
-│  │  ├─ _MovieCards.cshtml
-│  │  └─ _Details.cshtml as modal
-		_BookingCards.cshtml as modal from user clicked book now
-│  ├─ Cinemas/
-│  │  ├─ Index.cshtml (with filter +search +pagination + card) with ajax live script
-│  │  ├─ _CinemaCards.cshtml
-│  │  └─ _Details.cshtml as modal
-│  ├─ Categories/
-│  │  ├─ Index.cshtml (with filter +search +pagination + card) with ajax live script
-│  │  └─ Details.cshtml page Related Movies by only this category
-│  ├─ Showtimes/
-│  │  ├─ Index.cshtml (with filter +search +pagination + card) with ajax live script
-│  │  ├─ _ShowtimeCards.cshtml
-│  │  └─ _Details.cshtml as modal
-│  ├─ Bookings/
-│  │  ├─ Index.cshtml (with filter +search +pagination + card) with ajax live script for user to book ticket
-│  │  ├─ _BookingCards.cshtml
-│  │  └─ _CreatePartial.cshtml as modal from user clicked book now
-		 _EditPartial.cshtml as modal for user from User Profile
-		 _DetailsPartial.cshtml as modal for user from User Profile
-			
-│  ├─ Users/
-│  │  ├─ Index.cshtml (with filter +search +pagination + card) with ajax live script for user mangage profile
-│  │  ├─ _LoginForm.cshtml
-│  │  ├─ _RegisterForm.cshtml
-│  │  ├─ _EditCards.cshtml
-		 _PorfileView.cshtml	
-	  Home/for (static page)
-	  │     └─ Index.cshtml Landing page with ajax live script for search movie + upcoming movie + cinema + category + banner
-			   About.cshtml
-			   Contact.cshtml
-			   FAQ.cshtml
-			   Terms.cshtml
-			   News.cshtml 
-			   Privacy.cshtml
-			   RefoundPolicy.cshtml
-│  └─ Shared/
-		add scripts lib+ styles lib like animation.css +sweetalert2 +toastr +bootstrap +jquery +bt icons+ jquery validation +ajax 
-│     └─ _Layout.cshtml
-		_Pagination.cshtml
-		_Loader
-		_Header
-		_Footer
-		_ValidationScriptsPartial
-		Error
-	_ViewImports.cshtml
-	__ViewStart
-├─ wwwroot/
-│  ├─ css/
-│  ├─ js/
-│  └─ lib/
-	images/
-		logo.png
-	uploads/
-	├─ movies/
-	├─ actors/
-	├─ cinemas/
-	├─ users/
-	├─ banners/
-└─ Program.cs
-	appsettings
-└── GlobalUsings.cs
+﻿VoxTics/
+│
+├── Areas/
+│   ├── Identity/
+│   │   ├── Controllers/
+│   │   │   ├── AccountController.cs
+│   │   │   └── ProfileController.cs
+│   │   ├── Models/
+│   │   │   ├── Entities/
+│   │   │   │   ├── ApplicationUser.cs
+│   │   │   │   ├── UserOTP.cs
+│   │   │   │   └── UserMovieWatchlist.cs
+│   │   │   └── ViewModels/
+│   │   │       ├── ConfirmOTPVM.cs
+│   │   │       ├── ForgetPasswordVM.cs
+│   │   │       ├── LoginVM.cs
+│   │   │       ├── ManageProfileVM.cs
+│   │   │       ├── NewPasswordVM.cs
+│   │   │       ├── PersonalInfoVM.cs
+│   │   │       ├── RegisterVM.cs
+│   │   │       └── ResendEmailConfirmationVM.cs
+│   │   ├── Repositories/
+│   │   │   ├── IRepositories/
+│   │   │   │   └── IApplicationUsersRepository.cs
+│   │   │   └── ApplicationUsersRepository.cs
+│   │   └── Services/
+│   │       ├── Interfaces/
+│   │       │   └── IAccountService.cs
+│   │       └── AccountService.cs
+│   │
+│   └── Admin/
+│       ├── Controllers/
+│       │   ├── BookingsController.cs
+│       │   ├── CategoriesController.cs
+│       │   ├── CinemasController.cs
+│       │   ├── MoviesController.cs
+│       │   ├── ShowtimesController.cs
+│       │   ├── UsersController.cs
+│       │   └── HomeController.cs
+│       ├── Views/
+│       │   ├── Bookings/
+│       │   ├── Categories/
+│       │   ├── Cinemas/
+│       │   ├── Movies/
+│       │   ├── Showtimes/
+│       │   ├── Users/
+│       │   ├── Home/
+│       │   └── Shared/
+│       │       ├── _Layout.cshtml
+│       │       ├── _Sidebar.cshtml
+│       │       ├── _Topbar.cshtml
+│       │       ├── _ValidationScriptsPartial.cshtml
+│       │       └── Error.cshtml
+│       ├── ViewModels/
+│       │   ├── AdminDashboardViewModel.cs
+│       │   ├── BookingViewModels/
+│       │   ├── MovieViewModels/
+│       │   ├── CategoryViewModels/
+│       │   ├── CinemaViewModels/
+│       │   ├── ShowtimeViewModels/
+│       │   └── UserManagementStats.cs
+│       ├── Services/
+│       │   ├── Interfaces/
+│       │   └── Implementations/
+│       ├── Repositories/
+│       │   ├── Interfaces/
+│       │   └── Implementations/
+│       └── Profiles/
+│           ├── BookingAdminProfile.cs
+│           ├── CategoryAdminProfile.cs
+│           ├── CinemaAdminProfile.cs
+│           ├── MovieAdminProfile.cs
+│           ├── ShowtimeAdminProfile.cs
+│           └── UserAdminProfile.cs
+│
+├── Controllers/
+│   ├── BookingController.cs
+│   ├── CinemaController.cs
+│   ├── HomeController.cs
+│   ├── MovieController.cs
+│   ├── ShowtimeController.cs
+│   ├── ProfileController.cs
+│   └── CategoriesController.cs
+│
+├── Data/
+│   ├── MovieDbContext.cs
+│   ├── DbInitializer.cs
+│   └── UnitOfWork/
+│       ├── IUnitOfWork.cs
+│       └── UnitOfWork.cs
+│
+├── Helpers/
+│   ├── BookingRulesHelper.cs
+│   ├── DateTimeExtensions.cs
+│   ├── EmailTemplateHelper.cs
+│   ├── EnumExtensions.cs
+│   ├── IEmailService.cs
+│   ├── ImageHelper.cs
+│   ├── PaginatedList.cs
+│   ├── QueryableExtensions.cs
+│   ├── SmtpEmailSender.cs
+│   ├── SmtpEmailService.cs
+│   ├── SmtpOptions.cs
+│   ├── PriceFormatter.cs
+│   └── ValidationHelpers.cs
+│
+├── MappingProfiles/
+│   ├── IdentityProfile.cs
+│   ├── BookingProfile.cs
+│   ├── CategoryProfile.cs
+│   ├── CinemaProfile.cs
+│   ├── MovieProfile.cs
+│   └── ShowtimeProfile.cs
+│
+├── Models/
+│   ├── Entities/
+│   │   ├── Actor.cs
+│   │   ├── BaseEntity.cs
+│   │   ├── Booking.cs
+│   │   ├── BookingSeat.cs
+│   │   ├── Cart/
+│   │   │   ├── Cart.cs
+│   │   │   └── CartItem.cs
+│   │   ├── Category.cs
+│   │   ├── Cinema.cs
+│   │   ├── Hall.cs
+│   │   ├── Movie.cs
+│   │   ├── MovieActor.cs
+│   │   ├── MovieCategory.cs
+│   │   ├── MovieImg.cs
+│   │   ├── Notification/
+│   │   │   └── Notification.cs
+│   │   ├── Payment/
+│   │   │   └── Payment.cs
+│   │   ├── Seat.cs
+│   │   ├── Showtime.cs
+│   │   ├── Watchlist/
+│   │   │   ├── Watchlist.cs
+│   │   │   └── WatchlistItem.cs
+│   │   ├── SocialMediaLink.cs
+│   │   └── UserMovieWatchlist.cs
+│   ├── Enums/
+│   │   ├── BookingStatus.cs
+│   │   ├── MovieStatus.cs
+│   │   ├── PaymentMethod.cs
+│   │   ├── PaymentStatus.cs
+│   │   ├── SeatType.cs
+│   │   ├── ShowtimeStatus.cs
+│   │   └── Notifications/
+│   │       └── NotificationType.cs
+│   └── ViewModels/
+│       ├── ActorVM.cs
+│       ├── BookingVM.cs
+│       ├── CategoryVM.cs
+│       ├── CinemaVM.cs
+│       ├── HallVM.cs
+│       ├── HomeVM.cs
+│       ├── MovieListVM.cs
+│       ├── MovieDetailVM.cs
+│       ├── MovieActorVM.cs
+│       ├── MovieCategoryVM.cs
+│       ├── MovieImgVM.cs
+│       ├── SeatVM.cs
+│       ├── ShowtimeVM.cs
+│       └── SocialMediaLinkVM.cs
+│
+├── Repositories/
+│   ├── IRepositories/
+│   │   ├── IBaseRepository.cs
+│   │   ├── IBookingsRepository.cs
+│   │   ├── ICategoriesRepository.cs
+│   │   ├── ICinemasRepository.cs
+│   │   ├── IMoviesRepository.cs
+│   │   ├── IShowtimesRepository.cs
+│   │   └── IHomeRepository.cs
+│   └── 
+│     ├── BaseRepository.cs
+│     ├── BookingsRepository.cs
+│     ├── CategoriesRepository.cs
+│     ├── CinemasRepository.cs
+│     ├── MoviesRepository.cs
+│     ├── ShowtimesRepository.cs
+│     └── HomeRepository.cs
+│
+├── Services/
+│   ├── Interfaces/
+│   │   ├── IBookingService.cs
+│   │   ├── ICategoryService.cs
+│   │   ├── ICinemaService.cs
+│   │   ├── IHomeService.cs
+│   │   ├── IMovieService.cs
+│   │   ├── IShowtimeService.cs
+│   └── Implementations/
+│       ├── BookingService.cs
+│       ├── CategoryService.cs
+│       ├── CinemaService.cs
+│       ├── HomeService.cs
+│       ├── MovieService.cs
+│       ├── PaymentService.cs
+│       └── ShowtimeService.cs
+│
+├── TempHtml/
+│   ├── EmailTemplates/
+│   │   ├── WelcomeEmail.html
+│   │   ├── OTPConfirmation.html
+│   │   ├── PasswordReset.html
+│   │   └── ...
+│   └── BookingConfirmation/
+│
+├── Utility/
+│   └── SD.cs
+│
+├── Views/
+│   ├── Booking/
+│   ├── Cinema/
+│   ├── Home/
+│   │   ├── Index.cshtml
+│   │   ├── About.cshtml
+│   │   ├── Contact.cshtml
+│   │   ├── FAQ.cshtml
+│   │   ├── Terms.cshtml
+│   │   ├── News.cshtml
+│   │   ├── Privacy.cshtml
+│   │   └── RefoundPolicy.cshtml
+│   ├── Movie/
+│   ├── Showtime/
+│   ├── Profile/
+│   ├── Categories/
+│   └── Shared/
+│       ├── Components/
+│       ├── _Layout.cshtml
+│       ├── _ValidationScriptsPartial.cshtml
+│       ├── Error.cshtml
+│       ├── _Search.cshtml
+│       ├── _Footer.cshtml
+│       ├── _Header.cshtml
+│       ├── _Loader.cshtml
+│       ├── _NotificationPartial.cshtml
+│       └── _Pagination.cshtml
+│
+├── wwwroot/
+│   ├── css/
+│   ├── js/
+│   ├── lib/
+│   ├── images/
+│   │   └── logo.png
+│   └── uploads/
+│       ├── movies/
+│       ├── actors/
+│       ├── cinemas/
+│       ├── users/
+│       └── banners/
+│
+├── GlobalUsings.cs
+├── Program.cs
+├── ServiceCollectionExtensions.cs
+├── appsettings.json
+└── SeedData.cs   # optional database seeding

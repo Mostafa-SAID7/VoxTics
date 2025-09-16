@@ -110,7 +110,7 @@
     │       └── AdminUserService.cs
     │
     ├── Repositories/
-    │   ├── Interfaces/
+    │   ├── IRepositories/
     │   │   ├── IAdminBookingsRepository.cs
     │   │   ├── IAdminCategoriesRepository.cs
     │   │   ├── IAdminCinemasRepository.cs
@@ -119,14 +119,13 @@
     │   │   ├── IDashboardRepository.cs
     │   │   └── IAdminUserRepository.cs
     │   │
-    │   └── Implementations/
-    │       ├── AdminBookingsRepository.cs
-    │       ├── AdminCategoriesRepository.cs
-    │       ├── AdminCinemasRepository.cs
-    │       ├── AdminMoviesRepository.cs
-    │       ├── AdminShowtimesRepository.cs
-    │       ├── DashboardRepository.cs
-    │       └── AdminUserRepository.cs
+    │   ├── AdminBookingsRepository.cs
+    │   ├── AdminCategoriesRepository.cs
+    │   ├── AdminCinemasRepository.cs
+    │   ├── AdminMoviesRepository.cs
+    │   ├── AdminShowtimesRepository.cs
+    │   ├── DashboardRepository.cs
+    │   └── AdminUserRepository.cs
     │
     └── Profiles/
         ├── BookingAdminProfile.cs

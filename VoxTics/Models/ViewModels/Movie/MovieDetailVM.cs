@@ -10,7 +10,6 @@ namespace VoxTics.Models.ViewModels.Movie
 {
     public class MovieDetailsVM
     {
-        // Basic info
         public int Id { get; set; }
 
         [Required]
@@ -23,28 +22,23 @@ namespace VoxTics.Models.ViewModels.Movie
         public string Language { get; set; } = "EN";
         public string? AgeRating { get; set; }
 
-        // Media
         public string? ImageUrl { get; set; }
         public string? TrailerImageUrl { get; set; }
         public string? TrailerUrl { get; set; }
 
-        // Status and flags
         public bool IsFeatured { get; set; }
         public MovieStatus Status { get; set; }
 
-        // Dates and numbers
         public DateTime ReleaseDate { get; set; }
         public int Duration { get; set; } // minutes
         public decimal Price { get; set; }
         public decimal Rating { get; set; }
 
-        // Related collections
         public IReadOnlyList<ActorVM> Cast { get; set; } = new List<ActorVM>();
         public IReadOnlyList<CategoryVM> Categories { get; set; } = new List<CategoryVM>();
         public IReadOnlyList<string> GalleryImages { get; set; } = new List<string>();
         public IReadOnlyList<ShowtimeVM> Showtimes { get; set; } = new List<ShowtimeVM>();
 
-        // Computed properties
         public bool IsAvailableForBooking =>
             Status == MovieStatus.NowShowing && ReleaseDate <= DateTime.Today;
 

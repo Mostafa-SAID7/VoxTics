@@ -73,8 +73,9 @@ namespace VoxTics.Models.Entities
         public virtual Movie? Movie { get; set; } = null!;
         public virtual Cinema? Cinema { get; set; } = null!;
         public virtual Showtime Showtime { get; set; } = null!;
-        public virtual ICollection<BookingSeat> BookingSeats { get; set; } = new List<BookingSeat>();
-        public virtual Payment Payment { get; set; } = null!;
+        public ICollection<BookingSeat>? BookingSeats { get; set; }
+        public ICollection<Payment> Payments { get; set; }
+
 
         // -------------------------
         // Additional / computed
@@ -93,7 +94,7 @@ namespace VoxTics.Models.Entities
         [NotMapped]
         public string BookingReference => $"BK{Id:D6}";
 
-        public string Seats { get; internal set; }
-        public bool IsCheckedIn { get; internal set; }
+        public ICollection<Seat>? Seats { get; set; }
+        public bool IsCheckedIn { get; set; }
     }
 }

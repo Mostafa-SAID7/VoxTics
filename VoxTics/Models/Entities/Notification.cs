@@ -18,7 +18,7 @@ namespace VoxTics.Models.Entities
         // -------------------------
         // Foreign key
         // -------------------------
-        public int? UserId { get; set; }
+        public string UserId { get; set; }
 
         // -------------------------
         // Navigation property

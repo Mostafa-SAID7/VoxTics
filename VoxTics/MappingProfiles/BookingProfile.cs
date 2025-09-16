@@ -1,49 +1,37 @@
-﻿using VoxTics.Models.Entities;
+﻿using AutoMapper;
+using VoxTics.Models.Entities;
 using VoxTics.Models.ViewModels.Booking;
+using System;
+using System.Collections.Generic;
 
-namespace VoxTics.Helpers
+namespace VoxTics.MappingProfiles
 {
-    public static class BookingMappings
+    public class BookingProfile : Profile
     {
-        public static BookingDetailsVM ToDetailsVM(this Booking booking, string cinemaName, string hallName, List<string> seatNumbers)
+        public BookingProfile()
         {
-            return new BookingDetailsVM
-            {
-                BookingReference = booking.BookingReference,
-                MovieTitle = booking.Showtime.Movie.Title,
-                CinemaName = cinemaName,
-                HallName = hallName,
-                ShowTime = booking.Showtime.StartTime,
-                BookingDate = booking.BookingDate,
-                NumberOfTickets = booking.NumberOfTickets,
-                SeatNumbers = seatNumbers,
-                TotalAmount = booking.TotalAmount,
-                FinalAmount = booking.TotalAmount,
-                Status = booking.Status,
-                PaymentStatus = booking.PaymentStatus,
-                PaymentMethod = booking.PaymentMethod
-            };
-        }
+            // Map Booking -> BookingDetailsVM
+            CreateMap<Booking, BookingDetailsVM>()
+                .ForMember(dest => dest.CinemaName, opt => opt.Ignore()) // set manually
+                .ForMember(dest => dest.HallName, opt => opt.Ignore())   // set manually
+                .ForMember(dest => dest.SeatNumbers, opt => opt.Ignore()) // set manually
+                .ForMember(dest => dest.MovieTitle, opt => opt.MapFrom(src => src.Showtime.Movie.Title))
+                .ForMember(dest => dest.ShowTime, opt => opt.MapFrom(src => src.Showtime.StartTime))
+                .ForMember(dest => dest.FinalAmount, opt => opt.MapFrom(src => src.TotalAmount));
 
-        public static BookingSummaryVM ToSummaryVM(this Booking booking, string cinemaName, string hallName)
-        {
-            return new BookingSummaryVM
-            {
-                BookingReference = booking.BookingReference,
-                MovieTitle = booking.Showtime.Movie.Title,
-                CinemaName = cinemaName,
-                HallName = hallName,
-                ShowTime = booking.Showtime.StartTime,
-                NumberOfTickets = booking.NumberOfTickets,
-                TotalAmount = booking.TotalAmount,
-                DiscountAmount = 0,
-                FinalAmount = booking.TotalAmount,
-                PaymentMethod = booking.PaymentMethod,
-                Status = booking.Status.ToString(),
-                CanBeCancelled = booking.Showtime.StartTime > DateTime.UtcNow,
-                SavingsAmount = 0,
-                SeatNumbers = new List<string>() // populated separately if needed
-            };
+            // Map Booking -> BookingSummaryVM
+            CreateMap<Booking, BookingSummaryVM>()
+                .ForMember(dest => dest.CinemaName, opt => opt.Ignore()) // set manually
+                .ForMember(dest => dest.HallName, opt => opt.Ignore())   // set manually
+                .ForMember(dest => dest.MovieTitle, opt => opt.MapFrom(src => src.Showtime.Movie.Title))
+                .ForMember(dest => dest.ShowTime, opt => opt.MapFrom(src => src.Showtime.StartTime))
+                .ForMember(dest => dest.DiscountAmount, opt => opt.MapFrom(src => 0))
+                .ForMember(dest => dest.FinalAmount, opt => opt.MapFrom(src => src.TotalAmount))
+                .ForMember(dest => dest.PaymentMethod, opt => opt.MapFrom(src => src.PaymentMethod))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
+                .ForMember(dest => dest.CanBeCancelled, opt => opt.MapFrom(src => src.Showtime.StartTime > DateTime.UtcNow))
+                .ForMember(dest => dest.SavingsAmount, opt => opt.MapFrom(src => 0))
+                .ForMember(dest => dest.SeatNumbers, opt => opt.Ignore()); // populate manually if needed
         }
     }
 }

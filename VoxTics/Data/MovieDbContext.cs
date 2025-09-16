@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using VoxTics.Areas.Identity.Models.Entities;
+using VoxTics.Data.Seeds;
 using VoxTics.Models.Entities;
 
 namespace VoxTics.Data
@@ -23,21 +25,19 @@ namespace VoxTics.Data
         public DbSet<Seat> Seats { get; set; } = null!;
         public DbSet<Showtime> Showtimes { get; set; } = null!;
         public DbSet<UserOTP> UserOTPs { get; set; } = null!;
-        public DbSet<UserMovieWatchlist> UserMovieWatchlists { get; set; } = null!; // legacy
+        public DbSet<UserMovieWatchlist> UserMovieWatchlists { get; set; } = null!;
         public DbSet<Watchlist> Watchlists { get; set; } = null!;
         public DbSet<WatchlistItem> WatchlistItems { get; set; } = null!;
         public DbSet<Cart> Carts { get; set; } = null!;
         public DbSet<CartItem> CartItems { get; set; } = null!;
         public DbSet<Payment> Payments { get; set; } = null!;
         public DbSet<Notification> Notifications { get; set; } = null!;
-        public DbSet<ApplicationUser> ApplicationUsers { get; set; } = null!;
-        public DbSet<Coupon> Coupons { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // core domain
+            // Core entities
             ConfigureBooking(modelBuilder);
             ConfigureCinema(modelBuilder);
             ConfigureHall(modelBuilder);
@@ -51,10 +51,8 @@ namespace VoxTics.Data
             ConfigureMovieCategory(modelBuilder);
             ConfigureMovieImg(modelBuilder);
 
-            // identity / misc
+            // Identity and misc
             ConfigureUserOTP(modelBuilder);
-
-            // legacy and new user-related features
             ConfigureLegacyUserMovieWatchlist(modelBuilder);
             ConfigureWatchlist(modelBuilder);
             ConfigureWatchlistItem(modelBuilder);
@@ -62,8 +60,16 @@ namespace VoxTics.Data
             ConfigureCartItem(modelBuilder);
             ConfigurePayment(modelBuilder);
             ConfigureNotification(modelBuilder);
-        }
+            
+            // Call the seeder
+            DbSeeder.Seed(modelBuilder);
 
+        }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.ConfigureWarnings(w =>
+                w.Ignore(RelationalEventId.PendingModelChangesWarning));
+        }
         #region Core entity configurations
 
         private static void ConfigureBooking(ModelBuilder modelBuilder)
@@ -73,20 +79,17 @@ namespace VoxTics.Data
                 b.HasKey(x => x.Id);
                 b.Property(x => x.TotalAmount).HasColumnType("decimal(10,2)");
 
-                // Booking -> User
                 b.HasOne(x => x.User)
                  .WithMany(u => u.Bookings)
                  .HasForeignKey(x => x.UserId)
                  .IsRequired()
                  .OnDelete(DeleteBehavior.Restrict);
 
-                // Booking -> Cinema
                 b.HasOne(x => x.Cinema)
                  .WithMany(c => c.Bookings)
                  .HasForeignKey(x => x.CinemaId)
                  .OnDelete(DeleteBehavior.Restrict);
 
-                // Booking -> Movie
                 b.HasOne(x => x.Movie)
                  .WithMany(m => m.Bookings)
                  .HasForeignKey(x => x.MovieId)
@@ -128,7 +131,7 @@ namespace VoxTics.Data
                 h.HasMany(e => e.Showtimes)
                  .WithOne(s => s.Hall)
                  .HasForeignKey(s => s.HallId)
-                 .OnDelete(DeleteBehavior.Cascade);
+                 .OnDelete(DeleteBehavior.Restrict); // avoid multiple cascade paths
             });
         }
 
@@ -154,10 +157,20 @@ namespace VoxTics.Data
                  .HasForeignKey(s => s.MovieId)
                  .OnDelete(DeleteBehavior.Restrict);
 
-                // optional: ensure collections exist on Movie entity (WatchlistItems, CartItems, etc.)
-                m.HasMany(e => e.MovieActors).WithOne(ma => ma.Movie).HasForeignKey(ma => ma.MovieId);
-                m.HasMany(e => e.MovieCategories).WithOne(mc => mc.Movie).HasForeignKey(mc => mc.MovieId);
-                m.HasMany(e => e.MovieImages).WithOne(mi => mi.Movie).HasForeignKey(mi => mi.MovieId);
+                m.HasMany(e => e.MovieActors)
+                 .WithOne(ma => ma.Movie)
+                 .HasForeignKey(ma => ma.MovieId)
+                 .OnDelete(DeleteBehavior.Cascade);
+
+                m.HasMany(e => e.MovieCategories)
+                 .WithOne(mc => mc.Movie)
+                 .HasForeignKey(mc => mc.MovieId)
+                 .OnDelete(DeleteBehavior.Cascade);
+
+                m.HasMany(e => e.MovieImages)
+                 .WithOne(mi => mi.Movie)
+                 .HasForeignKey(mi => mi.MovieId)
+                 .OnDelete(DeleteBehavior.Cascade);
             });
         }
 
@@ -264,7 +277,7 @@ namespace VoxTics.Data
 
         #endregion
 
-        #region Identity-related & new entities
+        #region Identity & user-related entities
 
         private static void ConfigureUserOTP(ModelBuilder modelBuilder)
         {
@@ -279,10 +292,6 @@ namespace VoxTics.Data
             });
         }
 
-        /// <summary>
-        /// Legacy simple join table (userId + movieId) kept for compatibility.
-        /// If you drop legacy usage remove this entity & DbSet.
-        /// </summary>
         private static void ConfigureLegacyUserMovieWatchlist(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserMovieWatchlist>(umw =>
@@ -306,8 +315,7 @@ namespace VoxTics.Data
             modelBuilder.Entity<Watchlist>(w =>
             {
                 w.HasKey(x => x.Id);
-
-                w.Property(x => x.Name).HasMaxLength(100).IsRequired();
+                w.Property(x => x.Name).IsRequired().HasMaxLength(100);
 
                 w.HasOne(x => x.User)
                  .WithMany(u => u.Watchlists)
@@ -344,8 +352,6 @@ namespace VoxTics.Data
                  .WithMany(u => u.Carts)
                  .HasForeignKey(x => x.UserId)
                  .OnDelete(DeleteBehavior.Cascade);
-
-                // Cart does NOT have direct Movie nav - CartItem links movies to carts.
             });
         }
 
@@ -353,22 +359,32 @@ namespace VoxTics.Data
         {
             modelBuilder.Entity<CartItem>(ci =>
             {
-                ci.HasKey(x => new { x.CartId, x.MovieId });
+                ci.HasKey(x => x.Id);
 
+                // Cart -> CartItems
                 ci.HasOne(x => x.Cart)
                   .WithMany(c => c.CartItems)
                   .HasForeignKey(x => x.CartId)
-                  .OnDelete(DeleteBehavior.Cascade);
+                  .OnDelete(DeleteBehavior.Cascade); // deleting a cart deletes items
 
+                // Movie -> CartItems
                 ci.HasOne(x => x.Movie)
                   .WithMany(m => m.CartItems)
                   .HasForeignKey(x => x.MovieId)
-                  .OnDelete(DeleteBehavior.Cascade);
+                  .OnDelete(DeleteBehavior.Restrict); // prevents multiple cascade paths
 
-                ci.Property(x => x.Price).HasColumnType("decimal(10,2)");
+                // Showtime -> CartItems
+                ci.HasOne(x => x.Showtime)
+                  .WithMany(s => s.CartItems)
+                  .HasForeignKey(x => x.ShowtimeId)
+                  .OnDelete(DeleteBehavior.Restrict); // also prevent cascade conflict
+
+                ci.Property(x => x.Price).HasColumnType("decimal(18,2)");
                 ci.Property(x => x.Quantity).HasDefaultValue(1);
             });
         }
+
+
 
         private static void ConfigurePayment(ModelBuilder modelBuilder)
         {
@@ -377,18 +393,20 @@ namespace VoxTics.Data
                 p.HasKey(x => x.Id);
                 p.Property(x => x.Amount).HasColumnType("decimal(10,2)");
 
+                // User relationship
                 p.HasOne(x => x.User)
                  .WithMany(u => u.Payments)
                  .HasForeignKey(x => x.UserId)
-                 .OnDelete(DeleteBehavior.Restrict);
+                 .OnDelete(DeleteBehavior.Restrict); // ← Prevent cascade
 
-                // optional link to booking
-                p.HasOne<Booking>()
-                 .WithMany()
+                // Payment → Booking
+                p.HasOne(x => x.Booking)
+                 .WithMany(b => b.Payments)
                  .HasForeignKey(x => x.BookingId)
-                 .OnDelete(DeleteBehavior.SetNull);
+                 .OnDelete(DeleteBehavior.SetNull); // optional
             });
         }
+
 
         private static void ConfigureNotification(ModelBuilder modelBuilder)
         {
@@ -401,6 +419,7 @@ namespace VoxTics.Data
                 n.HasOne(x => x.User)
                  .WithMany(u => u.Notifications)
                  .HasForeignKey(x => x.UserId)
+                 .IsRequired(false)
                  .OnDelete(DeleteBehavior.Cascade);
             });
         }
