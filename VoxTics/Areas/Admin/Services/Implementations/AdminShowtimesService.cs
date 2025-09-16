@@ -6,92 +6,110 @@ using System.Threading.Tasks;
 using VoxTics.Data.UoW;
 using VoxTics.Helpers;
 using VoxTics.Models.Entities;
-using VoxTics.Areas.Admin.Services.Interfaces;
+using VoxTics.Repositories.IRepositories;
+using VoxTics.Services.Interfaces;
 
-namespace VoxTics.Areas.Admin.Services.Implementations
+namespace VoxTics.Services.Implementations
 {
-    public class AdminShowtimesService : IAdminShowtimesService
+    public class AdminShowtimeService : IAdminShowtimeService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IBaseRepository<Showtime> _showtimeRepository;
 
-        public AdminShowtimesService(IUnitOfWork unitOfWork)
+        public AdminShowtimeService(IUnitOfWork unitOfWork, IBaseRepository<Showtime> showtimeRepository)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            _showtimeRepository = showtimeRepository ?? throw new ArgumentNullException(nameof(showtimeRepository));
         }
 
-        public async Task<IEnumerable<Showtime>> GetPagedShowtimesAsync(
+        public async Task<(IEnumerable<Showtime> Showtimes, int TotalCount)> GetPagedShowtimesAsync(
             int pageIndex,
             int pageSize,
             string? searchTerm = null,
-            string? sortOrder = null,
             CancellationToken cancellationToken = default)
         {
-            var query = _unitOfWork.Showtimes.Query();
+            var query = _showtimeRepository.Query();
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
+                query = query.Where(s =>
+                    s.Movie.Title.Contains(searchTerm) ||
+                    s.Cinema.Name.Contains(searchTerm));
+
+            var totalCount = query.Count();
+            var showtimes = query
+                .OrderByDescending(s => s.StartTime)
+                .Skip(pageIndex * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return (showtimes, totalCount);
+        }
+
+        public async Task<Showtime?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            return await _showtimeRepository.GetByIdAsync(id, cancellationToken);
+        }
+
+        public async Task<List<string>> AddShowtimeAsync(Showtime showtime, CancellationToken cancellationToken = default)
+        {
+            var errors = ValidateShowtime(showtime);
+            if (errors.Any()) return errors;
+
+            await _showtimeRepository.AddAsync(showtime, cancellationToken);
+            await _unitOfWork.CommitAsync(cancellationToken);
+
+            return errors;
+        }
+
+        public async Task<List<string>> UpdateShowtimeAsync(Showtime showtime, CancellationToken cancellationToken = default)
+        {
+            var errors = ValidateShowtime(showtime);
+            if (errors.Any()) return errors;
+
+            await _showtimeRepository.UpdateAsync(showtime, cancellationToken);
+            await _unitOfWork.CommitAsync(cancellationToken);
+
+            return errors;
+        }
+
+        public async Task<bool> DeleteShowtimeAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var showtime = await _showtimeRepository.GetByIdAsync(id, cancellationToken);
+            if (showtime == null) return false;
+
+            await _showtimeRepository.RemoveAsync(showtime, cancellationToken);
+            await _unitOfWork.CommitAsync(cancellationToken);
+
+            return true;
+        }
+
+        #region Private Helpers
+
+        private List<string> ValidateShowtime(Showtime showtime)
+        {
+            var errors = new List<string>();
+
+            if (showtime == null)
             {
-                var search = searchTerm.ToLower();
-                query = query.Where(s => s.Movie.Title.ToLower().Contains(search) ||
-                                         s.Cinema.Name.ToLower().Contains(search));
+                errors.Add("Showtime cannot be null.");
+                return errors;
             }
 
-            query = query.ApplySorting(sortOrder ?? "asc", s => s.StartTime);
-
-            var totalCount = await _unitOfWork.Showtimes.CountAsync(cancellationToken: cancellationToken);
-            var items = await query.Skip((pageIndex - 1) * pageSize)
-                                   .Take(pageSize)
-                                   .ToListAsyncSafe(cancellationToken);
-
-            return items;
-        }
-
-        public async Task<Showtime?> GetShowtimeByIdAsync(int showtimeId, CancellationToken cancellationToken = default)
-        {
-            return await _unitOfWork.Showtimes.GetByIdAsync(showtimeId, cancellationToken);
-        }
-
-        public async Task<bool> CreateShowtimeAsync(Showtime showtime, CancellationToken cancellationToken = default)
-        {
             if (!ValidationHelpers.IsValidShowtime(showtime.StartTime))
-                throw new ArgumentException("Invalid showtime date.");
+                errors.Add("Showtime must be in the future and not more than 1 year ahead.");
 
-            await _unitOfWork.Showtimes.AddAsync(showtime, cancellationToken);
-            await _unitOfWork.CommitAsync(cancellationToken);
-            return true;
+            if (showtime.MovieId <= 0)
+                errors.Add("Invalid Movie.");
+
+            if (showtime.CinemaId <= 0)
+                errors.Add("Invalid Cinema.");
+
+            if (showtime.HallId <= 0)
+                errors.Add("Invalid Hall.");
+
+            return errors;
         }
 
-        public async Task<bool> UpdateShowtimeAsync(Showtime showtime, CancellationToken cancellationToken = default)
-        {
-            var existing = await _unitOfWork.Showtimes.GetByIdAsync(showtime.Id, cancellationToken);
-            if (existing == null) return false;
-
-            existing.StartTime = showtime.StartTime;
-            existing.Duration = showtime.Duration;
-            existing.Price = showtime.Price;
-            existing.Status = showtime.Status;
-            existing.Is3D = showtime.Is3D;
-            existing.Language = showtime.Language;
-            existing.ScreenType = showtime.ScreenType;
-
-            await _unitOfWork.Showtimes.UpdateAsync(existing, cancellationToken);
-            await _unitOfWork.CommitAsync(cancellationToken);
-            return true;
-        }
-
-        public async Task<bool> DeleteShowtimeAsync(int showtimeId, CancellationToken cancellationToken = default)
-        {
-            var existing = await _unitOfWork.Showtimes.GetByIdAsync(showtimeId, cancellationToken);
-            if (existing == null) return false;
-
-            await _unitOfWork.Showtimes.RemoveAsync(existing, cancellationToken);
-            await _unitOfWork.CommitAsync(cancellationToken);
-            return true;
-        }
-
-        public async Task<int> GetAvailableSeatsAsync(int showtimeId, CancellationToken cancellationToken = default)
-        {
-            var showtime = await _unitOfWork.Showtimes.GetByIdAsync(showtimeId, cancellationToken);
-            return showtime?.AvailableSeats ?? 0;
-        }
+        #endregion
     }
 }

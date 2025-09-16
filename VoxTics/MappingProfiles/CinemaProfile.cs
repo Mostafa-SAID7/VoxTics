@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
-using VoxTics.Areas.Admin.ViewModels.Cinema;
+using System.Linq;
 using VoxTics.Models.Entities;
 using VoxTics.Models.ViewModels.Cinema;
+using VoxTics.Models.ViewModels.Showtime;
+using VoxTics.Models.ViewModels.Booking;
 
 namespace VoxTics.MappingProfiles
 {
@@ -9,16 +11,35 @@ namespace VoxTics.MappingProfiles
     {
         public CinemaProfile()
         {
-            // Admin mapping
-            CreateMap<Cinema, CinemaViewModel>()
-                .ForMember(dest => dest.ImageFile, opt => opt.Ignore())
-                .ReverseMap();
-
-            // Public mapping
+            // -------------------------
+            // Cinema → CinemaVM (summary card view)
+            // -------------------------
             CreateMap<Cinema, CinemaVM>()
-                .ForMember(dest => dest.DisplayImage, opt => opt.MapFrom(src => !string.IsNullOrEmpty(src.ImageUrl)))
-                .ForMember(dest => dest.DisplayImage, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.ImageUrl) ? "/images/default-cinema.jpg" : src.ImageUrl))
-                .ReverseMap();
+                .ForMember(dest => dest.DisplayImage,
+                    opt => opt.MapFrom(src =>
+                        !string.IsNullOrEmpty(src.ImageUrl)
+                            ? src.ImageUrl
+                            : "/images/default-cinema.jpg"))
+                .ForMember(dest => dest.Country,
+                    opt => opt.MapFrom(src => src.Country));
+
+            // -------------------------
+            // Cinema → CinemaDetailsVM (detailed view)
+            // -------------------------
+            CreateMap<Cinema, CinemaDetailsVM>()
+                .ForMember(dest => dest.DisplayImage,
+                    opt => opt.MapFrom(src =>
+                        !string.IsNullOrEmpty(src.ImageUrl)
+                            ? src.ImageUrl
+                            : "/images/default-cinema.jpg"))
+                .ForMember(dest => dest.Halls,
+                    opt => opt.MapFrom(src => src.Halls))
+                .ForMember(dest => dest.Showtimes,
+                    opt => opt.MapFrom(src => src.Showtimes))
+                .ForMember(dest => dest.Bookings,
+                    opt => opt.MapFrom(src => src.Bookings))
+                .ForMember(dest => dest.SocialMediaLinks,
+                    opt => opt.MapFrom(src => src.SocialMediaLinks));
         }
     }
 }

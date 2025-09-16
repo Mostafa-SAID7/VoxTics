@@ -1,135 +1,205 @@
-﻿using VoxTics.Areas.Admin.Repositories.IRepositories;
-using VoxTics.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using VoxTics.Areas.Admin.Repositories.IRepositories;
+using VoxTics.Models.Entities;
+using VoxTics.Models.Enums;
+using VoxTics.Data;
 
 namespace VoxTics.Areas.Admin.Repositories
 {
-    /// <summary>
-    /// Admin-facing repository for advanced showtime management and analytics.
-    /// </summary>
-    public class AdminShowtimesRepository : BaseRepository<Showtime>, IAdminShowtimesRepository
+    public class AdminShowtimesRepository : IAdminShowtimesRepository
     {
         private readonly MovieDbContext _context;
+        private readonly DbSet<Showtime> _dbSet;
 
-        public AdminShowtimesRepository(MovieDbContext context) : base(context)
+        public AdminShowtimesRepository(MovieDbContext context)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _context = context;
+            _dbSet = context.Set<Showtime>();
         }
 
-        public async Task<Showtime> ScheduleShowtimeAsync(
-            int movieId, int cinemaId, DateTime startTime, int totalSeats, decimal price,
+        #region IBaseRepository Implementation
+
+        public IQueryable<Showtime> Query() => _dbSet.AsQueryable();
+
+        public async Task<IEnumerable<Showtime>> GetAllAsync(CancellationToken cancellationToken = default)
+            => await _dbSet.ToListAsync(cancellationToken);
+
+        public async Task<Showtime?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+            => await _dbSet.FindAsync(new object[] { id }, cancellationToken).ConfigureAwait(false);
+
+        public async Task<Showtime?> GetFirstOrDefaultAsync(Expression<Func<Showtime, bool>> predicate, CancellationToken cancellationToken = default)
+            => await _dbSet.FirstOrDefaultAsync(predicate, cancellationToken);
+
+        public async Task<IEnumerable<Showtime>> FindAsync(Expression<Func<Showtime, bool>> predicate, CancellationToken cancellationToken = default)
+            => await _dbSet.Where(predicate).ToListAsync(cancellationToken);
+
+        public async Task<bool> AnyAsync(Expression<Func<Showtime, bool>> predicate, CancellationToken cancellationToken = default)
+            => await _dbSet.AnyAsync(predicate, cancellationToken).ConfigureAwait(false);
+
+        public async Task<int> CountAsync(Expression<Func<Showtime, bool>>? predicate = null, CancellationToken cancellationToken = default)
+            => predicate == null ? await _dbSet.CountAsync(cancellationToken)
+                                 : await _dbSet.CountAsync(predicate, cancellationToken);
+
+        public async Task<Showtime?> FindByKeysAsync(object[] keys, CancellationToken cancellationToken = default)
+            => await _dbSet.FindAsync(keys, cancellationToken).ConfigureAwait(false);
+
+        public async Task AddAsync(Showtime entity, CancellationToken cancellationToken = default)
+            => await _dbSet.AddAsync(entity, cancellationToken);
+
+        public Task AddRangeAsync(IEnumerable<Showtime> entities, CancellationToken cancellationToken = default)
+            => _dbSet.AddRangeAsync(entities, cancellationToken);
+
+        public Task UpdateAsync(Showtime entity, CancellationToken cancellationToken = default)
+        {
+            _dbSet.Update(entity);
+            return Task.CompletedTask;
+        }
+
+        public Task UpdateRangeAsync(IEnumerable<Showtime> entities, CancellationToken cancellationToken = default)
+        {
+            _dbSet.UpdateRange(entities);
+            return Task.CompletedTask;
+        }
+
+        public Task RemoveAsync(Showtime entity, CancellationToken cancellationToken = default)
+        {
+            _dbSet.Remove(entity);
+            return Task.CompletedTask;
+        }
+
+        public Task RemoveRangeAsync(IEnumerable<Showtime> entities, CancellationToken cancellationToken = default)
+        {
+            _dbSet.RemoveRange(entities);
+            return Task.CompletedTask;
+        }
+
+        #endregion
+
+        #region IAdminShowtimesRepository Implementation
+
+        public async Task<IEnumerable<Showtime>> GetAllWithDetailsAsync(CancellationToken cancellationToken = default)
+            => await _dbSet
+                .Include(st => st.Movie)
+                .Include(st => st.Cinema)
+                .Include(st => st.Hall)
+                .ToListAsync(cancellationToken);
+
+        public async Task<Showtime?> GetByIdWithDetailsAsync(int showtimeId, CancellationToken cancellationToken = default)
+            => await _dbSet
+                .Include(st => st.Movie)
+                .Include(st => st.Cinema)
+                .Include(st => st.Hall)
+                .FirstOrDefaultAsync(st => st.Id == showtimeId, cancellationToken);
+
+        public async Task<bool> IsOverlappingAsync(int hallId, DateTime startTime, int duration, int? excludeShowtimeId = null, CancellationToken cancellationToken = default)
+        {
+            var endTime = startTime.AddMinutes(duration);
+            var query = _dbSet.Where(st => st.HallId == hallId);
+
+            if (excludeShowtimeId.HasValue)
+                query = query.Where(st => st.Id != excludeShowtimeId.Value);
+
+            return await query.AnyAsync(st => startTime < st.StartTime.AddMinutes(st.Duration) && endTime > st.StartTime, cancellationToken);
+        }
+
+        public async Task<IEnumerable<Showtime>> GetUpcomingShowtimesAsync(int count = 10, CancellationToken cancellationToken = default)
+            => await _dbSet
+                .Where(st => st.StartTime >= DateTime.Now)
+                .OrderBy(st => st.StartTime)
+                .Take(count)
+                .Include(st => st.Movie)
+                .Include(st => st.Cinema)
+                .Include(st => st.Hall)
+                .ToListAsync(cancellationToken);
+
+        public async Task<IEnumerable<Showtime>> GetByMovieAsync(int movieId, CancellationToken cancellationToken = default)
+            => await _dbSet
+                .Where(st => st.MovieId == movieId)
+                .Include(st => st.Cinema)
+                .Include(st => st.Hall)
+                .ToListAsync(cancellationToken);
+
+        public async Task<IEnumerable<Showtime>> GetByCinemaAsync(int cinemaId, CancellationToken cancellationToken = default)
+            => await _dbSet
+                .Where(st => st.CinemaId == cinemaId)
+                .Include(st => st.Movie)
+                .Include(st => st.Hall)
+                .ToListAsync(cancellationToken);
+
+        public async Task UpdateStatusAsync(int showtimeId, ShowtimeStatus status, CancellationToken cancellationToken = default)
+        {
+            var showtime = await GetByIdAsync(showtimeId, cancellationToken);
+            if (showtime == null) return;
+
+            showtime.Status = status;
+            _dbSet.Update(showtime);
+        }
+
+        public async Task UpdatePriceAsync(int showtimeId, decimal newPrice, CancellationToken cancellationToken = default)
+        {
+            var showtime = await GetByIdAsync(showtimeId, cancellationToken);
+            if (showtime == null) return;
+
+            showtime.Price = newPrice;
+            _dbSet.Update(showtime);
+        }
+
+        public async Task DeleteShowtimeAsync(int showtimeId, bool removeBookings = true, CancellationToken cancellationToken = default)
+        {
+            var showtime = await _dbSet
+                .Include(st => st.Bookings)
+                .FirstOrDefaultAsync(st => st.Id == showtimeId, cancellationToken);
+
+            if (showtime == null) return;
+
+            if (removeBookings)
+                _context.Set<Booking>().RemoveRange(showtime.Bookings);
+
+            _dbSet.Remove(showtime);
+        }
+
+        public async Task<IEnumerable<Showtime>> FilterShowtimesAsync(
+            DateTime? from = null,
+            DateTime? to = null,
+            int? movieId = null,
+            int? cinemaId = null,
+            int? hallId = null,
+            ShowtimeStatus? status = null,
             CancellationToken cancellationToken = default)
         {
-            var showtime = new Showtime
-            {
-                MovieId = movieId,
-                CinemaId = cinemaId,
-                StartTime = startTime,
-                TotalSeats = totalSeats,
-                AvailableSeats = totalSeats,
-                Price = price,
-                IsCancelled = false
-            };
+            var query = _dbSet.AsQueryable();
 
-            await _context.Showtimes.AddAsync(showtime, cancellationToken).ConfigureAwait(false);
-            return showtime; // Commit handled by UnitOfWork
+            if (from.HasValue) query = query.Where(st => st.StartTime >= from.Value);
+            if (to.HasValue) query = query.Where(st => st.StartTime <= to.Value);
+            if (movieId.HasValue) query = query.Where(st => st.MovieId == movieId.Value);
+            if (cinemaId.HasValue) query = query.Where(st => st.CinemaId == cinemaId.Value);
+            if (hallId.HasValue) query = query.Where(st => st.HallId == hallId.Value);
+            if (status.HasValue) query = query.Where(st => st.Status == status.Value);
+
+            return await query
+                .Include(st => st.Movie)
+                .Include(st => st.Cinema)
+                .Include(st => st.Hall)
+                .ToListAsync(cancellationToken);
         }
 
-        public async Task<bool> CancelShowtimeAsync(
-            int showtimeId, string reason, CancellationToken cancellationToken = default)
-        {
-            var showtime = await _context.Showtimes
-                .FirstOrDefaultAsync(s => s.Id == showtimeId, cancellationToken)
-                .ConfigureAwait(false);
+        public async Task<IEnumerable<Showtime>> SearchShowtimesAsync(string queryStr, CancellationToken cancellationToken = default)
+            => await _dbSet
+                .Include(st => st.Movie)
+                .Include(st => st.Cinema)
+                .Include(st => st.Hall)
+                .Where(st =>
+                    st.Movie.Title.Contains(queryStr) ||
+                    st.Cinema.Name.Contains(queryStr) ||
+                    st.Hall.Name.Contains(queryStr))
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
 
-            if (showtime == null) return false;
-
-            showtime.IsCancelled = true;
-            showtime.CancellationReason = reason;
-            _context.Showtimes.Update(showtime);
-            return true;
-        }
-
-        public async Task<bool> UpdateShowtimeDetailsAsync(
-            int showtimeId, DateTime? newStartTime = null, decimal? newPrice = null,
-            int? updatedSeats = null, CancellationToken cancellationToken = default)
-        {
-            var showtime = await _context.Showtimes
-                .FirstOrDefaultAsync(s => s.Id == showtimeId, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (showtime == null) return false;
-
-            if (newStartTime.HasValue) showtime.StartTime = newStartTime.Value;
-            if (newPrice.HasValue) showtime.Price = newPrice.Value;
-            if (updatedSeats.HasValue)
-            {
-                var seatDiff = updatedSeats.Value - showtime.TotalSeats;
-                showtime.TotalSeats = updatedSeats.Value;
-                showtime.AvailableSeats += seatDiff;
-            }
-
-            _context.Showtimes.Update(showtime);
-            return true;
-        }
-
-        public async Task<(IEnumerable<Showtime> Showtimes, int TotalCount)> GetPagedShowtimesAsync(
-            int pageIndex, int pageSize, string? searchTerm = null, int? movieId = null,
-            int? cinemaId = null, DateTime? date = null, CancellationToken cancellationToken = default)
-        {
-            var query = _context.Showtimes
-                .AsNoTracking()
-                .Include(s => s.Movie)
-                .Include(s => s.Cinema)
-                .AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(searchTerm))
-                query = query.Where(s => s.Movie.Title.Contains(searchTerm) ||
-                                         s.Cinema.Name.Contains(searchTerm));
-
-            if (movieId.HasValue) query = query.Where(s => s.MovieId == movieId.Value);
-            if (cinemaId.HasValue) query = query.Where(s => s.CinemaId == cinemaId.Value);
-            if (date.HasValue) query = query.Where(s => s.StartTime.Date == date.Value.Date);
-
-            var total = await query.CountAsync(cancellationToken).ConfigureAwait(false);
-            var items = await query.OrderByDescending(s => s.StartTime)
-                                   .Skip(pageIndex * pageSize)
-                                   .Take(pageSize)
-                                   .ToListAsync(cancellationToken)
-                                   .ConfigureAwait(false);
-
-            return (items, total);
-        }
-
-        public async Task<(int SoldSeats, decimal Revenue)> GetShowtimeStatsAsync(
-            int showtimeId, CancellationToken cancellationToken = default)
-        {
-            var bookings = await _context.Bookings
-                .AsNoTracking()
-                .Where(b => b.ShowtimeId == showtimeId)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
-
-            var soldSeats = bookings.Sum(b => b.BookingSeats);
-            var revenue = bookings.Sum(b => b.TotalPrice);
-
-            return (soldSeats, revenue);
-        }
-
-        public async Task<double> GetMovieOccupancyRateAsync(
-            int movieId, CancellationToken cancellationToken = default)
-        {
-            var showtimes = await _context.Showtimes
-                .AsNoTracking()
-                .Where(s => s.MovieId == movieId && !s.IsDeleted)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
-
-            if (!showtimes.Any()) return 0;
-
-            var totalSeats = showtimes.Sum(s => s.TotalSeats);
-            var bookedSeats = totalSeats - showtimes.Sum(s => s.AvailableSeats);
-
-            return totalSeats == 0 ? 0 : (double)bookedSeats / totalSeats * 100;
-        }
+        #endregion
     }
 }

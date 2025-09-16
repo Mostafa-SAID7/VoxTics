@@ -33,6 +33,10 @@ namespace VoxTics.Repositories
             _cache = cache;
         }
 
+        public CinemasRepository(MovieDbContext context) : base(context)
+        {
+        }
+
         public async Task<IEnumerable<Cinema>> GetActiveCinemasAsync(
             bool useCache = true,
             CancellationToken cancellationToken = default)

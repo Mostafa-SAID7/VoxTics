@@ -1,131 +1,60 @@
-﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using VoxTics.Areas.Identity.Models.Entities;
-using VoxTics.Data.UoW;
+﻿using VoxTics.Models.Enums;
 using VoxTics.Models.ViewModels.Booking;
 using VoxTics.Repositories.IRepositories;
-using VoxTics.Services.Interfaces;
-using VoxTics.Helpers;
+using VoxTics.Services.IServices;
 
-namespace VoxTics.Services.Implementations
+namespace VoxTics.Services
 {
-    /// <summary>
-    /// Concrete implementation of IBookingsService.
-    /// Handles user-facing booking operations and enforces domain rules.
-    /// </summary>
-    public class BookingsService : IBookingsService
+    public class BookingService : IBookingService
     {
-        private readonly IBookingsRepository _bookingsRepository;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IBookingsRepository _bookingsRepo;
 
-        public BookingsService(IBookingsRepository bookingsRepository, IUnitOfWork unitOfWork)
+        public BookingService(IBookingsRepository bookingsRepo)
         {
-            _bookingsRepository = bookingsRepository ?? throw new ArgumentNullException(nameof(bookingsRepository));
-            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            _bookingsRepo = bookingsRepo;
         }
 
-        public async Task<PaginatedList<Booking>> GetUserBookingsAsync(
+        public async Task<BookingDetailsVM> CreateBookingAsync(
+            BookingCreateVM model,
             string userId,
-            int pageIndex,
-            int pageSize,
-            string? sortOrder = null,
+            string? couponCode = null,
             CancellationToken cancellationToken = default)
         {
-            var query = _bookingsRepository.Query()
-                .Where(b => b.UserId == userId);
-
-            query = query.ApplySorting(sortOrder, b => b.BookingDate); // QueryableExtensions
-
-            var count = await _bookingsRepository.CountAsync(b => b.UserId == userId, cancellationToken)
-                                                 .ConfigureAwait(false);
-
-            var items = await query.Skip((pageIndex - 1) * pageSize)
-                                   .Take(pageSize)
-                                   .ToListAsyncSafe(cancellationToken); // ToListAsyncSafe is a pattern from QueryableExtensions
-
-            return new PaginatedList<Booking>(items, count, pageIndex, pageSize);
+            return await _bookingsRepo.CreateBookingAsync(model, userId, couponCode, cancellationToken)
+                                      .ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<Booking>> GetUpcomingBookingsAsync(
-            string userId,
-            DateTime currentDate,
-            CancellationToken cancellationToken = default) =>
-            await _bookingsRepository.GetUpcomingBookingsForUserAsync(userId, currentDate, cancellationToken)
-                                     .ConfigureAwait(false);
-
-        public async Task<Booking> CreateBookingAsync(
-            string userId,
-            int showtimeId,
-            IEnumerable<string> seatNumbers,
+        public async Task<BookingDetailsVM?> GetBookingDetailsAsync(
+            string bookingReference,
             CancellationToken cancellationToken = default)
         {
-            if (seatNumbers == null || !seatNumbers.Any())
-                throw new ArgumentException("At least one seat must be selected.", nameof(seatNumbers));
-
-            foreach (var seat in seatNumbers)
-            {
-                ValidationHelpers.ValidateSeatNumber(seat); // existing helper
-                var isBooked = await _bookingsRepository.IsSeatBookedAsync(showtimeId, seat, cancellationToken)
-                                                         .ConfigureAwait(false);
-                if (isBooked)
-                    throw new InvalidOperationException($"Seat {seat} is already booked.");
-            }
-
-            BookingRulesHelper.EnsureBookingLimit(seatNumbers); // NEW helper
-
-            var booking = new Booking
-            {
-                UserId = userId,
-                ShowtimeId = showtimeId,
-                Seats = string.Join(",", seatNumbers),
-                BookingDate = DateTimeExtensions.UtcNowSafe() // existing helper for UTC
-            };
-
-            await _bookingsRepository.AddAsync(booking, cancellationToken).ConfigureAwait(false);
-            await _unitOfWork.CommitAsync(cancellationToken).ConfigureAwait(false);
-
-            return booking;
+            return await _bookingsRepo.GetBookingDetailsAsync(bookingReference, cancellationToken)
+                                      .ConfigureAwait(false);
         }
 
         public async Task<bool> CancelBookingAsync(
-            int bookingId,
-            string userId,
+            string bookingReference,
+            string reason,
+            bool issueRefund = false,
             CancellationToken cancellationToken = default)
         {
-            var booking = await _bookingsRepository.GetFirstOrDefaultAsync(
-                b => b.Id == bookingId && b.UserId == userId, cancellationToken).ConfigureAwait(false);
-
-            if (booking == null) return false;
-
-            if (!BookingRulesHelper.CanCancel(booking)) return false;
-
-            await _bookingsRepository.RemoveAsync(booking, cancellationToken).ConfigureAwait(false);
-            await _unitOfWork.CommitAsync(cancellationToken).ConfigureAwait(false);
-            return true;
+            return await _bookingsRepo.CancelBookingAsync(bookingReference, reason, issueRefund, cancellationToken)
+                                      .ConfigureAwait(false);
         }
 
-        public async Task<bool> CheckInBookingAsync(
-            int bookingId,
-            string userId,
+        public async Task<bool> UpdatePaymentStatusAsync(
+            string bookingReference,
+            PaymentStatus status,
+            DateTime? paymentDate = null,
             CancellationToken cancellationToken = default)
         {
-            var booking = await _bookingsRepository.GetFirstOrDefaultAsync(
-                b => b.Id == bookingId && b.UserId == userId, cancellationToken).ConfigureAwait(false);
-
-            if (booking == null) return false;
-
-            booking.IsCheckedIn = true;
-            await _bookingsRepository.UpdateAsync(booking, cancellationToken).ConfigureAwait(false);
-            await _unitOfWork.CommitAsync(cancellationToken).ConfigureAwait(false);
-            return true;
+            return await _bookingsRepo.UpdatePaymentStatusAsync(bookingReference, status, paymentDate, cancellationToken)
+                                      .ConfigureAwait(false);
         }
 
-        public Task<bool> IsSeatBookedAsync(
-            int showtimeId,
-            string seatNumber,
-            CancellationToken cancellationToken = default) =>
-            _bookingsRepository.IsSeatBookedAsync(showtimeId, seatNumber, cancellationToken);
+        public Task<string?> GetUserBookingsAsync(string userId, int page, int pageSize, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

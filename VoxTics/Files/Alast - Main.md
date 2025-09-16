@@ -7,41 +7,6 @@
 		 logging support for monitoring + 
 		 validation support for data integrity + 
 		 custom exceptions for error handling + 
-/Areas
-├── Admin
-│   ├── Controllers/
-│   │   ├── BookingsController.cs
-│   │   ├── CategoriesController.cs
-│   │   ├── CinemasController.cs
-│   │   ├── HomeController.cs
-│   │   ├── MoviesController.cs
-│   │   └── ShowtimesController.cs
-│   ├── Views/
-│   │   └── Shared/
-│   │       └── Components/
-│   │           └── Movie/
-│   │               ├── Card.cshtml
-│   │               ├── Details.cshtml
-│   │               ├── Form.cshtml
-│   │               └── Table.cshtml
-│   ├── ViewModels/
-│   ├── Services/
-│   │   ├── Interfaces/
-│   │   └── Implementations/
-│   ├── Repositories/
-│   │   ├── Interfaces/
-│   │   └── Implementations/
-│   └── AdminProfiles/
-
-├── Account
-│   ├── Controllers/
-│   ├── Views/
-│   ├── ViewModels/
-│   ├── Services/
-│   │   ├── Interfaces/
-│   │   └── Implementations/
-│   ├── Repositories/
-│   └── IdentityProfiles/
 
 /Controllers
 ├── BookingController.cs
@@ -59,72 +24,91 @@
     ├── IUnitOfWork.cs
     └── UnitOfWork.cs
 
-/Repositories
-├── Interfaces/
-├── Implementations/
+   ├── Repositories/
+    │   ├── Interfaces/
+                IBaseRepository.cs
+    │   │   ├── IBookingsRepository.cs
+    │   │   ├── ICategoriesRepository.cs
+    │   │   ├── ICinemasRepository.cs
+    │   │   ├── IMoviesRepository.cs
+    │   │   ├── IShowtimesRepository.cs
+    │   │   ├── IHomeRepository.cs
+    │   │   
+    │   │
+    │   └──BaseRepository.cs
+    │   ├── BookingsRepository.cs
+    │   ├── CategoriesRepository.cs
+    │   ├── CinemasRepository.cs
+    │   ├── MoviesRepository.cs
+    │   ├── ShowtimesRepository.cs
+    │   ├── HomeRepository.cs
+    
 
-/Services
-├── Interfaces/
-├── Implementations/
+/Services/
+    │   ├── Interfaces/
+    │   │   ├── IBookingService.cs
+    │   │   ├── ICategoryService.cs
+    │   │   ├── ICinemaService.cs
+    │   │   ├── IHomeService.cs
+    │   │   ├── IMovieService.cs
+    │   │   ├── IShowtimeService.cs
+    │   │
+    │   └── Implementations/
+    │       ├── BookingService.cs
+    │       ├── CategoryService.cs
+    │       ├── CinemaService.cs
+    │       ├── HomeService.cs
+    │       ├── MovieService.cs
+    │       ├── PaymentService.cs
+    │       ├── ShowtimeService.cs
 
 /Helpers
-├── Filters/
-│   ├── BookingFilter.cs
-│   ├── CategoryFilter.cs
-│   ├── CinemaFilter.cs
-│   ├── MovieFilter.cs
-│   ├── ShowtimeFilter.cs
-│   └── UserFilter.cs
-├── FilterBase.cs
-├── IFileService.cs
+├── BookingRulesHelper.cs
+├── DateTimeExtensions.cs
+├── EmailTemplateHelper.cs
+├── EnumExtensions.cs
+├── IEmailService.cs
 ├── ImageHelper.cs
 ├── PaginatedList.cs
+├── QueryableExtensions.cs
+├── SmtpEmailSender.cs
+├── SmtpEmailService.cs
+├── SmtpOptions.cs
 ├── PriceFormatter.cs
-├── SearchHelper.cs
-├── ValidationHelpers.cs
-├── EnumExtensions.cs
-├── DateTimeExtensions.cs
-└── IEmailService.cs
+└── ValidationHelpers.cs
 
 /MappingProfiles
-├── BaseProfile.cs
 ├── BookingProfile.cs
 ├── CategoryProfile.cs
 ├── CinemaProfile.cs
 ├── MovieProfile.cs
 ├── ShowtimeProfile.cs
-└── IdentityProfiles/
 
-/Models
-├── Entities/
-│   ├── Actor.cs
-│   ├── BaseEntity.cs
-│   ├── Booking.cs
-│   ├── BookingSeat.cs
-│   ├── Category.cs
-│   ├── Cinema.cs
-│   ├── Hall.cs
-│   ├── Movie.cs
-│   ├── MovieActor.cs
-│   ├── MovieCategory.cs
-│   ├── MovieImg.cs
-│   ├── Seat.cs
-│   ├── Showtime.cs
-│   └── SocialMediaLink.cs
+
+VoxTics/Models/Entities/
+     ├─ Actor.cs
+     ├─ BaseEntity.cs                 
+     ├─ Booking.cs
+     ├─ BookingSeat.cs
+     ├─ Cart.cs
+     ├─ CartItem.cs
+     ├─ Category.cs
+     ├─ Cinema.cs
+     ├─ Hall.cs
+     ├─ Movie.cs
+     ├─ MovieActor.cs
+     ├─ MovieCategory.cs
+     ├─ MovieImg.cs
+     ├─ Notification.cs
+     ├─ Payment.cs
+     ├─ Seat.cs
+     ├─ Showtime.cs
+     ├─ SocialMediaLink
+     └─ UserMovieWatchlist
+     └─ Watchlist.cs
+        WatchlistItem.cs
 ├── Enums/
 │   ├── Notifications/NotificationType.cs
-│   ├── Sorting/
-│   │   ├── ActorSortBy.cs
-│   │   ├── BookingSortBy.cs
-│   │   ├── CategorySortBy.cs
-│   │   ├── CinemaSortBy.cs
-│   │   ├── MovieSortBy.cs
-│   │   ├── ShowtimeSortBy.cs
-│   │   ├── SortOrder.cs
-│   │   └── UserSortBy.cs
-│   ├── TimeRange/
-│   │   ├── TimeOfDayRange.cs
-│   │   └── TimeRange.cs
 │   ├── BookingStatus.cs
 │   ├── MovieStatus.cs
 │   ├── PaymentStatus.cs
@@ -132,8 +116,6 @@
 │   └── ShowtimeStatus.cs
 └── ViewModels/
     ├── ActorVM.cs
-    ├── PaginatedFilterVM.cs
-    ├── BaseVM.cs
     ├── BookingVM.cs
     ├── CategoryVM.cs
     ├── CinemaVM.cs

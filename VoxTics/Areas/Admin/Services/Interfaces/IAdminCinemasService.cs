@@ -1,68 +1,70 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using VoxTics.Areas.Identity.Models.Entities;
-using VoxTics.Helpers;
+using VoxTics.Areas.Admin.ViewModels.Cinema;
+using VoxTics.Models.Entities;
 
-namespace VoxTics.Areas.Admin.Services.Interfaces
+namespace VoxTics.Services.Interfaces
 {
     /// <summary>
-    /// Provides full CRUD and management functionality for cinemas in the admin area.
+    /// Service interface for admin-side cinema management.
+    /// Handles business logic, validation, and interaction with the repository.
     /// </summary>
-    public interface IAdminCinemasService
+    public interface IAdminCinemaService
     {
         /// <summary>
-        /// Gets a paginated list of cinemas with optional search and sorting.
+        /// Retrieves paged cinemas with optional search, city filter, and status filter.
         /// </summary>
-        Task<PaginatedList<Cinema>> GetPagedCinemasAsync(
+        Task<(IEnumerable<Cinema> Cinemas, int TotalCount)> GetPagedCinemasAsync(
             int pageIndex,
             int pageSize,
             string? searchTerm = null,
-            string? sortOrder = null,
+            string? city = null,
+            bool? isActive = null,
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Creates a new cinema and persists it to the database.
+        /// Retrieves a single cinema by its ID.
         /// </summary>
-        Task<Cinema> CreateCinemaAsync(
-            Cinema cinema,
-            CancellationToken cancellationToken = default);
+        Task<Cinema?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Updates the details of an existing cinema.
+        /// Adds a new cinema.
+        /// Returns list of validation errors if any, empty list if successful.
         /// </summary>
-        Task<bool> UpdateCinemaAsync(
-            Cinema cinema,
-            CancellationToken cancellationToken = default);
+        Task<List<string>> AddCinemaAsync(Cinema cinema, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Deletes a cinema by ID. Optionally handles related showtimes or bookings.
+        /// Updates an existing cinema.
+        /// Returns list of validation errors if any, empty list if successful.
         /// </summary>
-        Task<bool> DeleteCinemaAsync(
+        Task<List<string>> UpdateCinemaAsync(Cinema cinema, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Activates or deactivates a cinema.
+        /// Returns true if operation succeeded.
+        /// </summary>
+        Task<bool> SetCinemaStatusAsync(int cinemaId, bool isActive, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Deletes a cinema (hard delete).
+        /// Returns true if operation succeeded.
+        /// </summary>
+        Task<bool> DeleteCinemaAsync(int cinemaId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Retrieves statistics for a specific cinema.
+        /// </summary>
+        Task<(int TotalShowtimes, int UpcomingMovies, decimal Revenue)> GetCinemaStatsAsync(
             int cinemaId,
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Retrieves a cinema by ID for editing or detail view.
+        /// Retrieves audit info for a cinema (created, updated, last showtime).
         /// </summary>
-        Task<Cinema?> GetCinemaByIdAsync(
+        Task<(DateTime CreatedAt, DateTime? UpdatedAt, DateTime? LastShowtime)> GetCinemaAuditInfoAsync(
             int cinemaId,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Toggles the active status of a cinema (enable/disable in catalog).
-        /// </summary>
-        Task<bool> ToggleCinemaStatusAsync(
-            int cinemaId,
-            bool isActive,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Checks if a cinema name already exists (to avoid duplicates).
-        /// </summary>
-        Task<bool> CinemaNameExistsAsync(
-            string name,
-            int? excludeId = null,
             CancellationToken cancellationToken = default);
     }
 }

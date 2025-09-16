@@ -117,5 +117,22 @@ namespace VoxTics.Repositories
                 return false;
             }
         }
+
+        public async Task<bool> HasShowtimesForCinemaAsync(int cinemaId, CancellationToken cancellationToken = default)
+        {
+            if (cinemaId <= 0)
+                throw new ArgumentException("Cinema ID must be greater than zero.", nameof(cinemaId));
+
+            // Checks if any showtimes exist for the given cinema
+            return await _context.Showtimes
+                .AsNoTracking()
+                .AnyAsync(s => s.CinemaId == cinemaId, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        public Task<IEnumerable<Showtime>> GetByCinemaAndDateRangeAsync(int cinemaId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

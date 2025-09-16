@@ -11,19 +11,14 @@ namespace VoxTics.Repositories
 {
     public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
-        private readonly MovieDbContext _context;
+        // Make _context protected so derived repositories can access it
+        protected readonly MovieDbContext _context;
         private readonly DbSet<T> _dbSet;
-        private DbContext context;
 
         public BaseRepository(MovieDbContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _dbSet = _context.Set<T>();
-        }
-
-        public BaseRepository(DbContext context)
-        {
-            this.context = context;
         }
 
         #region Querying
@@ -72,14 +67,6 @@ namespace VoxTics.Repositories
                 ? await _dbSet.CountAsync(cancellationToken).ConfigureAwait(false)
                 : await _dbSet.CountAsync(predicate, cancellationToken).ConfigureAwait(false);
 
-        public async Task<T?> FindByKeysAsync(
-            object[] keys,
-            CancellationToken cancellationToken = default)
-        {
-            if (keys == null || keys.Length == 0) throw new ArgumentException("Keys must not be null or empty.", nameof(keys));
-            return await _dbSet.FindAsync(keys, cancellationToken).ConfigureAwait(false);
-        }
-
         #endregion
 
         #region Commands (CRUD)
@@ -99,26 +86,41 @@ namespace VoxTics.Repositories
         public async Task UpdateAsync(T entity, CancellationToken cancellationToken = default)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
-            await Task.Run(() => _dbSet.Update(entity), cancellationToken).ConfigureAwait(false);
+            _dbSet.Update(entity);
+            await Task.CompletedTask;
         }
 
         public async Task UpdateRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
         {
             if (entities == null) throw new ArgumentNullException(nameof(entities));
-            await Task.Run(() => _dbSet.UpdateRange(entities), cancellationToken).ConfigureAwait(false);
+            _dbSet.UpdateRange(entities);
+            await Task.CompletedTask;
         }
 
         public async Task RemoveAsync(T entity, CancellationToken cancellationToken = default)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
-            await Task.Run(() => _dbSet.Remove(entity), cancellationToken).ConfigureAwait(false);
+            _dbSet.Remove(entity);
+            await Task.CompletedTask;
         }
 
         public async Task RemoveRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
         {
             if (entities == null) throw new ArgumentNullException(nameof(entities));
-            await Task.Run(() => _dbSet.RemoveRange(entities), cancellationToken).ConfigureAwait(false);
+            _dbSet.RemoveRange(entities);
+            await Task.CompletedTask;
         }
+
+        public async Task<T?> FindByKeysAsync(object[] keys, CancellationToken cancellationToken = default)
+        {
+            if (keys == null || keys.Length == 0)
+                throw new ArgumentException("Keys must not be null or empty.", nameof(keys));
+
+            // DbSet.FindAsync accepts an array of key values and a cancellation token
+            var entity = await _dbSet.FindAsync(keys, cancellationToken).ConfigureAwait(false);
+            return entity;
+        }
+
 
         #endregion
     }

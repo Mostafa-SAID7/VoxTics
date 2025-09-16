@@ -1,18 +1,8 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using VoxTics.Areas.Admin.ViewModels;
-using VoxTics.Areas.Admin.ViewModels.Movie;
+using Microsoft.AspNetCore.Mvc;
 using VoxTics.Models.Entities;
-using VoxTics.Repositories.IRepositories;
 using VoxTics.Services.Interfaces;
 
 namespace VoxTics.Areas.Admin.Controllers
@@ -20,63 +10,108 @@ namespace VoxTics.Areas.Admin.Controllers
     [Area("Admin")]
     public class MoviesController : Controller
     {
-        private readonly IMovieService _service;
-        public MoviesController(IMovieService service) => _service = service;
+        private readonly IAdminMovieService _movieService;
 
-        public async Task<IActionResult> Index()
+        public MoviesController(IAdminMovieService movieService)
         {
-            var movies = await _service.GetAllAsync();
-            return View(movies);
+            _movieService = movieService;
         }
 
+        #region List / Paging
+
+        public async Task<IActionResult> Index(string? searchTerm, int pageIndex = 1, int pageSize = 10, CancellationToken cancellationToken = default)
+        {
+            var (movies, totalCount) = await _movieService.GetPagedMoviesAsync(pageIndex - 1, pageSize, searchTerm, cancellationToken);
+
+            ViewBag.TotalCount = totalCount;
+            ViewBag.PageIndex = pageIndex;
+            ViewBag.PageSize = pageSize;
+
+            return View(movies.ToList());
+        }
+
+        #endregion
+
+        #region Details
+
+        public async Task<IActionResult> Details(int id, CancellationToken cancellationToken)
+        {
+            var movie = await _movieService.GetByIdAsync(id, cancellationToken);
+            if (movie == null) return NotFound();
+
+            return View(movie);
+        }
+
+        #endregion
+
+        #region Create
+
+        [HttpGet]
         public IActionResult Create() => View();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Movie movie)
+        public async Task<IActionResult> Create(Movie movie, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid) return View(movie);
+            if (!ModelState.IsValid)
+                return View(movie);
 
-            var existing = await _service.GetByTitleAsync(movie.Title);
-            if (existing != null)
+            var errors = await _movieService.AddMovieAsync(movie, cancellationToken);
+            if (errors.Any())
             {
-                ModelState.AddModelError("Title", "Movie already exists.");
+                foreach (var err in errors) ModelState.AddModelError(string.Empty, err);
                 return View(movie);
             }
 
-            await _service.CreateAsync(movie);
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Edit(int id)
+        #endregion
+
+        #region Edit
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id, CancellationToken cancellationToken)
         {
-            var movie = await _service.GetByIdAsync(id);
+            var movie = await _movieService.GetByIdAsync(id, cancellationToken);
             if (movie == null) return NotFound();
+
             return View(movie);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Movie movie)
+        public async Task<IActionResult> Edit(int id, Movie movie, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid) return View(movie);
-            await _service.UpdateAsync(movie);
+            if (id != movie.Id) return BadRequest();
+
+            if (!ModelState.IsValid)
+                return View(movie);
+
+            var errors = await _movieService.UpdateMovieAsync(movie, cancellationToken);
+            if (errors.Any())
+            {
+                foreach (var err in errors) ModelState.AddModelError(string.Empty, err);
+                return View(movie);
+            }
+
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Delete(int id)
-        {
-            var movie = await _service.GetByIdAsync(id);
-            if (movie == null) return NotFound();
-            return View(movie);
-        }
+        #endregion
 
-        [HttpPost, ActionName("Delete")]
+        #region Delete
+
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {
-            await _service.DeleteAsync(id);
+            var result = await _movieService.DeleteMovieAsync(id, cancellationToken);
+            if (!result) return BadRequest("Movie not found or could not be deleted.");
+
             return RedirectToAction(nameof(Index));
         }
+
+        #endregion
     }
 }

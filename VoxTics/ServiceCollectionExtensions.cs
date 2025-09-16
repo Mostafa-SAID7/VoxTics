@@ -91,6 +91,7 @@ namespace VoxTics
             {
                 Assembly.GetExecutingAssembly(),
                 typeof(Data.MovieDbContext).Assembly,
+
                 // add more known assemblies if your profiles live in other projects:
                 // typeof(YourProfileType).Assembly
             }.Distinct().ToArray();

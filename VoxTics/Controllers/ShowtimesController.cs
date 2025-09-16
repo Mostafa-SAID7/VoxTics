@@ -1,29 +1,49 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using VoxTics.Models.ViewModels;
-using VoxTics.Repositories.IRepositories;
 using VoxTics.Services.Interfaces;
 
 namespace VoxTics.Controllers
 {
     public class ShowtimesController : Controller
     {
-        private readonly IShowtimeService _service;
-        public ShowtimesController(IShowtimeService service) => _service = service;
+        private readonly IShowtimeService _showtimeService;
 
-        public async Task<IActionResult> Index()
+        public ShowtimesController(IShowtimeService showtimeService)
         {
-            var showtimes = await _service.GetWithDetailsAsync();
+            _showtimeService = showtimeService;
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> Upcoming(int movieId, DateTime? fromDate = null, CancellationToken cancellationToken = default)
+        {
+            var date = fromDate ?? DateTime.UtcNow;
+            var showtimes = await _showtimeService.GetUpcomingShowtimesAsync(movieId, date, cancellationToken);
             return View(showtimes);
         }
 
-        public async Task<IActionResult> Details(int id)
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ByCinema(int cinemaId, DateTime? fromDate = null, CancellationToken cancellationToken = default)
         {
-            var showtime = await _service.GetWithMovieAsync(id);
+            var date = fromDate ?? DateTime.UtcNow;
+            var showtimes = await _showtimeService.GetAvailableShowtimesForCinemaAsync(cinemaId, date, cancellationToken);
+            return View(showtimes);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> Details(int id, CancellationToken cancellationToken)
+        {
+            var showtime = await _showtimeService.GetShowtimeByIdAsync(id, cancellationToken);
             if (showtime == null) return NotFound();
+
+            var availableSeats = await _showtimeService.GetAvailableSeatsAsync(id, cancellationToken);
+            ViewBag.AvailableSeats = availableSeats;
+
             return View(showtime);
         }
     }

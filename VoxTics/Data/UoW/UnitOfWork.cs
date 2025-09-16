@@ -49,7 +49,8 @@ namespace VoxTics.Data.UoW
         }
 
         #region Repository Accessors
-        
+        public IActorsRepository Actors { get; }
+  
         public IBookingsRepository Bookings => _bookings ??= new BookingsRepository(_context);
         public ICategoriesRepository Categories => _categories ??= new CategoriesRepository(_context);
         public ICinemasRepository Cinemas => _cinemas ??= new CinemasRepository(_context);

@@ -10,7 +10,7 @@ namespace VoxTics.Areas.Identity.Repositories
     public class ApplicationUsersRepository : BaseRepository<ApplicationUser>, IApplicationUsersRepository
     {
 
-        public ApplicationUsersRepository(MovieDbContext context):base(context) {}
+        public ApplicationUsersRepository(MovieDbContext context) : base(context) { }
 
         public async Task<ApplicationUser> GetByIdAsync(string id)
         {

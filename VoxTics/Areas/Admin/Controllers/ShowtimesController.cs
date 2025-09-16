@@ -1,16 +1,8 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using VoxTics.Areas.Admin.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 using VoxTics.Models.Entities;
-using VoxTics.Models.Enums;
-using VoxTics.Models.ViewModels;
-using VoxTics.Repositories.IRepositories;
 using VoxTics.Services.Interfaces;
 
 namespace VoxTics.Areas.Admin.Controllers
@@ -18,57 +10,108 @@ namespace VoxTics.Areas.Admin.Controllers
     [Area("Admin")]
     public class ShowtimesController : Controller
     {
-        private readonly IShowtimeService _service;
-        public ShowtimesController(IShowtimeService service) => _service = service;
+        private readonly IAdminShowtimeService _showtimeService;
 
-        public async Task<IActionResult> Index()
+        public ShowtimesController(IAdminShowtimeService showtimeService)
         {
-            var showtimes = await _service.GetWithDetailsAsync();
-            return View(showtimes);
+            _showtimeService = showtimeService;
         }
 
+        #region List / Paging
+
+        public async Task<IActionResult> Index(string? searchTerm, int pageIndex = 1, int pageSize = 10, CancellationToken cancellationToken = default)
+        {
+            var (showtimes, totalCount) = await _showtimeService.GetPagedShowtimesAsync(pageIndex - 1, pageSize, searchTerm, cancellationToken);
+
+            ViewBag.TotalCount = totalCount;
+            ViewBag.PageIndex = pageIndex;
+            ViewBag.PageSize = pageSize;
+
+            return View(showtimes.ToList());
+        }
+
+        #endregion
+
+        #region Details
+
+        public async Task<IActionResult> Details(int id, CancellationToken cancellationToken)
+        {
+            var showtime = await _showtimeService.GetByIdAsync(id, cancellationToken);
+            if (showtime == null) return NotFound();
+
+            return View(showtime);
+        }
+
+        #endregion
+
+        #region Create
+
+        [HttpGet]
         public IActionResult Create() => View();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Showtime showtime)
+        public async Task<IActionResult> Create(Showtime showtime, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid) return View(showtime);
+            if (!ModelState.IsValid)
+                return View(showtime);
 
-            await _service.CreateAsync(showtime);
+            var errors = await _showtimeService.AddShowtimeAsync(showtime, cancellationToken);
+            if (errors.Any())
+            {
+                foreach (var err in errors) ModelState.AddModelError(string.Empty, err);
+                return View(showtime);
+            }
+
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Edit(int id)
+        #endregion
+
+        #region Edit
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id, CancellationToken cancellationToken)
         {
-            var showtime = await _service.GetByIdAsync(id);
+            var showtime = await _showtimeService.GetByIdAsync(id, cancellationToken);
             if (showtime == null) return NotFound();
+
             return View(showtime);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Showtime showtime)
+        public async Task<IActionResult> Edit(int id, Showtime showtime, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid) return View(showtime);
+            if (id != showtime.Id) return BadRequest();
 
-            await _service.UpdateAsync(showtime);
+            if (!ModelState.IsValid)
+                return View(showtime);
+
+            var errors = await _showtimeService.UpdateShowtimeAsync(showtime, cancellationToken);
+            if (errors.Any())
+            {
+                foreach (var err in errors) ModelState.AddModelError(string.Empty, err);
+                return View(showtime);
+            }
+
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Delete(int id)
-        {
-            var showtime = await _service.GetByIdAsync(id);
-            if (showtime == null) return NotFound();
-            return View(showtime);
-        }
+        #endregion
 
-        [HttpPost, ActionName("Delete")]
+        #region Delete
+
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {
-            await _service.DeleteAsync(id);
+            var result = await _showtimeService.DeleteShowtimeAsync(id, cancellationToken);
+            if (!result) return BadRequest("Showtime not found or could not be deleted.");
+
             return RedirectToAction(nameof(Index));
         }
+
+        #endregion
     }
 }

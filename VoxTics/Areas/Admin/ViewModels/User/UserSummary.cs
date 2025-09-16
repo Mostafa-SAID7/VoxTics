@@ -1,6 +1,6 @@
 ﻿using VoxTics.Areas.Identity.Models.Enums;
 
-namespace VoxTics.Areas.Admin.ViewModels.Admin
+namespace VoxTics.Areas.Admin.ViewModels.User
 {
     public class UserSummary
     {

@@ -8,5 +8,6 @@ namespace VoxTics.Areas.Identity.Repositories.IRepositories
         Task<ApplicationUser> GetUserByEmailAsync(string email);
         Task<bool> IsEmailUniqueAsync(string email, string excludeUserId = null);
         Task<IEnumerable<ApplicationUser>> GetUsersWithBookingsAsync();
+        Task<ApplicationUser> GetByIdAsync(string userId);
     }
 }

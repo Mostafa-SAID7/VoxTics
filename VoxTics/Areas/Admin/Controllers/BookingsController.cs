@@ -1,66 +1,66 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using VoxTics.Areas.Admin.ViewModels;
-using VoxTics.Models.Entities;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using VoxTics.Services.Interfaces;
+using VoxTics.Models.Entities;
 
 namespace VoxTics.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Route("Admin/[controller]/[action]")]
     public class BookingsController : Controller
     {
-        private readonly IBookingService _service;
-        public BookingsController(IBookingService service) => _service = service;
+        private readonly IAdminBookingService _bookingService;
 
-        public async Task<IActionResult> Index()
+        public BookingsController(IAdminBookingService bookingService)
         {
-            var bookings = await _service.GetAllAsync().ConfigureAwait(false);
+            _bookingService = bookingService ?? throw new ArgumentNullException(nameof(bookingService));
+        }
+
+        // GET: Admin/Bookings/Index?pageIndex=0&pageSize=10&search=
+        public async Task<IActionResult> Index(int pageIndex = 0, int pageSize = 10, string? search = null, CancellationToken cancellationToken = default)
+        {
+            var (bookings, totalCount) = await _bookingService
+                .GetPagedBookingsAsync(pageIndex, pageSize, search, cancellationToken)
+                .ConfigureAwait(false);
+
+            ViewBag.PageIndex = pageIndex;
+            ViewBag.PageSize = pageSize;
+            ViewBag.TotalCount = totalCount;
+            ViewBag.Search = search;
+
             return View(bookings);
         }
-        public async Task<IActionResult> Details(int id)
+
+        // GET: Admin/Bookings/Stats
+        public async Task<IActionResult> Stats(CancellationToken cancellationToken = default)
         {
-            var booking = await _service.GetByIdAsync(id).ConfigureAwait(false);
-            if (booking == null) return NotFound();
-            return View(booking);
-        }
-        [HttpGet]
-        public async Task<IActionResult> Edit(int id)
-        {
-            var booking = await _service.GetByIdAsync(id).ConfigureAwait(false);
-            if (booking == null) return NotFound();
-            return View(booking);
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Booking booking)
-        {
-            if (!ModelState.IsValid) return View(booking);
-            await _service.UpdateAsync(booking).ConfigureAwait(false);
-            return RedirectToAction(nameof(Index));
+            var (total, today, revenue) = await _bookingService
+                .GetBookingStatsAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            return Json(new
+            {
+                TotalBookings = total,
+                TodayBookings = today,
+                TotalRevenue = revenue
+            });
         }
 
+        // POST: Admin/Bookings/ForceCancel/5
         [HttpPost]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> ForceCancel(int bookingId, CancellationToken cancellationToken = default)
         {
-            await _service.DeleteAsync(id).ConfigureAwait(false);
-            return RedirectToAction(nameof(Index));
-        }
+            if (bookingId <= 0) return BadRequest("Invalid booking ID.");
 
-        [HttpPost]
-        public async Task<IActionResult> UpdateStatus(int id, BookingStatus status)
-        {
-            await _service.UpdateStatusAsync(id, status).ConfigureAwait(false);
-            return RedirectToAction(nameof(Index));
-        }
+            var result = await _bookingService
+                .ForceCancelBookingAsync(bookingId, cancellationToken)
+                .ConfigureAwait(false);
 
-        [HttpPost]
-        public async Task<IActionResult> Cancel(int id, string reason)
-        {
-            await _service.CancelAsync(id, reason).ConfigureAwait(false);
-            return RedirectToAction(nameof(Index));
+            if (!result) return NotFound($"Booking with ID {bookingId} not found.");
+
+            return Ok(new { Message = "Booking successfully cancelled." });
         }
     }
-
 }

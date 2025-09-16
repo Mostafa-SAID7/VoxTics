@@ -32,15 +32,6 @@ namespace VoxTics.Areas.Identity.Controllers
 
             var model = new ManageProfileVM
             {
-                PersonalInfo = new PersonalInfoVM
-                {
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Email = user.Email,
-                    DateOfBirth = user.DateOfBirth,
-                    PhoneNumber = user.PhoneNumber
-                },
-                CurrentProfilePicture = user.ProfilePicture
             };
 
             return View(model);
@@ -66,7 +57,6 @@ namespace VoxTics.Areas.Identity.Controllers
 
             // Reload current profile picture if update fails
             var user = await _accountService.GetUserProfileAsync(_userManager.GetUserId(User));
-            model.CurrentProfilePicture = user.ProfilePicture;
 
             return View(model);
         }

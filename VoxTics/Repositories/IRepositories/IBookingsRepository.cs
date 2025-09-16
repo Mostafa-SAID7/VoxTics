@@ -1,92 +1,147 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using VoxTics.Areas.Identity.Models.Entities;
-using VoxTics.Repositories.IRepositories;
+﻿using VoxTics.Helpers;
+using VoxTics.Models.Entities;
+using VoxTics.Models.ViewModels.Booking;
 
 namespace VoxTics.Repositories.IRepositories
 {
     /// <summary>
-    /// Specialized repository interface for managing movie bookings.
-    /// Extends IBaseRepository for standard CRUD and adds domain-specific operations.
+    /// Advanced repository interface for managing cinema bookings.
+    /// Provides transactional operations, validation, analytics, and reporting.
     /// </summary>
     public interface IBookingsRepository : IBaseRepository<Booking>
     {
-        #region Advanced Queries
+        #region Booking Creation & Validation
 
         /// <summary>
-        /// Gets all bookings for a specific user.
+        /// Validates seat availability before creating a booking.
         /// </summary>
-        /// <param name="userId">The user’s ID.</param>
-        /// <param name="cancellationToken">Cancellation token for async operation.</param>
-        Task<IEnumerable<Booking>> GetBookingsByUserAsync(
-            string userId,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Gets all bookings for a specific showtime.
-        /// </summary>
-        /// <param name="showtimeId">The showtime ID.</param>
-        Task<IEnumerable<Booking>> GetBookingsByShowtimeAsync(
+        Task<bool> AreSeatsAvailableAsync(
             int showtimeId,
+            IEnumerable<int> seatIds,
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Checks if a seat is already booked for a showtime.
+        /// Calculates the price including discounts, promotions, and taxes.
         /// </summary>
-        /// <param name="showtimeId">The showtime ID.</param>
-        /// <param name="seatNumber">The seat number to check.</param>
-        Task<bool> IsSeatBookedAsync(
+        Task<decimal> CalculateTotalPriceAsync(
             int showtimeId,
-            string seatNumber,
+            int numberOfTickets,
+            string? couponCode = null,
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Gets upcoming bookings for a user (future showtimes only).
+        /// Creates a new booking transactionally.
         /// </summary>
-        Task<IEnumerable<Booking>> GetUpcomingBookingsForUserAsync(
+        Task<BookingDetailsVM> CreateBookingAsync(
+            BookingCreateVM model,
             string userId,
-            DateTime currentDate,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Retrieves paginated bookings with optional filtering.
-        /// </summary>
-        /// <param name="pageIndex">Zero-based page index.</param>
-        /// <param name="pageSize">Number of bookings per page.</param>
-        /// <param name="searchTerm">Optional filter by movie title or user.</param>
-        Task<(IEnumerable<Booking> Bookings, int TotalCount)> GetPagedBookingsAsync(
-            int pageIndex,
-            int pageSize,
-            string? searchTerm = null,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Gets summary statistics for bookings (e.g., total, today, this week).
-        /// </summary>
-        Task<(int TotalBookings, int TodayBookings, int WeeklyBookings)> GetBookingSummaryAsync(
+            string? couponCode = null,
             CancellationToken cancellationToken = default);
 
         #endregion
 
-        #region Commands (Domain-Specific)
+        #region Retrieval
 
         /// <summary>
-        /// Cancels a booking by its ID.
+        /// Gets a paginated list of a user's bookings with search & sorting.
         /// </summary>
-        /// <param name="bookingId">The booking ID to cancel.</param>
-        /// <param name="cancellationToken">Cancellation token for async operation.</param>
-        Task<bool> CancelBookingAsync(
-            int bookingId,
+        Task<PaginatedList<BookingSummaryVM>> GetUserBookingsAsync(
+            string userId,
+            int pageIndex,
+            int pageSize,
+            string? search = null,
+            string? sortColumn = "ShowTime",
+            bool sortDescending = false,
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Marks a booking as checked-in.
+        /// Gets detailed booking info by reference for user or admin.
         /// </summary>
-        /// <param name="bookingId">The booking ID.</param>
-        Task<bool> MarkAsCheckedInAsync(
-            int bookingId,
+        Task<BookingDetailsVM?> GetBookingDetailsAsync(
+            string bookingReference,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets upcoming bookings for dashboard display.
+        /// </summary>
+        Task<List<BookingSummaryVM>> GetUpcomingBookingsAsync(
+            int count = 10,
+            CancellationToken cancellationToken = default);
+
+        #endregion
+
+        #region Status Management
+
+        /// <summary>
+        /// Cancels a booking and processes refund logic if applicable.
+        /// </summary>
+        Task<bool> CancelBookingAsync(
+            string bookingReference,
+            string reason,
+            bool issueRefund = false,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Updates the payment status of a booking.
+        /// </summary>
+        Task<bool> UpdatePaymentStatusAsync(
+            string bookingReference,
+            PaymentStatus status,
+            DateTime? paymentDate = null,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Marks expired/unpaid bookings as void and releases seats.
+        /// </summary>
+        Task<int> AutoExpirePendingBookingsAsync(
+            TimeSpan gracePeriod,
+            CancellationToken cancellationToken = default);
+
+        #endregion
+
+        #region Analytics & Reporting
+
+        /// <summary>
+        /// Gets the total revenue for a date range.
+        /// </summary>
+        Task<decimal> GetRevenueAsync(
+            DateTime startDate,
+            DateTime endDate,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets the most popular movies based on bookings.
+        /// </summary>
+        Task<List<(string MovieTitle, int TicketsSold)>> GetTopMoviesAsync(
+            int count,
+            DateTime? from = null,
+            DateTime? to = null,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets booking trends for reporting dashboards.
+        /// </summary>
+        Task<Dictionary<DateTime, int>> GetBookingTrendsAsync(
+            DateTime from,
+            DateTime to,
+            CancellationToken cancellationToken = default);
+
+        #endregion
+
+        #region Utility
+
+        /// <summary>
+        /// Checks whether a booking exists.
+        /// </summary>
+        Task<bool> ExistsAsync(
+            string bookingReference,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets all seat numbers associated with a booking.
+        /// </summary>
+        Task<List<string>> GetBookingSeatsAsync(
+            string bookingReference,
             CancellationToken cancellationToken = default);
 
         #endregion

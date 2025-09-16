@@ -18,6 +18,7 @@ namespace VoxTics.Data.UoW
 
         /// <summary>Manages booking-related operations.</summary>
         IBookingsRepository Bookings { get; }
+        public IActorsRepository Actors { get; }
 
         /// <summary>Manages category-related operations.</summary>
         ICategoriesRepository Categories { get; }

@@ -1,51 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel.DataAnnotations;
+using VoxTics.Models.Enums;
 using VoxTics.Models.ViewModels.Actor;
 using VoxTics.Models.ViewModels.Category;
 using VoxTics.Models.ViewModels.Showtime;
 
 namespace VoxTics.Models.ViewModels.Movie
 {
-    public class MovieDetailVM : MovieVM
+    public class MovieDetailsVM
     {
-        // Detailed associations
-        public List<ActorVM> DetailedActors { get; set; } = new List<ActorVM>();
-        public List<CategoryVM> DetailedCategories { get; set; } = new List<CategoryVM>();
-        public List<MovieImageVM> DetailedImages { get; set; } = new List<MovieImageVM>();
+        // Basic info
+        public int Id { get; set; }
 
-        // Showtimes
-        public List<ShowtimeVM> Showtimes { get; set; } = new List<ShowtimeVM>();
-        public bool HasShowtimes => Showtimes.Any();
-        public bool CanBook => IsNowShowing && HasShowtimes;
+        [Required]
+        public string Title { get; set; } = string.Empty;
 
-        // Related movies
-        public List<MovieVM> RelatedMovies { get; set; } = new List<MovieVM>();
-        public List<MovieVM> SameCategoryMovies { get; set; } = new List<MovieVM>();
-        public bool HasRelatedMovies => RelatedMovies.Any();
+        public string ShortDescription { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string Director { get; set; } = string.Empty;
+        public string? Country { get; set; }
+        public string Language { get; set; } = "EN";
+        public string? AgeRating { get; set; }
 
-        // Additional images
-        public List<MovieImageVM> MovieImages => DetailedImages;
+        // Media
+        public string? ImageUrl { get; set; }
+        public string? TrailerImageUrl { get; set; }
+        public string? TrailerUrl { get; set; }
 
-        // Helpers for filtering showtimes
-        public List<ShowtimeVM> UpcomingShowtimes => Showtimes
-            .Where(s => s.ShowDateTime >= DateTime.Now && s.ShowDateTime <= DateTime.Now.AddDays(7))
-            .OrderBy(s => s.ShowDateTime)
-            .ToList();
+        // Status and flags
+        public bool IsFeatured { get; set; }
+        public MovieStatus Status { get; set; }
 
-        public List<ShowtimeVM> TodayShowtimes => Showtimes
-            .Where(s => s.ShowDateTime.Date == DateTime.Today && s.ShowDateTime > DateTime.Now)
-            .OrderBy(s => s.ShowDateTime)
-            .ToList();
+        // Dates and numbers
+        public DateTime ReleaseDate { get; set; }
+        public int Duration { get; set; } // minutes
+        public decimal Price { get; set; }
+        public decimal Rating { get; set; }
 
-        public Dictionary<DateTime, List<ShowtimeVM>> ShowtimesByDate => Showtimes
-            .Where(s => s.ShowDateTime >= DateTime.Now)
-            .GroupBy(s => s.ShowDateTime.Date)
-            .OrderBy(g => g.Key)
-            .Take(7) // Next 7 days only
-            .ToDictionary(g => g.Key, g => g.OrderBy(s => s.ShowDateTime).ToList());
+        // Related collections
+        public IReadOnlyList<ActorVM> Cast { get; set; } = new List<ActorVM>();
+        public IReadOnlyList<CategoryVM> Categories { get; set; } = new List<CategoryVM>();
+        public IReadOnlyList<string> GalleryImages { get; set; } = new List<string>();
+        public IReadOnlyList<ShowtimeVM> Showtimes { get; set; } = new List<ShowtimeVM>();
 
-        // Trailer helper
-        public bool HasTrailer => !string.IsNullOrEmpty(TrailerUrl);
+        // Computed properties
+        public bool IsAvailableForBooking =>
+            Status == MovieStatus.NowShowing && ReleaseDate <= DateTime.Today;
+
+        public int DaysSinceRelease =>
+            (Status == MovieStatus.NowShowing && ReleaseDate <= DateTime.Today)
+                ? (DateTime.Today - ReleaseDate).Days
+                : 0;
+
+        public string DisplayImage =>
+            !string.IsNullOrEmpty(ImageUrl) ? ImageUrl : "/images/default-movie.jpg";
     }
 }

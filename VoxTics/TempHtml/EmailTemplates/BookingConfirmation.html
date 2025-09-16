@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmation - VoxTics</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2dce89 0%, #2dcecc 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .content {
+            padding: 30px;
+            background-color: #f9f9f9;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .booking-details {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            width: 120px;
+        }
+
+        .qr-code {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Booking Confirmed!</h2>
+        <p>Your Movie Experience Awaits</p>
+    </div>
+
+    <div class="content">
+        <h3>Hello {{UserName}},</h3>
+        <p>Your booking has been confirmed. Here are your booking details:</p>
+
+        <div class="booking-details">
+            <div class="detail-row">
+                <div class="detail-label">Movie:</div>
+                <div>{{MovieTitle}}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Cinema:</div>
+                <div>{{CinemaName}}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Date & Time:</div>
+                <div>{{Showtime}}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Seats:</div>
+                <div>{{Seats}}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Booking ID:</div>
+                <div>{{BookingId}}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Total Amount:</div>
+                <div>{{TotalAmount}}</div>
+            </div>
+        </div>
+
+        <div class="qr-code">
+            <img src="{{QRCodeUrl}}" alt="Booking QR Code" width="150">
+            <p>Scan this QR code at the cinema</p>
+        </div>
+
+        <p>We recommend arriving at least 30 minutes before the showtime. Please bring a valid ID that matches the booking name.</p>
+
+        <p>If you need to cancel or modify your booking, please visit our website or contact our support team at least 2 hours before the showtime.</p>
+
+        <p>
+            Enjoy your movie!<br>
+            The VoxTics Team
+        </p>
+    </div>
+
+    <div class="footer">
+        <p>© 2023 VoxTics. All rights reserved.</p>
+        <p>This is an automated message. Please do not reply to this email.</p>
+    </div>
+</body>
+</html>

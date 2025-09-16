@@ -7,6 +7,13 @@ namespace VoxTics.Areas.Admin.ViewModels.Cinema
 {
     public class CinemaViewModel
     {
+        private Models.Entities.Cinema c;
+
+        public CinemaViewModel(Models.Entities.Cinema c)
+        {
+            this.c = c;
+        }
+
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Cinema name is required")]
@@ -43,7 +50,7 @@ namespace VoxTics.Areas.Admin.ViewModels.Cinema
 
 
         public List<ShowtimeVM> Showtimes { get; set; } = new List<ShowtimeVM>();
-
-
+        public object MovieCount { get; internal set; }
+        public object Movies { get; internal set; }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using VoxTics.Models.Entities;
-using VoxTics.Models.ViewModels;
-using VoxTics.Areas.Admin.ViewModels;
+using VoxTics.Models.ViewModels.Showtime;
 
 namespace VoxTics.MappingProfiles
 {
@@ -9,7 +8,25 @@ namespace VoxTics.MappingProfiles
     {
         public ShowtimeProfile()
         {
-            // Your mapping configurations here
+            // -------- Showtime → ShowtimeVM --------
+            CreateMap<Showtime, ShowtimeVM>()
+                .ForMember(dest => dest.MovieTitle, opt => opt.MapFrom(src => src.Movie.Title))
+                .ForMember(dest => dest.MoviePoster, opt => opt.MapFrom(src => src.Movie.ImageUrl))
+                .ForMember(dest => dest.HallName, opt => opt.MapFrom(src => src.Hall.Name))
+                .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.EndTime));
+
+            // -------- Showtime → ShowtimePreviewVM --------
+            CreateMap<Showtime, ShowtimeDetailsVM>()
+                .ForMember(dest => dest.MovieTitle, opt => opt.MapFrom(src => src.Movie.Title))
+                .ForMember(dest => dest.MoviePosterImage, opt => opt.MapFrom(src => src.Movie.ImageUrl))
+                .ForMember(dest => dest.MovieDuration, opt => opt.MapFrom(src => src.Movie.Duration))
+                .ForMember(dest => dest.CinemaName, opt => opt.MapFrom(src => src.Cinema.Name))
+                .ForMember(dest => dest.CinemaAddress, opt => opt.MapFrom(src => src.Cinema.Address))
+                .ForMember(dest => dest.HallName, opt => opt.MapFrom(src => src.Hall.Name))
+                .ForMember(dest => dest.ShowDateTime, opt => opt.MapFrom(src => src.StartTime))
+                .ForMember(dest => dest.AvailableSeats, opt => opt.MapFrom(src => src.AvailableSeats))
+                .ForMember(dest => dest.TotalSeats, opt => opt.MapFrom(src => src.TotalSeats))
+                .ForMember(dest => dest.BookedSeats, opt => opt.MapFrom(src => src.TotalSeats - src.AvailableSeats));
         }
     }
 }

@@ -4,6 +4,13 @@ namespace VoxTics.Areas.Admin.ViewModels.Movie
 {
     public class MovieListItemViewModel
     {
+        private Models.Entities.Movie m;
+
+        public MovieListItemViewModel(Models.Entities.Movie m)
+        {
+            this.m = m;
+        }
+
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string? PosterImage { get; set; }

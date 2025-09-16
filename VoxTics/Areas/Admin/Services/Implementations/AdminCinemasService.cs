@@ -1,115 +1,143 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
-using VoxTics.Areas.Admin.Services.Interfaces;
-using VoxTics.Areas.Identity.Models.Entities;
-using VoxTics.Data.UoW;
+using VoxTics.Areas.Admin.Repositories.IRepositories;
 using VoxTics.Helpers;
+using VoxTics.Models.Entities;
+using VoxTics.Services.Interfaces;
+using VoxTics.Data.UoW;
 
-namespace VoxTics.Areas.Admin.Services.Implementations
+namespace VoxTics.Services.Implementations
 {
-    public class AdminCinemasService : IAdminCinemasService
+    /// <summary>
+    /// Service for admin-side cinema management.
+    /// Handles CRUD, validation, status, stats, and audit info.
+    /// </summary>
+    public class AdminCinemaService : IAdminCinemaService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<AdminCinemasService> _logger;
+        private readonly IAdminCinemasRepository _cinemaRepository;
 
-        public AdminCinemasService(IUnitOfWork unitOfWork, ILogger<AdminCinemasService> logger)
+        public AdminCinemaService(IUnitOfWork unitOfWork, IAdminCinemasRepository cinemaRepository)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _cinemaRepository = cinemaRepository ?? throw new ArgumentNullException(nameof(cinemaRepository));
         }
 
-        public async Task<PaginatedList<Cinema>> GetPagedCinemasAsync(
+        #region Paging & Listing
+
+        public async Task<(IEnumerable<Cinema> Cinemas, int TotalCount)> GetPagedCinemasAsync(
             int pageIndex,
             int pageSize,
             string? searchTerm = null,
-            string? sortOrder = null,
+            string? city = null,
+            bool? isActive = null,
             CancellationToken cancellationToken = default)
         {
-            var query = _unitOfWork.Cinemas.Query();
-
-            if (!string.IsNullOrWhiteSpace(searchTerm))
-            {
-                string sanitized = ValidationHelpers.SanitizeInput(searchTerm);
-                query = query.Where(c => c.Name.Contains(sanitized) || c.City.Contains(sanitized));
-            }
-
-            query = query.ApplySorting(sortOrder ?? "Name", c => c.Name);
-
-            return await query.ToPaginatedListAsync(pageIndex, pageSize, cancellationToken);
+            return await _cinemaRepository.GetPagedCinemasAsync(pageIndex, pageSize, searchTerm, city, isActive, cancellationToken)
+                .ConfigureAwait(false);
         }
 
-        public async Task<Cinema> CreateCinemaAsync(Cinema cinema, CancellationToken cancellationToken = default)
+        #endregion
+
+        #region CRUD Operations
+
+        public async Task<Cinema?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            if (cinema == null) throw new ArgumentNullException(nameof(cinema));
-            cinema.Name = ValidationHelpers.SanitizeInput(cinema.Name);
-
-            await _unitOfWork.Cinemas.AddAsync(cinema, cancellationToken);
-            await _unitOfWork.CommitAsync(cancellationToken);
-
-            _logger.LogInformation("Cinema created: {CinemaName}", cinema.Name);
-            return cinema;
+            return await _cinemaRepository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<bool> UpdateCinemaAsync(Cinema cinema, CancellationToken cancellationToken = default)
+        public async Task<List<string>> AddCinemaAsync(Cinema cinema, CancellationToken cancellationToken = default)
         {
-            if (cinema == null) throw new ArgumentNullException(nameof(cinema));
+            var errors = ValidateCinema(cinema);
+            if (errors.Any()) return errors;
 
-            await _unitOfWork.Cinemas.UpdateAsync(cinema, cancellationToken);
-            var result = await _unitOfWork.CommitAsync(cancellationToken);
+            await _cinemaRepository.AddAsync(cinema, cancellationToken).ConfigureAwait(false);
+            await _unitOfWork.CommitAsync(cancellationToken).ConfigureAwait(false);
+            return errors;
+        }
 
-            _logger.LogInformation("Cinema updated: {CinemaName}", cinema.Name);
-            return result > 0;
+        public async Task<List<string>> UpdateCinemaAsync(Cinema cinema, CancellationToken cancellationToken = default)
+        {
+            var errors = ValidateCinema(cinema);
+            if (errors.Any()) return errors;
+
+            await _cinemaRepository.UpdateAsync(cinema, cancellationToken).ConfigureAwait(false);
+            await _unitOfWork.CommitAsync(cancellationToken).ConfigureAwait(false);
+            return errors;
         }
 
         public async Task<bool> DeleteCinemaAsync(int cinemaId, CancellationToken cancellationToken = default)
         {
-            var cinema = await _unitOfWork.Cinemas.GetByIdAsync(cinemaId, cancellationToken);
-            if (cinema == null) return false;
+            var success = await _cinemaRepository.HardDeleteCinemaAsync(cinemaId, cancellationToken).ConfigureAwait(false);
+            if (success)
+                await _unitOfWork.CommitAsync(cancellationToken).ConfigureAwait(false);
+            return success;
+        }
 
-            // Check related showtimes or bookings before deletion
-            if (await _unitOfWork.Showtimes.HasShowtimesForCinemaAsync(cinemaId, cancellationToken))
+        #endregion
+
+        #region Status Management
+
+        public async Task<bool> SetCinemaStatusAsync(int cinemaId, bool isActive, CancellationToken cancellationToken = default)
+        {
+            var success = await _cinemaRepository.SetCinemaStatusAsync(cinemaId, isActive, cancellationToken).ConfigureAwait(false);
+            if (success)
+                await _unitOfWork.CommitAsync(cancellationToken).ConfigureAwait(false);
+            return success;
+        }
+
+        #endregion
+
+        #region Statistics & Audit
+
+        public async Task<(int TotalShowtimes, int UpcomingMovies, decimal Revenue)> GetCinemaStatsAsync(int cinemaId, CancellationToken cancellationToken = default)
+        {
+            return await _cinemaRepository.GetCinemaDetailsStatsAsync(cinemaId, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<(DateTime CreatedAt, DateTime? UpdatedAt, DateTime? LastShowtime)> GetCinemaAuditInfoAsync(int cinemaId, CancellationToken cancellationToken = default)
+        {
+            return await _cinemaRepository.GetCinemaAuditInfoAsync(cinemaId, cancellationToken).ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region Private Helpers
+
+        /// <summary>
+        /// Validates a Cinema entity and returns a list of validation errors.
+        /// </summary>
+        private List<string> ValidateCinema(Cinema cinema)
+        {
+            var errors = new List<string>();
+
+            if (cinema == null)
             {
-                _logger.LogWarning("Cannot delete cinema {CinemaId} with active showtimes.", cinemaId);
-                return false;
+                errors.Add("Cinema cannot be null.");
+                return errors;
             }
 
-            await _unitOfWork.Cinemas.RemoveAsync(cinema, cancellationToken);
-            await _unitOfWork.CommitAsync(cancellationToken);
+            if (string.IsNullOrWhiteSpace(cinema.Name))
+                errors.Add("Cinema name is required.");
 
-            _logger.LogInformation("Cinema deleted: {CinemaName}", cinema.Name);
-            return true;
+            if (!string.IsNullOrWhiteSpace(cinema.Email) && !ValidationHelpers.IsValidEmail(cinema.Email))
+                errors.Add("Invalid email format.");
+
+            if (!string.IsNullOrWhiteSpace(cinema.Phone) && !ValidationHelpers.IsValidPhoneNumber(cinema.Phone))
+                errors.Add("Invalid phone number.");
+
+            if (cinema.TotalSeats <= 0)
+                errors.Add("Total seats must be greater than zero.");
+
+            if (!string.IsNullOrWhiteSpace(cinema.ImageUrl) && !ValidationHelpers.IsValidUrl(new Uri(cinema.ImageUrl, UriKind.RelativeOrAbsolute)))
+                errors.Add("Invalid image URL.");
+
+            return errors;
         }
 
-        public async Task<Cinema?> GetCinemaByIdAsync(int cinemaId, CancellationToken cancellationToken = default)
-        {
-            return await _unitOfWork.Cinemas.GetByIdAsync(cinemaId, cancellationToken);
-        }
-
-        public async Task<bool> ToggleCinemaStatusAsync(int cinemaId, bool isActive, CancellationToken cancellationToken = default)
-        {
-            var cinema = await _unitOfWork.Cinemas.GetByIdAsync(cinemaId, cancellationToken);
-            if (cinema == null) return false;
-
-            cinema.IsActive = isActive;
-            await _unitOfWork.Cinemas.UpdateAsync(cinema, cancellationToken);
-            await _unitOfWork.CommitAsync(cancellationToken);
-
-            _logger.LogInformation("Cinema status toggled: {CinemaName}, Active: {Status}", cinema.Name, isActive);
-            return true;
-        }
-
-        public async Task<bool> CinemaNameExistsAsync(string name, int? excludeId = null, CancellationToken cancellationToken = default)
-        {
-            name = ValidationHelpers.SanitizeInput(name);
-            var cinemas = await _unitOfWork.Cinemas.FindAsync(
-                c => c.Name == name && (!excludeId.HasValue || c.Id != excludeId),
-                cancellationToken);
-
-            return cinemas.Any();
-        }
+        #endregion
     }
 }

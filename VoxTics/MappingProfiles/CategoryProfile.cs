@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using VoxTics.Areas.Admin.ViewModels;
+using System.Linq;
 using VoxTics.Models.Entities;
 using VoxTics.Models.ViewModels.Category;
 using VoxTics.Models.ViewModels.Movie;
@@ -10,13 +10,11 @@ namespace VoxTics.MappingProfiles
     {
         public CategoryProfile()
         {
-            // Entity → ViewModel
-            CreateMap<Category, CategoryVM>()
-                .ForMember(dest => dest.MovieCount, opt => opt.MapFrom(src => src.MovieCategories.Count))
-                .ForMember(dest => dest.MovieCount, opt => opt.MapFrom(src => src.MovieCategories.Select(mc => mc.Movie)));
-
-            // Movie → MovieVM mapping must exist
-            CreateMap<Movie, MovieVM>();
+            // -----------------------------
+            // Category -> CategoryVM
+            
         }
     }
+
+
 }

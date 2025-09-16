@@ -1,6 +1,6 @@
 ﻿namespace VoxTics.Areas.Admin.AdminProfiles
 {
-    public class AdminProfile
+    public class UserAdminProfile
     {
     }
 }

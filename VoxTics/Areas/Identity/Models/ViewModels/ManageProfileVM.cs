@@ -12,5 +12,6 @@
         public string ZipCode { get; set; } = string.Empty;
         public List<string> Skills { get; set; } = new();
         public string? AvatarUrl { get; set; }
+        public string? Email { get; internal set; }
     }
 }

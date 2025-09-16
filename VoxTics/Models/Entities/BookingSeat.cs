@@ -21,5 +21,6 @@ namespace VoxTics.Models.Entities
         public virtual Booking Booking { get; set; } = null!;
         public virtual Seat Seat { get; set; } = null!;
         public string SeatNumber { get; internal set; }
+        public int ShowtimeId { get; internal set; }
     }
 }

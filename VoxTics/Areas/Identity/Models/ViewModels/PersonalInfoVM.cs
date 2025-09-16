@@ -47,5 +47,8 @@ namespace VoxTics.Areas.Identity.Models.ViewModels
         public int Age => DateOfBirth.HasValue ? (int)((DateTime.UtcNow - DateOfBirth.Value).TotalDays / 365.25) : 0;
 
         public string FullAddress => $"{Street}, {City}, {State}, {ZipCode}".Trim(',', ' ');
+
+        public object Email { get; internal set; }
+        public object CreatedAt { get; internal set; }
     }
 }

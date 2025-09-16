@@ -1,6 +1,5 @@
 ﻿VoxTics/Areas/Admin/ViewModels/
  ├─ BaseAdminVM.cs                
- ├─ BasePaginatedFilterVM.cs       
  ├─ AdminDashboardVM.cs
  ├─ BookingVM.cs
  ├─ CinemaVM.cs

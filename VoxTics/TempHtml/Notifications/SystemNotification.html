@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification - VoxTics</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #11cdef 0%, #1171ef 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .content {
+            padding: 30px;
+            background-color: #f9f9f9;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .notification {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #11cdef;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Notification from VoxTics</h2>
+        <p>Stay Updated with Your Movie Experience</p>
+    </div>
+
+    <div class="content">
+        <h3>Hello {{UserName}},</h3>
+
+        <div class="notification">
+            <h4>{{NotificationTitle}}</h4>
+            <p>{{NotificationMessage}}</p>
+
+            {{#if HasAction}}
+            <p style="text-align: center;">
+                <a href="{{ActionLink}}" class="button">{{ActionText}}</a>
+            </p>
+            {{/if}}
+        </div>
+
+        <p>If you have any questions about this notification, please contact our support team.</p>
+
+        <p>
+            Best regards,<br>
+            The VoxTics Team
+        </p>
+    </div>
+
+    <div class="footer">
+        <p>© 2023 VoxTics. All rights reserved.</p>
+        <p><a href="{{NotificationSettingsLink}}">Manage your notification preferences</a></p>
+        <p>This is an automated message. Please do not reply to this email.</p>
+    </div>
+</body>
+</html>

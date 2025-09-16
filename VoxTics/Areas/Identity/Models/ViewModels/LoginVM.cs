@@ -18,5 +18,6 @@ namespace VoxTics.Areas.Identity.Models.ViewModels
 
         [Display(Name = "Remember Me")]
         public bool RememberMe { get; set; }
+        public string Email { get; internal set; }
     }
 }

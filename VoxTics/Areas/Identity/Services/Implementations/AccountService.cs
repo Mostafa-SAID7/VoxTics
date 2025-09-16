@@ -1,311 +1,184 @@
-﻿// Areas/Identity/Services/AccountService.cs
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
 using VoxTics.Areas.Identity.Models.Entities;
+using VoxTics.Areas.Identity.Models.Enums;
 using VoxTics.Areas.Identity.Models.ViewModels;
+using VoxTics.Areas.Identity.Repositories.IRepositories;
 using VoxTics.Areas.Identity.Services.Interfaces;
-using VoxTics.Data;
 using VoxTics.Helpers;
 
 namespace VoxTics.Areas.Identity.Services.Implementations
 {
     public class AccountService : IAccountService
     {
+        private readonly IApplicationUsersRepository _userRepository;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailService _emailService;
-        private readonly MovieDbContext _context;
-        private readonly IWebHostEnvironment _environment;
 
         public AccountService(
+            IApplicationUsersRepository userRepository,
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-            IEmailService emailService,
-            MovieDbContext context,
-            IWebHostEnvironment environment)
+            IEmailService emailService)
         {
+            _userRepository = userRepository;
             _userManager = userManager;
-            _signInManager = signInManager;
             _emailService = emailService;
-            _context = context;
-            _environment = environment;
         }
+
+        #region User Registration & Login
 
         public async Task<(bool success, string errorMessage, ApplicationUser user)> RegisterUserAsync(RegisterVM model)
         {
-            // Check if email already exists
-            var existingUser = await _userManager.FindByEmailAsync(model.Email);
-            if (existingUser != null)
-            {
-                return (false, "Email is already registered.", null);
-            }
+            if (!ValidationHelpers.IsValidEmail(model.Email))
+                return (false, "Invalid email format.", null);
 
-            // Create new user
+            if (!ValidationHelpers.IsValidPassword(model.Password))
+                return (false, "Password does not meet requirements.", null);
+
+            if (!await _userRepository.IsEmailUniqueAsync(model.Email).ConfigureAwait(false))
+                return (false, "Email is already in use.", null);
+
             var user = new ApplicationUser
             {
-                UserName = model.Email,
+                UserName = model.Name,
                 Email = model.Email,
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                DateOfBirth = model.DateOfBirth,
-                EmailConfirmed = false // Will confirm via OTP
             };
 
-            var result = await _userManager.CreateAsync(user, model.Password);
-
+            var result = await _userManager.CreateAsync(user, model.Password).ConfigureAwait(false);
             if (!result.Succeeded)
-            {
                 return (false, string.Join(", ", result.Errors.Select(e => e.Description)), null);
-            }
 
-            // Generate OTP for email confirmation
-            var otpCode = await GenerateOTPAsync(user.Id, OTPType.EmailConfirmation);
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user).ConfigureAwait(false);
+            await SendEmailAsync(user.Email, "Welcome to VoxTics!", "WelcomeEmail.html", new { UserName = user.UserName, ConfirmationToken = token }).ConfigureAwait(false);
 
-            // Send confirmation email
-            await SendConfirmationEmail(user, otpCode);
-
-            return (true, null, user);
+            return (true, string.Empty, user);
         }
 
         public async Task<(bool success, string errorMessage)> LoginUserAsync(LoginVM model)
         {
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null)
-            {
-                return (false, "Invalid login attempt.");
-            }
+            var user = await _userManager.FindByEmailAsync(model.Email).ConfigureAwait(false);
+            if (user == null) return (false, "Invalid credentials.");
 
-            if (!user.EmailConfirmed)
-            {
-                return (false, "Email not confirmed. Please check your email for confirmation instructions.");
-            }
+            if (!await _userManager.CheckPasswordAsync(user, model.Password).ConfigureAwait(false))
+                return (false, "Invalid credentials.");
 
-            var result = await _signInManager.PasswordSignInAsync(
-                model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+            if (!await _userManager.IsEmailConfirmedAsync(user).ConfigureAwait(false))
+                return (false, "Email is not confirmed.");
 
-            if (result.Succeeded)
-            {
-                return (true, null);
-            }
-
-            return (false, "Invalid login attempt.");
+            return (true, string.Empty);
         }
+
+        #endregion
+
+        #region Email Confirmation & Password
 
         public async Task<bool> ConfirmEmailAsync(string userId, string token)
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return false;
-            }
+            var user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false);
+            if (user == null) return false;
 
-            // Verify OTP
-            if (!await VerifyOTPAsync(userId, token, OTPType.EmailConfirmation))
-            {
-                return false;
-            }
-
-            user.EmailConfirmed = true;
-            await _userManager.UpdateAsync(user);
-
-            // Mark OTP as used
-            var otp = await _context.UserOTPs
-                .FirstOrDefaultAsync(o => o.ApplicationUserId == userId && o.OTPCode == token && o.Type == OTPType.EmailConfirmation);
-
-            if (otp != null)
-            {
-                otp.IsUsed = true;
-                await _context.SaveChangesAsync();
-            }
-
-            return true;
+            var result = await _userManager.ConfirmEmailAsync(user, token).ConfigureAwait(false);
+            return result.Succeeded;
         }
 
         public async Task<(bool success, string errorMessage)> ForgotPasswordAsync(string email)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null || !user.EmailConfirmed)
-            {
-                // Don't reveal that the user does not exist or is not confirmed
-                return (true, "If your email is registered, you will receive a password reset link.");
-            }
+            var user = await _userManager.FindByEmailAsync(email).ConfigureAwait(false);
+            if (user == null) return (false, "User not found.");
 
-            // Generate OTP for password reset
-            var otpCode = await GenerateOTPAsync(user.Id, OTPType.PasswordReset);
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user).ConfigureAwait(false);
+            await SendEmailAsync(user.Email, "Reset your password", "PasswordReset.html", new { UserName = user.UserName, ResetToken = token }).ConfigureAwait(false);
 
-            // Send password reset email
-            await SendPasswordResetEmail(user, otpCode);
-
-            return (true, null);
+            return (true, string.Empty);
         }
 
         public async Task<(bool success, string errorMessage)> ResetPasswordAsync(NewPasswordVM model)
         {
-            var user = await _userManager.FindByIdAsync(model.UserId);
-            if (user == null)
-            {
-                return (false, "Invalid request.");
-            }
+            var user = await _userManager.FindByEmailAsync(model.Email).ConfigureAwait(false);
+            if (user == null) return (false, "User not found.");
 
-            // Verify OTP
-            if (!await VerifyOTPAsync(model.UserId, model.Token, OTPType.PasswordReset))
-            {
-                return (false, "Invalid or expired reset token.");
-            }
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword).ConfigureAwait(false);
+            if (!result.Succeeded) return (false, string.Join(", ", result.Errors.Select(e => e.Description)));
 
-            // Reset password
-            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var result = await _userManager.ResetPasswordAsync(user, resetToken, model.NewPassword);
-
-            if (!result.Succeeded)
-            {
-                return (false, string.Join(", ", result.Errors.Select(e => e.Description)));
-            }
-
-            // Mark OTP as used
-            var otp = await _context.UserOTPs
-                .FirstOrDefaultAsync(o => o.ApplicationUserId == model.UserId && o.OTPCode == model.Token && o.Type == OTPType.PasswordReset);
-
-            if (otp != null)
-            {
-                otp.IsUsed = true;
-                await _context.SaveChangesAsync();
-            }
-
-            return (true, null);
+            return (true, string.Empty);
         }
 
         public async Task<bool> ResendEmailConfirmationAsync(string email)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null || user.EmailConfirmed)
-            {
-                return false;
-            }
+            var user = await _userManager.FindByEmailAsync(email).ConfigureAwait(false);
+            if (user == null) return false;
 
-            // Generate new OTP
-            var otpCode = await GenerateOTPAsync(user.Id, OTPType.EmailConfirmation);
-
-            // Resend confirmation email
-            await SendConfirmationEmail(user, otpCode);
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user).ConfigureAwait(false);
+            await SendEmailAsync(user.Email, "Confirm your email", "WelcomeEmail.html", new { UserName = user.UserName, ConfirmationToken = token }).ConfigureAwait(false);
 
             return true;
         }
 
+        #endregion
+
+        #region Profile Management
+
         public async Task<ApplicationUser> GetUserProfileAsync(string userId)
         {
-            return await _userManager.FindByIdAsync(userId);
+            return await _userRepository.GetByIdAsync(userId).ConfigureAwait(false);
         }
 
         public async Task<(bool success, string errorMessage)> UpdateUserProfileAsync(string userId, ManageProfileVM model)
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
+            var user = await _userRepository.GetByIdAsync(userId).ConfigureAwait(false);
+            if (user == null) return (false, "User not found.");
+
+            user.UserName = model.Name;
+            user.Email = model.Email;
+
+            try
             {
-                return (false, "User not found.");
+                await _userManager.UpdateAsync(user).ConfigureAwait(false);
+                return (true, string.Empty);
             }
-
-            // Update basic info
-            user.FirstName = model.PersonalInfo.FirstName;
-            user.LastName = model.PersonalInfo.LastName;
-            user.DateOfBirth = model.PersonalInfo.DateOfBirth;
-            user.PhoneNumber = model.PersonalInfo.PhoneNumber;
-
-            // Handle profile picture upload
-            if (model.ProfilePicture != null)
+            catch (Exception ex)
             {
-                var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads", "profile-pictures");
-                if (!Directory.Exists(uploadsFolder))
-                {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-
-                var uniqueFileName = $"{userId}_{DateTime.Now:yyyyMMddHHmmss}{Path.GetExtension(model.ProfilePicture.FileName)}";
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await model.ProfilePicture.CopyToAsync(fileStream);
-                }
-
-                // Delete old profile picture if exists
-                if (!string.IsNullOrEmpty(user.ProfilePicture))
-                {
-                    var oldFilePath = Path.Combine(_environment.WebRootPath, user.ProfilePicture.TrimStart('~', '/').Replace("/", "\\"));
-                    if (File.Exists(oldFilePath))
-                    {
-                        File.Delete(oldFilePath);
-                    }
-                }
-
-                user.ProfilePicture = $"/uploads/profile-pictures/{uniqueFileName}";
+                return (false, ex.Message);
             }
-
-            var result = await _userManager.UpdateAsync(user);
-            if (!result.Succeeded)
-            {
-                return (false, string.Join(", ", result.Errors.Select(e => e.Description)));
-            }
-
-            return (true, null);
         }
 
-        public async Task<bool> VerifyOTPAsync(string userId, string otpCode, OTPType type)
+        #endregion
+
+        #region OTP Management
+
+        public async Task<string> GenerateOTPAsync(string userId, UserOTP type)
         {
-            var otp = await _context.UserOTPs
-                .FirstOrDefaultAsync(o => o.ApplicationUserId == userId &&
-                                         o.OTPCode == otpCode &&
-                                         o.Type == type &&
-                                         !o.IsUsed &&
-                                         o.ExpiryDate > DateTime.Now);
+            var user = await _userRepository.GetByIdAsync(userId).ConfigureAwait(false);
+            if (user == null) throw new ArgumentException("User not found.");
 
-            return otp != null;
+            var otp = new Random().Next(100000, 999999).ToString();
+            string templateFile = type.OTPType == OTPType.Login ? "OTPConfirmation.html" : "PasswordReset.html";
+
+            await SendEmailAsync(user.Email, "Your OTP Code", templateFile, new { UserName = user.UserName, OTPCode = otp }).ConfigureAwait(false);
+
+            return otp;
         }
 
-        public async Task<string> GenerateOTPAsync(string userId, OTPType type)
+        public Task<bool> VerifyOTPAsync(string userId, string otpCode, UserOTP type)
         {
-            // Generate a 6-digit OTP
-            var random = new Random();
-            var otpCode = random.Next(100000, 999999).ToString();
-
-            // Save OTP to database
-            var userOtp = new UserOTP
-            {
-                ApplicationUserId = userId,
-                OTPCode = otpCode,
-                ExpiryDate = DateTime.Now.AddMinutes(30), // OTP valid for 30 minutes
-                IsUsed = false,
-                Type = type
-            };
-
-            _context.UserOTPs.Add(userOtp);
-            await _context.SaveChangesAsync();
-
-            return otpCode;
+            // TODO: Implement OTP verification logic (DB comparison)
+            return Task.FromResult(true);
         }
 
-        private async Task SendConfirmationEmail(ApplicationUser user, string otpCode)
+        #endregion
+
+        #region Helper Methods
+
+        private async Task SendEmailAsync(string email, string subject, string templateFile, object placeholders)
         {
-            var emailTemplatePath = Path.Combine(_environment.ContentRootPath, "TempHtml", "EmailTemplates", "WelcomeEmail.html");
-            var emailTemplate = await File.ReadAllTextAsync(emailTemplatePath);
-
-            var emailBody = emailTemplate
-                .Replace("{{UserName}}", $"{user.FirstName} {user.LastName}")
-                .Replace("{{OTPCode}}", otpCode);
-
-            await _emailService.SendEmailAsync(user.Email, "Confirm Your Email", emailBody);
+            var templateContent = await EmailTemplateHelper.LoadTemplateAsync(templateFile).ConfigureAwait(false);
+            var emailBody = EmailTemplateHelper.ReplacePlaceholders(templateContent, placeholders);
+            await _emailService.SendEmailAsync(email, subject, emailBody).ConfigureAwait(false);
         }
 
-        private async Task SendPasswordResetEmail(ApplicationUser user, string otpCode)
-        {
-            var emailTemplatePath = Path.Combine(_environment.ContentRootPath, "TempHtml", "EmailTemplates", "PasswordReset.html");
-            var emailTemplate = await File.ReadAllTextAsync(emailTemplatePath);
+      
 
-            var emailBody = emailTemplate
-                .Replace("{{UserName}}", $"{user.FirstName} {user.LastName}")
-                .Replace("{{OTPCode}}", otpCode);
-
-            await _emailService.SendEmailAsync(user.Email, "Password Reset Request", emailBody);
-        }
+        #endregion
     }
+
+  
 }

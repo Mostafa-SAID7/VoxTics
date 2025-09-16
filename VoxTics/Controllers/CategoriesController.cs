@@ -1,32 +1,35 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 using System.Threading.Tasks;
-using VoxTics.Models.Entities;
-using VoxTics.Models.ViewModels;
-using VoxTics.Repositories.IRepositories;
-using VoxTics.Services.Interfaces;
+using VoxTics.Services;
 
 namespace VoxTics.Controllers
 {
+    
     public class CategoriesController : Controller
     {
-        private readonly ICategoryService _service;
-        public CategoriesController(ICategoryService service) => _service = service;
+        private readonly ICategoryService _categoryService;
 
-        public async Task<IActionResult> Index()
+        public CategoriesController(ICategoryService categoryService)
         {
-            var categories = await _service.GetAllAsync();
+            _categoryService = categoryService;
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> Index(CancellationToken cancellationToken)
+        {
+            var categories = await _categoryService.GetActiveCategoriesAsync(cancellationToken);
             return View(categories);
         }
 
-        public async Task<IActionResult> Details(int id)
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> Browse(int page = 1, int pageSize = 10, string? search = null, string? sort = null, CancellationToken cancellationToken = default)
         {
-            var category = await _service.GetByIdAsync(id);
-            if (category == null) return NotFound();
-            return View(category);
+            var pagedCategories = await _categoryService.GetPagedCategoriesAsync(page, pageSize, search, sort, cancellationToken);
+            return View(pagedCategories);
         }
     }
 }

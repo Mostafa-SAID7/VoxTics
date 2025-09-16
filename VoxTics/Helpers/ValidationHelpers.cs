@@ -160,5 +160,67 @@ namespace VoxTics.Helpers
 
             return true;
         }
+        public static List<string> ValidateEntity(object entity)
+        {
+            var errors = new List<string>();
+            if (entity == null)
+            {
+                errors.Add("Entity cannot be null.");
+                return errors;
+            }
+
+            switch (entity)
+            {
+                case Cinema cinema:
+                    if (string.IsNullOrWhiteSpace(cinema.Name))
+                        errors.Add("Cinema name is required.");
+                    if (!string.IsNullOrWhiteSpace(cinema.Email) && !IsValidEmail(cinema.Email))
+                        errors.Add("Cinema email is invalid.");
+                    if (!string.IsNullOrWhiteSpace(cinema.Phone) && !IsValidPhoneNumber(cinema.Phone))
+                        errors.Add("Cinema phone number is invalid.");
+                    if (!IsValidSeatCount(cinema.TotalSeats))
+                        errors.Add($"Cinema seat count must be between 1 and 500.");
+                    break;
+
+                case Movie movie:
+                    if (string.IsNullOrWhiteSpace(movie.Title))
+                        errors.Add("Movie title is required.");
+                    if (!IsValidMovieDuration(movie.Duration))
+                        errors.Add($"Movie duration must be between 1 and 600 minutes.");
+                    if (!IsValidRating(movie.Rating))
+                        errors.Add("Movie rating must be between 0 and 10.");
+                    break;
+
+                case Booking booking:
+                    if (booking.TotalPrice < 0)
+                        errors.Add("Booking total price cannot be negative.");
+                    if (!IsValidShowtime(booking.Showtime?.StartTime ?? DateTime.MinValue))
+                        errors.Add("Booking showtime is invalid.");
+                    break;
+
+                case Hall hall:
+                    if (string.IsNullOrWhiteSpace(hall.Name))
+                        errors.Add("Hall name is required.");
+                    if (!IsValidSeatCount(hall.SeatCount))
+                        errors.Add($"Hall seat count must be between 1 and 500.");
+                    break;
+
+                default:
+                    errors.Add($"Validation not implemented for type {entity.GetType().Name}.");
+                    break;
+            }
+
+            return errors;
+        }
+
+        private static bool IsValidRating(decimal rating)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static bool IsValidDateRange(DateTime releaseDate, DateTime? deletedAt)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

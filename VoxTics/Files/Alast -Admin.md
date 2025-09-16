@@ -1,26 +1,30 @@
 ﻿/Data
 ├── MovieDbContext.cs
-└── UnitOfWork
-    ├── IUnitOfWork.cs
-    └── UnitOfWork.cs
+├── UnitOfWork
+│   ├── IUnitOfWork.cs
+│   └── UnitOfWork.cs
+├── Migrations/          # EF Core migrations folder
+└── SeedData.cs          # Optional: database seeding
 
 /Areas
 └── Admin
-    ├── Controllers
+    ├── Controllers/
     │   ├── BookingsController.cs
     │   ├── CategoriesController.cs
     │   ├── CinemasController.cs
     │   ├── HomeController.cs
     │   ├── MoviesController.cs
-    │   └── ShowtimesController.cs
+    │   ├── ShowtimesController.cs
+    │   └── UsersController.cs
     │
-    ├── Views
+    ├── Views/
     │   ├── Bookings/
     │   ├── Categories/
     │   ├── Cinemas/
     │   ├── Home/
     │   ├── Movies/
     │   ├── Showtimes/
+    │   ├── Users/
     │   └── Shared/
     │       ├── _Layout.cshtml
     │       ├── _Sidebar.cshtml
@@ -28,99 +32,127 @@
     │       ├── _ValidationScriptsPartial.cshtml
     │       └── Error.cshtml
     │
-    ├── ViewModels
+    ├── ViewModels/
     │   ├── Admin/
-    │   │   ├── AdminDashboardViewModel.cs
-    │   │   ├── AdminLoginVM.cs
-    │   │   ├── AdminProfileVM.cs
-    │   │   ├── BookingSummary.cs
-    │   │   ├── MovieSummary.cs
-    │   │   └── UserSummary.cs
-    │   │
-    │   ├── Filter/
-    │   │   ├── MovieAdminVM.cs
-    │   │   ├── MovieFilterVM.cs
-    │   │   └── PagedResultVM.cs
+    │   │   ├── Dashboard/
+    │   │   │   ├── AdminDashboardViewModel.cs
+    │   │   │   ├── BookingSummary.cs
+    │   │   │   ├── MovieSummary.cs
+    │   │   │   └── UserSummary.cs
+    │   │   ├── Authentication/
+    │   │   │   └── AdminLoginVM.cs
+    │   │   ├── Profile/
+    │   │   │   └── AdminProfileVM.cs
     │   │
     │   ├── Movie/
     │   │   ├── MovieCreateEditViewModel.cs
     │   │   ├── MovieDetailViewModel.cs
     │   │   ├── MovieImageViewModel.cs
-    │   │   └── MovieListItemViewModel.cs
+    │   │   ├── MovieListItemViewModel.cs
+    │   │   └── MovieTableViewModel.cs
     │   │
-    │   ├── ActorViewModel.cs
-    │   ├── BookingViewModel.cs
-    │   ├── CategoryViewModel.cs
-    │   ├── CinemaViewModel.cs
-    │   ├── HallViewModel.cs
-    │   ├── ShowtimeViewModel.cs
+    │   ├── Booking/
+    │   │   ├── BookingViewModel.cs
+    │   │   ├── BookingCreateEditViewModel.cs
+    │   │   ├── BookingDetailViewModel.cs
+    │   │   └── BookingTableViewModel.cs
+    │   │
+    │   ├── Actor/
+    │   │   ├── ActorViewModel.cs
+    │   │   ├── ActorCreateEditViewModel.cs
+    │   │   ├── ActorDetailViewModel.cs
+    │   │   └── ActorTableViewModel.cs
+    │   │
+    │   ├── Category/
+    │   │   ├── CategoryViewModel.cs
+    │   │   ├── CategoryCreateEditViewModel.cs
+    │   │   ├── CategoryDetailViewModel.cs
+    │   │   └── CategoryTableViewModel.cs
+    │   │
+    │   ├── Cinema/
+    │   │   ├── CinemaViewModel.cs
+    │   │   ├── CinemaCreateEditViewModel.cs
+    │   │   ├── CinemaDetailViewModel.cs
+    │   │   └── CinemaTableViewModel.cs
+    │   │
+    │   ├── Showtime/
+    │   │   ├── ShowtimeViewModel.cs
+    │   │   ├── ShowtimeCreateEditViewModel.cs
+    │   │   ├── ShowtimeDetailViewModel.cs
+    │   │   └── ShowtimeTableViewModel.cs
+    │   │
+    │   ├── Hall/
+    │   │   └── HallViewModel.cs
+    │   │
+    │   └── User/
+    │       └── UserManagementStats.cs
     │
-    ├── Services
-    │   ├── Interfaces
-    │   │   ├── IBookingService.cs
-    │   │   ├── ICategoryService.cs
-    │   │   ├── ICinemaService.cs
+    ├── Services/
+    │   ├── Interfaces/
+    │   │   ├── IAdminBookingService.cs
+    │   │   ├── IAdminCategoryService.cs
+    │   │   ├── IAdminCinemaService.cs
     │   │   ├── IDashboardService.cs
-    │   │   ├── IHomeService.cs
-    │   │   ├── IMovieService.cs
-    │   │   └── IShowtimeService.cs
+    │   │   ├── IAdminHomeService.cs
+    │   │   ├── IAdminMovieService.cs
+    │   │   ├── IAdminShowtimeService.cs
+    │   │   └── IAdminUserService.cs
     │   │
-    │   └── Implementations
-    │       ├── BookingService.cs
-    │       ├── CategoryService.cs
-    │       ├── CinemaService.cs
+    │   └── Implementations/
+    │       ├── AdminBookingService.cs
+    │       ├── AdminCategoryService.cs
+    │       ├── AdminCinemaService.cs
     │       ├── DashboardService.cs
-    │       ├── HomeService.cs
-    │       ├── MovieService.cs
-    │       ├── PaymentService.cs
-    │       └── ShowtimeService.cs
+    │       ├── AdminHomeService.cs
+    │       ├── AdminMovieService.cs
+    │       ├── AdminPaymentService.cs
+    │       ├── AdminShowtimeService.cs
+    │       └── AdminUserService.cs
     │
-    ├── Repositories
-    │   ├── IRepositories
-    │   │   ├── IBaseRepository.cs
-    │   │   ├── IBookingRepository.cs
-    │   │   ├── ICategoryRepository.cs
-    │   │   ├── ICinemaRepository.cs
+    ├── Repositories/
+    │   ├── Interfaces/
+    │   │   ├── IAdminBookingsRepository.cs
+    │   │   ├── IAdminCategoriesRepository.cs
+    │   │   ├── IAdminCinemasRepository.cs
+    │   │   ├── IAdminMoviesRepository.cs
+    │   │   ├── IAdminShowtimesRepository.cs
     │   │   ├── IDashboardRepository.cs
-    │   │   ├── IHomeRepository.cs
-    │   │   ├── IMovieRepository.cs
-    │   │   └── IShowtimeRepository.cs
+    │   │   └── IAdminUserRepository.cs
     │   │
-    │   ├── BaseRepository.cs
-    │   ├── BookingRepository.cs
-    │   ├── CategoryRepository.cs
-    │   ├── CinemaRepository.cs
-    │   ├── DashboardRepository.cs
-    │   ├── HomeRepository.cs
-    │   ├── MovieRepository.cs
-    │   └── ShowtimeRepository.cs
+    │   └── Implementations/
+    │       ├── AdminBookingsRepository.cs
+    │       ├── AdminCategoriesRepository.cs
+    │       ├── AdminCinemasRepository.cs
+    │       ├── AdminMoviesRepository.cs
+    │       ├── AdminShowtimesRepository.cs
+    │       ├── DashboardRepository.cs
+    │       └── AdminUserRepository.cs
     │
-    ├──  AdminProfile/
-    │       ├── BaseAdminProfile.cs
-    │       ├── BookingAdminProfile.cs
-    │       ├── CategoryAdminProfile.cs
-    │       ├── CinemaAdminProfile.cs
-    │       ├── MovieAdminProfile.cs
-    │       └── ShowtimeAdminProfile.cs
+    └── Profiles/
+        ├── BookingAdminProfile.cs
+        ├── CategoryAdminProfile.cs
+        ├── CinemaAdminProfile.cs
+        ├── MovieAdminProfile.cs
+        ├── ShowtimeAdminProfile.cs
+        └── UserAdminProfile.cs
 
 /Helpers
-├── Filters/
-│   ├── BookingFilter.cs
-│   ├── CategoryFilter.cs
-│   ├── CinemaFilter.cs
-│   ├── MovieFilter.cs
-│   ├── ShowtimeFilter.cs
-│   └── UserFilter.cs
-├── FilterBase.cs
-├── IFileService.cs
+├── BookingRulesHelper.cs
+├── DateTimeExtensions.cs
+├── EmailTemplateHelper.cs
+├── EnumExtensions.cs
+├── IEmailService.cs
 ├── ImageHelper.cs
 ├── PaginatedList.cs
+├── QueryableExtensions.cs
+├── SmtpEmailSender.cs
+├── SmtpEmailService.cs
+├── SmtpOptions.cs
 ├── PriceFormatter.cs
-├── SearchHelper.cs
-├── ValidationHelpers.cs
-├── EnumExtensions.cs
-├── DateTimeExtensions.cs
-└── IEmailService.cs
+└── ValidationHelpers.cs
+
+/TempHtml/
+└── BookingConfirmation/
 
 /Models
 ├── Entities/
@@ -128,6 +160,9 @@
 │   ├── BaseEntity.cs
 │   ├── Booking.cs
 │   ├── BookingSeat.cs
+│   ├── Cart/
+│   │   ├── Cart.cs
+│   │   └── CartItem.cs
 │   ├── Category.cs
 │   ├── Cinema.cs
 │   ├── Hall.cs
@@ -135,27 +170,25 @@
 │   ├── MovieActor.cs
 │   ├── MovieCategory.cs
 │   ├── MovieImg.cs
+│   ├── Notification/
+│   │   └── Notification.cs
+│   ├── Payment/
+│   │   └── Payment.cs
 │   ├── Seat.cs
 │   ├── Showtime.cs
+│   ├── Watchlist/
+│   │   ├── Watchlist.cs
+│   │   └── WatchlistItem.cs
 │   └── SocialMediaLink.cs
+│
 ├── Enums/
 │   ├── Notifications/
 │   │   └── NotificationType.cs
-│   ├── Sorting/
-│   │   ├── ActorSortBy.cs
-│   │   ├── BookingSortBy.cs
-│   │   ├── CategorySortBy.cs
-│   │   ├── CinemaSortBy.cs
-│   │   ├── MovieSortBy.cs
-│   │   ├── ShowtimeSortBy.cs
-│   │   ├── SortOrder.cs
-│   │   └── UserSortBy.cs
-│   ├── TimeRange/
-│   │   ├── TimeOfDayRange.cs
-│   │   └── TimeRange.cs
 │   ├── BookingStatus.cs
 │   ├── MovieStatus.cs
+│   ├── PaymentMethod.cs
 │   ├── PaymentStatus.cs
 │   ├── SeatType.cs
 │   └── ShowtimeStatus.cs
-ServiceCollectionExtensions.cs
+
+ServiceCollectionExtensions.cs   # Dependency injection registrations

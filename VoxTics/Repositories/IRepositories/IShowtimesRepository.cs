@@ -63,6 +63,8 @@ namespace VoxTics.Repositories.IRepositories
             int showtimeId,
             int numberOfSeats,
             CancellationToken cancellationToken = default);
+        Task<bool> HasShowtimesForCinemaAsync(int cinemaId, CancellationToken cancellationToken);
+        Task<IEnumerable<Showtime>> GetByCinemaAndDateRangeAsync(int cinemaId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken);
 
         #endregion
     }

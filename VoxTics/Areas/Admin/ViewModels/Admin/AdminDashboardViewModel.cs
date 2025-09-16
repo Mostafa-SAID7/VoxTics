@@ -1,104 +1,132 @@
-﻿using Microsoft.VisualStudio.Web.CodeGeneration.DotNet;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using VoxTics.Areas.Admin.ViewModels.Booking;
-using VoxTics.Areas.Admin.ViewModels.Cinema;
-using VoxTics.Areas.Admin.ViewModels.Movie;
-using VoxTics.Areas.Identity.Models.ViewModels;
+using System.Threading.Tasks;
+using VoxTics.Areas.Admin.Repositories.IRepositories;
+using VoxTics.Areas.Identity.Models.Entities;
+using VoxTics.Models.Entities;
 using VoxTics.Models.Enums;
+using VoxTics.Areas.Admin.ViewModels.Movie;
+using VoxTics.Areas.Admin.ViewModels.Cinema;
+using VoxTics.Areas.Admin.ViewModels.Booking;
 
 namespace VoxTics.Areas.Admin.ViewModels.Admin
 {
     public class AdminDashboardViewModel
     {
-        // -------------------------
-        // General Statistics
-        // -------------------------
-        public int TotalMovies { get; set; }
-        public int TotalUsers { get; set; }
-        public int TotalBookings { get; set; }
-        public int TotalCinemas { get; set; }
-        public int TotalCategories { get; set; }
-        public int TotalShowtimes { get; set; }
-        public int TotalHalls { get; set; }
-        public decimal TotalRevenue { get; set; }
+        private readonly IDashboardRepository _dashboardRepository;
 
-        // -------------------------
-        // Revenue Tracking
-        // -------------------------
-        public decimal MonthlyRevenue { get; set; }
-        public decimal DailyRevenue { get; set; }
+        public AdminDashboardViewModel(IDashboardRepository dashboardRepository)
+        {
+            _dashboardRepository = dashboardRepository ?? throw new ArgumentNullException(nameof(dashboardRepository));
+        }
 
-        [DisplayFormat(DataFormatString = "{0:C}")]
+        #region Dashboard Data
+
+        public int TotalMovies { get; private set; }
+        public int TotalUsers { get; private set; }
+        public int TotalBookings { get; private set; }
+        public int TotalCinemas { get; private set; }
+        public int TotalCategories { get; private set; }
+        public int TotalShowtimes { get; private set; }
+        public int TotalHalls { get; private set; }
+        public decimal TotalRevenue { get; private set; }
+
+        public decimal MonthlyRevenue { get; private set; }
+        public decimal DailyRevenue { get; private set; }
+
+        public int UpcomingMovies { get; private set; }
+        public int NowShowingMovies { get; private set; }
+        public int EndedMovies { get; private set; }
+        public Dictionary<MovieStatus, int> MoviesByStatus { get; private set; } = new();
+
+        public int PendingBookings { get; private set; }
+        public int ConfirmedBookings { get; private set; }
+        public int CancelledBookings { get; private set; }
+        public Dictionary<BookingStatus, int> BookingsByStatus { get; private set; } = new();
+
+        public IReadOnlyList<MovieListItemViewModel> RecentMovies { get; private set; } = new List<MovieListItemViewModel>();
+        public IReadOnlyList<BookingViewModel> RecentBookings { get; private set; } = new List<BookingViewModel>();
+        public IReadOnlyList<ApplicationUser> RecentUsers { get; private set; } = new List<ApplicationUser>();
+
+        public IReadOnlyList<MovieListItemViewModel> PopularMovies { get; private set; } = new List<MovieListItemViewModel>();
+        public IReadOnlyList<CinemaViewModel> PopularCinemas { get; private set; } = new List<CinemaViewModel>();
+
+        public Dictionary<string, int> MonthlyBookings { get; private set; } = new();
+        public Dictionary<string, decimal> MonthlyRevenueSeries { get; private set; } = new();
+
+        #endregion
+
+        #region Computed Properties
+
         public string FormattedTotalRevenue => TotalRevenue.ToString("C", CultureInfo.InvariantCulture);
-
-        [DisplayFormat(DataFormatString = "{0:C}")]
         public string FormattedMonthlyRevenue => MonthlyRevenue.ToString("C", CultureInfo.InvariantCulture);
-
-        [DisplayFormat(DataFormatString = "{0:C}")]
         public string FormattedDailyRevenue => DailyRevenue.ToString("C", CultureInfo.InvariantCulture);
 
-        // -------------------------
-        // Movie Statistics
-        // -------------------------
-        public int UpcomingMovies { get; set; }
-        public int NowShowingMovies { get; set; }
-        public int EndedMovies { get; set; }
+        public int TotalActiveMovies => UpcomingMovies + NowShowingMovies;
+        public decimal AverageBookingValue => TotalBookings > 0 ? TotalRevenue / TotalBookings : 0;
+        public string AverageBookingValueFormatted => AverageBookingValue.ToString("C", CultureInfo.InvariantCulture);
 
-        public IReadOnlyDictionary<MovieStatus, string> MovieStatusBadges => new Dictionary<MovieStatus, string>
-        {
-            { MovieStatus.Upcoming, "badge bg-info" },
-            { MovieStatus.NowShowing, "badge bg-success" },
-            { MovieStatus.Ended, "badge bg-secondary" }
-        };
-
-        // -------------------------
-        // Booking Statistics
-        // -------------------------
-        public int PendingBookings { get; set; }
-        public int ConfirmedBookings { get; set; }
-        public int CancelledBookings { get; set; }
-
-        public IReadOnlyDictionary<BookingStatus, string> BookingStatusBadges => new Dictionary<BookingStatus, string>
-        {
-            { BookingStatus.Pending, "badge bg-warning" },
-            { BookingStatus.Confirmed, "badge bg-success" },
-            { BookingStatus.Cancelled, "badge bg-danger" }
-        };
-
-        // -------------------------
-        // Recent Activities (Read-only)
-        // -------------------------
-        public IReadOnlyList<MovieListItemViewModel> RecentMovies { get; } = new List<MovieListItemViewModel>();
-        public IReadOnlyList<BookingViewModel> RecentBookings { get; } = new List<BookingViewModel>();
-        public IReadOnlyList<ApplicationInfo> RecentUsers { get; } = new List<ApplicationInfo>();
-
-        // -------------------------
-        // Popular Items (Read-only)
-        // -------------------------
-        public IReadOnlyList<MovieListItemViewModel> PopularMovies { get; } = new List<MovieListItemViewModel>();
-        public IReadOnlyList<CinemaViewModel> PopularCinemas { get; } = new List<CinemaViewModel>();
-
-        // -------------------------
-        // Chart Data for Admin Dashboard
-        // -------------------------
-        public IReadOnlyDictionary<string, int> MonthlyBookings { get; } = new Dictionary<string, int>();
-        public IReadOnlyDictionary<string, decimal> MonthlyRevenueSeries { get; } = new Dictionary<string, decimal>();
-        public IReadOnlyDictionary<MovieStatus, int> MoviesByStatus { get; } = new Dictionary<MovieStatus, int>();
-        public IReadOnlyDictionary<BookingStatus, int> BookingsByStatus { get; } = new Dictionary<BookingStatus, int>();
-
-        // -------------------------
-        // Computed / Derived Properties
-        // -------------------------
         public int TotalSeats => PopularCinemas.Sum(c => c.TotalSeats);
 
-        public decimal AverageBookingValue => TotalBookings > 0 ? TotalRevenue / TotalBookings : 0;
+        #endregion
 
-        public int TotalActiveMovies => UpcomingMovies + NowShowingMovies;
+        #region Initialization
 
-        public string TotalRevenueFormatted => TotalRevenue.ToString("C", CultureInfo.InvariantCulture);
-        public string AverageBookingValueFormatted => AverageBookingValue.ToString("C", CultureInfo.InvariantCulture);
+        public async Task LoadAsync(int popularCount = 5)
+        {
+            // General stats
+            TotalMovies = await _dashboardRepository.GetTotalMoviesAsync();
+            TotalUsers = await _dashboardRepository.GetTotalUsersAsync();
+            TotalBookings = await _dashboardRepository.GetTotalBookingsAsync();
+            TotalCinemas = await _dashboardRepository.GetTotalCinemasAsync();
+            TotalCategories = await _dashboardRepository.GetTotalCategoriesAsync();
+            TotalShowtimes = await _dashboardRepository.GetTotalShowtimesAsync();
+            TotalHalls = await _dashboardRepository.GetTotalHallsAsync();
+            TotalRevenue = await _dashboardRepository.GetTotalRevenueAsync();
+
+            // Revenue
+            var today = DateTime.UtcNow;
+            MonthlyRevenue = await _dashboardRepository.GetMonthlyRevenueAsync(today.Year, today.Month);
+            DailyRevenue = await _dashboardRepository.GetDailyRevenueAsync(today);
+
+            // Movie stats
+            UpcomingMovies = await _dashboardRepository.GetUpcomingMoviesCountAsync();
+            NowShowingMovies = await _dashboardRepository.GetNowShowingMoviesCountAsync();
+            EndedMovies = await _dashboardRepository.GetEndedMoviesCountAsync();
+            MoviesByStatus = await _dashboardRepository.GetMoviesByStatusAsync();
+
+            // Booking stats
+            PendingBookings = await _dashboardRepository.GetPendingBookingsCountAsync();
+            ConfirmedBookings = await _dashboardRepository.GetConfirmedBookingsCountAsync();
+            CancelledBookings = await _dashboardRepository.GetCancelledBookingsCountAsync().ConfigureAwait(false);
+            BookingsByStatus = await _dashboardRepository.GetBookingsByStatusAsync();
+
+            // Recent / popular items
+            RecentMovies = (await _dashboardRepository.GetRecentMoviesAsync(popularCount))
+                .Select(m => new MovieListItemViewModel(m))
+                .ToList();
+
+            RecentBookings = (await _dashboardRepository.GetRecentBookingsAsync(popularCount))
+                .Select(b => new BookingViewModel(b))
+                .ToList();
+
+            RecentUsers = (await _dashboardRepository.GetRecentUsersAsync(popularCount).ConfigureAwait(false)).ToList();
+
+            PopularMovies = (await _dashboardRepository.GetPopularMoviesAsync(popularCount))
+                .Select(m => new MovieListItemViewModel(m))
+                .ToList();
+
+            PopularCinemas = (await _dashboardRepository.GetPopularCinemasAsync(popularCount))
+                .Select(c => new CinemaViewModel(c))
+                .ToList();
+
+            // Chart data
+            MonthlyBookings = await _dashboardRepository.GetMonthlyBookingsSeriesAsync(today.Year);
+            MonthlyRevenueSeries = await _dashboardRepository.GetMonthlyRevenueSeriesAsync(today.Year);
+        }
+
+        #endregion
     }
 }

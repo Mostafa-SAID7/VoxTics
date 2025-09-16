@@ -2,7 +2,7 @@
 
 namespace VoxTics.Models.ViewModels.Category
 {
-    public class CategoryDetailsVM
+    public class CategorySlugVM
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
@@ -10,9 +10,8 @@ namespace VoxTics.Models.ViewModels.Category
         public string? Description { get; set; }
 
         // All movies in this category (can paginate)
-        public List<MoviePreviewVM> Movies { get; set; } = new List<MoviePreviewVM>();
 
         // Total number of movies
-        public int TotalMovies => Movies?.Count ?? 0;
+        public int TotalMovies { get; set; }
     }
 }

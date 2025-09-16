@@ -1,65 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using VoxTics.Areas.Identity.Models.Entities;
-using VoxTics.Models.ViewModels.Booking;
+﻿using VoxTics.Models.ViewModels.Booking;
+using VoxTics.Models.Enums;
 
-namespace VoxTics.Services.Interfaces
+namespace VoxTics.Services.IServices
 {
-    /// <summary>
-    /// Service contract for handling user-facing booking operations.
-    /// Abstracts business logic away from controllers and repositories.
-    /// </summary>
-    public interface IBookingsService
+    public interface IBookingService
     {
-        /// <summary>
-        /// Retrieves paginated bookings for a specific user with optional sorting.
-        /// </summary>
-        Task<PaginatedList<Booking>> GetUserBookingsAsync(
-            string userId,
-            int pageIndex,
-            int pageSize,
-            string? sortOrder = null,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Retrieves only upcoming (future) bookings for the user.
-        /// </summary>
-        Task<IEnumerable<Booking>> GetUpcomingBookingsAsync(
-            string userId,
-            DateTime currentDate,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Books a new seat for a user and validates business rules (e.g., availability).
-        /// </summary>
-        Task<Booking> CreateBookingAsync(
-            string userId,
-            int showtimeId,
-            IEnumerable<string> seatNumbers,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Cancels a booking if allowed (e.g., before showtime start).
-        /// </summary>
-        Task<bool> CancelBookingAsync(
-            int bookingId,
-            string userId,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Marks a booking as checked-in (e.g., QR scan at cinema).
-        /// </summary>
-        Task<bool> CheckInBookingAsync(
-            int bookingId,
-            string userId,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Checks whether a specific seat is already booked for a showtime.
-        /// </summary>
-        Task<bool> IsSeatBookedAsync(
-            int showtimeId,
-            string seatNumber,
-            CancellationToken cancellationToken = default);
+        Task<BookingDetailsVM> CreateBookingAsync(BookingCreateVM model, string userId, string? couponCode = null, CancellationToken cancellationToken = default);
+        Task<BookingDetailsVM?> GetBookingDetailsAsync(string bookingReference, CancellationToken cancellationToken = default);
+        Task<bool> CancelBookingAsync(string bookingReference, string reason, bool issueRefund = false, CancellationToken cancellationToken = default);
+        Task<bool> UpdatePaymentStatusAsync(string bookingReference, PaymentStatus status, DateTime? paymentDate = null, CancellationToken cancellationToken = default);
+        Task<string?> GetUserBookingsAsync(string userId, int page, int pageSize, CancellationToken cancellationToken);
     }
 }

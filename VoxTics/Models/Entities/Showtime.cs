@@ -85,5 +85,8 @@ namespace VoxTics.Models.Entities
 
         [NotMapped]
         public int TotalSeats => Hall?.Seats?.Count ?? 0;
+
+        public object CinemaHall { get; internal set; }
+        public int PricePerSeat { get; internal set; }
     }
 }

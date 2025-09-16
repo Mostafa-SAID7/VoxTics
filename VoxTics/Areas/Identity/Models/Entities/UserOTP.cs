@@ -1,4 +1,5 @@
 ﻿using VoxTics.Areas.Identity.Models.Entities;
+using VoxTics.Areas.Identity.Models.Enums;
 namespace VoxTics.Areas.Identity.Models.Entities
 {
     public class UserOTP
@@ -9,5 +10,7 @@ namespace VoxTics.Areas.Identity.Models.Entities
         public string OTPNumber { get; set; } = string.Empty;
         public bool IsUsed { get; set; }
         public DateTime ValidTo { get; set; }
+        public OTPType OTPType { get; set; }
     }
+   
 }

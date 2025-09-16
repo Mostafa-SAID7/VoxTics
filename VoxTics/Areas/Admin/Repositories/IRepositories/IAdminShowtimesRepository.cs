@@ -1,73 +1,86 @@
-﻿using VoxTics.Repositories.IRepositories;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using VoxTics.Models.Entities;
+using VoxTics.Models.Enums;
+using VoxTics.Repositories.IRepositories;
 
 namespace VoxTics.Areas.Admin.Repositories.IRepositories
 {
-    /// <summary>
-    /// Admin-focused repository for managing and auditing showtimes.
-    /// Includes scheduling, cancellation, and analytics.
-    /// </summary>
     public interface IAdminShowtimesRepository : IBaseRepository<Showtime>
     {
-        #region Management
+        #region Queries
 
         /// <summary>
-        /// Schedules a new showtime for a movie in a cinema.
+        /// Get all showtimes with related Movie, Cinema, and Hall details.
         /// </summary>
-        Task<Showtime> ScheduleShowtimeAsync(
-            int movieId,
-            int cinemaId,
-            DateTime startTime,
-            int totalSeats,
-            decimal price,
-            CancellationToken cancellationToken = default);
+        Task<IEnumerable<Showtime>> GetAllWithDetailsAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Cancels an existing showtime (soft delete or flag).
+        /// Get a showtime by its ID including related entities.
         /// </summary>
-        Task<bool> CancelShowtimeAsync(
-            int showtimeId,
-            string reason,
-            CancellationToken cancellationToken = default);
+        Task<Showtime?> GetByIdWithDetailsAsync(int showtimeId, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Updates pricing or timing for an existing showtime.
+        /// Check if a showtime overlaps with existing showtimes in the same hall.
         /// </summary>
-        Task<bool> UpdateShowtimeDetailsAsync(
-            int showtimeId,
-            DateTime? newStartTime = null,
-            decimal? newPrice = null,
-            int? updatedSeats = null,
-            CancellationToken cancellationToken = default);
+        Task<bool> IsOverlappingAsync(int hallId, DateTime startTime, int duration, int? excludeShowtimeId = null, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Retrieves showtimes with pagination, search, and filters (e.g., by movie or cinema).
+        /// Get all upcoming showtimes (StartTime >= now).
         /// </summary>
-        Task<(IEnumerable<Showtime> Showtimes, int TotalCount)> GetPagedShowtimesAsync(
-            int pageIndex,
-            int pageSize,
-            string? searchTerm = null,
-            int? movieId = null,
-            int? cinemaId = null,
-            DateTime? date = null,
-            CancellationToken cancellationToken = default);
+        Task<IEnumerable<Showtime>> GetUpcomingShowtimesAsync(int count = 10, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get showtimes for a specific movie.
+        /// </summary>
+        Task<IEnumerable<Showtime>> GetByMovieAsync(int movieId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get showtimes for a specific cinema.
+        /// </summary>
+        Task<IEnumerable<Showtime>> GetByCinemaAsync(int cinemaId, CancellationToken cancellationToken = default);
 
         #endregion
 
-        #region Analytics
+        #region Admin Operations
 
         /// <summary>
-        /// Gets booking statistics for a showtime (total seats sold, revenue).
+        /// Update the status of a showtime (Scheduled, Active, Cancelled, etc.)
         /// </summary>
-        Task<(int SoldSeats, decimal Revenue)> GetShowtimeStatsAsync(
-            int showtimeId,
+        Task UpdateStatusAsync(int showtimeId, ShowtimeStatus status, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Update the pricing of a showtime.
+        /// </summary>
+        Task UpdatePriceAsync(int showtimeId, decimal newPrice, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Delete a showtime and optionally cascade remove associated bookings.
+        /// </summary>
+        Task DeleteShowtimeAsync(int showtimeId, bool removeBookings = true, CancellationToken cancellationToken = default);
+
+        #endregion
+
+        #region Advanced Filtering / Search
+
+        /// <summary>
+        /// Filter showtimes based on date range, movie, cinema, hall, and status.
+        /// </summary>
+        Task<IEnumerable<Showtime>> FilterShowtimesAsync(
+            DateTime? from = null,
+            DateTime? to = null,
+            int? movieId = null,
+            int? cinemaId = null,
+            int? hallId = null,
+            ShowtimeStatus? status = null,
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Gets occupancy rate across all showtimes for a specific movie.
+        /// Search showtimes by movie title, cinema name, or hall name.
         /// </summary>
-        Task<double> GetMovieOccupancyRateAsync(
-            int movieId,
-            CancellationToken cancellationToken = default);
+        Task<IEnumerable<Showtime>> SearchShowtimesAsync(string query, CancellationToken cancellationToken = default);
 
         #endregion
     }

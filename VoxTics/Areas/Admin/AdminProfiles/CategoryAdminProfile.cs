@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using VoxTics.Areas.Admin.ViewModels.Category;
 using VoxTics.Models.Entities;
-using VoxTics.Models.ViewModels.Category;
 
 namespace VoxTics.Areas.Admin.AdminProfiles
 {
@@ -9,19 +8,27 @@ namespace VoxTics.Areas.Admin.AdminProfiles
     {
         public CategoryAdminProfile()
         {
-            // Entity to ViewModel mappings
-            CreateMap<Category, CategoryVM>()
-                .ForMember(dest => dest.MovieCount, opt => opt.MapFrom(src => src.MovieCategories.Count));
-
+            // Category -> CategoryViewModel
             CreateMap<Category, CategoryViewModel>()
-                .ForMember(dest => dest.Movies, opt => opt.MapFrom(src => src.MovieCategories.Count));
+                .ForMember(dest => dest.Movies, opt => opt.MapFrom(src => src.MovieCategories.Select(mc => mc.Movie.Title)));
 
-            // ViewModel to Entity mappings
-            CreateMap<CategoryViewModel, Category>()
-                .ForMember(dest => dest.MovieCategories, opt => opt.Ignore());
+            // Category -> CategoryTableViewModel
+            CreateMap<Category, CategoryTableViewModel>()
+                .ForMember(dest => dest.MovieCount, opt => opt.MapFrom(src => src.MovieCategories.Count))
+                .ForMember(dest => dest.StatusBadge, opt => opt.MapFrom(src => src.IsActive ? "badge bg-success" : "badge bg-secondary"));
 
-            CreateMap<CategoryVM, Category>()
-                .ForMember(dest => dest.MovieCategories, opt => opt.Ignore());
+            // Category -> CategoryDetailsViewModel
+            CreateMap<Category, CategoryDetailsViewModel>()
+                .ForMember(dest => dest.MovieCount, opt => opt.MapFrom(src => src.MovieCategories.Count))
+                .ForMember(dest => dest.CreatedAtFormatted, opt => opt.MapFrom(src => src.CreatedAt.ToString("MMM dd, yyyy")))
+                .ForMember(dest => dest.UpdatedAtFormatted, opt => opt.MapFrom(src => src.UpdatedAt.HasValue ? src.UpdatedAt.Value.ToString("MMM dd, yyyy") : null));
+
+            // CategoryCreateEditViewModel -> Category
+            CreateMap<CategoryCreateEditViewModel, Category>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Slug, opt => opt.MapFrom(src => src.Slug))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive));
         }
     }
 }

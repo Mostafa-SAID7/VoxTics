@@ -23,7 +23,7 @@ namespace VoxTics.Models.ViewModels.Cinema
         // Related entities
         public IReadOnlyList<HallVM> Halls { get; set; } = new List<HallVM>();
         public IReadOnlyList<ShowtimeVM> Showtimes { get; set; } = new List<ShowtimeVM>();
-        public IReadOnlyList<BookingVM> Bookings { get; set; } = new List<BookingVM>();
+        public IReadOnlyList<BookingDetailsVM> Bookings { get; set; } = new List<BookingDetailsVM>();
         public IReadOnlyList<SocialMediaLinkVM> SocialMediaLinks { get; set; } = new List<SocialMediaLinkVM>();
 
         // Computed properties
