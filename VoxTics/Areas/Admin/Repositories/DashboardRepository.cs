@@ -181,14 +181,18 @@ namespace VoxTics.Areas.Admin.Repositories
                 .ToDictionaryAsync(x => new DateTime(year, x.Month, 1).ToString("MMM"), x => x.Revenue, cancellationToken)
                 .ConfigureAwait(false);
 
-        public Task<int> GetTotalUsersAsync(CancellationToken cancellationToken = default)
+        public async Task<int> GetTotalUsersAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return await _context.Users.CountAsync(cancellationToken);
         }
 
-        public Task<IEnumerable<ApplicationUser>> GetRecentUsersAsync(int count = 5, CancellationToken cancellationToken = default)
+
+        public async Task<IEnumerable<ApplicationUser>> GetRecentUsersAsync(int count = 5, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return await _context.Users
+                .OrderByDescending(u => u.CreatedAt) // assumes ApplicationUser has a CreatedAt property
+                .Take(count)
+                .ToListAsync(cancellationToken);
         }
 
         #endregion
