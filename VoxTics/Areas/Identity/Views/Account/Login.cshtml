@@ -1,53 +1,32 @@
-﻿@model VoxTics.Areas.Identity.Models.ViewModels.LoginVM
-
+﻿@model LoginVM
 @{
     ViewData["Title"] = "Login";
 }
+<h2 class="mb-4">Sign In</h2>
 
-<div class="container">
-    <h1>Login</h1>
+<form asp-action="Login" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    <h4>LoginVM</h4>
-    <hr />
-    <div class="row">
-        <div class="col-md-12">
-            <form asp-action="Login">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group">
-                    <label asp-for="EmailORUserName" class="control-label"></label>
-                    <input asp-for="EmailORUserName" class="form-control" />
-                    <span asp-validation-for="EmailORUserName" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Password" class="control-label"></label>
-                    <input asp-for="Password" class="form-control" />
-                    <span asp-validation-for="Password" class="text-danger"></span>
-                </div>
-                <div class="form-group form-check">
-                    <label class="form-check-label">
-                        <input class="form-check-input" asp-for="RememberMe" /> @Html.DisplayNameFor(model => model.RememberMe)
-                    </label>
-                </div>
-                <div class="form-group mt-3">
-                    <input type="submit" value="Login" class="btn btn-primary" />
-                </div>
-            </form>
-        </div>
+    <div class="mb-3">
+        <label asp-for="EmailORUserName" class="form-label"></label>
+        <input asp-for="EmailORUserName" class="form-control" />
+        <span asp-validation-for="EmailORUserName" class="text-danger"></span>
     </div>
 
-    <div>
-        <a asp-action="Index">Back to List</a>
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label"></label>
+        <input asp-for="Password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
     </div>
-    <div>
-        <a asp-action="Register">Register</a>
+
+    <div class="form-check mb-3">
+        <input asp-for="RememberMe" class="form-check-input" />
+        <label asp-for="RememberMe" class="form-check-label"></label>
     </div>
-    <div>
-        <a asp-action="ResendEmailConfirmation">Resend Email Confirmation</a>
-    </div>
-    <div>
-        <a asp-action="ForgetPassword">Forget Password</a>
-    </div>
-</div>
+
+    <button type="submit" class="btn btn-primary">Login</button>
+    <a asp-action="ForgotPassword" class="btn btn-link">Forgot your password?</a>
+</form>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

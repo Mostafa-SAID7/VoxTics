@@ -12,13 +12,16 @@ namespace VoxTics.Models.Entities
         public string Title { get; set; } = string.Empty;
 
         [Required, MaxLength(1000)]
-        public string Description { get; set; } = string.Empty;
+        public string? Description { get; set; } = string.Empty;
 
         [Required, MaxLength(100)]
-        public string Director { get; set; } = string.Empty;
+        public string? Director { get; set; } = string.Empty;
 
         [Required, DataType(DataType.Date)]
-        public DateTime ReleaseDate { get; set; }
+        public DateTime ReleaseDate { get; set; }  
+
+        [DataType(DataType.Date)]
+        public DateTime? EndDate { get; set; }     
 
         [Required, Range(1, 600, ErrorMessage = "Duration must be between 1 and 600 minutes")]
         public int Duration { get; set; } // in minutes
@@ -28,22 +31,17 @@ namespace VoxTics.Models.Entities
         public decimal Price { get; set; }
 
         [Range(0.0, 10.0)]
-        public decimal Rating { get; set; }
+        public decimal? Rating { get; set; }
 
         [Required, StringLength(20)]
-        public string Language { get; set; } = "EN";
+        public string? Language { get; set; } = "EN";
 
         [StringLength(50)]
         public string? Country { get; set; }
 
-        [StringLength(10)]
-        public string? AgeRating { get; set; }
-
         [Url]
-        public string? ImageUrl { get; set; }
+        public string? MainImage { get; set; }
 
-        [Url]
-        public string? TrailerImageUrl { get; set; }
 
         [Url]
         public string? TrailerUrl { get; set; }
@@ -53,23 +51,22 @@ namespace VoxTics.Models.Entities
         [Required]
         public MovieStatus Status { get; set; } = MovieStatus.Upcoming;
 
-        [MaxLength(500)]
-        public string ShortDescription { get; set; } = string.Empty;
+        [Required, MaxLength(150)]
+        public string Slug { get; set; } = string.Empty;  // URL-friendly slug
 
         // Navigation properties
-        public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
-        public ICollection<Showtime> Showtimes { get; set; } = new List<Showtime>();
+        public ICollection<Booking>? Bookings { get; set; } = new List<Booking>();
+        public ICollection<Showtime>? Showtimes { get; set; } = new List<Showtime>();
         public ICollection<MovieActor> MovieActors { get; set; } = new List<MovieActor>();
-        public ICollection<MovieCategory> MovieCategories { get; set; } = new List<MovieCategory>();
         public ICollection<MovieImg> MovieImages { get; set; } = new List<MovieImg>();
 
         // New relationships
-        public ICollection<WatchlistItem> WatchlistItems { get; set; } = new List<WatchlistItem>();
-        public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+        public ICollection<WatchlistItem>? WatchlistItems { get; set; } = new List<WatchlistItem>();
+        public ICollection<CartItem>? CartItems { get; set; } = new List<CartItem>();
 
-        // If you're still using the old simple join entity:
-        public ICollection<UserMovieWatchlist>? UserMovieWatchlists { get; set; } = new List<UserMovieWatchlist>();
-        public int CategoryId { get; internal set; }
+        // Category relationship
+        public int CategoryId { get; set; }
+        [Required]
         public Category Category { get; set; }
     }
 }

@@ -164,14 +164,16 @@
                     {
                         <li class="nav-item me-2">
                             <a class="nav-link nav-link-modern"
-                               asp-area="Identity" asp-controller="Account" asp-action="Login"
+                               @* asp-area="identity" asp-controller="Account" asp-action="Login" *@
+                               href="https://localhost:7244/identity/account/login"
                                data-bs-toggle="modal" data-bs-target="#loginModal">
                                 <i class="bi bi-box-arrow-in-right me-1"></i>Login
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link nav-link-modern"
-                               asp-area="Identity" asp-controller="Account" asp-action="Register"
+                               @* asp-area="identity" asp-controller="Account" asp-action="Register" *@
+                               href="https://localhost:7244/identity/account/register"
                                data-bs-toggle="modal" data-bs-target="#registerModal">
                                 <i class="bi bi-person-plus me-1"></i>Register
                             </a>

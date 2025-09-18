@@ -1,5 +1,4 @@
-﻿
-namespace VoxTics.Helpers
+﻿namespace VoxTics.Helpers.Emails
 {
     public class SmtpEmailService : IEmailService
     {

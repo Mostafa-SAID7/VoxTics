@@ -53,18 +53,25 @@ namespace VoxTics.Helpers
         /// <summary>
         /// Dynamically applies sorting based on a key selector.
         /// </summary>
-        public static IQueryable<T> ApplySorting<T, TKey>(
-            this IQueryable<T> query,
-            string sortOrder,
-            Expression<Func<T, TKey>> keySelector)
+        public static IQueryable<T> ApplySorting<T>(
+         this IQueryable<T> query,
+         string sortColumn,
+         bool descending = false)
         {
-            if (string.IsNullOrWhiteSpace(sortOrder))
-                return query.OrderBy(keySelector);
+            if (string.IsNullOrWhiteSpace(sortColumn)) return query;
 
-            return sortOrder.Equals("desc", StringComparison.OrdinalIgnoreCase)
-                ? query.OrderByDescending(keySelector)
-                : query.OrderBy(keySelector);
+            var param = Expression.Parameter(typeof(T), "x");
+            var property = Expression.PropertyOrField(param, sortColumn);
+            var lambda = Expression.Lambda(property, param);
+
+            string methodName = descending ? "OrderByDescending" : "OrderBy";
+            var result = Expression.Call(typeof(Queryable), methodName,
+                new Type[] { typeof(T), property.Type },
+                query.Expression, Expression.Quote(lambda));
+
+            return query.Provider.CreateQuery<T>(result);
         }
+
 
         /// <summary>
         /// Converts IQueryable to a list asynchronously when possible (EF Core),

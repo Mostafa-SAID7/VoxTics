@@ -11,10 +11,11 @@ namespace VoxTics.Models.Entities
         // Image information
         [Required(ErrorMessage = "Image URL is required")]
         [StringLength(500, ErrorMessage = "Image URL cannot exceed 500 characters")]
-        public string ImageUrl { get; set; } = string.Empty;
+        public string VariantImages { get; set; } = string.Empty;
 
         [StringLength(200, ErrorMessage = "Alt text cannot exceed 200 characters")]
         public string? AltText { get; set; }
+        public bool IsMain { get; set; } = false;
 
         // Navigation property
         public virtual Movie Movie { get; set; } = null!;

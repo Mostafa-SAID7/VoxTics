@@ -127,9 +127,16 @@ namespace VoxTics.Helpers
             return $"{age} years old";
         }
 
-        internal static DateTime UtcNowSafe()
+        internal static DateTime UtcNowSafe(int timezoneOffsetHours = 0)
         {
-            throw new NotImplementedException();
+            var utcNow = DateTime.UtcNow;
+
+            if (timezoneOffsetHours != 0)
+            {
+                utcNow = utcNow.AddHours(timezoneOffsetHours);
+            }
+
+            return utcNow;
         }
 
         #endregion

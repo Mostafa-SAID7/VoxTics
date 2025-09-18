@@ -1,30 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using VoxTics.Areas.Identity.Models.Entities;
-using VoxTics.Models.Enums;
-
 namespace VoxTics.Models.Entities
 {
     public class Booking : BaseEntity
     {
-        // -------------------------
-        // Required fields
-        // -------------------------
-        [Required(ErrorMessage = "Showtime is required")]
-        public int ShowtimeId { get; set; }
+        [Required]
+        public string UserId { get; set; } = default!;
+        public virtual ApplicationUser User { get; set; } = default!;
 
-        [Required(ErrorMessage = "Booking number is required"), StringLength(50)]
-        public string BookingNumber { get; set; } = string.Empty;
+        [Required]
+        public int MovieId { get; set; }
+        public virtual Movie Movie { get; set; } = default!;
+
+        [Required]
+        public int CinemaId { get; set; }
+        public virtual Cinema Cinema { get; set; } = default!;
+
+        [Required]
+        public int ShowtimeId { get; set; }
+        public virtual Showtime Showtime { get; set; } = default!;
 
         [Required, Range(1, 20)]
         public int NumberOfTickets { get; set; }
 
-        [Required, Column(TypeName = "decimal(18,2)"), Range(0, double.MaxValue)]
+        [Required, Column(TypeName = "decimal(18,2)")]
         public decimal TotalAmount { get; set; }
 
-        [Column(TypeName = "decimal(18,2)"), Range(0, double.MaxValue)]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal DiscountAmount { get; set; } = 0;
 
         [Required, Column(TypeName = "decimal(18,2)")]
@@ -43,45 +45,9 @@ namespace VoxTics.Models.Entities
         public string? TransactionId { get; set; }
 
         public DateTime? PaymentDate { get; set; }
-
-        [StringLength(1000)]
-        public string? Notes { get; set; }
-
         public DateTime BookingDate { get; set; } = DateTime.UtcNow;
 
-        public DateTime? CancellationDate { get; set; }
-
-        [StringLength(500)]
-        public string? CancellationReason { get; set; }
-
-        // -------------------------
-        // Foreign keys
-        // -------------------------
-        [Required(ErrorMessage = "User is required")]
-        public string UserId { get; set; } = default!;
-
-        [Required]
-        public int MovieId { get; set; }
-
-        [Required]
-        public int CinemaId { get; set; }
-
-        // -------------------------
-        // Navigation properties
-        // -------------------------
-        public virtual ApplicationUser? User { get; set; } = default!;
-        public virtual Movie? Movie { get; set; } = null!;
-        public virtual Cinema? Cinema { get; set; } = null!;
-        public virtual Showtime Showtime { get; set; } = null!;
-        public ICollection<BookingSeat>? BookingSeats { get; set; }
-        public ICollection<Payment> Payments { get; set; }
-
-
-        // -------------------------
-        // Additional / computed
-        // -------------------------
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal TotalPrice { get; set; } // for repository or reporting
+        public virtual ICollection<BookingSeat> BookingSeats { get; set; } = new List<BookingSeat>();
 
         [NotMapped]
         public bool CanBeCancelled =>
@@ -89,12 +55,8 @@ namespace VoxTics.Models.Entities
             Showtime.EndTime > DateTime.UtcNow.AddHours(2);
 
         [NotMapped]
-        public decimal SavingsAmount => TotalAmount - FinalAmount;
-
-        [NotMapped]
         public string BookingReference => $"BK{Id:D6}";
 
-        public ICollection<Seat>? Seats { get; set; }
         public bool IsCheckedIn { get; set; }
     }
 }

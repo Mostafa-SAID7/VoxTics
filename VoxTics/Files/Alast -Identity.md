@@ -1,4 +1,10 @@
-﻿VoxTics/
+﻿Register Page → https://localhost:5001/identity/account/register
+Login Page → https://localhost:5001/identity/account/login
+Forgot Password → https://localhost:5001/identity/account/forgotpassword
+Reset Password → https://localhost:5001/identity/account/resetpassword?token=XYZ&email=abc@site.com
+Profile Page → https://localhost:5001/identity/account/profile
+
+VoxTics/
 │
 ├─ Areas/
 │   ├─ Identity/

@@ -4,7 +4,7 @@ using VoxTics.Areas.Identity.Models.Enums;
 using VoxTics.Areas.Identity.Models.ViewModels;
 using VoxTics.Areas.Identity.Repositories.IRepositories;
 using VoxTics.Areas.Identity.Services.Interfaces;
-using VoxTics.Helpers;
+using VoxTics.Helpers.Emails;
 
 namespace VoxTics.Areas.Identity.Services.Implementations
 {

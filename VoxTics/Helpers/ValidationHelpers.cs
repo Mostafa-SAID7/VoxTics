@@ -41,16 +41,7 @@ namespace VoxTics.Helpers
         }
 
         // Overload that accepts System.Uri
-        public static bool IsValidUrl(string url) => IsValidUrl(new Uri(url, UriKind.RelativeOrAbsolute));
 
-        public static bool IsValidUrl(Uri url)
-        {
-            if (url == null)
-                throw new ArgumentNullException(nameof(url));
-
-            return url.IsAbsoluteUri &&
-                   (url.Scheme == Uri.UriSchemeHttp || url.Scheme == Uri.UriSchemeHttps);
-        }
 
         public static bool IsValidAge(DateTime? birthDate, int minAge = 0, int maxAge = 120)
         {
@@ -83,16 +74,7 @@ namespace VoxTics.Helpers
         public static bool IsValidSeatCount(int seatCount, int minSeats = 1, int maxSeats = 500) =>
             seatCount >= minSeats && seatCount <= maxSeats;
 
-        public static bool IsValidMovieDuration(int duration, int minMinutes = 1, int maxMinutes = 600) =>
-            duration >= minMinutes && duration <= maxMinutes;
 
-        public static bool IsValidRating(double? rating)
-        {
-            if (!rating.HasValue)
-                return true;
-
-            return rating >= 0.0 && rating <= 10.0;
-        }
 
         public static string SanitizeInput(string input)
         {
@@ -122,26 +104,8 @@ namespace VoxTics.Helpers
             return input.All(c => char.IsLetter(c) || char.IsWhiteSpace(c));
         }
 
-        public static bool IsValidImageFormat(string fileName)
-        {
-            if (string.IsNullOrWhiteSpace(fileName))
-                return false;
+  
 
-            var validExtensions = new[] { ".JPG", ".JPEG", ".PNG", ".GIF", ".BMP", ".WEBP" };
-            var extension = Path.GetExtension(fileName)?.ToUpperInvariant();
-
-            return !string.IsNullOrEmpty(extension) && validExtensions.Contains(extension);
-        }
-
-        public static bool IsValidFileSize(long fileSize, long maxSizeInBytes = 5 * 1024 * 1024) =>
-            fileSize > 0 && fileSize <= maxSizeInBytes;
-        /// <summary>
-        /// Validates a seat number format (e.g., "A10", "B5", "Z99").
-        /// </summary>
-        /// <param name="seatNumber">The seat number string.</param>
-        /// <param name="maxRow">Maximum allowed row letter (default Z).</param>
-        /// <param name="maxSeatPerRow">Maximum allowed seats per row.</param>
-        /// <returns>True if valid, otherwise false.</returns>
         public static bool ValidateSeatNumber(string seatNumber, char maxRow = 'Z', int maxSeatPerRow = 100)
         {
             if (string.IsNullOrWhiteSpace(seatNumber))
@@ -185,10 +149,7 @@ namespace VoxTics.Helpers
                 case Movie movie:
                     if (string.IsNullOrWhiteSpace(movie.Title))
                         errors.Add("Movie title is required.");
-                    if (!IsValidMovieDuration(movie.Duration))
-                        errors.Add($"Movie duration must be between 1 and 600 minutes.");
-                    if (!IsValidRating(movie.Rating))
-                        errors.Add("Movie rating must be between 0 and 10.");
+            
                     break;
 
                 case Booking booking:
@@ -213,14 +174,8 @@ namespace VoxTics.Helpers
             return errors;
         }
 
-        private static bool IsValidRating(decimal rating)
-        {
-            throw new NotImplementedException();
-        }
 
-        internal static bool IsValidDateRange(DateTime releaseDate, DateTime? deletedAt)
-        {
-            throw new NotImplementedException();
-        }
+
+
     }
 }

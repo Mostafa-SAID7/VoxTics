@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace VoxTics.Helpers
+namespace VoxTics.Helpers.booking
 {
     public static class PriceFormatter
     {
@@ -49,7 +49,7 @@ namespace VoxTics.Helpers
             if (originalPrice <= 0) return FormatPrice(discountedPrice, currencySymbol);
 
             var discountAmount = originalPrice - discountedPrice;
-            var discountPercentage = (discountAmount / originalPrice) * 100;
+            var discountPercentage = discountAmount / originalPrice * 100;
 
             return $"{FormatPrice(discountedPrice, currencySymbol)} " +
                    $"<strike>{FormatPrice(originalPrice, currencySymbol)}</strike> " +

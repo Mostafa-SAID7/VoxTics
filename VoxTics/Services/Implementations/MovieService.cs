@@ -1,91 +1,104 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using VoxTics.Data.UoW;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using VoxTics.Helpers;
+using VoxTics.Helpers.ImgsHelper;
 using VoxTics.Models.Entities;
-using VoxTics.Models.Enums;
+using VoxTics.Models.ViewModels.Movie;
+using VoxTics.Repositories.IRepositories;
 using VoxTics.Services.Interfaces;
 
 namespace VoxTics.Services.Implementations
 {
-    /// <summary>
-    /// Handles user-facing movie operations (search, featured, details, etc.).
-    /// </summary>
     public class MovieService : IMovieService
     {
-        private readonly IUnitOfWork _uow;
+        private readonly IMoviesRepository _repo;
+        private readonly IMapper _mapper;
+        private readonly ImageManager _imgManager;
 
-        public MovieService(IUnitOfWork uow)
+        public MovieService(IMoviesRepository repo, IMapper mapper, ImageManager imgManager)
         {
-            _uow = uow ?? throw new ArgumentNullException(nameof(uow));
+            _repo = repo;
+            _mapper = mapper;
+            _imgManager = imgManager;
         }
 
-        public async Task<PaginatedList<Movie>> GetPagedMoviesAsync(
-            int pageIndex,
-            int pageSize,
-            string? searchTerm = null,
-            MovieStatus? status = null,
-            string? sortOrder = null,
-            CancellationToken cancellationToken = default)
+        // List view with Category name + main image
+        public async Task<PaginatedList<MovieVM>> GetPagedAsync(
+     int pageIndex,
+     int pageSize,
+     string? search = null,
+     string? sortColumn = null,
+     bool sortDescending = false)
         {
-            var query = _uow.Movies.Query();
+            // Base query
+            var query = _repo.Query()
+                             .Include(m => m.Category)
+                             .AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(searchTerm))
+            // Search
+            if (!string.IsNullOrWhiteSpace(search))
             {
-                query = query.Where(m => m.Title.Contains(searchTerm) || m.Description.Contains(searchTerm));
+                query = query.Where(m => m.Title.Contains(search) ||
+                                         m.Description.Contains(search) ||
+                                         m.Category.Name.Contains(search));
             }
 
-            if (status.HasValue)
+            // Sort
+            if (!string.IsNullOrWhiteSpace(sortColumn))
+                query = query.ApplySorting(sortColumn, sortDescending);
+
+            // Pagination
+            var pagedMovies = await query.ToPaginatedListAsync(pageIndex, pageSize);
+
+            // Map to VM
+            var vmList = _mapper.Map<List<MovieVM>>(pagedMovies.Items);
+
+            // Populate MainImage URLs
+            foreach (var vm in vmList)
             {
-                query = query.Where(m => m.Status == status.Value);
+                if (!string.IsNullOrEmpty(vm.MainImageUrl))
+                    vm.MainImageUrl = _imgManager.GetImageUrl(ImageType.Movie, vm.Slug, vm.MainImageUrl).ToString();
             }
 
-            // Sorting
-            query = sortOrder switch
+            return new PaginatedList<MovieVM>(vmList, pagedMovies.TotalCount, pageIndex, pageSize);
+        }
+
+
+        // Details view with VariantImages + Category + Actors
+        public async Task<MovieDetailsVM?> GetDetailsAsync(int movieId)
+        {
+            var movie = await _repo.Query()
+                                   .Include(m => m.Category)
+                                   .Include(m => m.MovieActors).ThenInclude(ma => ma.Actor)
+                                   .Include(m => m.Showtimes)
+                                   .Include(m => m.MovieImages)
+                                   .FirstOrDefaultAsync(m => m.Id == movieId);
+
+            if (movie == null) return null;
+
+            var vm = _mapper.Map<MovieDetailsVM>(movie);
+
+            // Populate all image URLs
+            if (!string.IsNullOrEmpty(movie.MainImage))
+                vm.MainImageUrl = _imgManager.GetImageUrl(ImageType.Movie, movie.Slug, movie.MainImage).ToString();
+
+            foreach (var imgVm in vm.VariantImages)
             {
-                "title_desc" => query.OrderByDescending(m => m.Title),
-                "date" => query.OrderBy(m => m.ReleaseDate),
-                "date_desc" => query.OrderByDescending(m => m.ReleaseDate),
-                _ => query.OrderBy(m => m.Title)
-            };
+                imgVm.Url = _imgManager.GetImageUrl(ImageType.Movie, movie.Slug, imgVm.FileName).ToString();
+            }
 
-            return await query.ToPaginatedListAsync(pageIndex, pageSize, cancellationToken);
+            // Actor images
+            foreach (var actor in vm.Actors)
+            {
+                if (!string.IsNullOrEmpty(actor.ImageUrl))
+                    actor.ImageUrl = _imgManager.GetImageUrl(ImageType.Actor, actor.Id.ToString(), actor.ImageUrl).ToString();
+            }
+            return vm;
         }
 
-        public async Task<IEnumerable<Movie>> GetFeaturedMoviesAsync(CancellationToken cancellationToken = default)
+        public Task<List<MovieVM>> GetAllAsync()
         {
-            return await _uow.Movies.FindAsync(m => m.IsFeatured && m.Status == MovieStatus.NowShowing, cancellationToken);
-        }
-
-        public async Task<Movie?> GetMovieDetailsAsync(int movieId, CancellationToken cancellationToken = default)
-        {
-            return await _uow.Movies.GetByIdAsync(movieId, cancellationToken);
-        }
-
-        public async Task<IEnumerable<Movie>> GetMoviesByCategoryAsync(int categoryId, CancellationToken cancellationToken = default)
-        {
-            var query = _uow.Movies.Query()
-                                   .Where(m => m.MovieCategories.Any(mc => mc.CategoryId == categoryId));
-            return await query.ToListAsyncSafe(cancellationToken);
-        }
-
-        public async Task<IEnumerable<Movie>> GetMoviesByReleaseDateRangeAsync(DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
-        {
-            return await _uow.Movies.FindAsync(m => m.ReleaseDate >= startDate && m.ReleaseDate <= endDate, cancellationToken);
-        }
-
-        public async Task<IEnumerable<Movie>> SearchMoviesAsync(string keyword, CancellationToken cancellationToken = default)
-        {
-            return await _uow.Movies.FindAsync(m => m.Title.Contains(keyword) || m.Description.Contains(keyword), cancellationToken);
-        }
-
-        public async Task<IEnumerable<Movie>> GetTopRatedMoviesAsync(int count, CancellationToken cancellationToken = default)
-        {
-            var query = _uow.Movies.Query().OrderByDescending(m => m.Rating).Take(count);
-            return await query.ToListAsyncSafe(cancellationToken);
+            throw new NotImplementedException();
         }
     }
 }

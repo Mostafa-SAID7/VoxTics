@@ -37,6 +37,8 @@
 
 		<!-- Scaffolding -->
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
+		<PackageReference Include="QRCoder-ImageSharp" Version="0.10.0" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
 	</ItemGroup>
 
 	<ItemGroup>

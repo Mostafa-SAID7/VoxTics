@@ -7,25 +7,11 @@ namespace VoxTics.Models.Entities
 {
     public class Actor : BaseEntity
     {
-        [Required, MaxLength(50)]
-        public string FirstName { get; set; } = string.Empty;
-
-        [MaxLength(50)]
-        public string LastName { get; set; } = string.Empty;
-
-        [NotMapped]
-        public string FullName
-        {
-            get => $"{FirstName} {LastName}".Trim();
-            set
-            {
-                if (value == null) throw new ArgumentNullException(nameof(value), "FullName cannot be null.");
-
-                var parts = value.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
-                FirstName = parts.Length > 0 ? parts[0] : string.Empty;
-                LastName = parts.Length > 1 ? parts[1] : string.Empty;
-            }
-        }
+      
+      
+        [Required, MaxLength(100)]
+        public string FullName { get; set; } = string.Empty;
+     
 
         [MaxLength(500)]
         public string? Bio { get; set; }
@@ -39,19 +25,6 @@ namespace VoxTics.Models.Entities
         public bool IsActive { get; set; } = true;
 
         public DateTime? DateOfBirth { get; set; }
-
-        [NotMapped]
-        public int? Age
-        {
-            get
-            {
-                if (!DateOfBirth.HasValue) return null;
-                var today = DateTime.Today;
-                var age = today.Year - DateOfBirth.Value.Year;
-                if (DateOfBirth.Value.Date > today.AddYears(-age)) age--;
-                return age;
-            }
-        }
 
         // Navigation properties
         public virtual ICollection<MovieActor> MovieActors { get; set; } = new List<MovieActor>();

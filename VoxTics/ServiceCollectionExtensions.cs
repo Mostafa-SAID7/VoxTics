@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Configuration;
 using VoxTics.Areas.Admin.AdminProfiles;
 using VoxTics.Areas.Admin.Repositories;
 using VoxTics.Areas.Admin.Repositories.IRepositories;
@@ -11,11 +12,11 @@ using VoxTics.Areas.Identity.Services;
 using VoxTics.Areas.Identity.Services.Implementations;
 using VoxTics.Areas.Identity.Services.Interfaces;
 using VoxTics.Data.UoW;
-using VoxTics.Helpers;
+using VoxTics.Helpers.Emails;
+using VoxTics.Helpers.ImgsHelper;
 using VoxTics.MappingProfiles;
 using VoxTics.Repositories;
 using VoxTics.Repositories.IRepositories;
-using VoxTics.Repositories.UserArea;
 using VoxTics.Services;
 using VoxTics.Services.Implementations;
 using VoxTics.Services.Interfaces;
@@ -60,7 +61,10 @@ namespace VoxTics.Extensions
             services.AddScoped<IShowtimeService, ShowtimeService>();
             //Helpers
             services.AddScoped<IEmailService, EmailService>();
+            services.AddSingleton<ImageManager>();
             // Identity Services
+            services.Configure<ImageSettings>(config.GetSection("ImageSettings"));
+
             services.AddScoped<IAccountService, AccountService>();
 
             // Admin Services

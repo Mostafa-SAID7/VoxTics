@@ -1,4 +1,4 @@
-﻿namespace VoxTics.Helpers
+﻿namespace VoxTics.Helpers.Emails
 {
     public class SmtpOptions
     {

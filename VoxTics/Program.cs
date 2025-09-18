@@ -17,9 +17,9 @@ builder.Services.AddDbContext<MovieDbContext>(options =>
 // ASP.NET Core Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
-    options.Password.RequireDigit = true;
-    options.Password.RequiredLength = 6;
-    options.User.RequireUniqueEmail = true;
+    options.Password.RequireDigit = false;
+    options.Password.RequiredLength = 3;
+    options.User.RequireUniqueEmail = false;
 })
 .AddEntityFrameworkStores<MovieDbContext>()
 .AddDefaultTokenProviders();

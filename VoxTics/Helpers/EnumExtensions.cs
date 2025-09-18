@@ -66,7 +66,7 @@ namespace VoxTics.Helpers
         {
             return Enum.GetValues(typeof(T))
                        .Cast<T>()
-                       .ToDictionary(e => Convert.ToInt32(e), e => e.GetDescription());
+                       .ToDictionary(static e => Convert.ToInt32(e), e => e.GetDescription());
         }
     }
 }

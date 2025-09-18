@@ -1,4 +1,4 @@
-﻿namespace VoxTics.Helpers
+﻿namespace VoxTics.Helpers.booking
 {
     /// <summary>
     /// Provides centralized domain rules and validation logic for booking operations.

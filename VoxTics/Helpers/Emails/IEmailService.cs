@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
-namespace VoxTics.Helpers
+namespace VoxTics.Helpers.Emails
 {
     public interface IEmailService
     {

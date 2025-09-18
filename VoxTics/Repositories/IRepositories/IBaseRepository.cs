@@ -10,7 +10,6 @@ namespace VoxTics.Repositories.IRepositories
     public interface IBaseRepository<T> where T : class
     {
         #region Querying
-
         IQueryable<T> Query();
 
         Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default);

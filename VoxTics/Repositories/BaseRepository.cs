@@ -21,7 +21,6 @@ namespace VoxTics.Repositories
         }
 
         #region Querying
-
         public IQueryable<T> Query() => _dbSet.AsQueryable();
 
         public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)

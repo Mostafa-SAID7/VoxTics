@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using System.Linq;
+using VoxTics.Helpers.ImgsHelper;
 using VoxTics.Models.Entities;
 using VoxTics.Models.ViewModels.Movie;
 using VoxTics.Models.ViewModels.Actor;
 using VoxTics.Models.ViewModels.Category;
+using VoxTics.Models.ViewModels.Showtime;
 
 namespace VoxTics.MappingProfiles
 {
@@ -11,34 +13,37 @@ namespace VoxTics.MappingProfiles
     {
         public MovieProfile()
         {
-            // -------- Movie → MovieDetailsVM --------
-            CreateMap<Movie, MovieDetailsVM>()
-                .ForMember(dest => dest.Cast, opt => opt.MapFrom(src =>
-                    src.MovieActors.Select(ma => new ActorVM
-                    {
-                        Id = ma.Actor.Id,
-                        FullName = ma.Actor.FullName,
-                        ImageUrl = ma.Actor.ImageUrl
-                    }).ToList()))
-                .ForMember(dest => dest.Categories, opt => opt.MapFrom(src =>
-                    src.MovieCategories.Select(mc => new CategoryVM
-                    {
-                        Id = mc.Category.Id,
-                        Name = mc.Category.Name,
-                        Slug = mc.Category.Slug
-                    }).ToList()))
-                .ForMember(dest => dest.GalleryImages, opt => opt.MapFrom(src =>
-                    src.MovieImages.Select(mi => mi.ImageUrl).ToList()))
-                .ForMember(dest => dest.Showtimes, opt => opt.MapFrom(src => src.Showtimes));
-
-            // -------- Movie → MovieVM (preview/list) --------
+            // Movie -> MovieVM (لـ Index)
             CreateMap<Movie, MovieVM>()
-                .ForMember(dest => dest.PosterImage, opt => opt.MapFrom(src => src.ImageUrl))
-                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Rating.ToString("0.0")))
-                .ForMember(dest => dest.Categories, opt => opt.MapFrom(src =>
-                    src.MovieCategories.Select(mc => mc.Category.Name).ToList()))
-                .ForMember(dest => dest.CategoryNames, opt => opt.MapFrom(src =>
-                    string.Join(", ", src.MovieCategories.Select(mc => mc.Category.Name))));
+                .ForMember(dest => dest.MainImageUrl,
+                           opt => opt.MapFrom(src => src.MainImage ?? string.Empty))
+                .ForMember(dest => dest.CategoryName,
+                           opt => opt.MapFrom(src => src.Category != null ? src.Category.Name : string.Empty));
+
+            // Movie -> MovieDetailsVM (لـ Details)
+            CreateMap<Movie, MovieDetailsVM>()
+                .ForMember(dest => dest.MainImageUrl,
+                           opt => opt.MapFrom(src => src.MainImage ?? string.Empty))
+                .ForMember(dest => dest.TrailerUrl,
+                           opt => opt.MapFrom(src => src.TrailerUrl))
+                .ForMember(dest => dest.Category,
+                           opt => opt.MapFrom(src => src.Category))
+                .ForMember(dest => dest.Actors,
+                           opt => opt.MapFrom(src => src.MovieActors.Select(ma => ma.Actor)))
+                .ForMember(dest => dest.Showtimes,
+                           opt => opt.MapFrom(src => src.Showtimes));
+
+            // MovieActor -> ActorVM
+            CreateMap<MovieActor, ActorVM>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Actor.Id))
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.Actor.FullName))
+                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Actor.ImageUrl));
+
+            // Category -> CategoryVM
+            CreateMap<Category, CategoryVM>();
+
+            // Showtime -> ShowtimeVM
+            CreateMap<Showtime, ShowtimeVM>();
         }
     }
 }
