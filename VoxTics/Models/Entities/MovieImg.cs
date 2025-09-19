@@ -19,5 +19,6 @@ namespace VoxTics.Models.Entities
 
         // Navigation property
         public virtual Movie Movie { get; set; } = null!;
+        public string Url { get; internal set; }
     }
 }

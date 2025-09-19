@@ -12,7 +12,6 @@ namespace VoxTics.Areas.Admin.AdminProfiles
         {
             // Actor -> ActorDetailsViewModel
             CreateMap<Actor, ActorDetailsViewModel>()
-                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}".Trim()))
                 .ForMember(dest => dest.Age, opt => opt.MapFrom(src =>
                     src.DateOfBirth.HasValue
                         ? DateTime.Today.Year - src.DateOfBirth.Value.Year - (src.DateOfBirth.Value.Date > DateTime.Today.AddYears(-(DateTime.Today.Year - src.DateOfBirth.Value.Year)) ? 1 : 0)
@@ -22,20 +21,15 @@ namespace VoxTics.Areas.Admin.AdminProfiles
 
             // Actor -> ActorTableViewModel
             CreateMap<Actor, ActorTableViewModel>()
-                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}".Trim()))
                 .ForMember(dest => dest.Age, opt => opt.MapFrom(src =>
                     src.DateOfBirth.HasValue
                         ? DateTime.Today.Year - src.DateOfBirth.Value.Year - (src.DateOfBirth.Value.Date > DateTime.Today.AddYears(-(DateTime.Today.Year - src.DateOfBirth.Value.Year)) ? 1 : 0)
                         : (int?)null));
 
             // Actor -> ActorViewModel
-            CreateMap<Actor, ActorViewModel>()
-                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}".Trim()));
 
             // ActorCreateEditViewModel -> Actor
             CreateMap<ActorCreateEditViewModel, Actor>()
-                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
-                .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
                 .ForMember(dest => dest.Bio, opt => opt.MapFrom(src => src.Bio))
                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImageUrl))
                 .ForMember(dest => dest.Nationality, opt => opt.MapFrom(src => src.Nationality))

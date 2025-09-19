@@ -44,7 +44,7 @@ namespace VoxTics.Services.Implementations
                 query = query.Where(c => c.Name.Contains(sanitized) || c.City.Contains(sanitized));
             }
 
-            query = query.ApplySorting(sortOrder ?? "Name", c => c.Name);
+            //query = query.ApplySorting(sortOrder ?? "Name", c => c.Name);
 
             return await query.ToPaginatedListAsync(pageIndex, pageSize, cancellationToken);
         }

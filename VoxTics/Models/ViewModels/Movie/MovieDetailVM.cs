@@ -32,6 +32,7 @@ namespace VoxTics.Models.ViewModels.Movie
 
         // Related
         public CategoryVM? Category { get; set; }
+        public int CinemaId { get; set; }
         public List<ActorVM> Actors { get; set; } = new();
         public List<ShowtimeVM> Showtimes { get; set; } = new();
         //Booking input

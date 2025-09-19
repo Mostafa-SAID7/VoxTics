@@ -17,10 +17,10 @@ namespace VoxTics.Areas.Admin.MappingProfiles
             CreateMap<Movie, MovieListItemViewModel>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
-                .ForMember(dest => dest.PosterImage, opt => opt.MapFrom(src => src.ImageUrl))
+                .ForMember(dest => dest.MainImageUrl, opt => opt.MapFrom(src => src.MainImage))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
                 .ForMember(dest => dest.ReleaseDate, opt => opt.MapFrom(src => src.ReleaseDate))
-                .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.Category));
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category));
 
             // Cinema -> CinemaViewModel
             CreateMap<Cinema, CinemaViewModel>()
@@ -32,12 +32,11 @@ namespace VoxTics.Areas.Admin.MappingProfiles
 
             // Booking -> BookingViewModel
             CreateMap<Booking, BookingViewModel>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName))
+                .ForMember(dest => dest.BookingId, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.UserFullName, opt => opt.MapFrom(src => src.User.UserName))
                 .ForMember(dest => dest.MovieTitle, opt => opt.MapFrom(src => src.Showtime.Movie.Title))
                 .ForMember(dest => dest.CinemaName, opt => opt.MapFrom(src => src.Showtime.Cinema.Name))
-                .ForMember(dest => dest.HallName, opt => opt.MapFrom(src => src.Showtime.Hall.Name))
-                .ForMember(dest => dest.BookingDate, opt => opt.MapFrom(src => src.CreatedAt))
+                .ForMember(dest => dest.BookingId, opt => opt.MapFrom(src => src.CreatedAt))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
                 .ForMember(dest => dest.TotalAmount, opt => opt.MapFrom(src => src.TotalAmount));
 

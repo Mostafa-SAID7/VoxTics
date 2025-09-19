@@ -3,10 +3,7 @@
 
 <div class="row">
     <div class="col-md-4">
-        @if (!string.IsNullOrWhiteSpace(Model.PosterImage))
-        {
-            <img src="@Model.PosterImage" class="img-fluid rounded" alt="@Model.Title" />
-        }
+     
     </div>
     <div class="col-md-8">
         <h4>@Model.Title</h4>
@@ -27,7 +24,7 @@
             <dd class="col-sm-8">@Model.Price.ToString("C")</dd>
             <dt class="col-sm-4">Status</dt>
             <dt class="col-sm-4">Categories</dt>
-            <dd class="col-sm-8">@string.Join(", ", Model.SelectedCategoryIds)</dd>
+            <dd class="col-sm-8">@string.Join(", ", Model.CategoryId)</dd>
         </dl>
 
         <div class="text-end">

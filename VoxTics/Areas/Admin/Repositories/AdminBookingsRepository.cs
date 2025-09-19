@@ -17,63 +17,45 @@ namespace VoxTics.Areas.Admin.Repositories
         }
 
         public async Task<(IEnumerable<Booking> Bookings, int TotalCount)> GetPagedBookingsAsync(
-            int pageIndex,
-            int pageSize,
-            string? search = null,
-            CancellationToken cancellationToken = default)
+             int pageIndex,
+             int pageSize,
+             string? search = null,
+             CancellationToken cancellationToken = default)
         {
             var query = _context.Bookings
-                .AsNoTracking()
+                .Include(b => b.User)
                 .Include(b => b.Movie)
-                .Include(b => b.Showtime)
+                //.ThenInclude(m => m.Cinema) // if Movie has a Cinema navigation
+                .Include(b => b.BookingSeats)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
             {
                 query = query.Where(b =>
-                    b.Movie.Title.Contains(search) ||
-                    b.UserId.Contains(search));
+                    b.User.Name.Contains(search) ||
+                    b.User.Email.Contains(search) ||
+                    b.Movie.Title.Contains(search));
             }
 
-            var totalCount = await query.CountAsync(cancellationToken).ConfigureAwait(false);
+            var totalCount = await query.CountAsync(cancellationToken);
 
             var bookings = await query
-                .OrderByDescending(b => b.BookingDate)
-                .Skip(pageIndex * pageSize)
+                .OrderByDescending(b => b.Id) // latest first
+                .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
 
             return (bookings, totalCount);
         }
 
-        public async Task<(int Total, int Today, decimal Revenue)> GetBookingStatsAsync(
-            CancellationToken cancellationToken = default)
+        public async Task<Booking?> GetBookingDetailsAsync(int bookingId, CancellationToken cancellationToken = default)
         {
-            var today = DateTime.UtcNow.Date;
-            var total = await _context.Bookings.CountAsync(cancellationToken).ConfigureAwait(false);
-            var todayCount = await _context.Bookings
-                .CountAsync(b => b.BookingDate.Date == today, cancellationToken)
-                .ConfigureAwait(false);
-            var revenue = await _context.Bookings
-                .SumAsync(b => b.TotalPrice, cancellationToken)
-                .ConfigureAwait(false);
-
-            return (total, todayCount, revenue);
-        }
-
-        public async Task<bool> ForceCancelBookingAsync(
-            int bookingId,
-            CancellationToken cancellationToken = default)
-        {
-            var booking = await _context.Bookings
-                .FindAsync(new object?[] { bookingId }, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (booking == null) return false;
-
-            _context.Bookings.Remove(booking);
-            return true; // Commit handled by UnitOfWork
+            return await _context.Bookings
+                .Include(b => b.User)
+                .Include(b => b.Movie)
+                //.ThenInclude(m => m.Cinema) // if exists
+                .Include(b => b.BookingSeats)
+                .FirstOrDefaultAsync(b => b.Id == bookingId, cancellationToken);
         }
     }
 }

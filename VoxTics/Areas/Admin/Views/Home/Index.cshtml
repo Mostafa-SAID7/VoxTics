@@ -318,9 +318,7 @@
                             <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
                                 <div class="movie-card position-relative">
                                     <div class="movie-poster-wrapper">
-                                        @if (!string.IsNullOrEmpty(movie.PosterImage))
                                         {
-                                            <img src="@movie.PosterImage" class="movie-poster" alt="@movie.Title" />
                                         }
                                         else
                                         {
@@ -377,50 +375,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var booking in Model.RecentBookings)
-                                {
-                                    <tr>
-                                        <td class="fw-bold">#@booking.Id</td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="avatar-sm me-2">
-                                                    <div class="avatar-title bg-soft-primary text-primary rounded-circle">
-                                                        @booking.UserName.Substring(0, 1).ToUpper()
-                                                    </div>
-                                                </div>
-                                                @booking.UserName
-                                            </div>
-                                        </td>
-                                        <td class="fw-bold text-success">@booking.TotalAmount.ToString("C")</td>
-                                        <td>
-                                            @foreach (var bookings in Model.RecentBookings)
-                                            {
-                                                var badgeClass = booking.Status switch
-                                                {
-                                                    BookingStatus.Confirmed => "bg-success",
-                                                    BookingStatus.Pending => "bg-warning",
-                                                    BookingStatus.Cancelled => "bg-danger",
-                                                    _ => "bg-secondary"
-                                                };
-
-                                        <tr>
-                                            <td>@booking.Id</td>
-                                            <td>@booking.UserName</td>
-                                            <td>@booking.MovieTitle</td>
-                                            <td>@booking.FinalAmount.ToString("C")</td>
-                                            <td><span class="badge @badgeClass">@booking.Status</span></td>
-                                        </tr>
-                                    }
-                                    </td>
-                                    <td class="text-muted">@booking.BookingDate.ToString("MMM dd, yyyy")</td>
-                                    <td>
-                                        <div class="btn-group btn-group-sm">
-                                            <a href="@Url.Action("Details", "Bookings", new { id = booking.Id })" class="btn btn-outline-info">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
+                                
                                                                 }
                             </tbody>
                         </table>

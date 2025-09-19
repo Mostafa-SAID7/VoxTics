@@ -481,12 +481,12 @@
                                         </div>
                                     </td>
                                     <td>
-                                        @if (!string.IsNullOrEmpty(movie.PosterImage))
+                                        @if (!string.IsNullOrEmpty(movie.MainImageUrl))
                                         {
-                                            <img src="@movie.PosterImage" alt="@movie.Title" class="img-thumbnail" 
+                                            <img src="@movie.MainImageUrl" alt="@movie.Title" class="img-thumbnail" 
                                                  style="width: 50px; height: 75px; object-fit: cover; cursor: pointer;"
-                                                 data-bs-toggle="modal" data-bs-target="#posterModal" 
-                                                 data-poster="@movie.PosterImage" data-title="@movie.Title" />
+                                                 data-bs-toggle="modal" data-bs-target="#posterModal"
+                                                 data-poster="@movie.MainImageUrl" data-title="@movie.Title" />
                                         }
                                         else
                                         {
@@ -510,14 +510,7 @@
                                     <td>
                                         <span class="text-muted">@movie.ReleaseDate.ToString("MMM dd, yyyy")</span>
                                     </td>
-                                    <td>
-                                        <span class="badge bg-info">@movie.Rating</span>
-                                    </td>
-                                    <td>
-                                        <span class="text-muted">
-                                            <i class="fas fa-clock me-1"></i>@movie.Duration min
-                                        </span>
-                                    </td>
+                                  
                                     <td>
                                         <span class="fw-medium text-success">$@movie.Price.ToString("0.00")</span>
                                     </td>
@@ -546,16 +539,7 @@
                                         }
                                     </td>
                                     <td>
-                                        <div class="d-flex flex-wrap gap-1">
-                                            @foreach (var category in movie.Categories.Split(',', StringSplitOptions.RemoveEmptyEntries).Take(2))
-                                            {
-                                                <span class="badge bg-light text-dark">@category.Trim()</span>
-                                            }
-                                            @if (movie.Categories.Split(',', StringSplitOptions.RemoveEmptyEntries).Length > 2)
-                                            {
-                                                <span class="badge bg-secondary">+@(movie.Categories.Split(',', StringSplitOptions.RemoveEmptyEntries).Length - 2)</span>
-                                            }
-                                        </div>
+
                                     </td>
                                     <td>
                                         <div class="btn-group btn-group-sm" role="group">
@@ -592,7 +576,7 @@
                                                         <i class="fas fa-exchange-alt me-2"></i>Change Status
                                                     </a></li>
                                                     <li><hr class="dropdown-divider"></li>
-                                                    <li><a class="dropdown-item" href="#" onclick="viewTrailer('@movie.TrailerUrl')">
+                                                    <li><a class="dropdown-item" href="#" onclick="viewTrailer('@movie.ToString()')">
                                                         <i class="fas fa-play me-2"></i>View Trailer
                                                     </a></li>
                                                 </ul>
@@ -611,116 +595,7 @@
     <!-- Movies Card View -->
     <div id="cardViewContainer" class="position-relative" style="display: none;">
         <div class="row" id="moviesCardContainer">
-            @foreach (var movie in Model)
-            {
-                <div class="col-md-6 col-lg-4 col-xl-3 mb-4 movie-card" id="movieCard_@movie.Id">
-                    <div class="card h-100 shadow-sm">
-                        <div class="position-relative">
-                            @if (!string.IsNullOrEmpty(movie.PosterImage))
-                            {
-                                <img src="@movie.PosterImage" alt="@movie.Title" class="card-img-top" 
-                                     style="height: 300px; object-fit: cover; cursor: pointer;"
-                                     data-bs-toggle="modal" data-bs-target="#posterModal" 
-                                     data-poster="@movie.PosterImage" data-title="@movie.Title" />
-                            }
-                            else
-                            {
-                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
-                                     style="height: 300px;">
-                                    <i class="fas fa-image text-muted fa-3x"></i>
-                                </div>
-                            }
-                            
-                            <div class="position-absolute top-0 end-0 m-2">
-                                <div class="form-check">
-                                    <input class="form-check-input movie-checkbox" type="checkbox" value="@movie.Id">
-                                </div>
-                            </div>
-                            
-                            @if (movie.IsFeatured)
-                            {
-                                <div class="position-absolute top-0 start-0 m-2">
-                                    <span class="badge bg-warning text-dark">
-                                        <i class="fas fa-star"></i> Featured
-                                    </span>
-                                </div>
-                            }
-                            
-                            <div class="position-absolute bottom-0 start-0 m-2">
-                                @{
-                                    // compute badge class once per movie (in a loop)
-                                    string badgeClass = movie.Status switch
-                                    {
-                                        MovieStatus.Upcoming => "bg-success",
-                                        MovieStatus.NowShowing => "bg-warning",
-                                        MovieStatus.Ended => "bg-primary",
-                                        _ => "bg-secondary"
-                                    };
-                                }
-                                <span class="badge @badgeClass">@movie.Status</span>
-
-                            </div>
-                        </div>
-                        
-                        <div class="card-body">
-                            <h5 class="card-title">@movie.Title</h5>
-                            <div class="row text-center mb-2">
-                                <div class="col-4">
-                                    <div class="text-primary fw-bold">@movie.Rating</div>
-                                    <small class="text-muted">Rating</small>
-                                </div>
-                                <div class="col-4">
-                                    <div class="text-info fw-bold">@movie.Duration</div>
-                                    <small class="text-muted">Minutes</small>
-                                </div>
-                                <div class="col-4">
-                                    <div class="text-success fw-bold">$@movie.Price.ToString("0.00")</div>
-                                    <small class="text-muted">Price</small>
-                                </div>
-                            </div>
-                            <p class="card-text">
-                                <small class="text-muted">
-                                    <i class="fas fa-calendar me-1"></i>@movie.ReleaseDate.ToString("MMM dd, yyyy")
-                                </small>
-                            </p>
-                            <div class="d-flex flex-wrap gap-1 mb-2">
-                                @foreach (var category in movie.Categories.Split(',', StringSplitOptions.RemoveEmptyEntries).Take(3))
-                                {
-                                    <span class="badge bg-light text-dark">@category.Trim()</span>
-                                }
-                            </div>
-                        </div>
-                        
-                        <div class="card-footer bg-transparent">
-                            <div class="btn-group w-100 mb-2" role="group">
-                                <a asp-action="Details" asp-route-id="@movie.Id" class="btn btn-outline-info btn-sm">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a asp-action="Edit" asp-route-id="@movie.Id" class="btn btn-outline-warning btn-sm">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <button type="button" class="btn btn-outline-danger btn-sm delete-movie" 
-                                        data-id="@movie.Id" data-title="@movie.Title">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                                <button type="button" class="btn btn-outline-secondary btn-sm toggle-featured" 
-                                        data-id="@movie.Id" data-featured="@movie.IsFeatured.ToString().ToLower()">
-                                    <i class="fas @(movie.IsFeatured ? "fa-star" : "far fa-star")"></i>
-                                </button>
-                            </div>
-                            <div class="btn-group w-100" role="group">
-                                <a asp-action="Showtimes" asp-route-movieId="@movie.Id" class="btn btn-outline-primary btn-sm">
-                                    <i class="fas fa-clock me-1"></i>Shows
-                                </a>
-                                <button type="button" class="btn btn-outline-success btn-sm" onclick="viewTrailer('@movie.TrailerUrl')">
-                                    <i class="fas fa-play me-1"></i>Trailer
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
+                  </div>
     </div>
 
     <!-- Movies Poster View -->
@@ -730,12 +605,12 @@
             {
                 <div class="col-6 col-md-4 col-lg-3 col-xl-2 mb-4 movie-poster" id="moviePoster_@movie.Id">
                     <div class="position-relative">
-                        @if (!string.IsNullOrEmpty(movie.PosterImage))
+                        @if (!string.IsNullOrEmpty(movie.MainImageUrl))
                         {
-                            <img src="@movie.PosterImage" alt="@movie.Title" class="img-fluid rounded shadow-sm" 
+                            <img src="@movie.MainImageUrl" alt="@movie.Title" class="img-fluid rounded shadow-sm"
                                  style="width: 100%; height: 250px; object-fit: cover; cursor: pointer;"
-                                 data-bs-toggle="modal" data-bs-target="#posterModal" 
-                                 data-poster="@movie.PosterImage" data-title="@movie.Title" />
+                                 data-bs-toggle="modal" data-bs-target="#posterModal"
+                                 data-poster="@movie.MainImageUrl" data-title="@movie.Title" />
                         }
                         else
                         {
@@ -763,7 +638,6 @@
                         <div class="position-absolute bottom-0 start-0 right-0 p-2 bg-dark bg-opacity-75 text-white rounded-bottom">
                             <div class="fw-medium small">@movie.Title</div>
                             <div class="d-flex justify-content-between align-items-center">
-                                <small>@movie.Rating</small>
                                 <small>$@movie.Price.ToString("0.00")</small>
                             </div>
                         </div>
@@ -1491,9 +1365,7 @@
                 createDoughnutChart('statusChart', 'Movies by Status', statusData.map(d => d.Status), statusData.map(d => d.Count));
 
                 // Rating Chart
-                const ratingData = @Html.Raw(Json.Serialize(Model.GroupBy(m => m.Rating).Select(g => new { Rating = g.Key, Count = g.Count() }).ToArray()));
-                createDoughnutChart('ratingChart', 'Movies by Rating', ratingData.map(d => d.Rating), ratingData.map(d => d.Count));
-
+              
                 // Years Chart
                 const yearsData = @Html.Raw(Json.Serialize(Model.GroupBy(m => m.ReleaseDate.Year).Select(g => new { Year = g.Key, Count = g.Count() }).OrderBy(x => x.Year).ToArray()));
                 createBarChart('yearsChart', 'Movies by Release Year', yearsData.map(d => d.Year.ToString()), yearsData.map(d => d.Count));

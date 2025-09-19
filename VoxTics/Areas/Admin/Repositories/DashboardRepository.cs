@@ -49,18 +49,6 @@ namespace VoxTics.Areas.Admin.Repositories
 
         #region Revenue Tracking
 
-        public async Task<decimal> GetMonthlyRevenueAsync(int year, int month, CancellationToken cancellationToken = default)
-            => await _context.Bookings
-                .Where(b => b.CreatedAt.Year == year && b.CreatedAt.Month == month)
-                .SumAsync(b => b.TotalAmount - b.DiscountAmount, cancellationToken)
-                .ConfigureAwait(false);
-
-        public async Task<decimal> GetDailyRevenueAsync(DateTime date, CancellationToken cancellationToken = default)
-            => await _context.Bookings
-                .Where(b => b.CreatedAt.Date == date.Date)
-                .SumAsync(b => b.TotalAmount - b.DiscountAmount, cancellationToken)
-                .ConfigureAwait(false);
-
         #endregion
 
         #region Movie Statistics
@@ -165,21 +153,7 @@ namespace VoxTics.Areas.Admin.Repositories
 
         #region Chart Data
 
-        public async Task<Dictionary<string, int>> GetMonthlyBookingsSeriesAsync(int year, CancellationToken cancellationToken = default)
-            => await _context.Bookings
-                .Where(b => b.CreatedAt.Year == year)
-                .GroupBy(b => b.CreatedAt.Month)
-                .Select(g => new { Month = g.Key, Count = g.Count() })
-                .ToDictionaryAsync(x => new DateTime(year, x.Month, 1).ToString("MMM"), x => x.Count, cancellationToken)
-                .ConfigureAwait(false);
 
-        public async Task<Dictionary<string, decimal>> GetMonthlyRevenueSeriesAsync(int year, CancellationToken cancellationToken = default)
-            => await _context.Bookings
-                .Where(b => b.CreatedAt.Year == year)
-                .GroupBy(b => b.CreatedAt.Month)
-                .Select(g => new { Month = g.Key, Revenue = g.Sum(b => b.TotalAmount - b.DiscountAmount) })
-                .ToDictionaryAsync(x => new DateTime(year, x.Month, 1).ToString("MMM"), x => x.Revenue, cancellationToken)
-                .ConfigureAwait(false);
 
         public async Task<int> GetTotalUsersAsync(CancellationToken cancellationToken = default)
         {
@@ -193,6 +167,26 @@ namespace VoxTics.Areas.Admin.Repositories
                 .OrderByDescending(u => u.CreatedAt) // assumes ApplicationUser has a CreatedAt property
                 .Take(count)
                 .ToListAsync(cancellationToken);
+        }
+
+        public Task<decimal> GetMonthlyRevenueAsync(int year, int month, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<decimal> GetDailyRevenueAsync(DateTime date, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Dictionary<string, int>> GetMonthlyBookingsSeriesAsync(int year, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Dictionary<string, decimal>> GetMonthlyRevenueSeriesAsync(int year, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

@@ -86,54 +86,9 @@ namespace VoxTics.Areas.Admin.Repositories
             return true; // SaveChanges handled by UnitOfWork
         }
 
-        public async Task<(int TotalShowtimes, int UpcomingMovies, decimal Revenue)> GetCinemaDetailsStatsAsync(
-            int cinemaId,
-            CancellationToken cancellationToken = default)
-        {
-            var totalShowtimes = await _context.Showtimes
-                .CountAsync(s => s.CinemaId == cinemaId, cancellationToken)
-                .ConfigureAwait(false);
 
-            var upcomingMovies = await _context.Showtimes
-                .Include(s => s.Movie)
-                .Where(s => s.CinemaId == cinemaId && s.StartTime > DateTime.UtcNow)
-                .Select(s => s.MovieId)
-                .Distinct()
-                .CountAsync(cancellationToken)
-                .ConfigureAwait(false);
 
-            var revenue = await _context.Bookings
-                .Where(b => b.Showtime.CinemaId == cinemaId)
-                .SumAsync(b => b.TotalPrice, cancellationToken)
-                .ConfigureAwait(false);
-
-            _logger.LogInformation("Fetched stats for Cinema ID {Id}: Showtimes={Total}, Movies={Movies}, Revenue={Revenue}",
-                cinemaId, totalShowtimes, upcomingMovies, revenue);
-
-            return (totalShowtimes, upcomingMovies, revenue);
-        }
-
-        public async Task<(DateTime CreatedAt, DateTime? UpdatedAt, DateTime? LastShowtime)> GetCinemaAuditInfoAsync(
-            int cinemaId,
-            CancellationToken cancellationToken = default)
-        {
-            var cinema = await _context.Cinemas
-                .AsNoTracking()
-                .FirstOrDefaultAsync(c => c.Id == cinemaId, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (cinema == null)
-                throw new InvalidOperationException($"Cinema ID {cinemaId} not found.");
-
-            var lastShowtime = await _context.Showtimes
-                .Where(s => s.CinemaId == cinemaId)
-                .OrderByDescending(s => s.StartTime)
-                .Select(s => s.StartTime)
-                .FirstOrDefaultAsync(cancellationToken)
-                .ConfigureAwait(false);
-
-            return (cinema.CreatedAt, cinema.UpdatedAt, lastShowtime == default ? null : lastShowtime);
-        }
+    
 
         public async Task<bool> HardDeleteCinemaAsync(
             int cinemaId,
@@ -157,6 +112,16 @@ namespace VoxTics.Areas.Admin.Repositories
 
             _logger.LogCritical("Cinema ID {Id} and all related data were permanently deleted.", cinemaId);
             return true; // Commit handled by UnitOfWork
+        }
+
+        public Task<(int TotalShowtimes, int UpcomingMovies, decimal Revenue)> GetCinemaDetailsStatsAsync(int cinemaId, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<(DateTime CreatedAt, DateTime? UpdatedAt, DateTime? LastShowtime)> GetCinemaAuditInfoAsync(int cinemaId, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
     }
 }

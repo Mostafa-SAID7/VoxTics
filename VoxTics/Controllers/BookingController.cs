@@ -1,67 +1,89 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VoxTics.Models.ViewModels.Booking;
+using VoxTics.Services.Interfaces;
 using VoxTics.Services.IServices;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace VoxTics.Controllers
 {
-    [Authorize]
+    [Authorize] 
     public class BookingsController : Controller
     {
         private readonly IBookingService _bookingService;
+        private readonly IMovieService _movieService;
 
-        public BookingsController(IBookingService bookingService)
+        public BookingsController(IBookingService bookingService, IMovieService movieService)
         {
             _bookingService = bookingService;
+            _movieService = movieService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Details(string bookingReference, CancellationToken cancellationToken)
+        // GET: Bookings/MyBookings
+        public async Task<IActionResult> MyBookings()
         {
-            if (string.IsNullOrWhiteSpace(bookingReference))
-                return BadRequest();
-
-            var booking = await _bookingService.GetBookingDetailsAsync(bookingReference, cancellationToken);
-            if (booking == null) return NotFound();
-
-            return View(booking);
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value!;
+            var bookings = await _bookingService.GetUserBookingsAsync(userId);
+            return View(bookings); // View: Views/Bookings/MyBookings.cshtml
         }
 
+        // GET: Bookings/Create?movieId=5
+        [HttpGet]
+        public async Task<IActionResult> Create(int movieId)
+        {
+            var movie = await _movieService.GetDetailsAsync(movieId);
+            if (movie == null) return NotFound();
+
+            // تجهيز نموذج الحجز الأولي
+            var model = new BookingCreateVM
+            {
+                MovieId = movieId,
+                CinemaId = movie.CinemaId, 
+                ShowtimeId = movie.Showtimes.FirstOrDefault()?.Id ?? 0,
+                SeatIds = new List<int>(),
+                SeatPrice = movie.Price,
+                TotalAmount = 0,
+                DiscountAmount = 0,
+                FinalAmount = 0,
+                PaymentMethod = VoxTics.Models.Enums.PaymentMethod.Undefined
+            };
+
+            return View(model); // View: Views/Bookings/Create.cshtml
+        }
+
+        // POST: Bookings/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(BookingCreateVM model, CancellationToken cancellationToken)
+        public async Task<IActionResult> Create(BookingCreateVM model)
         {
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid)
+                return View(model);
 
-            var userId = User.FindFirst("sub")?.Value ?? User.Identity?.Name ?? string.Empty;
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value!;
+            var booking = await _bookingService.CreateBookingAsync(model, userId);
 
-            var booking = await _bookingService.CreateBookingAsync(
-                model,
-                userId,
-                model.CouponCode,
-                cancellationToken);
-
-            return RedirectToAction(nameof(Details), new { bookingReference = booking.BookingReference });
+            return RedirectToAction(nameof(Details), new { id = booking.BookingId });
         }
 
+        // GET: Bookings/Details/5
+        public async Task<IActionResult> Details(int id)
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value!;
+            var booking = await _bookingService.GetBookingDetailsAsync(id, userId);
+            if (booking == null) return NotFound();
+
+            return View(booking); // View: Views/Bookings/Details.cshtml
+        }
+
+        // POST: Bookings/Cancel/5
         [HttpPost]
-        public async Task<IActionResult> Cancel(string bookingReference, string reason, CancellationToken cancellationToken)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Cancel(int id)
         {
-            var success = await _bookingService.CancelBookingAsync(bookingReference, reason, true, cancellationToken);
-            if (!success) return NotFound();
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value!;
+            var success = await _bookingService.CancelBookingAsync(id, userId);
 
-            TempData["Message"] = "Booking cancelled successfully.";
-            return RedirectToAction(nameof(UserBookings));
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> UserBookings(int page = 1, int pageSize = 10, CancellationToken cancellationToken = default)
-        {
-            var userId = User.FindFirst("sub")?.Value ?? User.Identity?.Name ?? string.Empty;
-            var bookings = await _bookingService.GetUserBookingsAsync(userId, page, pageSize, cancellationToken);
-            return View(bookings);
+            TempData["Message"] = success ? "Booking cancelled successfully." : "Unable to cancel booking.";
+            return RedirectToAction(nameof(MyBookings));
         }
     }
 }

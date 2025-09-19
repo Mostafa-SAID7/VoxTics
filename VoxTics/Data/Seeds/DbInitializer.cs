@@ -98,9 +98,8 @@ namespace VoxTics.Data.Seeds
                     Language = "English",
                     Country = "USA",
                     Rating = 8,
-                    AgeRating = "PG-13",
                     Status = MovieStatus.NowShowing,
-                    ImageUrl = "/images/movies/avengers-endgame.jpg"
+                    MainImage = "/images/movies/avengers-endgame.jpg"
                 },
                 new Movie
                 {
@@ -112,9 +111,8 @@ namespace VoxTics.Data.Seeds
                     Language = "English",
                     Country = "USA",
                     Rating = 6,
-                    AgeRating = "PG",
                     Status = MovieStatus.NowShowing,
-                    ImageUrl = "/images/movies/lion-king.jpg"
+                    MainImage = "/images/movies/lion-king.jpg"
                 }
             };
 

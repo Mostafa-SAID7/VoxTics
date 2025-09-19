@@ -153,7 +153,7 @@ namespace VoxTics.Helpers
                     break;
 
                 case Booking booking:
-                    if (booking.TotalPrice < 0)
+                    if (booking.FinalAmount < 0)
                         errors.Add("Booking total price cannot be negative.");
                     if (!IsValidShowtime(booking.Showtime?.StartTime ?? DateTime.MinValue))
                         errors.Add("Booking showtime is invalid.");

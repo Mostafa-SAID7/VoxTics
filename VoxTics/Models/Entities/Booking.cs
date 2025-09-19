@@ -23,13 +23,13 @@ namespace VoxTics.Models.Entities
         [Required, Range(1, 20)]
         public int NumberOfTickets { get; set; }
 
-        [Required, Column(TypeName = "decimal(18,2)")]
+        [Required, Column(TypeName = "decimal(18,2)"), Range(0, double.MaxValue)]
         public decimal TotalAmount { get; set; }
 
-        [Column(TypeName = "decimal(18,2)")]
+        [Column(TypeName = "decimal(18,2)"), Range(0, double.MaxValue)]
         public decimal DiscountAmount { get; set; } = 0;
 
-        [Required, Column(TypeName = "decimal(18,2)")]
+        [Required, Column(TypeName = "decimal(18,2)"), Range(0, double.MaxValue)]
         public decimal FinalAmount { get; set; }
 
         [Required]
@@ -38,6 +38,7 @@ namespace VoxTics.Models.Entities
         [Required]
         public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
 
+        [Required]
         [StringLength(100)]
         public PaymentMethod PaymentMethod { get; set; }
 
@@ -45,14 +46,16 @@ namespace VoxTics.Models.Entities
         public string? TransactionId { get; set; }
 
         public DateTime? PaymentDate { get; set; }
-        public DateTime BookingDate { get; set; } = DateTime.UtcNow;
+        public DateTime BookingDate { get; init; } = DateTime.UtcNow;
 
         public virtual ICollection<BookingSeat> BookingSeats { get; set; } = new List<BookingSeat>();
 
         [NotMapped]
         public bool CanBeCancelled =>
-            Status == BookingStatus.Confirmed &&
-            Showtime.EndTime > DateTime.UtcNow.AddHours(2);
+         Status == BookingStatus.Confirmed &&
+         !IsCheckedIn &&
+         Showtime.EndTime > DateTime.UtcNow.AddHours(2);
+
 
         [NotMapped]
         public string BookingReference => $"BK{Id:D6}";

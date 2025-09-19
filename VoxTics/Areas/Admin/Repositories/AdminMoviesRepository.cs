@@ -23,170 +23,34 @@ namespace VoxTics.Areas.Admin.Repositories
             _context = context;
         }
 
-        #region Movie Queries
-
-        public async Task<IEnumerable<Movie>> GetAllWithDetailsAsync(CancellationToken cancellationToken = default)
+        // ✅ Get a movie with related data for editing or details
+        public async Task<Movie?> GetMovieWithDetailsAsync(int id)
         {
             return await _context.Movies
-                .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
-                .Include(m => m.MovieActors).ThenInclude(ma => ma.Actor)
+                .Include(m => m.Category)
+                .Include(m => m.MovieImages)
                 .Include(m => m.Showtimes)
-                .AsNoTracking()
-                .ToListAsync(cancellationToken);
+                .FirstOrDefaultAsync(m => m.Id == id);
         }
 
-        public async Task<Movie?> GetByIdWithDetailsAsync(int movieId, CancellationToken cancellationToken = default)
+        // ✅ Get all movies with their categories for listing in Admin
+        public async Task<IEnumerable<Movie>> GetAllWithCategoryAsync()
         {
             return await _context.Movies
-                .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
-                .Include(m => m.MovieActors).ThenInclude(ma => ma.Actor)
-                .Include(m => m.Showtimes)
-                .FirstOrDefaultAsync(m => m.Id == movieId, cancellationToken);
-        }
-
-        public async Task<bool> TitleExistsAsync(string title, int? excludeMovieId = null, CancellationToken cancellationToken = default)
-        {
-            return await _context.Movies
-                .AnyAsync(m => m.Title.ToLower() == title.ToLower() &&
-                               (!excludeMovieId.HasValue || m.Id != excludeMovieId.Value), cancellationToken);
-        }
-
-        public async Task<IEnumerable<Movie>> GetUpcomingMoviesAsync(int count = 10, CancellationToken cancellationToken = default)
-        {
-            return await _context.Movies
-                .Where(m => m.Status == MovieStatus.Upcoming)
-                .OrderBy(m => m.ReleaseDate)
-                .Take(count)
-                .AsNoTracking()
-                .ToListAsync(cancellationToken);
-        }
-
-        public async Task<IEnumerable<Movie>> GetFeaturedMoviesAsync(int count = 10, CancellationToken cancellationToken = default)
-        {
-            return await _context.Movies
-                .Where(m => m.IsFeatured)
+                .Include(m => m.Category)
                 .OrderByDescending(m => m.ReleaseDate)
-                .Take(count)
-                .AsNoTracking()
-                .ToListAsync(cancellationToken);
+                .ToListAsync();
         }
 
-        public async Task<IEnumerable<Movie>> GetMoviesByCategoryAsync(int categoryId, CancellationToken cancellationToken = default)
+        // ✅ Check for slug uniqueness (exclude a specific Id on update)
+        public async Task<bool> MovieExistsBySlugAsync(string slug, int? excludeId = null)
         {
-            return await _context.MovieCategories
-                .Where(mc => mc.CategoryId == categoryId)
-                .Select(mc => mc.Movie)
-                .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
-                .AsNoTracking()
-                .ToListAsync(cancellationToken);
-        }
-
-        #endregion
-
-        #region Admin Operations
-
-        public async Task UpdateStatusAsync(int movieId, MovieStatus status, CancellationToken cancellationToken = default)
-        {
-            var movie = await _context.Movies.FindAsync(new object[] { movieId }, cancellationToken);
-            if (movie != null)
-            {
-                movie.Status = status;
-                _context.Movies.Update(movie);
-            }
-        }
-
-        public async Task SetFeaturedAsync(int movieId, bool isFeatured, CancellationToken cancellationToken = default)
-        {
-            var movie = await _context.Movies.FindAsync(new object[] { movieId }, cancellationToken);
-            if (movie != null)
-            {
-                movie.IsFeatured = isFeatured;
-                _context.Movies.Update(movie);
-            }
-        }
-
-        public async Task UpdateImagesAsync(int movieId, IEnumerable<string> imageUrls, CancellationToken cancellationToken = default)
-        {
-            var movie = await _context.Movies
-                .Include(m => m.MovieImages)
-                .FirstOrDefaultAsync(m => m.Id == movieId, cancellationToken).ConfigureAwait(false);
-
-            if (movie != null)
-            {
-                // Remove existing images
-                _context.MovieImages.RemoveRange(movie.MovieImages);
-
-                // Add new images
-                foreach (var url in imageUrls)
-                {
-                    movie.MovieImages.Add(new MovieImg { MovieId = movieId, ImageUrl = url });
-                }
-            }
-        }
-
-        public async Task DeleteMovieAsync(int movieId, CancellationToken cancellationToken = default)
-        {
-            var movie = await _context.Movies
-                .Include(m => m.Showtimes)
-                .Include(m => m.MovieImages)
-                .FirstOrDefaultAsync(m => m.Id == movieId, cancellationToken).ConfigureAwait(false);
-
-            if (movie != null)
-            {
-                // Remove related entities first
-                _context.MovieImages.RemoveRange(movie.MovieImages);
-                _context.Showtimes.RemoveRange(movie.Showtimes);
-
-                // Remove the movie itself
-                _context.Movies.Remove(movie);
-            }
-        }
-
-        #endregion
-
-        #region Search & Filtering
-
-        public async Task<IEnumerable<Movie>> SearchMoviesAsync(string query, CancellationToken cancellationToken = default)
-        {
-            query = query.ToLower();
             return await _context.Movies
-                .Where(m => m.Title.ToLower().Contains(query) ||
-                            m.Director.ToLower().Contains(query) ||
-                            m.MovieActors.Any(ma => ma.Actor.FullName.ToLower().Contains(query)))
-                .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
-                .Include(m => m.MovieActors).ThenInclude(ma => ma.Actor)
-                .AsNoTracking()
-                .ToListAsync(cancellationToken);
+                .AnyAsync(m => m.Slug == slug && (!excludeId.HasValue || m.Id != excludeId.Value));
         }
-
-        public async Task<IEnumerable<Movie>> FilterMoviesAsync(
-            MovieStatus? status = null,
-            int? categoryId = null,
-            DateTime? releaseFrom = null,
-            DateTime? releaseTo = null,
-            CancellationToken cancellationToken = default)
+        public IQueryable<Movie> GetMoviesWithCategory()
         {
-            var query = _context.Movies.AsQueryable();
-
-            if (status.HasValue)
-                query = query.Where(m => m.Status == status.Value);
-
-            if (categoryId.HasValue)
-                query = query.Where(m => m.MovieCategories.Any(mc => mc.CategoryId == categoryId.Value));
-
-            if (releaseFrom.HasValue)
-                query = query.Where(m => m.ReleaseDate >= releaseFrom.Value);
-
-            if (releaseTo.HasValue)
-                query = query.Where(m => m.ReleaseDate <= releaseTo.Value);
-
-            return await query
-                .Include(m => m.MovieCategories).ThenInclude(mc => mc.Category)
-                .Include(m => m.MovieActors).ThenInclude(ma => ma.Actor)
-                .AsNoTracking()
-                .ToListAsync(cancellationToken);
+            return _context.Movies.Include(m => m.Category);
         }
-
-        #endregion
     }
 }

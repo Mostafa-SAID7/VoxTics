@@ -10,27 +10,20 @@ namespace VoxTics.Areas.Admin.ViewModels.Movie
     {
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
-        public string? Description { get; set; }
-        public DateTime ReleaseDate { get; set; }
-        public decimal Rating { get; set; }
-        public TimeSpan Duration { get; set; }
-        public bool IsFeatured { get; set; }
-        public decimal Price { get; set; }
+        public string Description { get; set; } = string.Empty;
         public string Director { get; set; } = string.Empty;
-        public string? Language { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
-
-        // Changed to System.Uri
-        public Uri? TrailerUrl { get; set; }
-
-        public int ShowtimesCount { get; set; }
-        public int BookingsCount { get; set; }
+        public DateTime ReleaseDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public int Duration { get; set; }
+        public decimal Price { get; set; }
+        public decimal? Rating { get; set; }
+        public string Language { get; set; } = "EN";
+        public string? Country { get; set; }
+        public string? MainImageUrl { get; set; }
+        public string? TrailerUrl { get; set; }
+        public bool IsFeatured { get; set; }
         public MovieStatus Status { get; set; }
-
-        // Read-only collections
-        public List<MovieImageViewModel> Images { get; } = new();
-        public List<ActorViewModel> Actors { get; } = new();
-        public List<CategoryViewModel> Categories { get; } = new();
+        public string Slug { get; set; } = string.Empty;
+        public string CategoryName { get; set; } = string.Empty;
     }
 }

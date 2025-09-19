@@ -162,11 +162,6 @@ namespace VoxTics.Data
                  .HasForeignKey(ma => ma.MovieId)
                  .OnDelete(DeleteBehavior.Cascade);
 
-                m.HasMany(e => e.MovieCategories)
-                 .WithOne(mc => mc.Movie)
-                 .HasForeignKey(mc => mc.MovieId)
-                 .OnDelete(DeleteBehavior.Cascade);
-
                 m.HasMany(e => e.MovieImages)
                  .WithOne(mi => mi.Movie)
                  .HasForeignKey(mi => mi.MovieId)
@@ -249,11 +244,7 @@ namespace VoxTics.Data
                 mc.HasKey(e => e.Id);
                 mc.HasIndex(e => new { e.MovieId, e.CategoryId }).IsUnique();
 
-                mc.HasOne(mc => mc.Movie)
-                  .WithMany(m => m.MovieCategories)
-                  .HasForeignKey(mc => mc.MovieId)
-                  .OnDelete(DeleteBehavior.Cascade);
-
+   
                 mc.HasOne(mc => mc.Category)
                   .WithMany(c => c.MovieCategories)
                   .HasForeignKey(mc => mc.CategoryId)
@@ -266,7 +257,7 @@ namespace VoxTics.Data
             modelBuilder.Entity<MovieImg>(mi =>
             {
                 mi.HasKey(e => e.Id);
-                mi.Property(e => e.ImageUrl).IsRequired().HasMaxLength(200);
+                mi.Property(e => e.VariantImages).IsRequired().HasMaxLength(200);
 
                 mi.HasOne(mi => mi.Movie)
                   .WithMany(m => m.MovieImages)
@@ -303,10 +294,7 @@ namespace VoxTics.Data
                    .HasForeignKey(x => x.UserId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-                umw.HasOne(x => x.Movie)
-                   .WithMany(m => m.UserMovieWatchlists)
-                   .HasForeignKey(x => x.MovieId)
-                   .OnDelete(DeleteBehavior.Cascade);
+               
             });
         }
 
@@ -399,11 +387,7 @@ namespace VoxTics.Data
                  .HasForeignKey(x => x.UserId)
                  .OnDelete(DeleteBehavior.Restrict); // ← Prevent cascade
 
-                // Payment → Booking
-                p.HasOne(x => x.Booking)
-                 .WithMany(b => b.Payments)
-                 .HasForeignKey(x => x.BookingId)
-                 .OnDelete(DeleteBehavior.SetNull); // optional
+          
             });
         }
 

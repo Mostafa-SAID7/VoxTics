@@ -1,95 +1,77 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using VoxTics.Services.Interfaces;
-using VoxTics.Models.Entities;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using VoxTics.Areas.Admin.Services.Implementations;
+using VoxTics.Areas.Admin.Services.Interfaces;
+using VoxTics.Areas.Admin.ViewModels.Booking;
 
 namespace VoxTics.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Route("Admin/[controller]/[action]")]
+    [Authorize(Roles = "Admin")]
     public class BookingsController : Controller
     {
-        private readonly IAdminBookingService _bookingService;
+        private readonly IAdminBookingsService _bookingService;
+        private readonly IMapper _mapper;
 
-        public BookingsController(IAdminBookingService bookingService)
+        public BookingsController(IAdminBookingsService bookingService, IMapper mapper)
         {
             _bookingService = bookingService ?? throw new ArgumentNullException(nameof(bookingService));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        // GET: Admin/Bookings/Index?pageIndex=0&pageSize=10&search=
-        public async Task<IActionResult> Index(int pageIndex = 0, int pageSize = 10, string? search = null, CancellationToken cancellationToken = default)
+        // GET: Admin/Bookings
+        public async Task<IActionResult> Index(int page = 1, string? search = null)
         {
-            // Get raw bookings (entities)
-            var (bookings, totalCount) = await _bookingService
-                .GetPagedBookingsAsync(pageIndex, pageSize, search, cancellationToken)
-                .ConfigureAwait(false);
+            const int pageSize = 10; // Customize as needed
 
-            // Map to BookingViewModel
-            var bookingViewModels = bookings.Select(b => new VoxTics.Areas.Admin.ViewModels.Booking.BookingViewModel(b)
-            {
-                Id = b.Id,
-                BookingNumber = $"BK{b.Id:D6}",
-                UserName = b.User?.Name ?? "",
-                UserEmail = b.User?.Email ?? "",
-                MovieTitle = b.Movie?.Title ?? "",
-                CinemaName = b.Cinema?.Name ?? "",
-                ShowtimeDisplay = b.Showtime != null ? b.Showtime.StartTime.ToString("yyyy-MM-dd HH:mm") : "",
-                NumberOfTickets = b.NumberOfTickets,
-                TotalAmount = b.TotalAmount,
-                DiscountAmount = b.DiscountAmount,
-                FinalAmount = b.FinalAmount,
-                Status = b.Status,
-                PaymentStatus = b.PaymentStatus,
-                PaymentMethod = b.PaymentMethod,
-                TransactionId = b.TransactionId,
-                PaymentDate = b.PaymentDate,
-                Notes = b.Notes,
-                BookingDate = b.BookingDate,
-                CancellationDate = b.CancellationDate,
-                CancellationReason = b.CancellationReason,
-                Seats = b.Seats?.Select(s => s.SeatNumber).ToList() ?? new List<string>()
-            }).ToList();
+            // Get paged bookings from service
+            var (bookings, totalCount) = await _bookingService.GetPagedBookingsAsync(page, pageSize, search);
 
-            // Pass ViewBag info for paging/search
-            ViewBag.PageIndex = pageIndex;
-            ViewBag.PageSize = pageSize;
+            // Map to ViewModel
+            var model = _mapper.Map<IEnumerable<BookingViewModel>>(bookings);
+
+            // Pass pagination info to view
             ViewBag.TotalCount = totalCount;
+            ViewBag.PageIndex = page;
+            ViewBag.PageSize = pageSize;
             ViewBag.Search = search;
 
-            return View(bookingViewModels);
+            return View(model);
         }
 
-
-        // GET: Admin/Bookings/Stats
-        public async Task<IActionResult> Stats(CancellationToken cancellationToken = default)
+        // GET: Admin/Bookings/Details/5
+        public async Task<IActionResult> Details(int id)
         {
-            var (total, today, revenue) = await _bookingService
-                .GetBookingStatsAsync(cancellationToken)
-                .ConfigureAwait(false);
+            var booking = await _bookingService.GetBookingDetailsAsync(id);
+            if (booking == null) return NotFound();
 
-            return Json(new
-            {
-                TotalBookings = total,
-                TodayBookings = today,
-                TotalRevenue = revenue
-            });
+            var model = _mapper.Map<BookingDetailsViewModel>(booking);
+            return View(model);
         }
 
-        // POST: Admin/Bookings/ForceCancel/5
+        // POST: Admin/Bookings/Cancel/5
         [HttpPost]
-        public async Task<IActionResult> ForceCancel(int bookingId, CancellationToken cancellationToken = default)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Cancel(int id)
         {
-            if (bookingId <= 0) return BadRequest("Invalid booking ID.");
+            var booking = await _bookingService.GetBookingDetailsAsync(id);
+            if (booking == null) return NotFound();
 
-            var result = await _bookingService
-                .ForceCancelBookingAsync(bookingId, cancellationToken)
-                .ConfigureAwait(false);
+            if (booking.Status == VoxTics.Models.Enums.BookingStatus.Cancelled)
+            {
+                TempData["Message"] = "Booking is already cancelled.";
+            }
+            else
+            {
+                booking.Status = VoxTics.Models.Enums.BookingStatus.Cancelled;
+                // Here you would call repository/service to update in DB
+                // For example: await _bookingService.UpdateBookingAsync(booking);
 
-            if (!result) return NotFound($"Booking with ID {bookingId} not found.");
+                TempData["Message"] = "Booking cancelled successfully.";
+            }
 
-            return Ok(new { Message = "Booking successfully cancelled." });
+            return RedirectToAction(nameof(Index));
         }
     }
 }

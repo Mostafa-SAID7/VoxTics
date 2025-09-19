@@ -20,7 +20,6 @@ namespace VoxTics.Areas.Admin.AdminProfiles
             // Category -> CategoryDetailsViewModel
             CreateMap<Category, CategoryDetailsViewModel>()
                 .ForMember(dest => dest.MovieCount, opt => opt.MapFrom(src => src.MovieCategories.Count))
-                .ForMember(dest => dest.CreatedAtFormatted, opt => opt.MapFrom(src => src.CreatedAt.ToString("MMM dd, yyyy")))
                 .ForMember(dest => dest.UpdatedAtFormatted, opt => opt.MapFrom(src => src.UpdatedAt.HasValue ? src.UpdatedAt.Value.ToString("MMM dd, yyyy") : null));
 
             // CategoryCreateEditViewModel -> Category

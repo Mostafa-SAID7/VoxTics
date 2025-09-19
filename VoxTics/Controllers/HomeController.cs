@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using VoxTics.Models.ViewModels.Cinema;
@@ -16,9 +19,10 @@ namespace VoxTics.Controllers
 
         public HomeController(IHomeService homeService)
         {
-            _homeService = homeService;
+            _homeService = homeService ?? throw new ArgumentNullException(nameof(homeService));
         }
 
+        // GET: Home/Index
         [HttpGet]
         public async Task<IActionResult> Index(CancellationToken cancellationToken = default)
         {
@@ -28,68 +32,42 @@ namespace VoxTics.Controllers
             var featured = await _homeService.GetFeaturedMoviesAsync();
             var cinemas = await _homeService.GetCinemasAsync();
 
-            // Map entities to view models
+            // Map entities to view models (null-safe)
             var model = new HomeVM
             {
-                NowShowing = nowShowing.Select(m => new MovieVM
+                NowShowing = nowShowing?.Select(m => new MovieVM
                 {
                     Id = m.Id,
                     Title = m.Title,
-                    PosterImage = m.MovieImages.FirstOrDefault()?.AltText
-                }).ToList(),
+                    MainImageUrl = m.MovieImages?.FirstOrDefault()?.AltText ?? "/images/defaults/placeholder.png"
+                }).ToList() ?? new List<MovieVM>(),
 
-                ComingSoon = comingSoon.Select(m => new MovieVM
+                ComingSoon = comingSoon?.Select(m => new MovieVM
                 {
                     Id = m.Id,
                     Title = m.Title,
-                    PosterImage = m.MovieImages.FirstOrDefault()?.AltText,
-                    ReleaseDate = m.Showtimes.Min(s => s.StartTime)
-                }).ToList(),
+                    MainImageUrl = m.MovieImages?.FirstOrDefault()?.AltText ?? "/images/defaults/placeholder.png",
+                  
+                }).ToList() ?? new List<MovieVM>(),
 
-                Featured = featured.Select(m => new MovieVM
+                Featured = featured?.Select(m => new MovieVM
                 {
                     Id = m.Id,
                     Title = m.Title,
-                    PosterImage = m.MovieImages.FirstOrDefault()?.AltText
-                }).ToList(),
+                    MainImageUrl = m.MovieImages?.FirstOrDefault()?.AltText ?? "/images/defaults/placeholder.png"
+                }).ToList() ?? new List<MovieVM>(),
 
-                Cinemas = cinemas.Select(c => new CinemaVM
+                Cinemas = cinemas?.Select(c => new CinemaVM
                 {
                     Id = c.Id,
                     Name = c.Name,
-                    Country = c.City
-                }).ToList()
+                    Country = string.IsNullOrWhiteSpace(c.City) ? "Unknown" : c.City
+                }).ToList() ?? new List<CinemaVM>()
             };
 
             return View(model);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> NowShowing(CancellationToken cancellationToken = default)
-        {
-            var movies = await _homeService.GetNowShowingAsync();
-            return View(movies);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ComingSoon(CancellationToken cancellationToken = default)
-        {
-            var movies = await _homeService.GetComingSoonAsync();
-            return View(movies);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Featured(CancellationToken cancellationToken = default)
-        {
-            var movies = await _homeService.GetFeaturedMoviesAsync();
-            return View(movies);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Cinemas(CancellationToken cancellationToken = default)
-        {
-            var cinemas = await _homeService.GetCinemasAsync();
-            return View(cinemas);
-        }
+        
     }
 }

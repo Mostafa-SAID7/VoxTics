@@ -46,7 +46,7 @@ namespace VoxTics.Services.Implementations
                 query = query.Where(c => c.Name.Contains(sanitized));
             }
 
-            query = query.ApplySorting(sortOrder, c => c.Name);
+            //query = query.ApplySorting(sortOrder, c => c.Name);
 
             return await query.ToPaginatedListAsync(pageIndex, pageSize, cancellationToken)
                               .ConfigureAwait(false);

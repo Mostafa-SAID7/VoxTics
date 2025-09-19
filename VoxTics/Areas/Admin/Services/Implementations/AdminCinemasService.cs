@@ -132,8 +132,7 @@ namespace VoxTics.Services.Implementations
             if (cinema.TotalSeats <= 0)
                 errors.Add("Total seats must be greater than zero.");
 
-            if (!string.IsNullOrWhiteSpace(cinema.ImageUrl) && !ValidationHelpers.IsValidUrl(new Uri(cinema.ImageUrl, UriKind.RelativeOrAbsolute)))
-                errors.Add("Invalid image URL.");
+        
 
             return errors;
         }

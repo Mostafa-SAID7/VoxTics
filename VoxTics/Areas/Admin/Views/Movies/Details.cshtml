@@ -9,7 +9,6 @@
 <p><strong>Director:</strong> @Model.Director</p>
 <p><strong>Release Date:</strong> @Model.ReleaseDate.ToString("yyyy-MM-dd")</p>
 <p><strong>Rating:</strong> @Model.Rating</p>
-<p><strong>Duration:</strong> @Model.Duration.TotalMinutes min</p>
 <p><strong>Price:</strong> $@Model.Price</p>
 <p><strong>Language:</strong> @Model.Language</p>
 <p><strong>Featured:</strong> @(Model.IsFeatured ? "Yes" : "No")</p>
@@ -21,28 +20,15 @@
 }
 
 <h3>Actors</h3>
-<ul>
-    @foreach (var actor in Model.Actors)
-    {
-        <li>@actor.FullName</li>
-    }
-</ul>
+
 
 <h3>Categories</h3>
 <ul>
-    @foreach (var category in Model.Categories)
-    {
-        <li>@category.Name</li>
-    }
+
 </ul>
 
 <h3>Images</h3>
-<div>
-    @foreach (var image in Model.Images)
-    {
-        <img src="@image.ImageUrl" alt="@image.AltText" width="100" style="margin:5px;" />
-    }
-</div>
+
 
 <p>
     <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>

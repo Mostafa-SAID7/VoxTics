@@ -23,6 +23,5 @@ namespace VoxTics.Models.Entities
         [NotMapped]
         public string SeatNumber { get; set; }
 
-        public int ShowtimeId { get; internal set; }
     }
 }

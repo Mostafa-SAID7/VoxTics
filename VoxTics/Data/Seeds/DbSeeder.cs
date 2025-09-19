@@ -98,16 +98,16 @@ namespace VoxTics.Data.Seeds
         private static void SeedMovies(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Movie>().HasData(
-                new Movie { Id = 1, Title = "Avengers: Endgame", Director = "Russo Brothers", ReleaseDate = STATIC_NOW, Duration = 181, Price = 10m, Status = MovieStatus.NowShowing, Language = "EN", CategoryId = 1 },
-                new Movie { Id = 2, Title = "Iron Man", Director = "Jon Favreau", ReleaseDate = STATIC_NOW.AddYears(-15), Duration = 126, Price = 8m, Status = MovieStatus.Ended, Language = "EN", CategoryId = 1 },
-                new Movie { Id = 3, Title = "Spider-Man: No Way Home", Director = "Jon Watts", ReleaseDate = STATIC_NOW, Duration = 148, Price = 12m, Status = MovieStatus.NowShowing, Language = "EN", CategoryId = 5 },
-                new Movie { Id = 4, Title = "Doctor Strange", Director = "Scott Derrickson", ReleaseDate = STATIC_NOW, Duration = 115, Price = 9m, Status = MovieStatus.Ended, Language = "EN", CategoryId = 5 },
-                new Movie { Id = 5, Title = "Black Widow", Director = "Cate Shortland", ReleaseDate = STATIC_NOW, Duration = 134, Price = 11m, Status = MovieStatus.NowShowing, Language = "EN", CategoryId = 1 },
-                new Movie { Id = 6, Title = "Thor: Ragnarok", Director = "Taika Waititi", ReleaseDate = STATIC_NOW.AddYears(-3), Duration = 130, Price = 10m, Status = MovieStatus.Ended, Language = "EN", CategoryId = 1 },
-                new Movie { Id = 7, Title = "Captain America: Civil War", Director = "Anthony Russo", ReleaseDate = STATIC_NOW.AddYears(-4), Duration = 147, Price = 9m, Status = MovieStatus.Ended, Language = "EN", CategoryId = 1 },
-                new Movie { Id = 8, Title = "Ant-Man", Director = "Peyton Reed", ReleaseDate = STATIC_NOW.AddYears(-5), Duration = 117, Price = 8m, Status = MovieStatus.Ended, Language = "EN", CategoryId = 5 },
-                new Movie { Id = 9, Title = "WandaVision", Director = "Matt Shakman", ReleaseDate = STATIC_NOW, Duration = 120, Price = 15m, Status = MovieStatus.NowShowing, Language = "EN", CategoryId = 2 },
-                new Movie { Id = 10, Title = "Doctor Strange in the Multiverse of Madness", Director = "Sam Raimi", ReleaseDate = STATIC_NOW, Duration = 150, Price = 14m, Status = MovieStatus.NowShowing, Language = "EN", CategoryId = 5 }
+                new Movie { Id = 1, CinemaId = 1, Title = "Avengers: Endgame", Director = "Russo Brothers", ReleaseDate = STATIC_NOW, Duration = 181, Price = 10m, Status = MovieStatus.NowShowing, Language = "EN", CategoryId = 1 },
+                new Movie { Id = 2, CinemaId = 1, Title = "Iron Man", Director = "Jon Favreau", ReleaseDate = STATIC_NOW.AddYears(-15), Duration = 126, Price = 8m, Status = MovieStatus.Ended, Language = "EN", CategoryId = 1 },
+                new Movie { Id = 3, CinemaId = 1, Title = "Spider-Man: No Way Home", Director = "Jon Watts", ReleaseDate = STATIC_NOW, Duration = 148, Price = 12m, Status = MovieStatus.NowShowing, Language = "EN", CategoryId = 5 },
+                new Movie { Id = 4, CinemaId = 1, Title = "Doctor Strange", Director = "Scott Derrickson", ReleaseDate = STATIC_NOW, Duration = 115, Price = 9m, Status = MovieStatus.Ended, Language = "EN", CategoryId = 5 },
+                new Movie { Id = 5, CinemaId = 1, Title = "Black Widow", Director = "Cate Shortland", ReleaseDate = STATIC_NOW, Duration = 134, Price = 11m, Status = MovieStatus.NowShowing, Language = "EN", CategoryId = 1 },
+                new Movie { Id = 6, CinemaId = 1, Title = "Thor: Ragnarok", Director = "Taika Waititi", ReleaseDate = STATIC_NOW.AddYears(-3), Duration = 130, Price = 10m, Status = MovieStatus.Ended, Language = "EN", CategoryId = 1 },
+                new Movie { Id = 7, CinemaId = 1, Title = "Captain America: Civil War", Director = "Anthony Russo", ReleaseDate = STATIC_NOW.AddYears(-4), Duration = 147, Price = 9m, Status = MovieStatus.Ended, Language = "EN", CategoryId = 1 },
+                new Movie { Id = 8, CinemaId = 1, Title = "Ant-Man", Director = "Peyton Reed", ReleaseDate = STATIC_NOW.AddYears(-5), Duration = 117, Price = 8m, Status = MovieStatus.Ended, Language = "EN", CategoryId = 5 },
+                new Movie { Id = 9, CinemaId = 1, Title = "WandaVision", Director = "Matt Shakman", ReleaseDate = STATIC_NOW, Duration = 120, Price = 15m, Status = MovieStatus.NowShowing, Language = "EN", CategoryId = 2 },
+                new Movie { Id = 10, CinemaId = 1, Title = "Doctor Strange in the Multiverse of Madness", Director = "Sam Raimi", ReleaseDate = STATIC_NOW, Duration = 150, Price = 14m, Status = MovieStatus.NowShowing, Language = "EN", CategoryId = 5 }
             );
         }
 

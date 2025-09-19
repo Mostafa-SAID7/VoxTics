@@ -104,19 +104,7 @@ namespace VoxTics.Areas.Admin.ViewModels.Admin
             BookingsByStatus = await _dashboardRepository.GetBookingsByStatusAsync();
 
             // Recent / popular items
-            RecentMovies = (await _dashboardRepository.GetRecentMoviesAsync(popularCount))
-                .Select(m => new MovieListItemViewModel(m))
-                .ToList();
-
-            RecentBookings = (await _dashboardRepository.GetRecentBookingsAsync(popularCount))
-                .Select(b => new BookingViewModel(b))
-                .ToList();
-
-            RecentUsers = (await _dashboardRepository.GetRecentUsersAsync(popularCount).ConfigureAwait(false)).ToList();
-
-            PopularMovies = (await _dashboardRepository.GetPopularMoviesAsync(popularCount))
-                .Select(m => new MovieListItemViewModel(m))
-                .ToList();
+      
 
             PopularCinemas = (await _dashboardRepository.GetPopularCinemasAsync(popularCount))
                 .Select(c => new CinemaViewModel(c))

@@ -10,8 +10,6 @@ using System.Threading.Tasks;
 
 namespace VoxTics.Helpers.ImgsHelper
 {
-
-
     public class ImageManager
     {
         private readonly ImageSettings _settings;
@@ -31,14 +29,16 @@ namespace VoxTics.Helpers.ImgsHelper
             return !string.IsNullOrEmpty(ext) && _settings.AllowedExtensions.Contains(ext);
         }
 
-        public static bool IsValidUrl(string url) => Uri.TryCreate(url, UriKind.Absolute, out var uri) &&
-                                                      (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
+        public static bool IsValidUrl(string url) =>
+            Uri.TryCreate(url, UriKind.Absolute, out var uri) &&
+            (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
         #endregion
 
         #region Folder Helpers
         private string GetFolder(ImageType type, string entityName)
         {
-            if (string.IsNullOrWhiteSpace(entityName)) throw new ArgumentNullException(nameof(entityName));
+            if (string.IsNullOrWhiteSpace(entityName))
+                throw new ArgumentNullException(nameof(entityName));
 
             string folder = type switch
             {
@@ -68,7 +68,8 @@ namespace VoxTics.Helpers.ImgsHelper
         #region Save & Hash
         public async Task<string> SaveImageAsync(IFormFile file, ImageType type, string entityName, bool setAsMain = false)
         {
-            if (!IsValidImageFile(file)) throw new ArgumentException("Invalid image file", nameof(file));
+            if (!IsValidImageFile(file))
+                throw new ArgumentException("Invalid image file", nameof(file));
 
             string folder = GetFolder(type, entityName);
 
@@ -76,13 +77,16 @@ namespace VoxTics.Helpers.ImgsHelper
             string newFileHash;
             using (var sha = SHA256.Create())
             using (var stream = file.OpenReadStream())
-                newFileHash = BitConverter.ToString(sha.ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
+                newFileHash = BitConverter.ToString(sha.ComputeHash(stream))
+                    .Replace("-", "").ToLowerInvariant();
 
             foreach (var existingFile in Directory.GetFiles(folder))
             {
                 using var fs = new FileStream(existingFile, FileMode.Open, FileAccess.Read);
                 using var sha = SHA256.Create();
-                var existingHash = BitConverter.ToString(sha.ComputeHash(fs)).Replace("-", "").ToLowerInvariant();
+                var existingHash = BitConverter.ToString(sha.ComputeHash(fs))
+                    .Replace("-", "").ToLowerInvariant();
+
                 if (existingHash == newFileHash)
                     return Path.GetFileName(existingFile); // already exists
             }
@@ -110,11 +114,8 @@ namespace VoxTics.Helpers.ImgsHelper
         public string[] GetImages(ImageType type, string entityName)
         {
             string folder = GetFolder(type, entityName);
-
             var files = Directory.GetFiles(folder).Select(Path.GetFileName).ToArray();
-            if (files.Length == 0) return new[] { GetDefaultImage(type) };
-
-            return files;
+            return files.Length == 0 ? new[] { GetDefaultImage(type) } : files;
         }
 
         public Uri GetImageUrl(ImageType type, string entityName, string? imageName = null)
@@ -152,7 +153,8 @@ namespace VoxTics.Helpers.ImgsHelper
             string folder = GetFolder(type, entityName);
             string filePath = Path.Combine(folder, imageName);
 
-            if (!File.Exists(filePath)) throw new FileNotFoundException("Image not found", filePath);
+            if (!File.Exists(filePath))
+                throw new FileNotFoundException("Image not found", filePath);
 
             string resizedFileName = $"{Guid.NewGuid()}{Path.GetExtension(imageName)}";
             string resizedFilePath = Path.Combine(folder, resizedFileName);

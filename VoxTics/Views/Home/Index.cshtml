@@ -542,7 +542,7 @@
         @foreach (var movie in Model.Featured)
         {
             <div class="movie-card fade-in-card" style="animation-delay: @(Model.Featured.ToList().IndexOf(movie) * 0.1)s">
-                <img src="@movie.PosterImage"
+                <img src="@movie.MainImageUrl"
                      class="movie-poster"
                      alt="@movie.Title"
                      onerror="this.onerror=null;this.src='@Url.Content("~/images/placeholder.svg")';" />
@@ -601,7 +601,6 @@
                         <h6 class="movie-title">@movie.Title</h6>
                         <div class="movie-meta">
                             <i class="fas fa-calendar"></i>
-                            <span>Release: @movie.ReleaseDate.ToString("MMM dd, yyyy")</span>
                         </div>
                     </div>
                     <span class="status-badge badge-info">Coming Soon</span>

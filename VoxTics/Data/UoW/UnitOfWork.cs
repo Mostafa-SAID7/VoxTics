@@ -13,7 +13,7 @@ namespace VoxTics.Repositories
         private readonly MovieDbContext _context;
 
         // General
-        public IBookingsRepository Bookings { get; }
+        public IBookingRepository Bookings { get; }
         public ICategoriesRepository Categories { get; }
         public ICinemasRepository Cinemas { get; }
         public IMoviesRepository Movies { get; }
@@ -33,7 +33,7 @@ namespace VoxTics.Repositories
 
         public UnitOfWork(
             MovieDbContext context,
-            IBookingsRepository bookings,
+            IBookingRepository bookings,
             ICategoriesRepository categories,
             ICinemasRepository cinemas,
             IMoviesRepository movies,
@@ -74,7 +74,10 @@ namespace VoxTics.Repositories
             await _context.SaveChangesAsync().ConfigureAwait(false);
         }
 
-
+        public async Task CommitAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
         #region Dispose
         private bool _disposed = false;
         protected virtual void Dispose(bool disposing)

@@ -17,14 +17,11 @@ namespace VoxTics.MappingProfiles
 
             // Actor -> ActorDetailsVM (detailed view)
             CreateMap<Actor, ActorDetailsVM>()
-                .ForMember(dest => dest.FullName,
-                           opt => opt.MapFrom(src => src.FullName))
-                .ForMember(dest => dest.FirstName,
-                           opt => opt.MapFrom(src => src.FirstName))
+              
                 .ForMember(dest => dest.LastName,
-                           opt => opt.MapFrom(src => src.LastName))
+                           opt => opt.MapFrom(src => src.FullName))
                 .ForMember(dest => dest.Age,
-                           opt => opt.MapFrom(src => src.Age))
+                           opt => opt.MapFrom(src => src.DateOfBirth))
                 .ForMember(dest => dest.ImageUrl,
                            opt => opt.MapFrom(src => src.ImageUrl))
                 .ForMember(dest => dest.DateOfBirth,
@@ -41,10 +38,7 @@ namespace VoxTics.MappingProfiles
             CreateMap<ActorDetailsVM, Actor>()
                 .ForMember(dest => dest.FullName,
                            opt => opt.MapFrom(src => src.FullName))
-                .ForMember(dest => dest.FirstName,
-                           opt => opt.MapFrom(src => src.FirstName))
-                .ForMember(dest => dest.LastName,
-                           opt => opt.MapFrom(src => src.LastName))
+               
                 .ForMember(dest => dest.ImageUrl,
                            opt => opt.MapFrom(src => src.ImageUrl))
                 .ForMember(dest => dest.DateOfBirth,

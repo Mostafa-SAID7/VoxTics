@@ -3,8 +3,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Configuration;
 using VoxTics.Areas.Admin.AdminProfiles;
+using VoxTics.Areas.Admin.MappingProfiles;
 using VoxTics.Areas.Admin.Repositories;
 using VoxTics.Areas.Admin.Repositories.IRepositories;
+using VoxTics.Areas.Admin.Services.Implementations;
+using VoxTics.Areas.Admin.Services.Interfaces;
 using VoxTics.Areas.Identity.IdentityProfiles;
 using VoxTics.Areas.Identity.Repositories;
 using VoxTics.Areas.Identity.Repositories.IRepositories;
@@ -34,7 +37,7 @@ namespace VoxTics.Extensions
             // General Repositories
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
 
-            services.AddScoped<IBookingsRepository, BookingsRepository>();
+            services.AddScoped<IBookingRepository, BookingRepository>();
             services.AddScoped<ICategoriesRepository, CategoriesRepository>();
             services.AddScoped<ICinemasRepository, CinemasRepository>();
             services.AddScoped<IMoviesRepository, MoviesRepository>();
@@ -68,7 +71,7 @@ namespace VoxTics.Extensions
             services.AddScoped<IAccountService, AccountService>();
 
             // Admin Services
-            services.AddScoped<IAdminBookingService, AdminBookingService>();
+            services.AddScoped<IAdminBookingsService, AdminBookingsService>();
             services.AddScoped<IAdminCategoryService, AdminCategoryService>();
             services.AddScoped<IAdminCinemaService, AdminCinemaService>();
             services.AddScoped<IDashboardService, DashboardService>();

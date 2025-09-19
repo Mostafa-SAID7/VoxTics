@@ -28,7 +28,7 @@ namespace VoxTics.Models.Entities
 
         [Required, Column(TypeName = "decimal(18,2)")]
         [Range(0, double.MaxValue, ErrorMessage = "Price must be positive")]
-        public decimal Price { get; set; }
+        public decimal Price { get; set; } = 0m;
 
         [Range(0.0, 10.0)]
         public decimal? Rating { get; set; }
@@ -68,5 +68,8 @@ namespace VoxTics.Models.Entities
         public int CategoryId { get; set; }
         [Required]
         public Category Category { get; set; }
+        public int CinemaId { get; set; }  // just the foreign key
+                                           // OR
+        public Cinema Cinema { get; set; }
     }
 }

@@ -8,7 +8,7 @@
 <h2>Edit Booking</h2>
 
 <form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="BookingId" />
 
     <div class="mb-3">
         <label asp-for="Status" class="form-label"></label>
@@ -20,30 +20,6 @@
         <span asp-validation-for="Status" class="text-danger"></span>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="PaymentStatus" class="form-label"></label>
-        <select asp-for="PaymentStatus" class="form-select">
-            <option value="Pending">Pending</option>
-            <option value="Paid">Paid</option>
-            <option value="Failed">Failed</option>
-        </select>
-        <span asp-validation-for="PaymentStatus" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="PaymentMethod" class="form-label"></label>
-        <input asp-for="PaymentMethod" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Notes" class="form-label"></label>
-        <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="TransactionId" class="form-label"></label>
-        <input asp-for="TransactionId" class="form-control" />
-    </div>
 
     <button type="submit" class="btn btn-primary">Save Changes</button>
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>

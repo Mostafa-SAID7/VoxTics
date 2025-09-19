@@ -30,7 +30,6 @@ namespace VoxTics.Repositories
                 .Select(a => new ActorVM
                 {
                     Id = a.Id,
-                    FullName = a.FirstName + " " + a.LastName,
                     ImageUrl = a.ImageUrl
                 });
 
@@ -65,8 +64,7 @@ namespace VoxTics.Repositories
                 .Select(a => new ActorDetailsVM
                 {
                     Id = a.Id,
-                    FirstName = a.FirstName,
-                    LastName = a.LastName,
+
                     Bio = a.Bio,
                     ImageUrl = a.ImageUrl,
                     DateOfBirth = a.DateOfBirth

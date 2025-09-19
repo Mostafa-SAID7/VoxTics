@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Threading.Tasks;
-using VoxTics.Repositories.IRepositories;
-using VoxTics.Areas.Identity.Repositories.IRepositories;
 using VoxTics.Areas.Admin.Repositories.IRepositories;
+using VoxTics.Areas.Identity.Repositories.IRepositories;
+using VoxTics.Repositories;
+using VoxTics.Repositories.IRepositories;
 
 namespace VoxTics.Data.UoW
 {
     public interface IUnitOfWork : IDisposable, IAsyncDisposable
     {
         // General
-        IBookingsRepository Bookings { get; }
+        IBookingRepository Bookings { get; }
         ICategoriesRepository Categories { get; }
         ICinemasRepository Cinemas { get; }
         IMoviesRepository Movies { get; }
@@ -27,7 +28,7 @@ namespace VoxTics.Data.UoW
         IAdminShowtimesRepository AdminShowtimes { get; }
         IDashboardRepository Dashboard { get; }
 
-        Task<int> CompleteAsync();
         Task CommitAsync<T>(T entity);
+        Task CommitAsync();
     }
 }
