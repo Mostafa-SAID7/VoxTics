@@ -1,210 +1,217 @@
-﻿@model VoxTics.Areas.Admin.ViewModels.MovieVMs.MovieIndexVm
+﻿@model VoxTics.Areas.Admin.ViewModels.MovieVMs.MovieIndexVM
+@using Microsoft.AspNetCore.Mvc.Rendering
+
 @{
-    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
-    var vm = Model;
+    ViewData["Title"] = "Admin - Manage Movies";
 }
 
-<h3>Movies</h3>
-
-<form id="filtersForm" class="row g-2 mb-3" onsubmit="return false;">
-    <div class="col-md-4">
-        <input id="searchInput" name="search" value="@vm.Search" class="form-control" placeholder="Search title or description..." />
+<div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a asp-action="Create" asp-controller="Movies" asp-area="Admin" class="btn btn-primary">Create Movie</a>
     </div>
 
-    <div class="col-md-2">
-        <select id="categorySelect" name="categoryId" class="form-select">
-            <option value="">All categories</option>
-            @foreach (var c in vm.Categories ?? Enumerable.Empty<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>())
+    <form id="filterForm" method="get" class="mb-3">
+        <div class="row g-2">
+            <div class="col-md-3">
+                <input asp-for="Filter.Search" class="form-control" placeholder="Search title or description" />
+            </div>
+            <div class="col-md-2">
+                <select asp-for="Filter.CategoryId" asp-items="Model.Categories" class="form-select">
+                    <option value="">All Categories</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select asp-for="Filter.CinemaId" asp-items="Model.Cinemas" class="form-select">
+                    <option value="">All Cinemas</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select asp-for="Filter.SortBy" class="form-select">
+                    <option value="Title">Sort by Title</option>
+                    <option value="Price">Sort by Price</option>
+                    <option value="StartDate">Sort by Start Date</option>
+                    <option value="EndDate">Sort by End Date</option>
+                </select>
+            </div>
+            <div class="col-md-1">
+                <input asp-for="Filter.PageSize" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-secondary">Apply</button>
+                <a asp-action="Index" asp-controller="Movies" asp-area="Admin" class="btn btn-link">Reset</a>
+            </div>
+        </div>
+    </form>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Poster</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Cinema</th>
+                <th>Price</th>
+                <th>Dates</th>
+                <th>Status</th>
+                <th style="width:170px">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var m in Model.Movies)
             {
-                <option value="@c.Value" @(vm.CategoryId.HasValue && vm.CategoryId.Value.ToString() == c.Value ? "selected" : "")>@c.Text</option>
+                <tr>
+                    <td style="width:80px">
+                        @if (!string.IsNullOrEmpty(m.ImgUrl))
+                        {
+                            <img src="@m.ImgUrl" style="height:60px;object-fit:cover" />
+                        }
+                    </td>
+                    <td>@m.Title</td>
+                    <td>@m.CategoryName</td>
+                    <td>@m.CinemaName</td>
+                    <td>@m.Price.ToString("0.00")</td>
+                    <td>@m.StartDate.ToShortDateString() - @m.EndDate.ToShortDateString()</td>
+                    <td>@m.MovieStatus</td>
+                    <td>
+                        <button class="btn btn-sm btn-info btn-details" data-id="@m.Id">Details</button>
+                        <button class="btn btn-sm btn-warning btn-edit" data-id="@m.Id">Edit</button>
+                        <button class="btn btn-sm btn-danger btn-delete" data-id="@m.Id">Delete</button>
+                    </td>
+                </tr>
             }
-        </select>
-    </div>
+        </tbody>
+    </table>
 
-    <div class="col-md-2">
-        <select id="sortSelect" name="sort" class="form-select">
-            <option value="title_asc" @(vm.Sort == "title_asc" ? "selected" : "")>Title ↑</option>
-            <option value="title_desc" @(vm.Sort == "title_desc" ? "selected" : "")>Title ↓</option>
-            <option value="date_desc" @(vm.Sort == "date_desc" ? "selected" : "")>Start Date ↓</option>
-            <option value="date_asc" @(vm.Sort == "date_asc" ? "selected" : "")>Start Date ↑</option>
-            <option value="price_asc" @(vm.Sort == "price_asc" ? "selected" : "")>Price ↑</option>
-            <option value="price_desc" @(vm.Sort == "price_desc" ? "selected" : "")>Price ↓</option>
-        </select>
-    </div>
-
-    <div class="col-md-1">
-        <select id="pageSizeSelect" name="pageSize" class="form-select">
-            @foreach (var p in vm.PageSizeOptions ?? Enumerable.Empty<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>())
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            @{
+                var current = Model.CurrentPage;
+                var total = Model.TotalPages <= 0 ? 1 : Model.TotalPages;
+            }
+            <li class="page-item @(current <= 1 ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action("Index", "Movies", new { area = "Admin", Page = current - 1, PageSize = Model.PageSize, Search = Model.Filter.Search, CategoryId = Model.Filter.CategoryId, CinemaId = Model.Filter.CinemaId, SortBy = Model.Filter.SortBy })">Previous</a>
+            </li>
+            @for (int i = 1; i <= total; i++)
             {
-                <option value="@p.Value" @(p.Value == vm.PageSize.ToString() ? "selected" : "")>@p.Text</option>
+                <li class="page-item @(i == current ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", "Movies", new { area = "Admin", Page = i, PageSize = Model.PageSize, Search = Model.Filter.Search, CategoryId = Model.Filter.CategoryId, CinemaId = Model.Filter.CinemaId, SortBy = Model.Filter.SortBy })">@i</a>
+                </li>
             }
-        </select>
-    </div>
-
-    <div class="col-md-3 d-flex">
-        <button id="applyBtn" class="btn btn-primary me-2">Apply</button>
-        <a id="resetBtn" class="btn btn-secondary" href="@Url.Action("Index", new { area = "Admin" })">Reset</a>
-        <a class="btn btn-success ms-auto" href="@Url.Action("Create", "Movies", new { area = "Admin" })">Add Movie</a>
-    </div>
-</form>
-
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Start</th>
-            <th>Price</th>
-            <th>Cinema</th>
-            <th>Category</th>
-            <th>Images</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody id="moviesTbody">
-        @* Server-render the first page initially so the page is usable without JS *@
-        @await Html.PartialAsync("_MovieList", Model.PagedMovies.Items)
-    </tbody>
-</table>
-
-<div id="loading" class="text-center my-3" style="display:none;">
-    <div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>
+            <li class="page-item @(current >= total ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action("Index", "Movies", new { area = "Admin", Page = current + 1, PageSize = Model.PageSize, Search = Model.Filter.Search, CategoryId = Model.Filter.CategoryId, CinemaId = Model.Filter.CinemaId, SortBy = Model.Filter.SortBy })">Next</a>
+            </li>
+        </ul>
+    </nav>
 </div>
 
-<script>
-    // ---------- Helper: debounce ----------
-    function debounce(fn, delay) {
-        let timer = null;
-        return function () {
-            const args = arguments;
-            clearTimeout(timer);
-            timer = setTimeout(() => fn.apply(this, args), delay);
-        };
-    }
+<!-- AJAX Modal -->
+<div class="modal fade" id="ajaxModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ajaxModalTitle">...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="ajaxModalBody"></div>
+        </div>
+    </div>
+</div>
 
-    // ---------- State ----------
-    let currentPage = @Model.PagedMovies.Page;
-    const pageSize = parseInt(document.getElementById('pageSizeSelect').value || '@Model.PageSize');
-    let totalPages = @Model.PagedMovies.TotalPages;
-    let isLoading = false;
-    let lastQuery = {
-        search: document.getElementById('searchInput').value || '',
-        categoryId: document.getElementById('categorySelect').value || '',
-        sort: document.getElementById('sortSelect').value || '',
-        pageSize: pageSize
-    };
+@section Scripts {
+    <text>
+        <script>
+            (function(){
+                var createUrl = '@Url.Action("Create", "Movies", new { area = "Admin" })';
+                var editUrl = '@Url.Action("Edit", "Movies", new { area = "Admin" })';
+                var deleteUrl = '@Url.Action("Delete", "Movies", new { area = "Admin" })';
+                var detailsUrl = '@Url.Action("Details", "Movies", new { area = "Admin" })';
+                var removeImageUrl = '@Url.Action("RemoveImage", "Movies", new { area = "Admin" })';
 
-    // ---------- Build query string ----------
-    function buildQuery(q) {
-        const params = new URLSearchParams();
-        if (q.search) params.set('search', q.search);
-        if (q.categoryId) params.set('categoryId', q.categoryId);
-        if (q.sort) params.set('sort', q.sort);
-        if (q.page) params.set('page', q.page);
-        if (q.pageSize) params.set('pageSize', q.pageSize);
-        return params.toString();
-    }
+                function showModal(title, html) {
+                    $('#ajaxModalTitle').text(title);
+                    $('#ajaxModalBody').html(html);
+                    var modal = new bootstrap.Modal(document.getElementById('ajaxModal'));
+                    modal.show();
+                }
 
-    // ---------- Fetch and replace (for search / filter) ----------
-    async function fetchAndReplace(page = 1) {
-        if (isLoading) return;
-        isLoading = true;
-        document.getElementById('loading').style.display = 'block';
+                $('#btnCreate').on('click', function(){
+                    $.get(createUrl).done(function(html){ showModal('Create Movie', html); });
+                });
 
-        lastQuery.page = page;
-        const qs = buildQuery(lastQuery);
-        const url = `@Url.Action("List", "Movies", new { area = "Admin" })?${qs}`;
+                $(document).on('click', '.btn-edit', function(){
+                    var id = $(this).data('id');
+                    $.get(editUrl, { id: id }).done(function(html){ showModal('Edit Movie', html); });
+                });
 
-        try {
-            const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-            if (!res.ok) throw new Error('Network error');
-            const html = await res.text();
+                $(document).on('click', '.btn-details', function(){
+                    var id = $(this).data('id');
+                    $.get(detailsUrl, { id: id }).done(function(html){ showModal('Movie Details', html); });
+                });
 
-            // Replace tbody with returned rows
-            document.getElementById('moviesTbody').innerHTML = html;
+                $(document).on('click', '.btn-delete', function(){
+                    var id = $(this).data('id');
+                    $.get(deleteUrl, { id: id }).done(function(html){ showModal('Delete Movie', html); });
+                });
 
-            // Update page / total from response headers if you set them,
-            // otherwise use server initial values or re-query via hidden endpoint.
-            // We'll try reading header "X-Total-Pages" if controller sets it:
-            const totalPagesHeader = res.headers.get('X-Total-Pages');
-            if (totalPagesHeader) totalPages = parseInt(totalPagesHeader);
+                // submit create/edit forms by AJAX (multipart support)
+                $(document).on('submit', 'form.ajax-entity-form', function(e){
+                    e.preventDefault();
+                    var form = $(this);
+                    var fd = new FormData(this);
+                    $.ajax({
+                        url: form.attr('action'),
+                        method: form.attr('method'),
+                        data: fd,
+                        processData: false,
+                        contentType: false,
+                        success: function(res){
+                            if (res && res.success) {
+                                var modalEl = document.getElementById('ajaxModal');
+                                var modal = bootstrap.Modal.getInstance(modalEl);
+                                if (modal) modal.hide();
+                                location.reload();
+                            } else {
+                                // server returned HTML partial (validation errors)
+                                $('#ajaxModalBody').html(res);
+                            }
+                        },
+                        error: function(xhr){
+                            alert('Error: ' + xhr.statusText);
+                        }
+                    });
+                });
 
-            currentPage = page;
-            isLoading = false;
-            document.getElementById('loading').style.display = 'none';
-        } catch (err) {
-            console.error(err);
-            isLoading = false;
-            document.getElementById('loading').style.display = 'none';
-        }
-    }
+                // delegated delete form
+                $(document).on('submit', 'form.ajax-delete-form', function(e){
+                    e.preventDefault();
+                    var f = $(this);
+                    $.ajax({
+                        url: f.attr('action'),
+                        method: f.attr('method'),
+                        data: f.serialize(),
+                        success: function(res){
+                            if (res && res.success) {
+                                var modalEl = document.getElementById('ajaxModal');
+                                var modal = bootstrap.Modal.getInstance(modalEl);
+                                if (modal) modal.hide();
+                                location.reload();
+                            }
+                        }
+                    });
+                });
 
-    // ---------- Fetch and append (for infinite scroll) ----------
-    async function fetchAndAppend(page) {
-        if (isLoading) return;
-        if (page > totalPages) return;
-        isLoading = true;
-        document.getElementById('loading').style.display = 'block';
+                // remove single image button
+                $(document).on('click', '.btn-remove-img', function(e){
+                    e.preventDefault();
+                    if (!confirm('Remove this image?')) return;
+                    var id = $(this).data('id');
+                    var $btn = $(this);
+                    $.post(removeImageUrl, { id: id }).done(function(res){
+                        if (res.success) $btn.closest('.existing-image').remove();
+                    });
+                });
 
-        lastQuery.page = page;
-        const qs = buildQuery(lastQuery);
-        const url = `@Url.Action("List", "Movies", new { area = "Admin" })?${qs}`;
-
-        try {
-            const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-            if (!res.ok) throw new Error('Network error');
-            const html = await res.text();
-
-            // Append rows
-            const container = document.createElement('tbody');
-            container.innerHTML = html;
-            // Move children to real tbody
-            const rows = container.querySelectorAll('tr');
-            rows.forEach(r => document.getElementById('moviesTbody').appendChild(r));
-
-            const totalPagesHeader = res.headers.get('X-Total-Pages');
-            if (totalPagesHeader) totalPages = parseInt(totalPagesHeader);
-
-            currentPage = page;
-            isLoading = false;
-            document.getElementById('loading').style.display = 'none';
-        } catch (err) {
-            console.error(err);
-            isLoading = false;
-            document.getElementById('loading').style.display = 'none';
-        }
-    }
-
-    // ---------- Handlers ----------
-    const debouncedSearch = debounce(function () {
-        lastQuery.search = document.getElementById('searchInput').value.trim();
-        lastQuery.categoryId = document.getElementById('categorySelect').value;
-        lastQuery.sort = document.getElementById('sortSelect').value;
-        lastQuery.pageSize = parseInt(document.getElementById('pageSizeSelect').value);
-        currentPage = 1;
-        fetchAndReplace(1);
-    }, 350);
-
-    document.getElementById('searchInput').addEventListener('input', debouncedSearch);
-    document.getElementById('categorySelect').addEventListener('change', function () {
-        debouncedSearch();
-    });
-    document.getElementById('sortSelect').addEventListener('change', function () {
-        debouncedSearch();
-    });
-    document.getElementById('pageSizeSelect').addEventListener('change', function () {
-        debouncedSearch();
-    });
-    document.getElementById('applyBtn').addEventListener('click', function () { debouncedSearch(); });
-
-    // Infinite scroll: when near bottom load next page
-    window.addEventListener('scroll', function () {
-        if (isLoading) return;
-        const nearBottom = (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 200);
-        if (nearBottom && currentPage < totalPages) {
-            fetchAndAppend(currentPage + 1);
-        }
-    });
-
-    // Optionally: initial totalPages from server model
-    totalPages = @Model.PagedMovies.TotalPages;
-</script>
+            })();
+        </script>
+    </text>
+}

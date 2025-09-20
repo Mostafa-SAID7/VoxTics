@@ -1,0 +1,200 @@
+﻿@* Views/Shared/_MovieModals.cshtml or Areas/Admin/Views/Shared/_MovieModals.cshtml *@
+@* Requires jQuery and Bootstrap 5 on the page (scripts should be loaded before these handlers run) *@
+
+<div class="modal fade" id="ajaxModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="ajaxModalTitle" class="modal-title">...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="ajaxModalBody" class="modal-body">
+                @* Partial HTML will be loaded here via AJAX *@
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <text>
+        <script>
+            (function () {
+                // Utility to find an antiforgery token on the page (in layout or inside modal)
+                function getAntiForgeryToken() {
+                    var token = $('input[name="__RequestVerificationToken"]').first().val();
+                    return token || '';
+                }
+
+                // Show modal helper
+                function showModal(title, html) {
+                    $('#ajaxModalTitle').text(title || '');
+                    $('#ajaxModalBody').html(html || '');
+                    var modalEl = document.getElementById('ajaxModal');
+                    var modal = new bootstrap.Modal(modalEl, { keyboard: true });
+                    modal.show();
+                }
+
+                // Load a partial HTML into the modal (GET). url: string, data: object (optional), title: string (optional)
+                window.loadPartial = function (url, data, title) {
+                    return $.get(url, data || {})
+                        .done(function (html) {
+                            showModal(title || '', html);
+                        })
+                        .fail(function (xhr) {
+                            var msg = "Failed to load content: " + (xhr.statusText || xhr.status);
+                            alert(msg);
+                        });
+                };
+
+                // Generic AJAX form submit for forms that might be multipart (files)
+                // Accepts the form jQuery element and optional callbacks
+                async function postFormAjax($form, opts) {
+                    opts = opts || {};
+                    var url = $form.attr('action') || window.location.href;
+                    var method = ($form.attr('method') || 'post').toUpperCase();
+
+                    var fd = new FormData($form[0]);
+
+                    // if no token in form, try to append token from page
+                    if (!fd.get('__RequestVerificationToken')) {
+                        var token = getAntiForgeryToken();
+                        if (token) {
+                            fd.append('__RequestVerificationToken', token);
+                        }
+                    }
+
+                    try {
+                        var response = await $.ajax({
+                            url: url,
+                            method: method,
+                            data: fd,
+                            processData: false,
+                            contentType: false,
+                            cache: false
+                        });
+
+                        // If server returned JSON with success flag
+                        if (response && typeof response === 'object' && response.success) {
+                            // hide modal
+                            var modalEl = document.getElementById('ajaxModal');
+                            var instance = bootstrap.Modal.getInstance(modalEl);
+                            if (instance) instance.hide();
+
+                            // call optional success handler
+                            if (opts.onSuccess && typeof opts.onSuccess === 'function') {
+                                opts.onSuccess(response);
+                            } else if (window.onModalSuccess && typeof window.onModalSuccess === 'function') {
+                                window.onModalSuccess(response);
+                            } else {
+                                // default: reload page to reflect changes
+                                location.reload();
+                            }
+                            return;
+                        }
+
+                        // if server returned HTML (likely validation errors), replace modal body
+                        if (typeof response === 'string') {
+                            $('#ajaxModalBody').html(response);
+                        } else {
+                            // fallback: reload
+                            location.reload();
+                        }
+
+                    } catch (err) {
+                        var statusText = (err && err.statusText) ? err.statusText : 'Unknown error';
+                        alert('Submission failed: ' + statusText);
+                    }
+                }
+
+                // Delegated handlers ------------------------
+
+                // Submit handler for forms loaded into modal that have class .ajax-entity-form
+                $(document).on('submit', 'form.ajax-entity-form', function (e) {
+                    e.preventDefault();
+                    var $form = $(this);
+                    postFormAjax($form);
+                });
+
+                // Submit handler for delete forms (non-multipart simple posts)
+                $(document).on('submit', 'form.ajax-delete-form', function (e) {
+                    e.preventDefault();
+                    var $form = $(this);
+
+                    // collect token if present
+                    var token = getAntiForgeryToken();
+                    var data = $form.serialize();
+                    if (token && data.indexOf('__RequestVerificationToken') === -1) {
+                        data += (data ? '&' : '') + '__RequestVerificationToken=' + encodeURIComponent(token);
+                    }
+
+                    $.post($form.attr('action'), data)
+                        .done(function (res) {
+                            if (res && res.success) {
+                                var modalEl = document.getElementById('ajaxModal');
+                                var instance = bootstrap.Modal.getInstance(modalEl);
+                                if (instance) instance.hide();
+                                if (window.onModalSuccess && typeof window.onModalSuccess === 'function') {
+                                    window.onModalSuccess(res);
+                                } else {
+                                    location.reload();
+                                }
+                            } else {
+                                // server returned HTML or error; replace modal body if HTML
+                                if (typeof res === 'string') $('#ajaxModalBody').html(res);
+                            }
+                        })
+                        .fail(function (xhr) {
+                            alert('Delete failed: ' + (xhr.statusText || xhr.status));
+                        });
+                });
+
+                // Click handler for remove-image buttons inside modal (class btn-remove-img) — expects data-id attr
+                $(document).on('click', '.btn-remove-img', function (e) {
+                    e.preventDefault();
+                    if (!confirm('Remove this image?')) return;
+                    var id = $(this).data('id');
+                    var url = $(this).data('url') || window.removeImageUrl; // optional data-url or global var
+                    if (!url) {
+                        // default to admin movies RemoveImage if area present
+                        url = '/Admin/Movies/RemoveImage';
+                    }
+                    var token = getAntiForgeryToken();
+                    var payload = { id: id };
+                    if (token) payload.__RequestVerificationToken = token;
+
+                    $.post(url, payload)
+                        .done(function (res) {
+                            if (res && res.success) {
+                                // remove the image element from DOM (closest wrapper .existing-image)
+                                $(e.target).closest('.existing-image').remove();
+                            } else {
+                                alert('Could not remove image.');
+                            }
+                        })
+                        .fail(function (xhr) {
+                            alert('Remove failed: ' + (xhr.statusText || xhr.status));
+                        });
+                });
+
+                // Optional: allow any anchor with data-modal="true" to load content into modal
+                // e.g. <a href="/Admin/Movies/Edit/5" data-modal="true" data-title="Edit">Edit</a>
+                $(document).on('click', 'a[data-modal="true"]', function (e) {
+                    e.preventDefault();
+                    var $a = $(this);
+                    var url = $a.attr('href');
+                    var title = $a.data('title') || '';
+                    loadPartial(url, null, title);
+                });
+
+                // expose helpers to global scope
+                window.showMovieModal = showModal;
+                window.postMovieForm = postFormAjax;
+                window.loadMoviePartial = loadPartial;
+
+                // Optional global success hook — define this in your page if you want custom handling.
+                // Example:
+                // window.onModalSuccess = function(res) { // update partial table only; don't reload page }
+            })();
+        </script>
+    </text>
+}

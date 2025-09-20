@@ -1,35 +1,241 @@
-﻿@model IEnumerable<VoxTics.Models.Movie>
+﻿@model VoxTics.Areas.Admin.ViewModels.MovieVMs.MovieIndexVM
+@using Microsoft.AspNetCore.Mvc.Rendering
 
-<h2>Movies</h2>
+@{
+    ViewData["Title"] = "Manage Movies";
+}
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Cinema</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Status</th>
-            <th>Actors</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var movie in Model)
-        {
+<div class="container py-3">
+    <div class="d-flex justify-content-between mb-3">
+        <h2>Movies</h2>
+        <button class="btn btn-primary" id="btnCreate">Create Movie</button>
+    </div>
+
+    <form id="filterForm" method="get" class="mb-3">
+        <div class="row g-2">
+            <div class="col-md-3">
+                <input name="Search" value="@Model.Filter.Search" class="form-control" placeholder="Search title or description" />
+            </div>
+            <div class="col-md-2">
+                <select name="CategoryId" class="form-select">
+                    <option value="">All Categories</option>
+                    @foreach (var c in Model.Categories) {
+                        @* <option value="@c.Value" @(Model.Filter.CategoryId?.ToString() == c.Value ? "selected" : "")>@c.Text</option> *@
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select name="CinemaId" class="form-select">
+                    <option value="">All Cinemas</option>
+                    @foreach (var c in Model.Cinemas) {
+                        @* <option value="@c.Value" @(Model.Filter.CinemaId?.ToString() == c.Value ? "selected" : "")>@c.Text</option> *@
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                @* <select name="SortBy" class="form-select">
+                    <option value="Title" @(Model.Filter.SortBy == "Title" ? "selected" : "")>Sort by Title</option>
+                    <option value="Price" @(Model.Filter.SortBy == "Price" ? "selected" : "")>Sort by Price</option>
+                    <option value="StartDate" @(Model.Filter.SortBy == "StartDate" ? "selected" : "")>Sort by Start Date</option>
+                    <option value="EndDate" @(Model.Filter.SortBy == "EndDate" ? "selected" : "")>Sort by End Date</option>
+                </select> *@
+            </div>
+            <div class="col-md-1">
+                <input type="number" name="PageSize" value="@Model.Filter.PageSize" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-secondary">Apply</button>
+                <a href="@Url.Action("Index")" class="btn btn-link">Reset</a>
+            </div>
+        </div>
+    </form>
+
+    <table class="table table-striped">
+        <thead>
             <tr>
-                <td>@movie.Title</td>
-                <td>@movie.Cinema?.Name</td>
-                <td>@movie.Category?.Name</td>
-                <td>$@movie.Price</td>
-                <td>@movie.MovieStatus</td>
-                <td>
-                    @string.Join(", ", movie.MovieActors.Select(ma => ma.Actor.FirstName + " " + ma.Actor.LastName))
-                </td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@movie.Id">Details</a>
-                </td>
+                <th>Poster</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Cinema</th>
+                <th>Price</th>
+                <th>Dates</th>
+                <th>Status</th>
+                <th style="width:165px">Actions</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var m in Model.Movies)
+            {
+                <tr>
+                    <td style="width:80px">
+                        @if (!string.IsNullOrEmpty(m.ImgUrl))
+                        {
+                            <img src="@m.ImgUrl" style="height:60px;object-fit:cover" />
+                        }
+                    </td>
+                    <td>@m.Title</td>
+                    <td>@m.CategoryName</td>
+                    <td>@m.CinemaName</td>
+                    <td>@m.Price.ToString("0.00")</td>
+                    <td>@m.StartDate.ToShortDateString() - @m.EndDate.ToShortDateString()</td>
+                    <td>@m.MovieStatus</td>
+                    <td>
+                        <button class="btn btn-sm btn-info btn-details" data-id="@m.Id">Details</button>
+                        <button class="btn btn-sm btn-warning btn-edit" data-id="@m.Id">Edit</button>
+                        <button class="btn btn-sm btn-danger btn-delete" data-id="@m.Id">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- pagination -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            @{
+                var current = Model.Filter.Page;
+                var total = Model.TotalPages;
+                if (total == 0) total = 1;
+            }
+            <li class="page-item @(current <= 1 ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { Page = current - 1, PageSize = Model.Filter.PageSize, Search = Model.Filter.Search, CategoryId = Model.Filter.CategoryId, CinemaId = Model.Filter.CinemaId, SortBy = Model.Filter.SortBy })">Previous</a>
+            </li>
+            @for (int i = 1; i <= total; i++)
+            {
+                <li class="page-item @(i == current ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { Page = i, PageSize = Model.Filter.PageSize, Search = Model.Filter.Search, CategoryId = Model.Filter.CategoryId, CinemaId = Model.Filter.CinemaId, SortBy = Model.Filter.SortBy })">@i</a>
+                </li>
+            }
+            <li class="page-item @(current >= total ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { Page = current + 1, PageSize = Model.Filter.PageSize, Search = Model.Filter.Search, CategoryId = Model.Filter.CategoryId, CinemaId = Model.Filter.CinemaId, SortBy = Model.Filter.SortBy })">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="ajaxModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ajaxModalTitle">...</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="ajaxModalBody">
+        <!-- loaded via AJAX -->
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function(){
+            // Create
+            $('#btnCreate').on('click', function(){
+                $.get('@Url.Action("Create")').done(function(html){
+                    $('#ajaxModalBody').html(html);
+                    $('#ajaxModalTitle').text('Create Movie');
+                    var modal = new bootstrap.Modal(document.getElementById('ajaxModal'));
+                    modal.show();
+                });
+            });
+
+            // Edit
+            $('.btn-edit').on('click', function(){
+                var id = $(this).data('id');
+                $.get('@Url.Action("Edit")', { id: id }).done(function(html){
+                    $('#ajaxModalBody').html(html);
+                    $('#ajaxModalTitle').text('Edit Movie');
+                    var modal = new bootstrap.Modal(document.getElementById('ajaxModal'));
+                    modal.show();
+                });
+            });
+
+            // Details
+            $('.btn-details').on('click', function(){
+                var id = $(this).data('id');
+                $.get('@Url.Action("Details")', { id: id }).done(function(html){
+                    $('#ajaxModalBody').html(html);
+                    $('#ajaxModalTitle').text('Details');
+                    var modal = new bootstrap.Modal(document.getElementById('ajaxModal'));
+                    modal.show();
+                });
+            });
+
+            // Delete
+            $('.btn-delete').on('click', function(){
+                var id = $(this).data('id');
+                $.get('@Url.Action("Delete")', { id: id }).done(function(html){
+                    $('#ajaxModalBody').html(html);
+                    $('#ajaxModalTitle').text('Delete Movie');
+                    var modal = new bootstrap.Modal(document.getElementById('ajaxModal'));
+                    modal.show();
+                });
+            });
+
+            // Handle form submit by delegation because partial is loaded later
+            $(document).on('submit', 'form.ajax-entity-form', function(e){
+                e.preventDefault();
+                var form = $(this);
+                var fd = new FormData(this);
+                $.ajax({
+                    url: form.attr('action'),
+                    method: form.attr('method'),
+                    data: fd,
+                    processData: false,
+                    contentType: false,
+                    success: function(res){
+                        if (res && res.success) {
+                            // close modal and refresh page/list
+                            var modalEl = document.getElementById('ajaxModal');
+                            var modal = bootstrap.Modal.getInstance(modalEl);
+                            if (modal) modal.hide();
+                            // reload list - simple approach:
+                            location.reload();
+                        } else {
+                            // server returned html (likely validation errors)
+                            $('#ajaxModalBody').html(res);
+                        }
+                    },
+                    error: function(xhr){
+                        alert('Error: ' + xhr.statusText);
+                    }
+                });
+            });
+
+            // Remove extra image (button in edit partial)
+            $(document).on('click', '.btn-remove-img', function(e){
+                e.preventDefault();
+                if (!confirm('Remove this image?')) return;
+                var id = $(this).data('id');
+                var $btn = $(this);
+                $.post('@Url.Action("RemoveImage")', { id: id })
+                 .done(function(res){
+                    if (res.success) {
+                        $btn.closest('.existing-image').remove();
+                    }
+                 });
+            });
+
+            // Delete confirmed form (delegated)
+            $(document).on('submit', 'form.ajax-delete-form', function(e){
+                e.preventDefault();
+                var f = $(this);
+                $.ajax({
+                    url: f.attr('action'),
+                    method: f.attr('method'),
+                    data: f.serialize(),
+                    success: function(res){
+                        if (res && res.success) {
+                            var modalEl = document.getElementById('ajaxModal');
+                            var modal = bootstrap.Modal.getInstance(modalEl);
+                            if (modal) modal.hide();
+                            location.reload();
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -2,19 +2,23 @@
 
 namespace VoxTics.Areas.Admin.ViewModels.MovieVMs
 {
-    public class MovieIndexVm
+    public class MovieIndexVM
     {
-        public PagedResult<MovieListItemVm> PagedMovies { get; set; } = new PagedResult<MovieListItemVm>();
+        // the list of movies to display
+        public IEnumerable<MovieListItemVM> Movies { get; set; } = Enumerable.Empty<MovieListItemVM>();
 
-        // Filters & sorts (preserve in query)
-        public string? Search { get; set; }
-        public int? CategoryId { get; set; }
-        public string? Sort { get; set; }            // e.g. "title_asc", "price_desc", "date_desc"
-        public int Page { get; set; } = 1;
-        public int PageSize { get; set; } = 10;
+        // nested filter model
+        public MovieFilterVM Filter { get; set; } = new MovieFilterVM();
 
-        // Dropdowns
-        public IEnumerable<SelectListItem>? Categories { get; set; }
-        public IEnumerable<SelectListItem>? PageSizeOptions { get; set; }
+        // convenience/pagination helpers (avoid referencing Filter.Page everywhere)
+        public int CurrentPage => Math.Max(Filter?.Page ?? 1, 1);
+        public int PageSize => Filter?.PageSize ?? 10;
+
+        public int TotalItems { get; set; } = 0;
+        public int TotalPages { get; set; } = 0;
+
+        // selects for filters
+        public IEnumerable<SelectListItem> Categories { get; set; } = Enumerable.Empty<SelectListItem>();
+        public IEnumerable<SelectListItem> Cinemas { get; set; } = Enumerable.Empty<SelectListItem>();
     }
 }

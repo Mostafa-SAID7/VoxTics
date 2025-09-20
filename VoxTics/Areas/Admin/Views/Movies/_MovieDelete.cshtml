@@ -1,0 +1,13 @@
+﻿@model VoxTics.Models.Movie
+
+<form asp-action="DeleteConfirmed" asp-controller="Movies" asp-area="Admin" method="post" class="ajax-delete-form">
+    <input type="hidden" name="id" value="@Model.Id" />
+    <div class="p-3">
+        <h5>Are you sure you want to delete "<strong>@Model.Title</strong>"?</h5>
+        <p>This action cannot be undone.</p>
+        <div class="text-end">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,60 @@
+﻿@model VoxTics.Models.ViewModels.MovieDetailsVM
+
+<div class="row">
+    <!-- Left: Poster + Slider -->
+    <div class="col-md-6">
+        <img src="@Model.ImgUrl" class="img-fluid rounded shadow-sm mb-3" alt="@Model.Title" />
+        @if (Model.Images.Any())
+        {
+            <div id="movieImgCarousel" class="carousel slide">
+                <div class="carousel-inner">
+                    @for (int i = 0; i < Model.Images.Count; i++)
+                    {
+                        <div class="carousel-item @(i == 0 ? "active" : "")">
+                            <img src="@Model.Images[i]" class="d-block w-100 rounded" />
+                        </div>
+                    }
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#movieImgCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#movieImgCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+            </div>
+        }
+    </div>
+
+    <!-- Right: Info -->
+    <div class="col-md-6">
+        <h2>@Model.Title</h2>
+        <p>@Model.Description</p>
+
+        <ul class="list-group mb-3">
+            <li class="list-group-item"><strong>Cinema:</strong> @Model.CinemaName</li>
+            <li class="list-group-item"><strong>Category:</strong> @Model.CategoryName</li>
+            <li class="list-group-item"><strong>Price:</strong> $@Model.Price</li>
+        </ul>
+
+        @if (!string.IsNullOrEmpty(Model.TrailerUrl))
+        {
+            <div class="ratio ratio-16x9 mb-3">
+                <iframe src="@Model.TrailerUrl" title="Trailer" allowfullscreen></iframe>
+            </div>
+        }
+
+        <h5>Actors</h5>
+        <ul>
+            @foreach (var actor in Model.Actors)
+            {
+                <li>@actor</li>
+            }
+        </ul>
+
+        <!-- Book Now Button -->
+        <button class="btn btn-success"
+                onclick="openBookingModal(@Model.Id, '@Model.Title')">
+            Book Now
+        </button>
+    </div>
+</div>

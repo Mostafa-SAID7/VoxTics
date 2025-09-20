@@ -1,0 +1,55 @@
+﻿@model VoxTics.Areas.Admin.ViewModels.MovieVMs.MovieListItemVM
+<form asp-action="@((Model.Id > 0) ? "Edit" : "Create")" asp-area="Admin" method="post" data-ajax="true">
+    @if (Model.Id > 0)
+    {
+        <input type="hidden" asp-for="Id" />
+    }
+
+    <div class="modal-header">
+        <h5 class="modal-title">@((Model.Id > 0) ? "✏️ Edit Movie" : "➕ Create Movie")</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="mb-3">
+            <label asp-for="Title" class="form-label"></label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label"></label>
+            <textarea asp-for="Description" class="form-control"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Price" class="form-label"></label>
+            <input asp-for="Price" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ImgUrl" class="form-label"></label>
+            <input asp-for="ImgUrl" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="TrailerUrl" class="form-label"></label>
+            <input asp-for="TrailerUrl" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="CategoryId" class="form-label"></label>
+            <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select"></select>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="CinemaId" class="form-label"></label>
+            <select asp-for="CinemaId" asp-items="Model.Cinemas" class="form-select"></select>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success">@((Model.Id > 0) ? "Update" : "Save")</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+    </div>
+</form>
