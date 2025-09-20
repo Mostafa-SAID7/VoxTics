@@ -1,29 +1,32 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using VoxTics.Areas.Admin.ViewModels.Movie;
-using VoxTics.Models.Entities;
+using VoxTics.Helpers;
 
 namespace VoxTics.Areas.Admin.Services.Interfaces
 {
-    /// <summary>
-    /// Admin service interface for movie management.
-    /// Handles CRUD, validation, and business logic.
-    /// </summary>
     public interface IAdminMovieService
     {
+        // 🔹 Get paginated movies with optional search/sort
         Task<PaginatedList<MovieListItemViewModel>> GetPagedMoviesAsync(
-                    int pageIndex,
-                    int pageSize,
-                    string? search = null,
-                    string? sortColumn = null,
-                    bool sortDescending = false);
+            int pageIndex,
+            int pageSize,
+            string? search = null,
+            string? sortColumn = null,
+            bool sortDescending = false);
 
+        // 🔹 Get movie details for viewing
         Task<MovieDetailViewModel?> GetMovieDetailsAsync(int id);
-        Task<int> AddMovieAsync(MovieCreateEditViewModel model);
-        Task<MovieDetailViewModel?> GetByIdAsync(int id);
+
+        // 🔹 Get movie for editing
+        Task<MovieCreateEditViewModel?> GetByIdAsync(int id);
+
+        // 🔹 Create a new movie
         Task<int> CreateMovieAsync(MovieCreateEditViewModel model);
+
+        // 🔹 Update existing movie
         Task<bool> UpdateMovieAsync(MovieCreateEditViewModel model);
+
+        // 🔹 Delete a movie by ID
         Task<bool> DeleteMovieAsync(int id);
     }
 }

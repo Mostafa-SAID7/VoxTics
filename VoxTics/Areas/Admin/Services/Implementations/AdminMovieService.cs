@@ -1,8 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using VoxTics.Areas.Admin.Services.Interfaces;
 using VoxTics.Areas.Admin.ViewModels.Movie;
 using VoxTics.Data.UoW;
@@ -25,21 +21,13 @@ namespace VoxTics.Areas.Admin.Services.Implementations
             _imageManager = imageManager;
         }
 
-        // 🔹 Pagination with optional search/sort
         public async Task<PaginatedList<MovieListItemViewModel>> GetPagedMoviesAsync(
-            int pageIndex,
-            int pageSize,
-            string? search = null,
-            string? sortColumn = null,
-            bool sortDescending = false)
+            int pageIndex, int pageSize, string? search = null, string? sortColumn = null, bool sortDescending = false)
         {
             var query = _uow.AdminMovies.GetMoviesWithCategory();
 
             if (!string.IsNullOrWhiteSpace(search))
-            {
-                query = query.Where(m =>
-                    m.Title.Contains(search) || m.Category.Name.Contains(search));
-            }
+                query = query.Where(m => m.Title.Contains(search) || m.Category.Name.Contains(search));
 
             query = query.ApplySorting(sortColumn ?? nameof(Movie.ReleaseDate), sortDescending);
 
@@ -50,21 +38,19 @@ namespace VoxTics.Areas.Admin.Services.Implementations
             return items;
         }
 
-        // 🔹 Get detailed movie info
         public async Task<MovieDetailViewModel?> GetMovieDetailsAsync(int id)
         {
             var movie = await _uow.AdminMovies.GetMovieWithDetailsAsync(id);
             return movie == null ? null : _mapper.Map<MovieDetailViewModel>(movie);
         }
 
-        // 🔹 Create a new movie (alias for AddMovieAsync)
-        public async Task<int> CreateMovieAsync(MovieCreateEditViewModel model)
+        public async Task<MovieCreateEditViewModel?> GetByIdAsync(int id)
         {
-            return await AddMovieAsync(model);
+            var movie = await _uow.AdminMovies.GetMovieWithDetailsAsync(id);
+            return movie == null ? null : _mapper.Map<MovieCreateEditViewModel>(movie);
         }
 
-        // 🔹 Add movie and handle images
-        public async Task<int> AddMovieAsync(MovieCreateEditViewModel model)
+        public async Task<int> CreateMovieAsync(MovieCreateEditViewModel model)
         {
             var slug = SlugHelper.GenerateSlug(model.Title);
 
@@ -83,14 +69,6 @@ namespace VoxTics.Areas.Admin.Services.Implementations
             return movie.Id;
         }
 
-        // 🔹 Get movie by ID for edit/view
-        public async Task<MovieDetailViewModel?> GetByIdAsync(int id)
-        {
-            var movie = await _uow.AdminMovies.GetMovieWithDetailsAsync(id);
-            return movie == null ? null : _mapper.Map<MovieDetailViewModel>(movie);
-        }
-
-        // 🔹 Update movie
         public async Task<bool> UpdateMovieAsync(MovieCreateEditViewModel model)
         {
             var movie = await _uow.AdminMovies.GetMovieWithDetailsAsync(model.Id);
@@ -103,14 +81,18 @@ namespace VoxTics.Areas.Admin.Services.Implementations
 
             await _uow.AdminMovies.UpdateAsync(movie);
             await _uow.CommitAsync();
+
             return true;
         }
 
-        // 🔹 Delete movie and its images
         public async Task<bool> DeleteMovieAsync(int id)
         {
             var movie = await _uow.AdminMovies.GetMovieWithDetailsAsync(id);
             if (movie == null) return false;
+
+            bool hasBookings = movie.Showtimes.Any(s => s.Bookings.Any());
+            if (hasBookings)
+                throw new InvalidOperationException("Cannot delete the movie because it has existing bookings.");
 
             await _uow.AdminMovies.RemoveAsync(movie);
             await _uow.CommitAsync();
@@ -119,14 +101,12 @@ namespace VoxTics.Areas.Admin.Services.Implementations
             return true;
         }
 
-        // ✅ Private helpers for images
+
         private async Task HandleMainImageAsync(MovieCreateEditViewModel model, Movie movie, string slug)
         {
             if (model.MainImage == null) return;
 
-            var fileName = await _imageManager.SaveImageAsync(
-                model.MainImage, ImageType.Movie, slug, true).ConfigureAwait(false);
-
+            var fileName = await _imageManager.SaveImageAsync(model.MainImage, ImageType.Movie, slug, true);
             movie.MainImage = fileName;
         }
 
@@ -136,9 +116,7 @@ namespace VoxTics.Areas.Admin.Services.Implementations
 
             foreach (var img in model.AdditionalImages)
             {
-                var fileName = await _imageManager.SaveImageAsync(
-                    img, ImageType.Movie, slug).ConfigureAwait(false);
-
+                var fileName = await _imageManager.SaveImageAsync(img, ImageType.Movie, slug);
                 movie.MovieImages.Add(new MovieImg { ImageUrl = fileName });
             }
         }

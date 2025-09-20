@@ -1,82 +1,34 @@
 ﻿@model VoxTics.Areas.Admin.ViewModels.Movie.MovieCreateEditViewModel
-
 @{
     ViewData["Title"] = "Edit Movie";
 }
 
-<h1>Edit Movie</h1>
+<div class="container py-4">
+    <h2 class="mb-3">Edit Movie</h2>
 
-<form asp-action="Edit" enctype="multipart/form-data" method="post">
-    <input type="hidden" asp-for="Id" />
-    <div class="form-group">
-        <label asp-for="Title"></label>
-        <input asp-for="Title" class="form-control" />
-        <span asp-validation-for="Title" class="text-danger"></span>
-    </div>
+    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
 
-    <div class="form-group">
-        <label asp-for="Description"></label>
-        <textarea asp-for="Description" class="form-control"></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
+        @* Fields are same as Create.cshtml *@
+        @* You can reuse the same markup, optionally showing existing poster *@
+        <div class="mb-3">
+            @if (!string.IsNullOrEmpty(Model.ExistingPosterUrl))
+            {
+                <img src="~/uploads/movies/@Model.ExistingPosterUrl" width="120" class="mb-2" />
+            }
+        </div>
 
-    <div class="form-group">
-        <label asp-for="Director"></label>
-        <input asp-for="Director" class="form-control" />
-        <span asp-validation-for="Director" class="text-danger"></span>
-    </div>
+        @* Include all the same inputs as Create.cshtml *@
+        @await Html.PartialAsync("_MovieForm", Model)
 
-    <div class="form-group">
-        <label asp-for="ReleaseDate"></label>
-        <input asp-for="ReleaseDate" class="form-control" type="date" />
-        <span asp-validation-for="ReleaseDate" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Language"></label>
-        <input asp-for="Language" class="form-control" />
-        <span asp-validation-for="Language" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Rating"></label>
-        <input asp-for="Rating" class="form-control" type="number" step="0.1" />
-        <span asp-validation-for="Rating" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Duration"></label>
-        <input asp-for="Duration" class="form-control" />
-        <span asp-validation-for="Duration" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Price"></label>
-        <input asp-for="Price" class="form-control" />
-        <span asp-validation-for="Price" class="text-danger"></span>
-    </div>
-
-    <div class="form-group form-check">
-        <input asp-for="IsFeatured" class="form-check-input" />
-        <label asp-for="IsFeatured" class="form-check-label"></label>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="TrailerUrl"></label>
-        <input asp-for="TrailerUrl" class="form-control" />
-        <span asp-validation-for="TrailerUrl" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="MainImage">Poster Image</label>
-        <input asp-for="MainImage" type="file" class="form-control" />
-        <span asp-validation-for="MainImage" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Create</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-</form>
+        <button type="submit" class="btn btn-primary">Update Movie</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

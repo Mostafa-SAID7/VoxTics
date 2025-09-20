@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Configuration;
 using VoxTics.Areas.Admin.AdminProfiles;
 using VoxTics.Areas.Admin.MappingProfiles;
+using VoxTics.Areas.Admin.Profiles;
 using VoxTics.Areas.Admin.Repositories;
 using VoxTics.Areas.Admin.Repositories.IRepositories;
 using VoxTics.Areas.Admin.Services.Implementations;
@@ -91,7 +92,7 @@ namespace VoxTics.Extensions
                 cfg.AddProfile<BookingAdminProfile>();
                 cfg.AddProfile<CategoryAdminProfile>();
                 cfg.AddProfile<CinemaAdminProfile>();
-                cfg.AddProfile<MovieAdminProfile>();
+                cfg.AddProfile<AdminMovieProfile>();
                 cfg.AddProfile<ShowtimeAdminProfile>();
 
                 // Identity

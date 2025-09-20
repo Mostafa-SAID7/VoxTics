@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Http;
 using VoxTics.Models.Enums;
 
 namespace VoxTics.Areas.Admin.ViewModels.Movie
@@ -58,6 +59,7 @@ namespace VoxTics.Areas.Admin.ViewModels.Movie
 
         [Required(ErrorMessage = "Category is required.")]
         public int CategoryId { get; set; }
+        public List<SelectListItem>? Categories { get; set; }
 
         [Display(Name = "Upload Additional Images")]
         public List<IFormFile>? AdditionalImages { get; set; }
