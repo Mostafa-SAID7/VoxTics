@@ -1,6 +1,7 @@
-﻿using VoxTics.Models.ViewModels.Movie;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using VoxTics.Models.ViewModels.Cart;
+using VoxTics.Models.ViewModels.Movie;
 
 namespace VoxTics.Services.Interfaces
 {
@@ -22,7 +23,8 @@ namespace VoxTics.Services.Interfaces
       string? search = null,
       string? sortColumn = null,
       bool sortDescending = false);
-    
+        Task<List<SeatVM>> GetAvailableSeatsAsync(int showtimeId);
 
-}
+
+    }
 }

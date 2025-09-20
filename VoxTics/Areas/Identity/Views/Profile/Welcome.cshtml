@@ -1,0 +1,108 @@
+﻿@model VoxTics.Areas.Identity.Models.ViewModels.PersonalInfoVM
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <!-- Profile Sidebar -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <img src="@Model.AvatarUrl ?? " ~ /images/defaults/avater.png"" class="rounded-circle mb-3" style="width:120px;height:120px;" alt="Avatar" />
+                    <h4 class="card-title">@Model.Name</h4>
+                    <p class="text-muted mb-1">@Model.Email</p>
+                    @if (!string.IsNullOrEmpty(Model.PhoneNumber))
+                    {
+                        <p class="text-muted mb-1">@Model.PhoneNumber</p>
+                    }
+                    <p class="text-muted mb-0">Age: @Model.Age</p>
+                    <p class="text-muted">@Model.Gender</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">Skills</h5>
+                    @if (Model.Skills != null && Model.Skills.Count > 0)
+                    {
+                        <div class="d-flex flex-wrap">
+                            @foreach (var skill in Model.Skills)
+                            {
+                                <span class="badge bg-primary me-1 mb-1">@skill</span>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No skills added.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Details -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Personal Information</h4>
+                    <dl class="row">
+                        <dt class="col-sm-4">Full Name:</dt>
+                        <dd class="col-sm-8">@Model.Name</dd>
+
+                        <dt class="col-sm-4">Date of Birth:</dt>
+                        <dd class="col-sm-8">@Model.DateOfBirth?.ToString("MMMM dd, yyyy")</dd>
+
+                        <dt class="col-sm-4">Gender:</dt>
+                        <dd class="col-sm-8">@Model.Gender</dd>
+
+                        <dt class="col-sm-4">Address:</dt>
+                        <dd class="col-sm-8">@Model.FullAddress</dd>
+
+                        @if (!string.IsNullOrEmpty(Model.PhoneNumber))
+                        {
+                            <dt class="col-sm-4">Phone:</dt>
+                            <dd class="col-sm-8">@Model.PhoneNumber</dd>
+                        }
+
+                        <dt class="col-sm-4">Email:</dt>
+                        <dd class="col-sm-8">@Model.Email</dd>
+
+                        <dt class="col-sm-4">Account Created:</dt>
+                        <dd class="col-sm-8">@Model.CreatedAt.ToString("MMMM dd, yyyy")</dd>
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Password Update -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Update Password</h4>
+                    <form method="post" asp-action="UpdatePassword" asp-controller="Profile" asp-area="Identity">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label asp-for="CurrentPassword" class="form-label"></label>
+                            <input asp-for="CurrentPassword" class="form-control" type="password" placeholder="Current Password" />
+                            <span asp-validation-for="CurrentPassword" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="NewPassword" class="form-label"></label>
+                            <input asp-for="NewPassword" class="form-control" type="password" placeholder="New Password" />
+                            <span asp-validation-for="NewPassword" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success">Update Password</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

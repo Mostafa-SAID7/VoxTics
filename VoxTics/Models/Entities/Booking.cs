@@ -1,5 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using VoxTics.Areas.Identity.Models.Entities;
+
 namespace VoxTics.Models.Entities
 {
     public class Booking : BaseEntity
@@ -7,14 +11,6 @@ namespace VoxTics.Models.Entities
         [Required]
         public string UserId { get; set; } = default!;
         public virtual ApplicationUser User { get; set; } = default!;
-
-        [Required]
-        public int MovieId { get; set; }
-        public virtual Movie Movie { get; set; } = default!;
-
-        [Required]
-        public int CinemaId { get; set; }
-        public virtual Cinema Cinema { get; set; } = default!;
 
         [Required]
         public int ShowtimeId { get; set; }
@@ -35,27 +31,17 @@ namespace VoxTics.Models.Entities
         [Required]
         public BookingStatus Status { get; set; } = BookingStatus.Pending;
 
-        [Required]
-        public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
 
-        [Required]
-        [StringLength(100)]
-        public PaymentMethod PaymentMethod { get; set; }
-
-        [StringLength(200)]
-        public string? TransactionId { get; set; }
-
-        public DateTime? PaymentDate { get; set; }
         public DateTime BookingDate { get; init; } = DateTime.UtcNow;
+        public ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
         public virtual ICollection<BookingSeat> BookingSeats { get; set; } = new List<BookingSeat>();
 
         [NotMapped]
         public bool CanBeCancelled =>
-         Status == BookingStatus.Confirmed &&
-         !IsCheckedIn &&
-         Showtime.EndTime > DateTime.UtcNow.AddHours(2);
-
+            Status == BookingStatus.Confirmed &&
+            !IsCheckedIn &&
+            Showtime.EndTime > DateTime.UtcNow.AddHours(2);
 
         [NotMapped]
         public string BookingReference => $"BK{Id:D6}";

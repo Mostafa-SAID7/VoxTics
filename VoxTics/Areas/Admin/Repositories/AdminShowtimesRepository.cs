@@ -200,6 +200,21 @@ namespace VoxTics.Areas.Admin.Repositories
                     st.Hall.Name.Contains(queryStr))
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
 
+        public Task CommitAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task GetAsync(Func<object, bool> value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<Showtime>> GetAsync(Func<Showtime, bool> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }

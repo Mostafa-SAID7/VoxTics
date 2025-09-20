@@ -15,6 +15,7 @@
 
 		<!-- Security & Passwords -->
 		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+		<PackageReference Include="Mapster" Version="7.4.0" />
 
 		<!-- Identity & Authentication -->
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="9.0.9" />
@@ -39,11 +40,14 @@
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
 		<PackageReference Include="QRCoder-ImageSharp" Version="0.10.0" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
+		<PackageReference Include="Stripe.net" Version="48.5.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<!-- Static files / libraries -->
+		<Folder Include="Areas\Admin\Services\" />
 		<Folder Include="Areas\Admin\Views\Shared\Components\" />
+		<Folder Include="Areas\Identity\Repositories\IRepositories\" />
 		<Folder Include="Views\Shared\Components\" />
 		<Folder Include="wwwroot\lib\animate.css\" />
 		<Folder Include="wwwroot\lib\sweetalert2\" />

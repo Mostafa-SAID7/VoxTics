@@ -24,9 +24,7 @@ namespace VoxTics.MappingProfiles
                 .ForMember(dest => dest.CinemaAddress, opt => opt.MapFrom(src => src.Cinema.Address))
                 .ForMember(dest => dest.HallName, opt => opt.MapFrom(src => src.Hall.Name))
                 .ForMember(dest => dest.ShowDateTime, opt => opt.MapFrom(src => src.StartTime))
-                .ForMember(dest => dest.AvailableSeats, opt => opt.MapFrom(src => src.AvailableSeats))
-                .ForMember(dest => dest.TotalSeats, opt => opt.MapFrom(src => src.TotalSeats))
-                .ForMember(dest => dest.BookedSeats, opt => opt.MapFrom(src => src.TotalSeats - src.AvailableSeats));
+                .ForMember(dest => dest.AvailableSeats, opt => opt.MapFrom(src => src.AvailableSeats));
         }
     }
 }

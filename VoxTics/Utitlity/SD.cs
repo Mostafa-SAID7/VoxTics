@@ -1,5 +1,5 @@
 ﻿
-namespace VoxTics.Utility
+namespace VoxTics.Utitlity
 {
     public class SD
     {
@@ -10,5 +10,9 @@ namespace VoxTics.Utility
 
         public const string NotFoundPage = "NotFoundPage";
         public const string HomeController = "Home";
+        public const string SuperAdminRole = "SuperAdmin";
+        public const string AdminRole = "Admin";
+        public const string CustomerRole = "Customer";
+        public const string CompanyRole = "Company";
     }
 }

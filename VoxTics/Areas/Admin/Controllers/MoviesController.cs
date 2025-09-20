@@ -8,12 +8,12 @@ namespace VoxTics.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Route("admin/movies")]
-    public class AdminMovieController : Controller
+    public class MoviesController : Controller
     {
         private readonly IAdminMovieService _movieService;
         private readonly IMapper _mapper;
 
-        public AdminMovieController(IAdminMovieService movieService, IMapper mapper)
+        public MoviesController(IAdminMovieService movieService, IMapper mapper)
         {
             _movieService = movieService;
             _mapper = mapper;

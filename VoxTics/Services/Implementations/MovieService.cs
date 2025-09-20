@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using VoxTics.Helpers;
 using VoxTics.Helpers.ImgsHelper;
 using VoxTics.Models.Entities;
+using VoxTics.Models.ViewModels.Cart;
 using VoxTics.Models.ViewModels.Movie;
 using VoxTics.Repositories.IRepositories;
 using VoxTics.Services.Interfaces;
@@ -14,12 +15,14 @@ namespace VoxTics.Services.Implementations
         private readonly IMoviesRepository _repo;
         private readonly IMapper _mapper;
         private readonly ImageManager _imgManager;
+        private readonly IShowtimesRepository _showtimeRepo;
 
-        public MovieService(IMoviesRepository repo, IMapper mapper, ImageManager imgManager)
+        public MovieService(IMoviesRepository repo, IMapper mapper, ImageManager imgManager, IShowtimesRepository showtimeRepo)
         {
             _repo = repo;
             _mapper = mapper;
             _imgManager = imgManager;
+            _showtimeRepo = showtimeRepo;
         }
 
         // List view with Category name + main image
@@ -96,9 +99,51 @@ namespace VoxTics.Services.Implementations
             return vm;
         }
 
-        public Task<List<MovieVM>> GetAllAsync()
+        public async Task<List<MovieVM>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            // Get all movies including Category
+            var movies = await _repo.Query()
+                                    .Include(m => m.Category)
+                                    .ToListAsync();
+
+            // Map to MovieVM
+            var vmList = _mapper.Map<List<MovieVM>>(movies);
+
+            // Populate main image URLs
+            foreach (var vm in vmList)
+            {
+                if (!string.IsNullOrEmpty(vm.MainImageUrl))
+                    vm.MainImageUrl = _imgManager.GetImageUrl(ImageType.Movie, vm.Slug, vm.MainImageUrl).ToString();
+            }
+
+            return vmList;
         }
+
+        public async Task<List<SeatVM>> GetAvailableSeatsAsync(int showtimeId)
+        {
+            var showtime = await _showtimeRepo.Query()
+                .Include(s => s.Hall)
+                    .ThenInclude(h => h.Seats)
+                .Include(s => s.Bookings)
+                    .ThenInclude(b => b.BookingSeats)
+                .FirstOrDefaultAsync(s => s.Id == showtimeId);
+
+            if (showtime == null) return new List<SeatVM>();
+
+            // Get all booked seat IDs for this showtime
+            var bookedSeatIds = showtime.Bookings
+                .SelectMany(b => b.BookingSeats)
+                .Select(bs => bs.SeatId)
+                .ToHashSet();
+
+            // Filter available seats
+            var availableSeats = showtime.Hall.Seats
+                .Where(s => s.IsActive && !bookedSeatIds.Contains(s.Id))
+                .ToList();
+
+            // Map to SeatVM
+            return _mapper.Map<List<SeatVM>>(availableSeats);
+        }
+
     }
 }

@@ -25,18 +25,6 @@ namespace VoxTics.Repositories
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 
-        public async Task<IEnumerable<Movie>> GetTrendingMoviesAsync(int count = 5,
-                                                                     CancellationToken cancellationToken = default)
-        {
-            return await _context.Bookings
-                .AsNoTracking()
-                .GroupBy(b => b.Movie)
-                .OrderByDescending(g => g.Count())
-                .Select(g => g.Key)
-                .Take(count)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
-        }
 
         public async Task<IEnumerable<Movie>> GetUpcomingMoviesAsync(DateTime fromDate, int count = 10,
                                                                      CancellationToken cancellationToken = default) =>
@@ -53,16 +41,12 @@ namespace VoxTics.Repositories
         {
             var favoriteCategories = await _context.Bookings
                 .Where(b => b.UserId == userId)
-                .GroupBy(b => b.Movie.CategoryId)
-                .OrderByDescending(g => g.Count())
-                .Select(g => g.Key)
                 .Take(2)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 
             return await _context.Movies
                 .AsNoTracking()
-                .Where(m => favoriteCategories.Contains(m.CategoryId) && m.ReleaseDate <= DateTime.UtcNow)
                 .OrderByDescending(m => m.Rating)
                 .Take(count)
                 .ToListAsync(cancellationToken)
@@ -109,6 +93,11 @@ namespace VoxTics.Repositories
                 .Take(maxResults)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
+        }
+
+        public Task<IEnumerable<Movie>> GetTrendingMoviesAsync(int count = 5, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
     }
 }

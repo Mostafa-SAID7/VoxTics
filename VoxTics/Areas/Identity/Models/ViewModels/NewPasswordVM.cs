@@ -4,24 +4,23 @@ namespace VoxTics.Areas.Identity.Models.ViewModels
 {
     public class NewPasswordVM
     {
-        public int Id { get; set; }
+        public string ApplicationUserId { get; set; } = default!;
 
-        [Required(ErrorMessage = "Password is required.")]
+        [Required]
         [DataType(DataType.Password)]
-        [StringLength(255, MinimumLength = 6, ErrorMessage = "Password must be between 6 and 255 characters.")]
-        [Display(Name = "New Password")]
         public string Password { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Please confirm your password.")]
+        [Required]
         [DataType(DataType.Password)]
-        [Compare(nameof(Password), ErrorMessage = "Password and confirmation password do not match.")]
-        [Display(Name = "Confirm Password")]
+        [Compare("Password", ErrorMessage = "Passwords do not match.")]
         public string ConfirmPassword { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "User reference is required.")]
-        public string ApplicationUserId { get; set; } = string.Empty;
-        public string Email { get; internal set; }
-        public string Token { get; internal set; }
-        public string NewPassword { get; internal set; }
+        // Add these
+        [Required]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        public string Token { get; set; } = string.Empty;
     }
+
 }

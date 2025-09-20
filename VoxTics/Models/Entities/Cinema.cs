@@ -40,18 +40,14 @@ namespace VoxTics.Models.Entities
         [Url, StringLength(200)]
         public string? ImageUrl { get; set; }
 
-        // Status
         public bool IsActive { get; set; } = true;
 
-        // Navigation properties
         public virtual ICollection<Hall> Halls { get; set; } = new List<Hall>();
         public virtual ICollection<Showtime> Showtimes { get; set; } = new List<Showtime>();
-        public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
         public virtual ICollection<SocialMediaLink> SocialMediaLinks { get; set; } = new List<SocialMediaLink>();
 
-        // Computed properties
         [NotMapped]
-        public int TotalSeats => Halls?.Sum(h => h.Seats.Count) ?? 0;
+        public int TotalSeats => Halls?.Sum(h => h.Seats?.Count ?? 0) ?? 0;
 
         [NotMapped]
         public int HallCount => Halls?.Count ?? 0;
@@ -60,6 +56,6 @@ namespace VoxTics.Models.Entities
         public int ShowtimeCount => Showtimes?.Count ?? 0;
 
         [NotMapped]
-        public string DisplayImage => !string.IsNullOrEmpty(ImageUrl) ? ImageUrl : "/images/default-cinema.jpg";
+        public string DisplayImage => !string.IsNullOrEmpty(ImageUrl) ? ImageUrl : "/images/defaults/placeholder.jpg";
     }
 }

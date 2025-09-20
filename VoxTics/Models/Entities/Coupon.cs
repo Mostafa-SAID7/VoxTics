@@ -1,55 +1,38 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VoxTics.Models.Entities
 {
-    /// <summary>
-    /// Represents a discount or promotional coupon for bookings.
-    /// </summary>
-    public class Coupon
+    public class Coupon : BaseEntity
     {
-        public int Id { get; set; }
-
-        [Required, StringLength(50)]
+        [Required, MaxLength(50)]
         public string Code { get; set; } = string.Empty;
 
-        [Required, Range(0, 100, ErrorMessage = "Discount percentage must be between 0 and 100.")]
+        [Required]
+        [Range(0, 100, ErrorMessage = "Discount percentage must be between 0 and 100")]
         public decimal DiscountPercentage { get; set; }
 
-        /// <summary>
-        /// Optional fixed amount discount (can be combined with percentage if needed).
-        /// </summary>
+        [Column(TypeName = "decimal(18,2)")]
         [Range(0, double.MaxValue)]
-        public decimal? FixedAmount { get; set; }
+        public decimal? MaxDiscountAmount { get; set; }
 
-        [Required]
-        public DateTime ExpiryDate { get; set; }
+        public DateTime? ExpiryDate { get; set; }
 
-        /// <summary>
-        /// Maximum number of times this coupon can be used across all users.
-        /// </summary>
-        public int? UsageLimit { get; set; }
+        public int? UsageLimit { get; set; }  // Optional: limit number of times it can be used
+        public int UsedCount { get; set; } = 0;
 
-        /// <summary>
-        /// Number of times the coupon has been redeemed.
-        /// </summary>
-        public int TimesUsed { get; set; } = 0;
-
-        /// <summary>
-        /// Minimum booking amount to apply this coupon.
-        /// </summary>
-        [Range(0, double.MaxValue)]
-        public decimal MinimumSpend { get; set; } = 0;
-
-        /// <summary>
-        /// Indicates whether this coupon is active.
-        /// </summary>
         public bool IsActive { get; set; } = true;
+        public bool IsApplied { get; set; } = false;
+        // Navigation properties
+        public int? BookingId { get; set; }
+        [ForeignKey(nameof(BookingId))]
+        public virtual Booking? Booking { get; set; }
 
-        /// <summary>
-        /// Navigation property for bookings that used this coupon.
-        /// </summary>
-        public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+        public int? CartId { get; set; }
+        [ForeignKey(nameof(CartId))]
+        public virtual Cart? Cart { get; set; }
+        public ICollection<Payment> Payments { get; set; } = new List<Payment>();
+
     }
 }

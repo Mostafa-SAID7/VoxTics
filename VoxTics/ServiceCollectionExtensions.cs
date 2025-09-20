@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Configuration;
@@ -9,13 +10,9 @@ using VoxTics.Areas.Admin.Repositories.IRepositories;
 using VoxTics.Areas.Admin.Services.Implementations;
 using VoxTics.Areas.Admin.Services.Interfaces;
 using VoxTics.Areas.Identity.IdentityProfiles;
-using VoxTics.Areas.Identity.Repositories;
-using VoxTics.Areas.Identity.Repositories.IRepositories;
+using VoxTics.Areas.Identity.Models.Entities;
 using VoxTics.Areas.Identity.Services;
-using VoxTics.Areas.Identity.Services.Implementations;
-using VoxTics.Areas.Identity.Services.Interfaces;
 using VoxTics.Data.UoW;
-using VoxTics.Helpers.Emails;
 using VoxTics.Helpers.ImgsHelper;
 using VoxTics.MappingProfiles;
 using VoxTics.Repositories;
@@ -45,7 +42,7 @@ namespace VoxTics.Extensions
             services.AddScoped<IHomeRepository, HomeRepository>();
 
             // Identity Repositories
-            services.AddScoped<IApplicationUsersRepository, ApplicationUsersRepository>();
+            services.AddScoped<IBaseRepository<UserOTP>, BaseRepository<UserOTP>>();
 
             // Admin Repositories
             services.AddScoped<IAdminBookingsRepository, AdminBookingsRepository>();
@@ -62,13 +59,14 @@ namespace VoxTics.Extensions
             services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IMovieService, MovieService>();
             services.AddScoped<IShowtimeService, ShowtimeService>();
+            services.AddScoped<ICartService, CartService>();
+
             //Helpers
-            services.AddScoped<IEmailService, EmailService>();
+            services.AddTransient<IEmailSender, EmailSender>();
             services.AddSingleton<ImageManager>();
             // Identity Services
             services.Configure<ImageSettings>(config.GetSection("ImageSettings"));
 
-            services.AddScoped<IAccountService, AccountService>();
 
             // Admin Services
             services.AddScoped<IAdminBookingsService, AdminBookingsService>();

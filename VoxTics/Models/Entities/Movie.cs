@@ -54,13 +54,10 @@ namespace VoxTics.Models.Entities
         [Required, MaxLength(150)]
         public string Slug { get; set; } = string.Empty;  // URL-friendly slug
 
-        // Navigation properties
-        public ICollection<Booking>? Bookings { get; set; } = new List<Booking>();
         public ICollection<Showtime>? Showtimes { get; set; } = new List<Showtime>();
         public ICollection<MovieActor> MovieActors { get; set; } = new List<MovieActor>();
         public ICollection<MovieImg> MovieImages { get; set; } = new List<MovieImg>();
-
-        // New relationships
+        public ICollection<Booking>? Bookings { get; set; } = new List<Booking>();
         public ICollection<WatchlistItem>? WatchlistItems { get; set; } = new List<WatchlistItem>();
         public ICollection<CartItem>? CartItems { get; set; } = new List<CartItem>();
 
@@ -68,8 +65,6 @@ namespace VoxTics.Models.Entities
         public int CategoryId { get; set; }
         [Required]
         public Category Category { get; set; }
-        public int CinemaId { get; set; }  // just the foreign key
-                                           // OR
-        public Cinema Cinema { get; set; }
+
     }
 }

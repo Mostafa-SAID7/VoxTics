@@ -14,12 +14,17 @@ namespace VoxTics.Models.Entities
         public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 
         [NotMapped]
-        public decimal TotalAmount => CartItems?.Sum(ci => ci.Price * ci.Quantity) ?? 0;
+        public decimal TotalAmount => CartItems?.Sum(ci => ci.Showtime.Price * ci.Quantity) ?? 0;
 
         [NotMapped]
         public int TotalTickets => CartItems?.Sum(ci => ci.Quantity) ?? 0;
-        public ICollection<BookingSeat> BookingSeats { get; set; } = new List<BookingSeat>();
-        public int MovieId { get; set; }
-        public virtual Movie Movie { get; set; } = null!; 
+        public int? CouponId { get; set; }
+        [ForeignKey(nameof(CouponId))]
+        public virtual Coupon? Coupon { get; set; }
+
+        [NotMapped]
+        public decimal TotalAmountAfterDiscount =>
+            Coupon != null ? TotalAmount * (1 - Coupon.DiscountPercentage / 100) : TotalAmount;
     }
+
 }

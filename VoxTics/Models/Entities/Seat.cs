@@ -9,28 +9,23 @@ namespace VoxTics.Models.Entities
         [Required]
         public int HallId { get; set; }
 
-        [Required]
-        [StringLength(10)]
-        public string SeatNumber { get; set; } = string.Empty;
+        [Required, MaxLength(1)]
+        public string Row { get; set; } = string.Empty;
 
-        [Required]
-        public int RowNumber { get; set; }
-
-        public string? Row { get; set; } // optional "A", "B", etc.
-
-        [Required]
-        public int SeatNumberInRow { get; set; }
+        [Required, Range(1, 100)]
+        public int NumberInRow { get; set; }
 
         [Required]
         public SeatType Type { get; set; } = SeatType.VIP;
 
         public bool IsActive { get; set; } = true;
+        public bool IsAvailable { get; set; } = true;
 
-        // Navigation properties
         [ForeignKey(nameof(HallId))]
         public virtual Hall Hall { get; set; } = null!;
-
+        [Required]
+        [StringLength(10)]
+        public string SeatNumber { get; set; } = string.Empty;
         public virtual ICollection<BookingSeat> BookingSeats { get; set; } = new HashSet<BookingSeat>();
-
     }
 }

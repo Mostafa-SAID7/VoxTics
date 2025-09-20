@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using VoxTics.Repositories.IRepositories;
 
 namespace VoxTics.Repositories
@@ -20,154 +15,62 @@ namespace VoxTics.Repositories
             _dbSet = _context.Set<T>();
         }
 
-        #region Querying
+        // Query
         public IQueryable<T> Query() => _dbSet.AsQueryable();
 
         public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                return await _dbSet.AsNoTracking().ToListAsync(cancellationToken);
-            }
-            catch (TaskCanceledException)
-            {
-                // المهمة أُلغيّت، إرجاع قائمة فارغة بدلًا من رفع استثناء
-                return Enumerable.Empty<T>();
-            }
-        }
+            => await _dbSet.AsNoTracking().ToListAsync(cancellationToken);
 
         public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
-        {
-            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
-            try
-            {
-                return await _dbSet.AsNoTracking().Where(predicate).ToListAsync(cancellationToken);
-            }
-            catch (TaskCanceledException)
-            {
-                return Enumerable.Empty<T>();
-            }
-        }
+            => await _dbSet.AsNoTracking().Where(predicate).ToListAsync(cancellationToken);
 
         public async Task<T?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                return await _dbSet.FindAsync(new object?[] { id }, cancellationToken);
-            }
-            catch (TaskCanceledException)
-            {
-                return null;
-            }
-        }
+            => await _dbSet.FindAsync(new object[] { id }, cancellationToken);
 
         public async Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
-        {
-            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
-            try
-            {
-                return await _dbSet.AsNoTracking().FirstOrDefaultAsync(predicate, cancellationToken);
-            }
-            catch (TaskCanceledException)
-            {
-                return null;
-            }
-        }
+            => await _dbSet.AsNoTracking().FirstOrDefaultAsync(predicate, cancellationToken);
 
         public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
-        {
-            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
-            try
-            {
-                return await _dbSet.AnyAsync(predicate, cancellationToken);
-            }
-            catch (TaskCanceledException)
-            {
-                return false;
-            }
-        }
+            => await _dbSet.AnyAsync(predicate, cancellationToken);
 
         public async Task<int> CountAsync(Expression<Func<T, bool>>? predicate = null, CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                return predicate == null
-                    ? await _dbSet.CountAsync(cancellationToken)
-                    : await _dbSet.CountAsync(predicate, cancellationToken);
-            }
-            catch (TaskCanceledException)
-            {
-                return 0;
-            }
-        }
+            => predicate == null ? await _dbSet.CountAsync(cancellationToken) : await _dbSet.CountAsync(predicate, cancellationToken);
 
-        #endregion
-
-        #region Commands (CRUD)
-
+        // Commands
         public async Task AddAsync(T entity, CancellationToken cancellationToken = default)
-        {
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
-            try
-            {
-                await _dbSet.AddAsync(entity, cancellationToken);
-            }
-            catch (TaskCanceledException) { /* يمكن تسجيل الحدث إذا أحببت */ }
-        }
+            => await _dbSet.AddAsync(entity, cancellationToken);
 
         public async Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
-        {
-            if (entities == null) throw new ArgumentNullException(nameof(entities));
-            try
-            {
-                await _dbSet.AddRangeAsync(entities, cancellationToken);
-            }
-            catch (TaskCanceledException) { }
-        }
+            => await _dbSet.AddRangeAsync(entities, cancellationToken);
 
-        public async Task UpdateAsync(T entity, CancellationToken cancellationToken = default)
+        public Task UpdateAsync(T entity, CancellationToken cancellationToken = default)
         {
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
             _dbSet.Update(entity);
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
-        public async Task UpdateRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
+        public Task UpdateRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
         {
-            if (entities == null) throw new ArgumentNullException(nameof(entities));
             _dbSet.UpdateRange(entities);
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
-        public async Task RemoveAsync(T entity, CancellationToken cancellationToken = default)
+        public Task RemoveAsync(T entity, CancellationToken cancellationToken = default)
         {
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
             _dbSet.Remove(entity);
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
-        public async Task RemoveRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
+        public Task RemoveRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
         {
-            if (entities == null) throw new ArgumentNullException(nameof(entities));
             _dbSet.RemoveRange(entities);
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
         public async Task<T?> FindByKeysAsync(object[] keys, CancellationToken cancellationToken = default)
-        {
-            if (keys == null || keys.Length == 0)
-                throw new ArgumentException("Keys must not be null or empty.", nameof(keys));
+            => await _dbSet.FindAsync(keys, cancellationToken);
 
-            try
-            {
-                return await _dbSet.FindAsync(keys, cancellationToken);
-            }
-            catch (TaskCanceledException)
-            {
-                return null;
-            }
-        }
-
-        #endregion
+        public async Task CommitAsync()
+            => await _context.SaveChangesAsync();
     }
 }

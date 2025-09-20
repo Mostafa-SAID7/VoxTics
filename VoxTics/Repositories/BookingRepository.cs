@@ -22,8 +22,6 @@ namespace VoxTics.Repositories
             CancellationToken cancellationToken = default)
         {
             return await _context.Bookings
-                .Include(b => b.Movie)
-                .Include(b => b.Cinema)
                 .Include(b => b.Showtime)
                 .Where(b => b.UserId == userId)
                 .OrderByDescending(b => b.BookingDate)
@@ -36,8 +34,7 @@ namespace VoxTics.Repositories
             CancellationToken cancellationToken = default)
         {
             return await _context.Bookings
-                .Include(b => b.Movie)
-                .Include(b => b.Cinema)
+
                 .Include(b => b.Showtime)
                 .Include(b => b.BookingSeats)
                     .ThenInclude(bs => bs.Seat)
@@ -51,8 +48,7 @@ namespace VoxTics.Repositories
             CancellationToken cancellationToken = default)
         {
             return await _context.Bookings
-                .Include(b => b.Movie)
-                .Include(b => b.Cinema)
+
                 .Include(b => b.Showtime)
                 .Include(b => b.BookingSeats)
                     .ThenInclude(bs => bs.Seat)

@@ -36,7 +36,6 @@ namespace VoxTics.Areas.Admin.Controllers
                 Name = c.Name ?? "",
                 Slug = c.Slug ?? "",
                 IsActive = c.IsActive,
-                MovieCount = c.Movies?.Count ?? 0
             }).ToList();
 
             ViewBag.PageIndex = pageIndex;

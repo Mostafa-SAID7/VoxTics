@@ -1,159 +1,138 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<VoxTics.Areas.Identity.Models.Entities.ApplicationUser> SignInManager
+@inject UserManager<VoxTics.Areas.Identity.Models.Entities.ApplicationUser> UserManager
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <title>@ViewData["Title"] - VoxTics Cinema</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="VoxTics - Your ultimate movie ticket booking platform">
-    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="VoxTics - Your ultimate movie ticket booking platform" />
+    <meta name="theme-color" content="#667eea" />
 
-    <!-- Preload critical resources -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-    <!-- CSS libraries -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Libraries -->
     <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="~/lib/animate.css/animate.min.css" />
     <link rel="stylesheet" href="~/lib/toastr/toastr.min.css" />
     <link rel="stylesheet" href="~/lib/sweetalert2/sweetalert2.min.css" />
+
+    <!-- Custom Styles -->
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="~/css/main/mainlayout.css" />
-
-    
 
     @RenderSection("Styles", required: false)
 </head>
 <body>
     <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
+    <div id="loadingOverlay" class="loading-overlay d-none">
         <div class="loading-spinner"></div>
     </div>
 
-    <!-- Enhanced Modern Navbar -->
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-modern" id="mainNavbar">
         <div class="container-fluid">
-            <!-- Brand -->
-            <a class="navbar-brand navbar-brand-modern animate__animated animate__fadeInDown"
-               asp-area="" asp-controller="Home" asp-action="Index">
-                <span class="brand-icon">🎬</span>
-                <span>VoxTics</span>
+            <a class="navbar-brand navbar-brand-modern" asp-area="" asp-controller="Home" asp-action="Index">
+                <span class="brand-icon">🎬</span> VoxTics
             </a>
-
-            <!-- Mobile Toggler -->
-            <button class="navbar-toggler navbar-toggler-modern" type="button"
-                    data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <div class="navbar-toggler-icon-modern">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
+                <span class="navbar-toggler-icon"></span>
             </button>
 
-            <!-- Navbar Content -->
             <div class="collapse navbar-collapse navbar-collapse-modern" id="navbarNav">
-                <!-- Main Navigation -->
+                @* Left links *@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-modern @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")"
-                           asp-area="" asp-controller="Home" asp-action="Index">
-                            <i class="bi bi-house me-1"></i>Home
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-modern @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Movies" ? "active" : "")"
-                           asp-area="" asp-controller="Movies" asp-action="Index">
-                            <i class="bi bi-film me-1"></i>Movies
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-modern @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Cinemas" ? "active" : "")"
-                           asp-area="" asp-controller="Cinemas" asp-action="Index">
-                            <i class="bi bi-building me-1"></i>Cinemas
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-modern @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Showtimes" ? "active" : "")"
-                           asp-area="" asp-controller="Showtimes" asp-action="Index">
-                            <i class="bi bi-calendar-event me-1"></i>Showtimes
-                        </a>
-                    </li>
+                    @{
+                        var navLinks = new[]
+                        {
+                                        new { Controller="Home", Action="Index", Text="Home", Icon="bi-house" },
+                                        new { Controller="Movies", Action="Index", Text="Movies", Icon="bi-film" },
+                                        new { Controller="Cinemas", Action="Index", Text="Cinemas", Icon="bi-building" },
+                                        new { Controller="Showtimes", Action="Index", Text="Showtimes", Icon="bi-calendar-event" }
+                                        };
+                    }
+                    @foreach (var link in navLinks)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == link.Controller ? "active" : "")"
+                               asp-area="" asp-controller="@link.Controller" asp-action="@link.Action">
+                                <i class="bi @link.Icon me-1"></i>@link.Text
+                            </a>
+                        </li>
+                    }
                 </ul>
 
-                <!-- Search Bar -->
-                <div class="search-container d-flex">
-                    <form class="search-form" method="get" asp-controller="Movies" asp-action="Index">
-                        <i class="bi bi-search search-icon"></i>
-                        <input class="form-control search-input" type="search" name="search"
+                @* Search form *@
+                <form class="d-flex me-3" method="get" asp-controller="Movies" asp-action="Index">
+                    <div class="input-group">
+                        <input type="search" name="search" class="form-control"
                                placeholder="Search movies, actors, genres..."
-                               value="@Context.Request.Query["search"]" aria-label="Search">
-                        <button class="search-btn" type="submit" aria-label="Search">
-                            <i class="bi bi-arrow-right"></i>
+                               value="@Context.Request.Query["search"]" />
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <i class="bi bi-search"></i>
                         </button>
-                    </form>
-                </div>
+                    </div>
+                </form>
 
-                <!-- User Actions -->
+                @* User & Admin links *@
                 <ul class="navbar-nav mb-2 mb-lg-0 align-items-center">
-                    <!-- Admin Link (if admin) -->
-                    <li class="nav-item me-2">
-                        <a class="nav-link nav-link-modern admin-link"
-                           asp-area="Admin" asp-controller="Home" asp-action="Index">
-                            <i class="bi bi-gear me-1"></i>Admin
-                        </a>
-                    </li>
-
-                    @* User Authentication Section *@
                     @if (User.Identity.IsAuthenticated)
                     {
-                        <li class="nav-item dropdown user-dropdown">
-                            <div class="user-avatar position-relative" data-bs-toggle="dropdown"
-                                 aria-expanded="false" title="User menu">
-                                @User.Identity.Name?.Substring(0, 1).ToUpper()
-                                <span class="notification-badge" id="notificationBadge" style="display: none;">3</span>
-                            </div>
-                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-modern">
+                        if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item me-2">
+                                <a class="nav-link" asp-area="Admin" asp-controller="Home" asp-action="Index">
+                                    <i class="bi bi-gear me-1"></i>Admin
+                                </a>
+                            </li>
+                        }
+
+                        <li class="nav-item dropdown user-dropdown" >
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="user-avatar me-2">@User.Identity.Name?.Substring(0, 1).ToUpper()</div>
+                                <span class="d-none d-lg-inline">@User.Identity.Name</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
                                 <li class="dropdown-header">
                                     <div class="fw-semibold">@User.Identity.Name</div>
                                     <div class="text-muted small">Welcome back!</div>
                                 </li>
-                                <li><hr class="dropdown-divider"></li>
+                                <li><hr class="dropdown-divider" /></li>
                                 <li>
-                                    <a class="dropdown-item dropdown-item-modern"
-                                       asp-area="Identity" asp-controller="Home" asp-action="Index">
-                                        <i class="bi bi-person-circle"></i>My Profile
+                                    <a class="dropdown-item" asp-area="Identity" asp-controller="Profile" asp-action="Welcome">
+                                        <i class="bi bi-person-circle me-2"></i>My Profile
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item dropdown-item-modern"
-                                       asp-area="" asp-controller="Booking" asp-action="MyBookings">
-                                        <i class="bi bi-ticket-perforated"></i>My Bookings
-                                        <span class="ms-auto badge bg-primary">2</span>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Bookings" asp-action="MyBookings">
+                                        <i class="bi bi-ticket-perforated me-2"></i>My Bookings
+                                    </a>
+
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="User" asp-action="Favorites">
+                                        <i class="bi bi-heart me-2"></i>Favorites
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item dropdown-item-modern"
-                                       asp-area="" asp-controller="User" asp-action="Favorites">
-                                        <i class="bi bi-heart"></i>Favorites
+                                    <a class="dropdown-item" asp-controller="User" asp-action="Settings">
+                                        <i class="bi bi-gear me-2"></i>Settings
                                     </a>
                                 </li>
+                                <li><hr class="dropdown-divider" /></li>
                                 <li>
-                                    <a class="dropdown-item dropdown-item-modern"
-                                       asp-area="" asp-controller="User" asp-action="Settings">
-                                        <i class="bi bi-gear"></i>Settings
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form method="post" asp-area="" asp-controller="Users" asp-action="Logout" class="d-inline w-100">
-                                        <button type="submit" class="dropdown-item dropdown-item-modern text-danger border-0 bg-transparent w-100 text-start">
-                                            <i class="bi bi-box-arrow-right"></i>Logout
+                                    <form method="post" asp-area="Identity" asp-controller="Account" asp-action="Logout">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="dropdown-item text-danger">
+                                            <i class="bi bi-box-arrow-right me-2"></i>Logout
                                         </button>
                                     </form>
                                 </li>
@@ -162,228 +141,67 @@
                     }
                     else
                     {
-                        <li class="nav-item me-2">
-                            <a class="nav-link nav-link-modern"
-                               @* asp-area="identity" asp-controller="Account" asp-action="Login" *@
-                               href="https://localhost:7244/identity/account/login"
-                               data-bs-toggle="modal" data-bs-target="#loginModal">
-                                <i class="bi bi-box-arrow-in-right me-1"></i>Login
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link nav-link-modern"
-                               @* asp-area="identity" asp-controller="Account" asp-action="Register" *@
-                               href="https://localhost:7244/identity/account/register"
-                               data-bs-toggle="modal" data-bs-target="#registerModal">
-                                <i class="bi bi-person-plus me-1"></i>Register
-                            </a>
-                        </li>
+                        <li class="nav-item"><a class="nav-link" asp-area="Identity" asp-controller="Account" asp-action="Login">Login</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-area="Identity" asp-controller="Account" asp-action="Register">Register</a></li>
                     }
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <main>
+    <main class="pb-4">
         @RenderBody()
     </main>
 
-    <!-- Enhanced Modern Footer -->
+    <!-- Footer -->
     <footer class="footer-modern">
         <div class="container">
             <div class="row">
-                <!-- Company Info -->
                 <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="footer-section animate-on-scroll">
-                        <h5>
-                            <span class="brand-icon me-2">🎬</span>
-                            VoxTics Cinema
-                        </h5>
-                        <p class="mb-4">
-                            Your ultimate movie ticket booking platform. Discover the latest movies,
-                            find showtimes at your favorite cinemas, and book tickets instantly with
-                            our seamless experience.
-                        </p>
-                        <div class="d-flex align-items-center mb-3">
-                            <i class="contact-icon bi bi-geo-alt"></i>
-                            <span>123 Cinema Street, Movie District</span>
-                        </div>
-                        <div class="d-flex align-items-center mb-3">
-                            <i class="contact-icon bi bi-telephone"></i>
-                            <a href="tel:+1234567890" class="footer-link">+1 (234) 567-890</a>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <i class="contact-icon bi bi-envelope"></i>
-                            <a href="mailto:support@voxtics.com" class="footer-link">support@voxtics.com</a>
-                        </div>
-                    </div>
+                    <h5><span class="brand-icon me-2">🎬</span>VoxTics Cinema</h5>
+                    <p>Your ultimate movie ticket booking platform.</p>
+                    <p><i class="bi bi-geo-alt me-2"></i>123 Cinema Street</p>
+                    <p><i class="bi bi-envelope me-2"></i><a href="mailto:support@voxtics.com">support@voxtics.com</a></p>
                 </div>
 
-                <!-- Quick Links -->
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <div class="footer-section animate-on-scroll animate-delay-1">
-                        <h5>Quick Links</h5>
-                        <ul class="list-unstyled">
-                            <li>
-                                <a class="footer-link" asp-area="" asp-controller="Home" asp-action="Index">
-                                    Home
-                                </a>
-                            </li>
-                            <li>
-                                <a class="footer-link" asp-area="" asp-controller="Movies" asp-action="Index">
-                                    Movies
-                                </a>
-                            </li>
-                            <li>
-                                <a class="footer-link" asp-area="" asp-controller="Cinemas" asp-action="Index">
-                                    Cinemas
-                                </a>
-                            </li>
-                            <li>
-                                <a class="footer-link" asp-area="" asp-controller="Showtimes" asp-action="Index">
-                                    Showtimes
-                                </a>
-                            </li>
-                            <li>
-                                <a class="footer-link" asp-area="" asp-controller="Home" asp-action="About">
-                                    About Us
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                        <li><a asp-area="" asp-controller="Movies" asp-action="Index">Movies</a></li>
+                        <li><a asp-area="" asp-controller="Cinemas" asp-action="Index">Cinemas</a></li>
+                        <li><a asp-area="" asp-controller="Showtimes" asp-action="Index">Showtimes</a></li>
+                    </ul>
                 </div>
 
-                <!-- Services -->
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <div class="footer-section animate-on-scroll animate-delay-2">
-                        <h5>Services</h5>
-                        <ul class="list-unstyled">
-                            <li>
-                                <a class="footer-link" asp-area="" asp-controller="Booking" asp-action="Index">
-                                    Book Tickets
-                                </a>
-                            </li>
-                            <li>
-                                <a class="footer-link" asp-area="" asp-controller="Movies" asp-action="ComingSoon">
-                                    Coming Soon
-                                </a>
-                            </li>
-                            <li>
-                                <a class="footer-link" asp-area="" asp-controller="Movies" asp-action="NowShowing">
-                                    Now Showing
-                                </a>
-                            </li>
-                            <li>
-                                <a class="footer-link" asp-area="" asp-controller="User" asp-action="Membership">
-                                    Membership
-                                </a>
-                            </li>
-                            <li>
-                                <a class="footer-link" asp-area="" asp-controller="Support" asp-action="Index">
-                                    Support
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
+                    <h5>Services</h5>
+                    <ul class="list-unstyled">
+                        <li><a asp-controller="Booking" asp-action="Index">Book Tickets</a></li>
+                        <li><a asp-controller="Movies" asp-action="ComingSoon">Coming Soon</a></li>
+                    </ul>
                 </div>
 
-                <!-- Legal & Support -->
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <div class="footer-section animate-on-scroll animate-delay-3">
-                        <h5>Support</h5>
-                        <ul class="list-unstyled">
-                            <li>
-                                <a class="footer-link" asp-area="" asp-controller="Help" asp-action="Index">
-                                    Help Center
-                                </a>
-                            </li>
-                            <li>
-                                <a class="footer-link" asp-area="" asp-controller="Help" asp-action="FAQ">
-                                    FAQ
-                                </a>
-                            </li>
-                            <li>
-                                <a class="footer-link" asp-area="" asp-controller="Home" asp-action="Contact">
-                                    Contact Us
-                                </a>
-                            </li>
-                            <li>
-                                <a class="footer-link" asp-area="" asp-controller="Home" asp-action="Privacy">
-                                    Privacy Policy
-                                </a>
-                            </li>
-                            <li>
-                                <a class="footer-link" asp-area="" asp-controller="Home" asp-action="Terms">
-                                    Terms of Service
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Social & Newsletter -->
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <div class="footer-section animate-on-scroll animate-delay-3">
-                        <h5>Connect</h5>
-                        <p class="small mb-3">Follow us for the latest updates and movie news!</p>
-
-                        <div class="social-links">
-                            <a href="#" class="social-link" title="Facebook" aria-label="Follow us on Facebook">
-                                <i class="bi bi-facebook"></i>
-                            </a>
-                            <a href="#" class="social-link" title="Twitter" aria-label="Follow us on Twitter">
-                                <i class="bi bi-twitter"></i>
-                            </a>
-                            <a href="#" class="social-link" title="Instagram" aria-label="Follow us on Instagram">
-                                <i class="bi bi-instagram"></i>
-                            </a>
-                            <a href="#" class="social-link" title="YouTube" aria-label="Subscribe to our YouTube">
-                                <i class="bi bi-youtube"></i>
-                            </a>
-                        </div>
-
-                        <!-- Newsletter Signup -->
-                        <div class="mt-4">
-                            <form class="newsletter-form" method="post" asp-controller="Newsletter" asp-action="Subscribe">
-                                <div class="input-group">
-                                    <input type="email" class="form-control" name="email"
-                                           placeholder="Your email" required
-                                           style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary);">
-                                    <button class="btn" type="submit"
-                                            style="background: var(--secondary-gradient); border: none; color: white;">
-                                        <i class="bi bi-arrow-right"></i>
-                                    </button>
-                                </div>
-                                <small class="text-muted mt-1 d-block">Get movie updates & exclusive offers</small>
-                            </form>
-                        </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5>Connect</h5>
+                    <div class="social-links">
+                        <a href="#" class="me-2"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="me-2"><i class="bi bi-twitter"></i></a>
+                        <a href="#" class="me-2"><i class="bi bi-instagram"></i></a>
+                        <a href="#"><i class="bi bi-youtube"></i></a>
                     </div>
                 </div>
             </div>
 
-            <!-- Footer Bottom -->
-            <div class="footer-bottom">
-                <div class="row align-items-center">
-                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                        <p class="mb-0">
-                            &copy; @DateTime.Now.Year VoxTics Cinema. All rights reserved.
-                        </p>
-                    </div>
-                    <div class="col-md-6 text-center text-md-end">
-                        <div class="d-flex justify-content-center justify-content-md-end align-items-center gap-3">
-                            <span class="small text-muted">Powered by</span>
-                            <img src="/images/powered-by-logo.png" alt="Powered by VoxTics" height="20" class="opacity-75">
-                        </div>
-                    </div>
-                </div>
+            <div class="footer-bottom mt-4 d-flex justify-content-between">
+                <span>&copy; @DateTime.Now.Year VoxTics Cinema. All rights reserved.</span>
+                <span>Powered by VoxTics</span>
             </div>
         </div>
     </footer>
 
     <!-- Back to Top Button -->
-    <button id="backToTop" class="btn position-fixed bottom-4 end-4 rounded-circle"
-            style="background: var(--secondary-gradient); border: none; width: 50px; height: 50px; display: none; z-index: 1000;">
+    <button id="backToTop" class="btn position-fixed bottom-4 end-4 rounded-circle d-none" style="width:50px;height:50px;">
         <i class="bi bi-arrow-up text-white"></i>
     </button>
 
@@ -397,7 +215,36 @@
     <script src="~/js/site.js"></script>
     <script src="~/js/main/main.js"></script>
 
-    
+    <script>
+        (() => {
+            // Show Login modal if TempData is set
+            var showLogin = '@(TempData["ShowLoginModal"] ?? "false")';
+            if (showLogin.toLowerCase() === 'true') {
+                new bootstrap.Modal(document.getElementById('loginModal')).show();
+            }
+
+            // Show Register modal if TempData is set
+            var showRegister = '@(TempData["ShowRegisterModal"] ?? "false")';
+            if (showRegister.toLowerCase() === 'true') {
+                new bootstrap.Modal(document.getElementById('registerModal')).show();
+            }
+
+            // Toastr notifications
+            var success = '@(TempData["success-notification"] ?? "")';
+            var error = '@(TempData["error-notification"] ?? "")';
+            if (success) toastr.success(success);
+            if (error) toastr.error(error);
+
+            // Loading overlay on submit
+            $('form').on('submit', () => $('#loadingOverlay').removeClass('d-none').addClass('d-flex'));
+
+            // Back to top
+            const backBtn = $('#backToTop');
+            $(window).on('scroll', () => backBtn.toggleClass('d-none', $(window).scrollTop() <= 300));
+            backBtn.on('click', () => $('html, body').animate({ scrollTop: 0 }, 500));
+        })();
+    </script>
+
 
     @RenderSection("Scripts", required: false)
 </body>

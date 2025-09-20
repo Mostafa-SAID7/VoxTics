@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using VoxTics.Data;
 using VoxTics.Data.UoW;
 using VoxTics.Repositories.IRepositories;
-using VoxTics.Areas.Identity.Repositories.IRepositories;
 using VoxTics.Areas.Admin.Repositories.IRepositories;
 
 namespace VoxTics.Repositories
@@ -21,7 +20,6 @@ namespace VoxTics.Repositories
         public IHomeRepository Home { get; }
 
         // Identity
-        public IApplicationUsersRepository ApplicationUsers { get; }
 
         // Admin
         public IAdminBookingsRepository AdminBookings { get; }
@@ -39,7 +37,6 @@ namespace VoxTics.Repositories
             IMoviesRepository movies,
             IShowtimesRepository showtimes,
             IHomeRepository home,
-            IApplicationUsersRepository appUsers,
             IAdminBookingsRepository adminBookings,
             IAdminCategoriesRepository adminCategories,
             IAdminCinemasRepository adminCinemas,
@@ -57,7 +54,6 @@ namespace VoxTics.Repositories
             Showtimes = showtimes;
             Home = home;
 
-            ApplicationUsers = appUsers;
 
             AdminBookings = adminBookings;
             AdminCategories = adminCategories;

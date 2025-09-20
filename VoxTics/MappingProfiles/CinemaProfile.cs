@@ -36,8 +36,7 @@ namespace VoxTics.MappingProfiles
                     opt => opt.MapFrom(src => src.Halls))
                 .ForMember(dest => dest.Showtimes,
                     opt => opt.MapFrom(src => src.Showtimes))
-                .ForMember(dest => dest.Bookings,
-                    opt => opt.MapFrom(src => src.Bookings))
+               
                 .ForMember(dest => dest.SocialMediaLinks,
                     opt => opt.MapFrom(src => src.SocialMediaLinks));
         }

@@ -48,7 +48,13 @@ namespace VoxTics.Areas.Identity.Models.ViewModels
 
         public string FullAddress => $"{Street}, {City}, {State}, {ZipCode}".Trim(',', ' ');
 
-        public object Email { get; internal set; }
-        public object CreatedAt { get; internal set; }
+        [Required]
+        public string Email { get; set; } = string.Empty;
+        public DateTime CreatedAt { get;  set; }
+        public string? PhoneNumber { get; set; }
+        [DataType(DataType.Password)]
+        public string? CurrentPassword { get; set; }
+        [DataType(DataType.Password)]
+        public string? NewPassword { get; set; }
     }
 }

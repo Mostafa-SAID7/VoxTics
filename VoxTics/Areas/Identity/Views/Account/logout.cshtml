@@ -1,0 +1,8 @@
+﻿<li>
+    <form method="post" asp-area="Identity" asp-controller="Account" asp-action="Logout" class="d-inline w-100">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="dropdown-item dropdown-item-modern text-danger border-0 bg-transparent w-100 text-start">
+            <i class="bi bi-box-arrow-right"></i>Logout
+        </button>
+    </form>
+</li>

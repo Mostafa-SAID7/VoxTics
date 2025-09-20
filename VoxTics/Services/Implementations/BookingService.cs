@@ -41,16 +41,12 @@ namespace VoxTics.Services
             var booking = new Booking
             {
                 UserId = userId,
-                MovieId = model.MovieId,
-                CinemaId = model.CinemaId,
                 ShowtimeId = model.ShowtimeId,
                 NumberOfTickets = model.SeatIds.Count,
                 TotalAmount = model.TotalAmount,
                 DiscountAmount = model.DiscountAmount,
                 FinalAmount = model.FinalAmount,
-                PaymentMethod = model.PaymentMethod,
                 Status = BookingStatus.Pending,
-                PaymentStatus = PaymentStatus.Pending,
                 BookingSeats = model.SeatIds.Select(seatId => new BookingSeat
                 {
                     SeatId = seatId,

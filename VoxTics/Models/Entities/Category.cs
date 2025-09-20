@@ -9,16 +9,12 @@ namespace VoxTics.Models.Entities
         public string Name { get; set; } = string.Empty;
 
         [Required, MaxLength(60)]
-        public string Slug { get; set; } = string.Empty; // Used for URL-friendly queries
+        public string Slug { get; set; } = string.Empty;
 
         [MaxLength(500)]
         public string? Description { get; set; }
 
         public bool IsActive { get; set; } = true;
 
-        // Navigation properties
-        public ICollection<Movie> Movies { get; set; } = new List<Movie>();
-
-        public virtual ICollection<MovieCategory> MovieCategories { get; set; } = new List<MovieCategory>();
     }
 }

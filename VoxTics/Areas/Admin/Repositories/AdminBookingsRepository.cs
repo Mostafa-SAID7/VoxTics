@@ -24,7 +24,6 @@ namespace VoxTics.Areas.Admin.Repositories
         {
             var query = _context.Bookings
                 .Include(b => b.User)
-                .Include(b => b.Movie)
                 //.ThenInclude(m => m.Cinema) // if Movie has a Cinema navigation
                 .Include(b => b.BookingSeats)
                 .AsQueryable();
@@ -33,8 +32,8 @@ namespace VoxTics.Areas.Admin.Repositories
             {
                 query = query.Where(b =>
                     b.User.Name.Contains(search) ||
-                    b.User.Email.Contains(search) ||
-                    b.Movie.Title.Contains(search));
+                    b.User.Email.Contains(search) 
+                   );
             }
 
             var totalCount = await query.CountAsync(cancellationToken);
@@ -52,7 +51,7 @@ namespace VoxTics.Areas.Admin.Repositories
         {
             return await _context.Bookings
                 .Include(b => b.User)
-                .Include(b => b.Movie)
+
                 //.ThenInclude(m => m.Cinema) // if exists
                 .Include(b => b.BookingSeats)
                 .FirstOrDefaultAsync(b => b.Id == bookingId, cancellationToken);

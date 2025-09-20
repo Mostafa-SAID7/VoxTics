@@ -28,8 +28,6 @@ namespace VoxTics.Areas.Identity.Models.Entities
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
         public ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
-        // Backwards-compatibility collection (if you still use the simpler mapping)
-        public ICollection<UserMovieWatchlist> UserMovieWatchlists { get; set; } = new List<UserMovieWatchlist>();
 
         public int Age => DateOfBirth.HasValue ? (int)((DateTime.UtcNow - DateOfBirth.Value).TotalDays / 365.25) : 0;
         public string FullAddress => $"{Street}, {City}, {State}, {ZipCode}".Trim(',', ' ');

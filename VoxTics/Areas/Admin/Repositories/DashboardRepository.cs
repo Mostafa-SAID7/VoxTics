@@ -169,24 +169,52 @@ namespace VoxTics.Areas.Admin.Repositories
                 .ToListAsync(cancellationToken);
         }
 
-        public Task<decimal> GetMonthlyRevenueAsync(int year, int month, CancellationToken cancellationToken = default)
+        public async Task<decimal> GetMonthlyRevenueAsync(int year, int month, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return await _context.Bookings
+                .Where(b => b.BookingDate.Year == year && b.BookingDate.Month == month)
+                .SumAsync(b => b.FinalAmount, cancellationToken);
         }
 
-        public Task<decimal> GetDailyRevenueAsync(DateTime date, CancellationToken cancellationToken = default)
+        public async Task<decimal> GetDailyRevenueAsync(DateTime date, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return await _context.Bookings
+                .Where(b => b.BookingDate.Date == date.Date)
+                .SumAsync(b => b.FinalAmount, cancellationToken);
         }
 
-        public Task<Dictionary<string, int>> GetMonthlyBookingsSeriesAsync(int year, CancellationToken cancellationToken = default)
+        public async Task<Dictionary<string, int>> GetMonthlyBookingsSeriesAsync(int year, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var bookings = await _context.Bookings
+                .Where(b => b.BookingDate.Year == year)
+                .GroupBy(b => b.BookingDate.Month)
+                .Select(g => new { Month = g.Key, Count = g.Count() })
+                .ToListAsync(cancellationToken);
+
+            var result = new Dictionary<string, int>();
+            for (int month = 1; month <= 12; month++)
+            {
+                var data = bookings.FirstOrDefault(b => b.Month == month);
+                result.Add(new DateTime(year, month, 1).ToString("MMM"), data?.Count ?? 0);
+            }
+            return result;
         }
 
-        public Task<Dictionary<string, decimal>> GetMonthlyRevenueSeriesAsync(int year, CancellationToken cancellationToken = default)
+        public async Task<Dictionary<string, decimal>> GetMonthlyRevenueSeriesAsync(int year, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var revenues = await _context.Bookings
+                .Where(b => b.BookingDate.Year == year)
+                .GroupBy(b => b.BookingDate.Month)
+                .Select(g => new { Month = g.Key, Revenue = g.Sum(b => b.FinalAmount) })
+                .ToListAsync(cancellationToken);
+
+            var result = new Dictionary<string, decimal>();
+            for (int month = 1; month <= 12; month++)
+            {
+                var data = revenues.FirstOrDefault(r => r.Month == month);
+                result.Add(new DateTime(year, month, 1).ToString("MMM"), data?.Revenue ?? 0);
+            }
+            return result;
         }
 
         #endregion

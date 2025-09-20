@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
+using VoxTics.Areas.Identity.Models.Entities;
 using VoxTics.Data;
 using VoxTics.Extensions;
+using VoxTics.Helpers.booking;
 using VoxTics.Models.Entities;
-using VoxTics.Areas.Identity.Models.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +35,14 @@ builder.Services.AddApplicationServices(configuration);
 
 // AutoMapper profiles (if your profiles are in the same assembly)
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
+builder.Services.ConfigureApplicationCookie(option =>
+{
+    option.LoginPath = "/Identity/Account/Login";
+    option.AccessDeniedPath = "/Customer/Home/NotFoundPage";
+});
+
+builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
 var app = builder.Build();
 

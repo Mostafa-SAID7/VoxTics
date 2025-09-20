@@ -14,5 +14,6 @@ namespace VoxTics.Areas.Identity.Models.ViewModels
 
         [Required(ErrorMessage = "User reference is required.")]
         public string ApplicationUserId { get; set; } = string.Empty;
+ 
     }
 }

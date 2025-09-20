@@ -1,64 +1,89 @@
 ﻿// Areas/Identity/Controllers/ProfileController.cs
+using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using VoxTics.Areas.Identity.Models.Entities;
 using VoxTics.Areas.Identity.Models.ViewModels;
-using VoxTics.Areas.Identity.Services.Interfaces;
+using VoxTics.Utitlity;
 
 namespace VoxTics.Areas.Identity.Controllers
 {
-    [Area("Identity")]
-    [Route("[area]/[controller]/[action]")]
+    [Area(SD.IdentityArea)]
     [Authorize]
     public class ProfileController : Controller
     {
-        private readonly IAccountService _accountService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public ProfileController(
-            IAccountService accountService,
-            UserManager<ApplicationUser> userManager)
+        public ProfileController(UserManager<ApplicationUser> userManager)
         {
-            _accountService = accountService;
             _userManager = userManager;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Welcome()
         {
-            var userId = _userManager.GetUserId(User);
-            var user = await _accountService.GetUserProfileAsync(userId);
+            var user = await _userManager.GetUserAsync(User);
 
-            var model = new ManageProfileVM
-            {
-            };
+            if (user is null)
+                return NotFound();
 
-            return View(model);
+            PersonalInfoVM personalInfoVM = user.Adapt<PersonalInfoVM>();
+
+            return View(personalInfoVM);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(ManageProfileVM model)
+        public async Task<IActionResult> UpdateInfo(PersonalInfoVM personalInfoVM)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var userId = _userManager.GetUserId(User);
-                var result = await _accountService.UpdateUserProfileAsync(userId, model);
-
-                if (result.success)
-                {
-                    TempData["Message"] = "Profile updated successfully.";
-                    return RedirectToAction("Index");
-                }
-
-                ModelState.AddModelError(string.Empty, result.errorMessage);
+                return View(personalInfoVM);
             }
 
-            // Reload current profile picture if update fails
-            var user = await _accountService.GetUserProfileAsync(_userManager.GetUserId(User));
+            var user = await _userManager.GetUserAsync(User);
 
-            return View(model);
+            if (user is null)
+                return NotFound();
+
+            user.Name = personalInfoVM.Name;
+            user.Email = personalInfoVM.Email;
+            user.PhoneNumber = personalInfoVM.PhoneNumber;
+            user.Street = personalInfoVM.Street;
+            user.City = personalInfoVM.City;
+            user.State = personalInfoVM.State;
+            user.ZipCode = personalInfoVM.ZipCode;
+
+            await _userManager.UpdateAsync(user);
+
+            TempData["success-notification"] = "Update Info Successfully";
+            return RedirectToAction("Welcome");
         }
+
+        public async Task<IActionResult> ChangePassword(ChangePasswordVM changePasswordVM)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(changePasswordVM);
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user is null)
+                return NotFound();
+
+            var result = await _userManager.ChangePasswordAsync(user, changePasswordVM.CurrentPassword, changePasswordVM.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                TempData["error-notification"] = String.Join(", ", result.Errors.Select(e => e.Description));
+            }
+            else
+            {
+                TempData["success-notification"] = "Update Password Successfully";
+            }
+
+            return RedirectToAction("Welcome");
+        }
+
     }
 }

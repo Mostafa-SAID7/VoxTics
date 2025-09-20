@@ -6,29 +6,30 @@ namespace VoxTics.Models.Entities
     {
         [Required]
         public int CartId { get; set; }
-        public int MovieId { get; set; }
-        public virtual Movie Movie { get; set; } = null!;
-
         [ForeignKey(nameof(CartId))]
         public virtual Cart Cart { get; set; } = null!;
 
         [Required]
-        public int ShowtimeId { get; set; }
+        public int MovieId { get; set; }
+        public virtual Movie Movie { get; set; } = null!;
 
+        [Required]
+        public int ShowtimeId { get; set; }
         [ForeignKey(nameof(ShowtimeId))]
         public virtual Showtime Showtime { get; set; } = null!;
 
-        [Required]
-        [Range(1, 20)]
+        [Required, Range(1, 20)]
         public int Quantity { get; set; } = 1;
 
-        [Required]
-        [Column(TypeName = "decimal(18,2)")]
-        [Range(0, double.MaxValue)]
-        public decimal Price { get; set; }
+        public virtual ICollection<Seat> Seats { get; set; } = new List<Seat>();
 
         [NotMapped]
-        public decimal Total => Quantity * Price;
-        public ICollection<Seat> Seats { get; set; } = new List<Seat>();
+        public decimal TotalPrice => (Showtime?.Price ?? 0) * Quantity;
+
+        [NotMapped]
+        public string SeatLabels => Seats is null || !Seats.Any()
+            ? string.Empty
+            : string.Join(", ", Seats.Select(s => s.SeatNumber));
     }
+
 }

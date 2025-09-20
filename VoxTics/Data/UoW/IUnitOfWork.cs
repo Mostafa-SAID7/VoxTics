@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using VoxTics.Areas.Admin.Repositories.IRepositories;
-using VoxTics.Areas.Identity.Repositories.IRepositories;
 using VoxTics.Repositories;
 using VoxTics.Repositories.IRepositories;
 
@@ -18,7 +17,6 @@ namespace VoxTics.Data.UoW
         IHomeRepository Home { get; }
 
         // Identity
-        IApplicationUsersRepository ApplicationUsers { get; }
 
         // Admin
         IAdminBookingsRepository AdminBookings { get; }

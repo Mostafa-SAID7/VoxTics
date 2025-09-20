@@ -45,9 +45,6 @@ namespace VoxTics.Areas.Admin.MappingProfiles
             CreateMap<Movie, MovieCreateEditViewModel>()
                 .ForMember(dest => dest.MainImage, opt => opt.Ignore()) // can't map URL to IFormFile
                 .ForMember(dest => dest.ExistingPosterUrl, opt => opt.MapFrom(src => src.MainImage))
-                .ForMember(dest => dest.AdditionalImages, opt => opt.Ignore()) // new uploads only
-                .ForMember(dest => dest.ExistingImageUrls,
-                    opt => opt.MapFrom(src => src.MovieImages.Select(mi => mi.VariantImages)));
-        }
+                .ForMember(dest => dest.AdditionalImages, opt => opt.Ignore());        }
     }
 }

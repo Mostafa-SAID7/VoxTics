@@ -20,13 +20,11 @@ namespace VoxTics.Models.Entities
 
         public bool IsActive { get; set; } = true;
 
-        // Computed property
-        [NotMapped]
-        public int SeatCount => Seats?.Count ?? 0;
-
-        // Navigation properties
         public virtual Cinema Cinema { get; set; } = null!;
         public virtual ICollection<Seat> Seats { get; set; } = new List<Seat>();
         public virtual ICollection<Showtime> Showtimes { get; set; } = new List<Showtime>();
+
+        [NotMapped]
+        public int SeatCount => Seats?.Count ?? 0;
     }
 }

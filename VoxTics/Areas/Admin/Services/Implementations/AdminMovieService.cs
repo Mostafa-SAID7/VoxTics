@@ -139,7 +139,7 @@ namespace VoxTics.Areas.Admin.Services.Implementations
                 var fileName = await _imageManager.SaveImageAsync(
                     img, ImageType.Movie, slug).ConfigureAwait(false);
 
-                movie.MovieImages.Add(new MovieImg { Url = fileName });
+                movie.MovieImages.Add(new MovieImg { ImageUrl = fileName });
             }
         }
     }

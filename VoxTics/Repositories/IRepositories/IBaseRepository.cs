@@ -9,39 +9,23 @@ namespace VoxTics.Repositories.IRepositories
 {
     public interface IBaseRepository<T> where T : class
     {
-        #region Querying
+        // Querying
         IQueryable<T> Query();
-
         Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default);
-
         Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
-
         Task<T?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
-
         Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
-
         Task<bool> AnyAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
-
         Task<int> CountAsync(Expression<Func<T, bool>>? predicate = null, CancellationToken cancellationToken = default);
 
-        #endregion
-
-        #region Commands (CRUD)
-
+        // Commands (CRUD)
         Task AddAsync(T entity, CancellationToken cancellationToken = default);
-
         Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default);
-
         Task UpdateAsync(T entity, CancellationToken cancellationToken = default);
-
         Task UpdateRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default);
-
         Task RemoveAsync(T entity, CancellationToken cancellationToken = default);
-
         Task RemoveRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default);
-
         Task<T?> FindByKeysAsync(object[] keys, CancellationToken cancellationToken = default);
-
-        #endregion
+        Task CommitAsync();
     }
 }
