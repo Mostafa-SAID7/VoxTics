@@ -3,35 +3,130 @@
 @inject VoxTics.Helpers.ImgsHelper.ImageManager ImgManager
 
 @{
-    // Resolve image URL (prefer absolute if provided, otherwise use ImgManager)
-    string imgUrl;
-    if (!string.IsNullOrWhiteSpace(Model.MainImageUrl))
-    {
-        imgUrl = Uri.IsWellFormedUriString(Model.MainImageUrl, UriKind.Absolute)
+    string imgUrl = !string.IsNullOrWhiteSpace(Model.MainImageUrl)
+        ? (Uri.IsWellFormedUriString(Model.MainImageUrl, UriKind.Absolute)
             ? Model.MainImageUrl
-            : ImgManager.GetImageWebPath(ImageType.Movie, Model.Slug, Model.MainImageUrl);
-    }
-    else
-    {
-        imgUrl = ImgManager.GetImageWebPath(ImageType.Movie, Model.Slug, null);
-    }
+            : ImgManager.GetImageWebPath(ImageType.Movie, Model.Slug, Model.MainImageUrl))
+        : ImgManager.GetImageWebPath(ImageType.Movie, Model.Slug, null);
 }
 
-<tr>
-    <td>
+<tr class="movie-row slide-in" data-title="@Model.Title" data-status="@Model.Status" >
+    <td class="poster-cell">
         <img src="@imgUrl"
-             alt="@Model.Title"
-             width="60"
+             alt="@Model.Title poster"
+             class="movie-poster"
              onerror="this.onerror=null;this.src='@Url.Content("~/images/defaults/placeholder.png")';" />
     </td>
-    <td>@Model.Title</td>
-    <td>@Model.CategoryName</td>
-    <td>@Model.ShowtimeCount</td>
-    <td>@Model.Price.ToString("C")</td>
-    <td>@Model.Status</td>
+
+
     <td>
-        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-sm btn-primary">Details</a>
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-warning">Edit</a>
-        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-sm btn-danger">Delete</a>
+        <span class="category-badge">@Model.CategoryName</span>
+    </td>
+    <td>
+        <div class="showtimes-count">
+            <i class="fas fa-ticket-alt text-primary"></i>
+            <strong>@Model.ShowtimeCount</strong>
+        </div>
+    </td>
+    <td>
+        <span class="price-tag">@Model.Price.ToString("C")</span>
+    </td>
+    <td>
+        <span class="status-badge status-@Model.Status.ToString().ToLower()">
+            <i class="fas fa-circle"></i>
+            @Model.Status
+        </span>
+    </td>
+    <td class="actions-cell">
+        <div class="action-buttons">
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-sm btn-details-table" title="View Details">
+                <i class="fas fa-eye"></i>
+            </a>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-edit-table" title="Edit Movie">
+                <i class="fas fa-edit"></i>
+            </a>
+            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-sm btn-delete-table" title="Delete Movie">
+                <i class="fas fa-trash"></i>
+            </a>
+        </div>
     </td>
 </tr>
+
+<style>
+    .movie-title-table {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.25rem;
+    }
+
+    .movie-meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.8rem;
+    }
+
+    .rating-badge, .duration-badge {
+        background: #f8f9fa;
+        padding: 0.25rem 0.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+    }
+
+    .category-badge {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.8rem;
+    }
+
+    .showtimes-count {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+    }
+
+    .price-tag {
+        background: #e8f5e8;
+        color: #2e7d32;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .btn-details-table {
+        background: #e3f2fd;
+        color: #1976d2;
+        border-radius: 8px;
+        padding: 0.5rem;
+    }
+
+    .btn-edit-table {
+        background: #fff3e0;
+        color: #f57c00;
+        border-radius: 8px;
+        padding: 0.5rem;
+    }
+
+    .btn-delete-table {
+        background: #ffebee;
+        color: #d32f2f;
+        border-radius: 8px;
+        padding: 0.5rem;
+    }
+
+        .btn-details-table:hover,
+        .btn-edit-table:hover,
+        .btn-delete-table:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+</style>

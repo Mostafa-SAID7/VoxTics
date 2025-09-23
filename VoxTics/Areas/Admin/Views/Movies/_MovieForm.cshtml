@@ -2,175 +2,187 @@
 @using VoxTics.Models.Enums
 @inject VoxTics.Helpers.ImgsHelper.ImageManager ImgManager
 
-<div class="row">
-    <div class="col-lg-8">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<!-- Add CSS reference in your main layout or view -->
+<link rel="stylesheet" href="~/css/admin/movies/movie-form.css" asp-append-version="true" />
 
-        <div class="mb-3">
-            <label asp-for="Title" class="form-label"></label>
-            <input asp-for="Title" class="form-control" />
-            <span asp-validation-for="Title" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="Description" class="form-label"></label>
-            <textarea asp-for="Description" class="form-control" rows="5"></textarea>
-            <span asp-validation-for="Description" class="text-danger"></span>
-        </div>
-
+<div class="movie-form-container">
+    <div class="form-section">
+        <h3 class="section-title">Movie Information</h3>
         <div class="row">
-            <div class="col-md-6 mb-3">
-                <label asp-for="Director" class="form-label"></label>
-                <input asp-for="Director" class="form-control" />
-                <span asp-validation-for="Director" class="text-danger"></span>
+            <div class="col-lg-8">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="mb-4">
+                    <label asp-for="Title" class="form-label-modern"></label>
+                    <input asp-for="Title" class="form-control form-control-modern" placeholder="Enter movie title" />
+                    <span asp-validation-for="Title" class="text-danger small mt-1"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Description" class="form-label-modern"></label>
+                    <textarea asp-for="Description" class="form-control form-control-modern" rows="5" placeholder="Enter movie description"></textarea>
+                    <span asp-validation-for="Description" class="text-danger small mt-1"></span>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Director" class="form-label-modern"></label>
+                        <input asp-for="Director" class="form-control form-control-modern" placeholder="Director name" />
+                        <span asp-validation-for="Director" class="text-danger small mt-1"></span>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label asp-for="ReleaseDate" class="form-label-modern"></label>
+                        <input asp-for="ReleaseDate" type="date" class="form-control form-control-modern" />
+                        <span asp-validation-for="ReleaseDate" class="text-danger small mt-1"></span>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label asp-for="EndDate" class="form-label-modern"></label>
+                        <input asp-for="EndDate" type="date" class="form-control form-control-modern" />
+                        <span asp-validation-for="EndDate" class="text-danger small mt-1"></span>
+                    </div>
+                </div>
+
+                <div class="row g-3 mt-2">
+                    <div class="col-md-3">
+                        <label asp-for="Duration" class="form-label-modern"></label>
+                        <input asp-for="Duration" type="number" class="form-control form-control-modern" placeholder="Minutes" />
+                        <span asp-validation-for="Duration" class="text-danger small mt-1"></span>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label asp-for="Price" class="form-label-modern"></label>
+                        <input asp-for="Price" type="number" step="0.01" class="form-control form-control-modern" placeholder="0.00" />
+                        <span asp-validation-for="Price" class="text-danger small mt-1"></span>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label asp-for="Rating" class="form-label-modern"></label>
+                        <input asp-for="Rating" type="number" step="0.1" class="form-control form-control-modern" placeholder="0.0" min="0" max="10" />
+                        <span asp-validation-for="Rating" class="text-danger small mt-1"></span>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label asp-for="Language" class="form-label-modern"></label>
+                        <input asp-for="Language" class="form-control form-control-modern" placeholder="Language" />
+                        <span asp-validation-for="Language" class="text-danger small mt-1"></span>
+                    </div>
+                </div>
+
+                <div class="row g-3 mt-2">
+                    <div class="col-md-6">
+                        <label asp-for="Country" class="form-label-modern"></label>
+                        <input asp-for="Country" class="form-control form-control-modern" placeholder="Country" />
+                        <span asp-validation-for="Country" class="text-danger small mt-1"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="TrailerUrl" class="form-label-modern"></label>
+                        <input asp-for="TrailerUrl" class="form-control form-control-modern" placeholder="Trailer URL" />
+                        <span asp-validation-for="TrailerUrl" class="text-danger small mt-1"></span>
+                    </div>
+                </div>
+
+                <div class="row g-3 mt-2">
+                    <div class="col-md-6">
+                        <label asp-for="CategoryId" class="form-label-modern"></label>
+                        <select asp-for="CategoryId" asp-items="Model.Categories" class="form-control form-control-modern">
+                            <option value="">Select Category</option>
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger small mt-1"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Status" class="form-label-modern"></label>
+                        <select asp-for="Status" class="form-control form-control-modern">
+                            <option value="Upcoming">Upcoming</option>
+                            <option value="NowShowing">Now Showing</option>
+                            <option value="Ended">Ended</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-3 mt-2">
+                    <div class="col-md-6">
+                        <label asp-for="Slug" class="form-label-modern"></label>
+                        <input asp-for="Slug" class="form-control form-control-modern" placeholder="movie-slug" />
+                        <span class="form-text small">Slug will be generated from title if left empty.</span>
+                        <span asp-validation-for="Slug" class="text-danger small mt-1"></span>
+                    </div>
+
+                    <div class="col-md-6 d-flex align-items-center">
+                        <div class="form-check form-switch form-switch-lg">
+                            <input asp-for="IsFeatured" class="form-check-input" />
+                            <label asp-for="IsFeatured" class="form-check-label fw-bold"></label>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="col-md-3 mb-3">
-                <label asp-for="ReleaseDate" class="form-label"></label>
-                <input asp-for="ReleaseDate" type="date" class="form-control" />
-                <span asp-validation-for="ReleaseDate" class="text-danger"></span>
-            </div>
+            <div class="col-lg-4">
+                <div class="form-section">
+                    <h4 class="section-title">Media Management</h4>
 
-            <div class="col-md-3 mb-3">
-                <label asp-for="EndDate" class="form-label"></label>
-                <input asp-for="EndDate" type="date" class="form-control" />
-                <span asp-validation-for="EndDate" class="text-danger"></span>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-3 mb-3">
-                <label asp-for="Duration" class="form-label"></label>
-                <input asp-for="Duration" type="number" class="form-control" />
-                <span asp-validation-for="Duration" class="text-danger"></span>
-            </div>
-
-            <div class="col-md-3 mb-3">
-                <label asp-for="Price" class="form-label"></label>
-                <input asp-for="Price" type="number" step="0.01" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
-            </div>
-
-            <div class="col-md-3 mb-3">
-                <label asp-for="Rating" class="form-label"></label>
-                <input asp-for="Rating" type="number" step="0.1" class="form-control" />
-                <span asp-validation-for="Rating" class="text-danger"></span>
-            </div>
-
-            <div class="col-md-3 mb-3">
-                <label asp-for="Language" class="form-label"></label>
-                <input asp-for="Language" class="form-control" />
-                <span asp-validation-for="Language" class="text-danger"></span>
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="Country" class="form-label"></label>
-            <input asp-for="Country" class="form-control" />
-            <span asp-validation-for="Country" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="TrailerUrl" class="form-label"></label>
-            <input asp-for="TrailerUrl" class="form-control" />
-            <span asp-validation-for="TrailerUrl" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="CategoryId" class="form-label"></label>
-            <select asp-for="CategoryId" asp-items="Model.Categories" class="form-control"></select>
-            <span asp-validation-for="CategoryId" class="text-danger"></span>
-        </div>
-
-        <div class="form-check form-switch mb-3">
-            <input asp-for="IsFeatured" class="form-check-input" />
-            <label asp-for="IsFeatured" class="form-check-label"></label>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="Status" class="form-label"></label>
-            <select asp-for="Status" class="form-control">
-                <option value="Upcoming">Upcoming</option>
-                <option value="NowShowing">Now Showing</option>
-                <option value="Ended">Ended</option>
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="Slug" class="form-label"></label>
-            <input asp-for="Slug" class="form-control" />
-            <span class="form-text">Slug will be generated from title if left empty.</span>
-            <span asp-validation-for="Slug" class="text-danger"></span>
-        </div>
-    </div>
-
-    <div class="col-lg-4">
-        <div class="mb-3">
-            <label class="form-label">Main Poster</label>
-            <input asp-for="MainImage" type="file" accept="image/*" class="form-control" id="mainImageInput" />
-            <span asp-validation-for="MainImage" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Current Poster</label>
-            <div>
-                @{
-                    string posterUrl = ImgManager.GetImageWebPath(ImageType.Movie, Model.Slug ?? string.Empty, Model.ExistingPosterUrl);
-                }
-                <img id="mainImagePreview" src="@posterUrl" alt="Poster" style="width:100%; object-fit:cover;" onerror="this.onerror=null;this.src='@Url.Content("~/images/defaults/movie-placeholder.png")';" />
-            </div>
-            @* keep existing poster url in hidden so it round-trips if no new upload *@
-            <input type="hidden" asp-for="ExistingPosterUrl" />
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="AdditionalImages" class="form-label">Upload Additional Images</label>
-            <input asp-for="AdditionalImages" type="file" accept="image/*" multiple class="form-control" />
-            <span asp-validation-for="AdditionalImages" class="text-danger"></span>
-        </div>
-
-        @if (Model.ExistingImageUrls != null && Model.ExistingImageUrls.Any())
-        {
-            <div class="mb-2">
-                <label class="form-label">Existing Images</label>
-                <div class="d-flex flex-wrap gap-2">
-                    @foreach (var img in Model.ExistingImageUrls)
-                    {
-                        var imgUrl = Uri.IsWellFormedUriString(img, UriKind.Absolute) ? img : ImgManager.GetImageWebPath(ImageType.Movie, Model.Slug ?? string.Empty, img);
-                        <div class="position-relative" style="width:100px;">
-                            <img src="@imgUrl" alt="img" class="img-thumbnail" style="width:100px; height:70px; object-fit:cover;" onerror="this.onerror=null;this.src='@Url.Content("~/images/defaults/placeholder.png")';" />
-                            <div class="form-check mt-1">
-                                <input type="checkbox" class="form-check-input" name="ImagesToRemove" value="@img" id="rm_@img.GetHashCode()" />
-                                <label class="form-check-label small" for="rm_@img.GetHashCode()">Remove</label>
+                    <div class="mb-4">
+                        <label class="form-label-modern">Main Poster</label>
+                        <div class="image-upload-area">
+                            <input asp-for="MainImage" type="file" accept="image/*" class="form-control" id="mainImageInput" />
+                            <div class="mt-2">
+                                <small class="text-muted">Drag & drop or click to upload</small>
                             </div>
+                        </div>
+                        <span asp-validation-for="MainImage" class="text-danger small mt-1"></span>
+                    </div>
 
-                            @* hidden input so the existing urls are posted back if not removed *@
-                            <input type="hidden" name="ExistingImageUrls" value="@img" />
+                    <div class="mb-4">
+                        <label class="form-label-modern">Current Poster</label>
+                        <div class="image-preview-container">
+                            @{
+                                string posterUrl = ImgManager.GetImageWebPath(ImageType.Movie, Model.Slug ?? string.Empty, Model.ExistingPosterUrl);
+                            }
+                            <img id="mainImagePreview" src="@posterUrl" alt="Poster" class="image-preview"
+                                 onerror="this.onerror=null;this.src='@Url.Content("~/images/defaults/movie-placeholder.png")';" />
+                        </div>
+                        <input type="hidden" asp-for="ExistingPosterUrl" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="AdditionalImages" class="form-label-modern">Additional Images</label>
+                        <div class="image-upload-area">
+                            <input asp-for="AdditionalImages" type="file" accept="image/*" multiple class="form-control" />
+                            <div class="mt-2">
+                                <small class="text-muted">Select multiple images (Ctrl+Click)</small>
+                            </div>
+                        </div>
+                        <span asp-validation-for="AdditionalImages" class="text-danger small mt-1"></span>
+                    </div>
+
+                    @if (Model.ExistingImageUrls != null && Model.ExistingImageUrls.Any())
+                    {
+                        <div class="mb-4">
+                            <label class="form-label-modern">Existing Images</label>
+                            <div class="thumbnail-grid">
+                                @foreach (var img in Model.ExistingImageUrls)
+                                {
+                                    var imgUrl = Uri.IsWellFormedUriString(img, UriKind.Absolute) ? img : ImgManager.GetImageWebPath(ImageType.Movie, Model.Slug ?? string.Empty, img);
+                                    <div class="thumbnail-item">
+                                        <img src="@imgUrl" alt="Movie image" class="thumbnail-image"
+                                             onerror="this.onerror=null;this.src='@Url.Content("~/images/defaults/placeholder.png")';" />
+                                        <div class="thumbnail-actions">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" name="ImagesToRemove" value="@img" id="rm_@img.GetHashCode()" />
+                                                <label class="form-check-label text-white small" for="rm_@img.GetHashCode()">Remove</label>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="ExistingImageUrls" value="@img" />
+                                    </div>
+                                }
+                            </div>
                         </div>
                     }
                 </div>
             </div>
-        }
+        </div>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        (function () {
-            const input = document.getElementById('mainImageInput');
-            const preview = document.getElementById('mainImagePreview');
-
-            if (input) {
-                input.addEventListener('change', (e) => {
-                    const f = input.files && input.files[0];
-                    if (!f) return;
-                    const reader = new FileReader();
-                    reader.onload = function (ev) {
-                        preview.src = ev.target.result;
-                    };
-                    reader.readAsDataURL(f);
-                });
-            }
-        })();
-    </script>
-}

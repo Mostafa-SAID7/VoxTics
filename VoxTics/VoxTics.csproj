@@ -49,8 +49,6 @@
 		<Folder Include="Areas\Admin\Views\Shared\Components\" />
 		<Folder Include="Areas\Identity\Repositories\IRepositories\" />
 		<Folder Include="Views\Shared\Components\" />
-		<Folder Include="wwwroot\css\admin\movies\" />
-		<Folder Include="wwwroot\js\admin\movies\" />
 		<Folder Include="wwwroot\lib\animate.css\" />
 		<Folder Include="wwwroot\lib\sweetalert2\" />
 		<Folder Include="wwwroot\lib\toastr\" />
