@@ -1,119 +1,140 @@
 ﻿@model VoxTics.Areas.Admin.ViewModels.Movie.MovieCreateEditViewModel
 
-<div class="row g-3">
-    <div class="col-md-6">
-        <label asp-for="Title" class="form-label"></label>
-        <input asp-for="Title" class="form-control" />
-        <span asp-validation-for="Title" class="text-danger"></span>
-    </div>
+<partial name="_NotificationPartial" />
 
-    <div class="col-md-6">
-        <label asp-for="Director" class="form-label"></label>
-        <input asp-for="Director" class="form-control" />
-        <span asp-validation-for="Director" class="text-danger"></span>
-    </div>
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+@await Html.PartialAsync("_NotificationPartial")
 
-    <div class="col-md-6">
+<div class="mb-3">
+    <label asp-for="Title" class="form-label"></label>
+    <input asp-for="Title" class="form-control" />
+    <span asp-validation-for="Title" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Description" class="form-label"></label>
+    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+    <span asp-validation-for="Description" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Director" class="form-label"></label>
+    <input asp-for="Director" class="form-control" />
+    <span asp-validation-for="Director" class="text-danger"></span>
+</div>
+
+<div class="row mb-3">
+    <div class="col">
         <label asp-for="ReleaseDate" class="form-label"></label>
-        <input asp-for="ReleaseDate" type="date" class="form-control" />
+        <input asp-for="ReleaseDate" class="form-control" type="date" />
         <span asp-validation-for="ReleaseDate" class="text-danger"></span>
     </div>
-
-    <div class="col-md-6">
+    <div class="col">
         <label asp-for="EndDate" class="form-label"></label>
-        <input asp-for="EndDate" type="date" class="form-control" />
+        <input asp-for="EndDate" class="form-control" type="date" />
         <span asp-validation-for="EndDate" class="text-danger"></span>
     </div>
+</div>
 
-    <div class="col-md-6">
+<div class="row mb-3">
+    <div class="col">
         <label asp-for="Duration" class="form-label"></label>
-        <input asp-for="Duration" class="form-control" />
+        <input asp-for="Duration" class="form-control" type="number" />
         <span asp-validation-for="Duration" class="text-danger"></span>
     </div>
-
-    <div class="col-md-6">
+    <div class="col">
         <label asp-for="Price" class="form-label"></label>
-        <input asp-for="Price" class="form-control" />
+        <input asp-for="Price" class="form-control" type="number" step="0.01" />
         <span asp-validation-for="Price" class="text-danger"></span>
     </div>
-
-    <div class="col-md-6">
+    <div class="col">
         <label asp-for="Rating" class="form-label"></label>
-        <input asp-for="Rating" class="form-control" />
+        <input asp-for="Rating" class="form-control" type="number" step="0.1" />
         <span asp-validation-for="Rating" class="text-danger"></span>
     </div>
+</div>
 
-    <div class="col-md-6">
+<div class="row mb-3">
+    <div class="col">
         <label asp-for="Language" class="form-label"></label>
         <input asp-for="Language" class="form-control" />
         <span asp-validation-for="Language" class="text-danger"></span>
     </div>
-
-    <div class="col-md-6">
+    <div class="col">
         <label asp-for="Country" class="form-label"></label>
         <input asp-for="Country" class="form-control" />
         <span asp-validation-for="Country" class="text-danger"></span>
     </div>
-    <div class="col-md-6">
-        <label asp-for="CategoryId" class="form-label"></label>
-        <select asp-for="CategoryId" class="form-select" asp-items="Model.Categories">
-            <option value="">-- Select Category --</option>
-        </select>
-        <span asp-validation-for="CategoryId" class="text-danger"></span>
-    </div>
-
-    <div class="col-md-12">
-        <label asp-for="Description" class="form-label"></label>
-        <textarea asp-for="Description" class="form-control" rows="5"></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
-
-    <div class="col-md-6">
-        <label asp-for="MainImage" class="form-label"></label>
-        <input asp-for="MainImage" type="file" class="form-control" />
-        <span asp-validation-for="MainImage" class="text-danger"></span>
-
-        @* Show existing poster if available *@
-        @if (!string.IsNullOrEmpty(Model.ExistingPosterUrl))
-        {
-            <img src="~/uploads/movies/@Model.ExistingPosterUrl" width="120" class="mt-2" />
-        }
-    </div>
-
-    <div class="col-md-6">
-        <label asp-for="TrailerUrl" class="form-label"></label>
-        <input asp-for="TrailerUrl" class="form-control" />
-        <span asp-validation-for="TrailerUrl" class="text-danger"></span>
-    </div>
-
-    <div class="col-md-12">
-        <label asp-for="AdditionalImages" class="form-label"></label>
-        <input asp-for="AdditionalImages" type="file" class="form-control" multiple />
-        <span asp-validation-for="AdditionalImages" class="text-danger"></span>
-
-        @if (Model.ExistingImageUrls != null && Model.ExistingImageUrls.Count > 0)
-        {
-            <div class="mt-2">
-                @foreach (var img in Model.ExistingImageUrls)
-                {
-                    <img src="~/uploads/movies/@img" width="100" class="me-2 mb-2" />
-                }
-            </div>
-        }
-    </div>
-
-    <div class="col-md-6">
-        <label asp-for="Status" class="form-label"></label>
-        <select asp-for="Status" class="form-select">
-            <option value="Upcoming">Upcoming</option>
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-        </select>
-        <span asp-validation-for="Status" class="text-danger"></span>
-    </div>
-
-    <div class="col-md-6 form-check mt-4">
-        <input asp-for="IsFeatured" class="form-check-input" type="checkbox" />
-        <label asp-for="IsFeatured" class="form-check-label"></label>
-    </div>
 </div>
+
+<div class="mb-3">
+    <label asp-for="MainImage" class="form-label"></label>
+    <input asp-for="MainImage" type="file" class="form-control" />
+
+    <!-- Preview existing or default image -->
+    @if (!string.IsNullOrWhiteSpace(Model.ExistingPosterUrl))
+    {
+        <div class="mt-2">
+            <img src="@Model.ExistingPosterUrl" alt="@Model.Title" width="80" class="rounded" />
+        </div>
+    }
+    else
+    {
+        <div class="mt-2">
+            <img src="/images/defaults/movie-placeholder.png" alt="Default Poster" width="80" class="rounded" />
+        </div>
+    }
+
+    <span asp-validation-for="MainImage" class="text-danger"></span>
+</div>
+
+
+<div class="mb-3">
+    <label asp-for="AdditionalImages" class="form-label"></label>
+    <input asp-for="AdditionalImages" type="file" class="form-control" multiple />
+    @if (Model.ExistingImageUrls?.Count > 0)
+    {
+        <div class="mt-2 d-flex flex-wrap gap-2">
+            @foreach (var img in Model.ExistingImageUrls)
+            {
+                <img src="@img" alt="Additional" width="80" class="rounded" />
+            }
+        </div>
+    }
+</div>
+
+<div class="mb-3">
+    <label asp-for="TrailerUrl" class="form-label"></label>
+    <input asp-for="TrailerUrl" class="form-control" />
+    <span asp-validation-for="TrailerUrl" class="text-danger"></span>
+</div>
+
+<div class="mb-3 form-check">
+    <input asp-for="IsFeatured" class="form-check-input" />
+    <label asp-for="IsFeatured" class="form-check-label"></label>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Status" class="form-label"></label>
+    <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<VoxTics.Models.Enums.MovieStatus>()"></select>
+    <span asp-validation-for="Status" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Slug" class="form-label"></label>
+    <input asp-for="Slug" class="form-control" />
+    <span asp-validation-for="Slug" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="CategoryId" class="form-label"></label>
+    <select asp-for="CategoryId" class="form-select" asp-items="Model.Categories"></select>
+    <span asp-validation-for="CategoryId" class="text-danger"></span>
+</div>
+
+<button type="submit" class="btn btn-primary">Save</button>
+<a asp-action="Index" class="btn btn-secondary">Cancel</a>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

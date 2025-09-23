@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "Page Not Found";
+}
+
+
+
+<div class="notfound-container">
+    <div id="lottie-animation"></div>
+    <h1 class="floating">404</h1>
+    <h2>Oops! Page Not Found</h2>
+    <p>The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.</p>
+    <a asp-controller="Home" asp-action="Index">Go to Homepage</a>
+</div>
+
+@section Scripts{
+    <script src="~/js/notfound.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.9.6/lottie.min.js" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+        // Load Lottie animation
+        const animation = lottie.loadAnimation({
+            container: document.getElementById('lottie-animation'),
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            path: 'https://assets10.lottiefiles.com/packages/lf20_j1adxtyb.json' // free 404 animation
+        });
+
+        // Animate the 404 text with GSAP
+        gsap.from(".container h1", { duration: 1, y: -50, opacity: 0, ease: "bounce.out" });
+        gsap.from(".container h2", { duration: 1, y: 30, opacity: 0, delay: 0.3 });
+        gsap.from(".container p", { duration: 1, y: 20, opacity: 0, delay: 0.6 });
+        gsap.from(".btn-home", { duration: 1, y: 20, opacity: 0, delay: 0.9 });
+    </script>
+}
+@section Styles{
+    <link rel="stylesheet" href="~/css/notfound.css" />
+}

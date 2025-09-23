@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using VoxTics.Areas.Admin.ViewModels.Admin;
@@ -7,6 +8,8 @@ using VoxTics.Services.Interfaces;
 namespace VoxTics.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = $"{SD.SuperAdminRole}")]
+
     public class HomeController : Controller
     {
         private readonly IDashboardService _dashboardService;

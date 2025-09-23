@@ -60,7 +60,7 @@ namespace VoxTics.Services.Implementations
             foreach (var vm in vmList)
             {
                 if (!string.IsNullOrEmpty(vm.MainImageUrl))
-                    vm.MainImageUrl = _imgManager.GetImageUrl(ImageType.Movie, vm.Slug, vm.MainImageUrl).ToString();
+                    vm.MainImageUrl = _imgManager.GetImageWebPath(ImageType.Movie, vm.Slug, vm.MainImageUrl).ToString();
             }
 
             return new PaginatedList<MovieVM>(vmList, pagedMovies.TotalCount, pageIndex, pageSize);
@@ -83,18 +83,18 @@ namespace VoxTics.Services.Implementations
 
             // Populate all image URLs
             if (!string.IsNullOrEmpty(movie.MainImage))
-                vm.MainImageUrl = _imgManager.GetImageUrl(ImageType.Movie, movie.Slug, movie.MainImage).ToString();
+                vm.MainImageUrl = _imgManager.GetImageWebPath(ImageType.Movie, movie.Slug, movie.MainImage).ToString();
 
             foreach (var imgVm in vm.VariantImages)
             {
-                imgVm.Url = _imgManager.GetImageUrl(ImageType.Movie, movie.Slug, imgVm.FileName).ToString();
+                imgVm.Url = _imgManager.GetImageWebPath(ImageType.Movie, movie.Slug, imgVm.FileName).ToString();
             }
 
             // Actor images
             foreach (var actor in vm.Actors)
             {
                 if (!string.IsNullOrEmpty(actor.ImageUrl))
-                    actor.ImageUrl = _imgManager.GetImageUrl(ImageType.Actor, actor.Id.ToString(), actor.ImageUrl).ToString();
+                    actor.ImageUrl = _imgManager.GetImageWebPath(ImageType.Actor, actor.Id.ToString(), actor.ImageUrl).ToString();
             }
             return vm;
         }
@@ -113,7 +113,7 @@ namespace VoxTics.Services.Implementations
             foreach (var vm in vmList)
             {
                 if (!string.IsNullOrEmpty(vm.MainImageUrl))
-                    vm.MainImageUrl = _imgManager.GetImageUrl(ImageType.Movie, vm.Slug, vm.MainImageUrl).ToString();
+                    vm.MainImageUrl = _imgManager.GetImageWebPath(ImageType.Movie, vm.Slug, vm.MainImageUrl).ToString();
             }
 
             return vmList;

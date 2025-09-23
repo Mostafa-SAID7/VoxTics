@@ -1,59 +1,275 @@
 ﻿@model VoxTics.Helpers.PaginatedList<VoxTics.Models.ViewModels.Movie.MovieVM>
-
 @{
     ViewData["Title"] = "Movies";
 }
 
-<h2>Movies</h2>
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h2>Movies Collection</h2>
+        <p class="lead">Discover and book your favorite movies</p>
+    </div>
+</div>
 
-<form asp-action="Index" method="get" class="mb-3">
-    <input type="text" name="search" value="@ViewData["CurrentSearch"]" placeholder="Search..." />
-    <button type="submit">Search</button>
-</form>
+<!-- Search Section -->
+<div class="search-container">
+    <form asp-action="Index" method="get" class="search-form">
+        <input type="text" 
+               name="search" 
+               value="@ViewData["CurrentSearch"]" 
+               placeholder="Search movies by title, category..." 
+               class="search-input"
+               autocomplete="off"
+               data-tooltip="Press Ctrl+F to focus search" />
+        <button type="submit" class="search-btn">
+            Search
+        </button>
+    </form>
+</div>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>
-                <a asp-action="Index" asp-route-sortColumn="Title" asp-route-sortDesc="@(ViewData["SortDesc"] != null && (bool)ViewData["SortDesc"] == true ? false : true)">
-                    Title
-                </a>
-            </th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Rating</th>
-            <th>Main Image</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
+<!-- Sort Controls -->
+<div class="sort-controls">
+    <a asp-action="Index" 
+       asp-route-sortColumn="Title" 
+       asp-route-sortDesc="@(ViewData["SortColumn"]?.ToString() == "Title" && ViewData["SortDesc"] != null && (bool)ViewData["SortDesc"] == false ? true : false)"
+       asp-route-search="@ViewData["CurrentSearch"]"
+       class="sort-btn @(ViewData["SortColumn"]?.ToString() == "Title" ? "active" : "")">
+        Sort by Title @(ViewData["SortColumn"]?.ToString() == "Title" ? (ViewData["SortDesc"] != null && (bool)ViewData["SortDesc"] ? "↓" : "↑") : "")
+    </a>
+    <a asp-action="Index" 
+       asp-route-sortColumn="Price" 
+       asp-route-sortDesc="@(ViewData["SortColumn"]?.ToString() == "Price" && ViewData["SortDesc"] != null && (bool)ViewData["SortDesc"] == false ? true : false)"
+       asp-route-search="@ViewData["CurrentSearch"]"
+       class="sort-btn @(ViewData["SortColumn"]?.ToString() == "Price" ? "active" : "")">
+        Sort by Price @(ViewData["SortColumn"]?.ToString() == "Price" ? (ViewData["SortDesc"] != null && (bool)ViewData["SortDesc"] ? "↓" : "↑") : "")
+    </a>
+    <a asp-action="Index" 
+       asp-route-sortColumn="Rating" 
+       asp-route-sortDesc="@(ViewData["SortColumn"]?.ToString() == "Rating" && ViewData["SortDesc"] != null && (bool)ViewData["SortDesc"] == false ? true : false)"
+       asp-route-search="@ViewData["CurrentSearch"]"
+       class="sort-btn @(ViewData["SortColumn"]?.ToString() == "Rating" ? "active" : "")">
+        Sort by Rating @(ViewData["SortColumn"]?.ToString() == "Rating" ? (ViewData["SortDesc"] != null && (bool)ViewData["SortDesc"] ? "↓" : "↑") : "")
+    </a>
+</div>
+
+<!-- Movies Grid -->
+<div class="movies-grid">
+    @if (Model.Items.Any())
+    {
         @foreach (var movie in Model.Items)
         {
-            <tr>
-                <td>@movie.Title</td>
-                <td>@movie.CategoryName</td>
-                <td>@movie.Price.ToString("C")</td>
-                <td>@(movie.Rating?.ToString("0.0") ?? "-")</td>
-                <td>
-                    <img src="@movie.MainImageUrl" alt="@movie.Title" width="80" />
-                </td>
-                <td>
-                    <a class="btn btn-success" asp-controller="Bookings" asp-action="Create" asp-route-movieId="@movie.Id">Book Now</a>
-
-                    <a asp-action="Details" asp-route-id="@movie.Id" class="btn btn-sm btn-primary">Details</a>
-                </td>
-            </tr>
+            <div class="movie-card" data-movie-id="@movie.Id">
+                <!-- Movie Image Container -->
+                <div class="movie-image-container">
+                    <img src="@movie.MainImageUrl" 
+                         alt="@movie.Title" 
+                         class="movie-image"
+                         loading="lazy"
+                         onerror="this.src='/images/defaults/placeholder.png';" />
+                    
+                    <!-- Hover Overlay -->
+                    <div class="movie-overlay">
+                        <div class="overlay-actions">
+                            <a class="overlay-btn" 
+                               asp-controller="Bookings" 
+                               asp-action="Create" 
+                               asp-route-movieId="@movie.Id">
+                                Book Now
+                            </a>
+                            <a class="overlay-btn" 
+                               asp-action="Details" 
+                               asp-route-id="@movie.Id">
+                                Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Card Content -->
+                <div class="movie-content">
+                    <h3 class="movie-title">@movie.Title</h3>
+                    
+                    <span class="movie-category">@movie.CategoryName</span>
+                    
+                    <!-- Movie Details -->
+                    <div class="movie-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Price</span>
+                            <span class="detail-value price">@movie.Price.ToString("C")</span>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <span class="detail-label">Rating</span>
+                            @if (movie.Rating.HasValue)
+                            {
+                                <span class="detail-value rating">@movie.Rating.Value.ToString("0.0")</span>
+                            }
+                            else
+                            {
+                                <span class="detail-value">Not rated</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Card Actions -->
+                <div class="card-actions">
+                    <a class="btn-book" 
+                       asp-controller="Bookings" 
+                       asp-action="Create" 
+                       asp-route-movieId="@movie.Id"
+                       data-tooltip="Book tickets for @movie.Title">
+                        Book Now
+                    </a>
+                    <a class="btn-details" 
+                       asp-action="Details" 
+                       asp-route-id="@movie.Id"
+                       data-tooltip="View details">
+                        Details
+                    </a>
+                </div>
+            </div>
         }
-    </tbody>
-</table>
+    }
+    else
+    {
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-icon">🎬</div>
+            <h3>No movies found</h3>
+            <p>@(ViewData["CurrentSearch"] != null ? "We couldn't find any movies matching your search. Try different keywords or browse all movies." : "No movies are currently available. Please check back later!")</p>
+            @if (ViewData["CurrentSearch"] != null)
+            {
+                <a asp-action="Index" class="btn-book">Browse All Movies</a>
+            }
+        </div>
+    }
+</div>
 
-<nav>
-    <ul class="pagination">
-        @for (int i = 1; i <= Model.TotalPages; i++)
-        {
-            <li class="page-item @(i == Model.PageIndex ? "active" : "")">
-                <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-pageSize="@Model.PageSize" asp-route-search="@ViewData["CurrentSearch"]" asp-route-sortColumn="@ViewData["CurrentSort"]" asp-route-sortDesc="@ViewData["SortDesc"]">@i</a>
-            </li>
-        }
-    </ul>
-</nav>
+<!-- Pagination -->
+@if (Model.TotalPages > 1)
+{
+    <div class="pagination-container">
+        <nav aria-label="Movie pagination">
+            <ul class="pagination">
+                @if (Model.PageIndex > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" 
+                           asp-action="Index" 
+                           asp-route-page="@(Model.PageIndex - 1)" 
+                           asp-route-pageSize="@Model.PageSize" 
+                           asp-route-search="@ViewData["CurrentSearch"]" 
+                           asp-route-sortColumn="@ViewData["SortColumn"]" 
+                           asp-route-sortDesc="@ViewData["SortDesc"]"
+                           data-tooltip="Previous page">
+                            ‹ Prev
+                        </a>
+                    </li>
+                }
+                
+                @{
+                    var startPage = Math.Max(1, Model.PageIndex - 2);
+                    var endPage = Math.Min(Model.TotalPages, Model.PageIndex + 2);
+                }
+                
+                @if (startPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" 
+                           asp-action="Index" 
+                           asp-route-page="1" 
+                           asp-route-pageSize="@Model.PageSize" 
+                           asp-route-search="@ViewData["CurrentSearch"]" 
+                           asp-route-sortColumn="@ViewData["SortColumn"]" 
+                           asp-route-sortDesc="@ViewData["SortDesc"]">
+                            1
+                        </a>
+                    </li>
+                    @if (startPage > 2)
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    }
+                }
+                
+                @for (int i = startPage; i <= endPage; i++)
+                {
+                    <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                        <a class="page-link" 
+                           asp-action="Index" 
+                           asp-route-page="@i" 
+                           asp-route-pageSize="@Model.PageSize" 
+                           asp-route-search="@ViewData["CurrentSearch"]" 
+                           asp-route-sortColumn="@ViewData["SortColumn"]" 
+                           asp-route-sortDesc="@ViewData["SortDesc"]"
+                           data-tooltip="Page @i">
+                            @i
+                        </a>
+                    </li>
+                }
+                
+                @if (endPage < Model.TotalPages)
+                {
+                    @if (endPage < Model.TotalPages - 1)
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    }
+                    <li class="page-item">
+                        <a class="page-link" 
+                           asp-action="Index" 
+                           asp-route-page="@Model.TotalPages" 
+                           asp-route-pageSize="@Model.PageSize" 
+                           asp-route-search="@ViewData["CurrentSearch"]" 
+                           asp-route-sortColumn="@ViewData["SortColumn"]" 
+                           asp-route-sortDesc="@ViewData["SortDesc"]">
+                            @Model.TotalPages
+                        </a>
+                    </li>
+                }
+                
+                @if (Model.PageIndex < Model.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link" 
+                           asp-action="Index" 
+                           asp-route-page="@(Model.PageIndex + 1)" 
+                           asp-route-pageSize="@Model.PageSize" 
+                           asp-route-search="@ViewData["CurrentSearch"]" 
+                           asp-route-sortColumn="@ViewData["SortColumn"]" 
+                           asp-route-sortDesc="@ViewData["SortDesc"]"
+                           data-tooltip="Next page">
+                            Next ›
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+        
+        <!-- Results Info -->
+        <div class="results-info">
+            Showing @((Model.PageIndex - 1) * Model.PageSize + 1) to @Math.Min(Model.PageIndex * Model.PageSize, Model.TotalCount) 
+            of @Model.TotalCount movies
+            @if (ViewData["CurrentSearch"] != null)
+            {
+                <span>for "@ViewData["CurrentSearch"]"</span>
+            }
+        </div>
+    </div>
+}
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loader"></div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/main/movie.css" />
+}
+
+@section Scripts {
+    <script src="~/js/main/movie.js"></script>
+}

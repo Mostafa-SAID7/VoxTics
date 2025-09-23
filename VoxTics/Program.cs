@@ -1,18 +1,23 @@
+using ECommerce516.Utitlity.DBInitializer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Stripe;
-using VoxTics.Areas.Identity.Models.Entities;
-using VoxTics.Data;
-using VoxTics.Extensions;
+using VoxTics;
 using VoxTics.Helpers.booking;
-using VoxTics.Models.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Load configuration
 var configuration = builder.Configuration;
 
+builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>)); 
+builder.Services.AddScoped<IAdminMoviesRepository, AdminMoviesRepository>();     
+builder.Services.AddScoped<IAdminMovieService, AdminMovieService>();            
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();                           
+builder.Services.AddAutoMapper(typeof(AdminMovieProfile));
+
 // Database context
+builder.Services.AddScoped<IDBInitializer, DBInitializer>();
+
 builder.Services.AddDbContext<MovieDbContext>(options =>
     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
@@ -31,14 +36,14 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
 // Register custom services, repositories, UnitOfWork, etc.
-builder.Services.AddApplicationServices(configuration);
+builder.Services.AddVoxTicsServices(builder.Configuration);
 
 // AutoMapper profiles (if your profiles are in the same assembly)
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.ConfigureApplicationCookie(option =>
 {
     option.LoginPath = "/Identity/Account/Login";
-    option.AccessDeniedPath = "/Customer/Home/NotFoundPage";
+    option.AccessDeniedPath = "/Shared/AccessDenied";
 });
 
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
@@ -51,6 +56,7 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
+app.UseStatusCodePagesWithReExecute("/Shared/NotFound");
 }
 
 app.UseHttpsRedirection();
@@ -60,6 +66,9 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+var scope = app.Services.CreateScope();
+var service = scope.ServiceProvider.GetService<IDBInitializer>();
+service.Initialize();
 // Area routing
 app.MapControllerRoute(
     name: "areas",

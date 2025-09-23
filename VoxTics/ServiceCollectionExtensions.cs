@@ -1,40 +1,17 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System.Configuration;
-using VoxTics.Areas.Admin.AdminProfiles;
-using VoxTics.Areas.Admin.MappingProfiles;
-using VoxTics.Areas.Admin.Profiles;
-using VoxTics.Areas.Admin.Repositories;
-using VoxTics.Areas.Admin.Repositories.IRepositories;
-using VoxTics.Areas.Admin.Services.Implementations;
-using VoxTics.Areas.Admin.Services.Interfaces;
-using VoxTics.Areas.Identity.IdentityProfiles;
-using VoxTics.Areas.Identity.Models.Entities;
-using VoxTics.Areas.Identity.Services;
-using VoxTics.Data.UoW;
-using VoxTics.Helpers.ImgsHelper;
-using VoxTics.MappingProfiles;
-using VoxTics.Repositories;
-using VoxTics.Repositories.IRepositories;
-using VoxTics.Services;
-using VoxTics.Services.Implementations;
-using VoxTics.Services.Interfaces;
-using VoxTics.Services.IServices;
-
-namespace VoxTics.Extensions
+﻿
+namespace VoxTics
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
+        public static IServiceCollection AddVoxTicsServices(this IServiceCollection services, IConfiguration config)
         {
-            // Unit of Work
+            // 🟢 Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            // General Repositories
+            // 🟢 Generic Repository Registration
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
 
+            // 🟢 General Repositories
             services.AddScoped<IBookingRepository, BookingRepository>();
             services.AddScoped<ICategoriesRepository, CategoriesRepository>();
             services.AddScoped<ICinemasRepository, CinemasRepository>();
@@ -42,18 +19,26 @@ namespace VoxTics.Extensions
             services.AddScoped<IShowtimesRepository, ShowtimesRepository>();
             services.AddScoped<IHomeRepository, HomeRepository>();
 
-            // Identity Repositories
+            // 🟢 Identity Repositories
             services.AddScoped<IBaseRepository<UserOTP>, BaseRepository<UserOTP>>();
 
-            // Admin Repositories
+            // 🟢 Admin Repositories
+            services.AddScoped<IAdminMoviesRepository, AdminMoviesRepository>();
             services.AddScoped<IAdminBookingsRepository, AdminBookingsRepository>();
             services.AddScoped<IAdminCategoriesRepository, AdminCategoriesRepository>();
             services.AddScoped<IAdminCinemasRepository, AdminCinemasRepository>();
-            services.AddScoped<IAdminMoviesRepository, AdminMoviesRepository>();
             services.AddScoped<IAdminShowtimesRepository, AdminShowtimesRepository>();
             services.AddScoped<IDashboardRepository, DashboardRepository>();
 
-            // General Services
+            // 🟢 Admin Services
+            services.AddScoped<IAdminBookingsService, AdminBookingsService>();
+            services.AddScoped<IAdminCategoryService, AdminCategoryService>();
+            services.AddScoped<IAdminCinemaService, AdminCinemaService>();
+            services.AddScoped<IDashboardService, DashboardService>();
+            services.AddScoped<IAdminMovieService, AdminMovieService>();
+            services.AddScoped<IAdminShowtimeService, AdminShowtimeService>();
+
+            // 🟢 General Services
             services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<ICinemaService, CinemaService>();
@@ -62,45 +47,31 @@ namespace VoxTics.Extensions
             services.AddScoped<IShowtimeService, ShowtimeService>();
             services.AddScoped<ICartService, CartService>();
 
-            //Helpers
-            services.AddTransient<IEmailSender, EmailSender>();
-            services.AddSingleton<ImageManager>();
-            // Identity Services
-            services.Configure<ImageSettings>(config.GetSection("ImageSettings"));
-
-
-            // Admin Services
-            services.AddScoped<IAdminBookingsService, AdminBookingsService>();
-            services.AddScoped<IAdminCategoryService, AdminCategoryService>();
-            services.AddScoped<IAdminCinemaService, AdminCinemaService>();
-            services.AddScoped<IDashboardService, DashboardService>();
-            services.AddScoped<IAdminMovieService, AdminMovieService>();
-            services.AddScoped<IAdminShowtimeService, AdminShowtimeService>();
-
-
-            // AutoMapper Mapping Profiles
+            // 🟢 AutoMapper Mapping Profiles
             services.AddAutoMapper(cfg =>
             {
-                // General
+                // 🔹 General Profiles
                 cfg.AddProfile<BookingProfile>();
                 cfg.AddProfile<CategoryProfile>();
                 cfg.AddProfile<CinemaProfile>();
                 cfg.AddProfile<MovieProfile>();
                 cfg.AddProfile<ShowtimeProfile>();
 
-                // Admin
+                // 🔹 Admin Profiles
                 cfg.AddProfile<BookingAdminProfile>();
                 cfg.AddProfile<CategoryAdminProfile>();
                 cfg.AddProfile<CinemaAdminProfile>();
                 cfg.AddProfile<AdminMovieProfile>();
                 cfg.AddProfile<ShowtimeAdminProfile>();
 
-                // Identity
+                // 🔹 Identity Profiles
                 cfg.AddProfile<AccountProfile>();
             });
 
-            // Helpers or utilities can also be added here if they need DI
-            // services.AddTransient<ImageHelper>();
+            // 🟢 Helpers & Settings
+            services.AddTransient<IEmailSender, EmailSender>();
+            services.Configure<ImageSettings>(config.GetSection("ImageSettings"));
+            services.AddSingleton<ImageManager>();
 
             return services;
         }

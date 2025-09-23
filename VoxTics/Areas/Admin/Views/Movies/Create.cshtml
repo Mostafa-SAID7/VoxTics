@@ -1,81 +1,14 @@
 ﻿@model VoxTics.Areas.Admin.ViewModels.Movie.MovieCreateEditViewModel
 @{
-    ViewData["Title"] = "Add Movie";
+    ViewData["Title"] = "Create Movie";
 }
 
-<div class="container py-4">
-    <h2 class="mb-3">Add Movie</h2>
+<h1>@ViewData["Title"]</h1>
 
-    <form asp-action="Create" method="post" enctype="multipart/form-data">
-        @Html.AntiForgeryToken()
-        <div class="row g-3">
-            <div class="col-md-6">
-                <label asp-for="Title" class="form-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
+<!-- Notifications -->
+<partial name="_NotificationPartial" />
 
-            <div class="col-md-6">
-                <label asp-for="Director" class="form-label"></label>
-                <input asp-for="Director" class="form-control" />
-                <span asp-validation-for="Director" class="text-danger"></span>
-            </div>
-
-            <div class="col-md-6">
-                <label asp-for="ReleaseDate" class="form-label"></label>
-                <input asp-for="ReleaseDate" class="form-control" type="date" />
-                <span asp-validation-for="ReleaseDate" class="text-danger"></span>
-            </div>
-
-            <div class="col-md-6">
-                <label asp-for="Price" class="form-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
-            </div>
-
-            <div class="col-md-6">
-                <label asp-for="Duration" class="form-label"></label>
-                <input asp-for="Duration" class="form-control" />
-                <span asp-validation-for="Duration" class="text-danger"></span>
-            </div>
-
-            <div class="col-md-6">
-                <label asp-for="CategoryId" class="form-label"></label>
-                <select asp-for="CategoryId" class="form-select">
-                    <option value="">-- Select Category --</option>
-                    @* Populate categories dynamically *@
-                </select>
-                <span asp-validation-for="CategoryId" class="text-danger"></span>
-            </div>
-
-            <div class="col-md-12">
-                <label asp-for="Description" class="form-label"></label>
-                <textarea asp-for="Description" class="form-control" rows="5"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-
-            <div class="col-md-6">
-                <label asp-for="MainImage" class="form-label"></label>
-                <input asp-for="MainImage" type="file" class="form-control" />
-                <span asp-validation-for="MainImage" class="text-danger"></span>
-            </div>
-
-            <div class="col-md-6">
-                <label asp-for="TrailerUrl" class="form-label"></label>
-                <input asp-for="TrailerUrl" class="form-control" />
-                <span asp-validation-for="TrailerUrl" class="text-danger"></span>
-            </div>
-
-            <div class="col-md-12">
-                <button type="submit" class="btn btn-success">Save Movie</button>
-                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-            </div>
-        </div>
-    </form>
-</div>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    @await Html.PartialAsync("_MovieForm", Model)
+</form>

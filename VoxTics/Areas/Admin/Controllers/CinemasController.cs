@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using VoxTics.Areas.Admin.ViewModels.Cinema;
 using VoxTics.Models.Entities;
 using VoxTics.Services.Interfaces;
@@ -10,6 +11,8 @@ using VoxTics.Services.Interfaces;
 namespace VoxTics.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = $"{SD.SuperAdminRole}")]
+
     public class CinemasController : Controller
     {
         private readonly IAdminCinemaService _cinemaService;

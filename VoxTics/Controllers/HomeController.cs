@@ -67,7 +67,11 @@ namespace VoxTics.Controllers
 
             return View(model);
         }
+        public IActionResult NotFoundPage()
+        {
+            Response.StatusCode = 404;
+            return View("NotFound");
+        }
 
-        
     }
 }

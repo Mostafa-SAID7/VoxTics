@@ -65,7 +65,6 @@ namespace VoxTics.Areas.Admin.ViewModels.Movie
         public List<IFormFile>? AdditionalImages { get; set; }
 
         public List<string> ExistingImageUrls { get; set; } = new();
-
         
     }
 }

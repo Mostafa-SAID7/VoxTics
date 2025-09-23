@@ -8,7 +8,7 @@ using VoxTics.Areas.Admin.ViewModels.Booking;
 namespace VoxTics.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = $"{SD.SuperAdminRole}")]
     public class BookingsController : Controller
     {
         private readonly IAdminBookingsService _bookingService;

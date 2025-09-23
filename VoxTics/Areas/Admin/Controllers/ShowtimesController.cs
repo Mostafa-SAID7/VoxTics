@@ -1,13 +1,16 @@
-﻿using System.Linq;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using VoxTics.Models.Entities;
 using VoxTics.Services.Interfaces;
 
 namespace VoxTics.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = $"{SD.SuperAdminRole}")]
+
     public class ShowtimesController : Controller
     {
         private readonly IAdminShowtimeService _showtimeService;

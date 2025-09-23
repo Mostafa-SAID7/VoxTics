@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using VoxTics.Areas.Admin.ViewModels.Movie;
 using VoxTics.Models.Entities;
+using System.Linq;
 
 namespace VoxTics.Areas.Admin.Profiles
 {
@@ -17,15 +18,16 @@ namespace VoxTics.Areas.Admin.Profiles
             // 🔹 Entity -> Detail VM
             CreateMap<Movie, MovieDetailViewModel>()
                 .ForMember(dest => dest.MainImageUrl, opt => opt.MapFrom(src => src.MainImage))
-                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name));
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name))
+                .ForMember(dest => dest.AdditionalImageUrls, opt => opt.MapFrom(src => src.MovieImages.Select(mi => mi.ImageUrl).ToList()));
 
-            // Create/Edit VM -> Entity
+            // 🔹 Create/Edit VM -> Entity
             CreateMap<MovieCreateEditViewModel, Movie>()
-                .ForMember(dest => dest.MainImage, opt => opt.Ignore())
-                .ForMember(dest => dest.MovieImages, opt => opt.Ignore())
-                .ForMember(dest => dest.Slug, opt => opt.Ignore());
+                .ForMember(dest => dest.MainImage, opt => opt.Ignore())        // handled separately
+                .ForMember(dest => dest.MovieImages, opt => opt.Ignore())     // handled separately
+                .ForMember(dest => dest.Slug, opt => opt.Ignore());           // generated separately
 
-            // Entity -> Create/Edit VM (for editing)
+            // 🔹 Entity -> Create/Edit VM (for editing)
             CreateMap<Movie, MovieCreateEditViewModel>()
                 .ForMember(dest => dest.MainImage, opt => opt.Ignore())
                 .ForMember(dest => dest.ExistingPosterUrl, opt => opt.MapFrom(src => src.MainImage))

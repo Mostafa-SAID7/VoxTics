@@ -13,5 +13,7 @@ namespace VoxTics.Areas.Admin.ViewModels.Movie
         public bool IsFeatured { get; set; }
         public string? MainImageUrl { get; set; }
         public int ShowtimeCount { get; set; }
+        public string Slug { get; set; } = string.Empty;
+
     }
 }

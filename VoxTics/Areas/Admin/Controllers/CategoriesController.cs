@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading;
 using System.Threading.Tasks;
 using VoxTics.Areas.Admin.ViewModels.Category;
@@ -8,6 +9,8 @@ using VoxTics.Services.Interfaces;
 namespace VoxTics.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = $"{SD.SuperAdminRole}")]
+
     public class CategoriesController : Controller
     {
         private readonly IAdminCategoryService _categoryService;

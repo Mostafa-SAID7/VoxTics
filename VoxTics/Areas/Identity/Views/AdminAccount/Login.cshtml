@@ -1,0 +1,30 @@
+﻿@model VoxTics.Areas.Identity.Models.ViewModels.LoginVM
+@{
+    ViewData["Title"] = "Admin Login";
+}
+
+<h2>Admin Login</h2>
+<p>Email : SuperAdmin@gamil.com</p>
+<p>Password : Admin123$</p>
+<form asp-action="Login" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="EmailORUserName"></label>
+        <input asp-for="EmailORUserName" class="form-control" />
+        <span asp-validation-for="EmailORUserName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" type="password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <div class="form-check">
+        <input asp-for="RememberMe" class="form-check-input" />
+        <label asp-for="RememberMe" class="form-check-label"></label>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Login</button>
+</form>

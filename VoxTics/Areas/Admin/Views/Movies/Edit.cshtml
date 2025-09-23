@@ -1,34 +1,9 @@
 ﻿@model VoxTics.Areas.Admin.ViewModels.Movie.MovieCreateEditViewModel
-@{
-    ViewData["Title"] = "Edit Movie";
-}
 
-<div class="container py-4">
-    <h2 class="mb-3">Edit Movie</h2>
+<h1>@ViewData["Title"]</h1>
+<partial name="_NotificationPartial" />
 
-    <form asp-action="Edit" method="post" enctype="multipart/form-data">
-        @Html.AntiForgeryToken()
-        <input type="hidden" asp-for="Id" />
-
-        @* Fields are same as Create.cshtml *@
-        @* You can reuse the same markup, optionally showing existing poster *@
-        <div class="mb-3">
-            @if (!string.IsNullOrEmpty(Model.ExistingPosterUrl))
-            {
-                <img src="~/uploads/movies/@Model.ExistingPosterUrl" width="120" class="mb-2" />
-            }
-        </div>
-
-        @* Include all the same inputs as Create.cshtml *@
-        @await Html.PartialAsync("_MovieForm", Model)
-
-        <button type="submit" class="btn btn-primary">Update Movie</button>
-        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-    </form>
-</div>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
+<form asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    @await Html.PartialAsync("_MovieForm", Model)
+</form>

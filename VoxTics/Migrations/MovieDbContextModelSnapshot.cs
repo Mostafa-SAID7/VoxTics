@@ -257,8 +257,8 @@ namespace VoxTics.Migrations
                             Id = "user1",
                             AccessFailedCount = 0,
                             Address = "",
-                            ConcurrencyStamp = "f14fab1d-a8be-4154-a98d-7f634b2e68e2",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 33, 999, DateTimeKind.Utc).AddTicks(4127),
+                            ConcurrencyStamp = "e1d9a557-57f0-41e9-8685-d3df6acb8a12",
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 8, 968, DateTimeKind.Utc).AddTicks(6660),
                             Email = "user1@example.com",
                             EmailConfirmed = true,
                             Gender = 0,
@@ -266,7 +266,7 @@ namespace VoxTics.Migrations
                             Name = "",
                             NormalizedEmail = "USER1@EXAMPLE.COM",
                             NormalizedUserName = "USER1@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOak2MH4R8ynq+48ZaswmOLu2mqQEpVthSmTx7CwvWpSiwKzkyFiNb6OEmrAD1J4nQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBbLbnm97tfDvR/pXrd9dnEj10j1/5K74vvyKCj72HXdjsCZezJIA21q1IVIXkSd/g==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -277,8 +277,8 @@ namespace VoxTics.Migrations
                             Id = "user2",
                             AccessFailedCount = 0,
                             Address = "",
-                            ConcurrencyStamp = "259712d8-a61d-491c-a39f-d60e405e8902",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 106, DateTimeKind.Utc).AddTicks(1941),
+                            ConcurrencyStamp = "01e46c61-5b8d-463c-83a6-186b63f2a89c",
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 108, DateTimeKind.Utc).AddTicks(6330),
                             Email = "user2@example.com",
                             EmailConfirmed = true,
                             Gender = 0,
@@ -286,7 +286,7 @@ namespace VoxTics.Migrations
                             Name = "",
                             NormalizedEmail = "USER2@EXAMPLE.COM",
                             NormalizedUserName = "USER2@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPNUTie2QBo2eHkdrv8ZzN0HKiSncc/Rdt7z+zfdcj55Hr7Ec+TLAb13pj2fEXWf9A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAENxQR4MUwXM9+81Ss+4cKsyN2KQ74P3210ifjJNp/iFQxpSOL7933wy1LC60rDo3lg==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -297,8 +297,8 @@ namespace VoxTics.Migrations
                             Id = "user3",
                             AccessFailedCount = 0,
                             Address = "",
-                            ConcurrencyStamp = "7631d569-5214-49c0-bea3-a696db5dc95e",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 207, DateTimeKind.Utc).AddTicks(8700),
+                            ConcurrencyStamp = "345e4c21-ecad-44f3-9f09-e235207ce289",
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 230, DateTimeKind.Utc).AddTicks(8161),
                             Email = "user3@example.com",
                             EmailConfirmed = true,
                             Gender = 0,
@@ -306,7 +306,7 @@ namespace VoxTics.Migrations
                             Name = "",
                             NormalizedEmail = "USER3@EXAMPLE.COM",
                             NormalizedUserName = "USER3@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHHQJT+Wlm/EHd3pKWeLcwWdBE9oJ0ydRKjMCadkA8rX7DD5IV6XCgaSpT63u8GbyA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEAG12bmyY6rx15bnTOpVuUHmEDCTsg3dKmJufVoiOLvV8tmwCZgB1vg4kUlNlumtTQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -317,8 +317,8 @@ namespace VoxTics.Migrations
                             Id = "user4",
                             AccessFailedCount = 0,
                             Address = "",
-                            ConcurrencyStamp = "deea2382-8543-48bd-ac4d-8121912ac209",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 310, DateTimeKind.Utc).AddTicks(7991),
+                            ConcurrencyStamp = "06f85e0c-e0c4-40b2-893b-c30bd98c1f11",
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 345, DateTimeKind.Utc).AddTicks(5347),
                             Email = "user4@example.com",
                             EmailConfirmed = true,
                             Gender = 0,
@@ -326,7 +326,7 @@ namespace VoxTics.Migrations
                             Name = "",
                             NormalizedEmail = "USER4@EXAMPLE.COM",
                             NormalizedUserName = "USER4@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAED+ZmfIcUZnlZb2H2EdzGA2OfM9/ekNBY8w2z3mMWinAQzTRxVXzBo5sBUAs8czNDw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHeGAU1/9gzhHyBbsIBQfFfCq9pyffG74yhzZluKHYsr/f2cLv3QdG6EjfmB2Ukl2g==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -337,8 +337,8 @@ namespace VoxTics.Migrations
                             Id = "user5",
                             AccessFailedCount = 0,
                             Address = "",
-                            ConcurrencyStamp = "a5b3ef2e-bfde-4bf5-b04f-d9294e92489c",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 451, DateTimeKind.Utc).AddTicks(561),
+                            ConcurrencyStamp = "7da80e60-d5b1-4bdd-8987-c80deee520a9",
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 551, DateTimeKind.Utc).AddTicks(3943),
                             Email = "user5@example.com",
                             EmailConfirmed = true,
                             Gender = 0,
@@ -346,7 +346,7 @@ namespace VoxTics.Migrations
                             Name = "",
                             NormalizedEmail = "USER5@EXAMPLE.COM",
                             NormalizedUserName = "USER5@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAELfOqGJTQPABcnoDHm7IbHWyR7aOrq6RfSxrdHhhpTmpBLsVgFAg/STnPlnLtIFgnw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEG5yjHxizcKrC/B5H4K0llcSuzhc8yH3bSHnw3CpUaydpGdpTne/8tQHS2PFvR5Slw==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -440,7 +440,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 1,
                             Bio = "American actor known for Iron Man.",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 638, DateTimeKind.Utc).AddTicks(9521),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 682, DateTimeKind.Utc).AddTicks(6851),
                             FullName = "Robert Downey Jr.",
                             IsActive = true,
                             IsDeleted = false
@@ -449,7 +449,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 2,
                             Bio = "American actress and singer.",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 639, DateTimeKind.Utc).AddTicks(2123),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 683, DateTimeKind.Utc).AddTicks(9795),
                             FullName = "Gwyneth Paltrow",
                             IsActive = true,
                             IsDeleted = false
@@ -458,7 +458,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 3,
                             Bio = "American actor known for Captain America.",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 639, DateTimeKind.Utc).AddTicks(2129),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 683, DateTimeKind.Utc).AddTicks(9802),
                             FullName = "Chris Evans",
                             IsActive = true,
                             IsDeleted = false
@@ -467,7 +467,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 4,
                             Bio = "American actress known for Black Widow.",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 639, DateTimeKind.Utc).AddTicks(2132),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 683, DateTimeKind.Utc).AddTicks(9804),
                             FullName = "Scarlett Johansson",
                             IsActive = true,
                             IsDeleted = false
@@ -476,7 +476,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 5,
                             Bio = "Australian actor known for Thor.",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 639, DateTimeKind.Utc).AddTicks(2134),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 683, DateTimeKind.Utc).AddTicks(9806),
                             FullName = "Chris Hemsworth",
                             IsActive = true,
                             IsDeleted = false
@@ -485,7 +485,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 6,
                             Bio = "American actor known for Hulk.",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 639, DateTimeKind.Utc).AddTicks(2153),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 683, DateTimeKind.Utc).AddTicks(9813),
                             FullName = "Mark Ruffalo",
                             IsActive = true,
                             IsDeleted = false
@@ -494,7 +494,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 7,
                             Bio = "English actor known for Spider-Man.",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 639, DateTimeKind.Utc).AddTicks(2166),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 683, DateTimeKind.Utc).AddTicks(9815),
                             FullName = "Tom Holland",
                             IsActive = true,
                             IsDeleted = false
@@ -503,7 +503,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 8,
                             Bio = "American actress known for MJ.",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 639, DateTimeKind.Utc).AddTicks(2182),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 683, DateTimeKind.Utc).AddTicks(9830),
                             FullName = "Zendaya",
                             IsActive = true,
                             IsDeleted = false
@@ -583,8 +583,8 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 1,
-                            BookingDate = new DateTime(2025, 9, 20, 15, 53, 34, 652, DateTimeKind.Utc).AddTicks(3157),
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 652, DateTimeKind.Utc).AddTicks(3350),
+                            BookingDate = new DateTime(2025, 9, 23, 3, 34, 9, 695, DateTimeKind.Utc).AddTicks(1342),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 695, DateTimeKind.Utc).AddTicks(1488),
                             DiscountAmount = 0m,
                             FinalAmount = 20.00m,
                             IsCheckedIn = false,
@@ -598,8 +598,8 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 2,
-                            BookingDate = new DateTime(2025, 9, 20, 15, 53, 34, 653, DateTimeKind.Utc).AddTicks(447),
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 653, DateTimeKind.Utc).AddTicks(456),
+                            BookingDate = new DateTime(2025, 9, 23, 3, 34, 9, 695, DateTimeKind.Utc).AddTicks(5868),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 695, DateTimeKind.Utc).AddTicks(5874),
                             DiscountAmount = 0m,
                             FinalAmount = 36.00m,
                             IsCheckedIn = false,
@@ -613,8 +613,8 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 3,
-                            BookingDate = new DateTime(2025, 9, 20, 15, 53, 34, 653, DateTimeKind.Utc).AddTicks(469),
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 653, DateTimeKind.Utc).AddTicks(471),
+                            BookingDate = new DateTime(2025, 9, 23, 3, 34, 9, 695, DateTimeKind.Utc).AddTicks(5880),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 695, DateTimeKind.Utc).AddTicks(5880),
                             DiscountAmount = 0m,
                             FinalAmount = 11.50m,
                             IsCheckedIn = false,
@@ -628,8 +628,8 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 4,
-                            BookingDate = new DateTime(2025, 9, 20, 15, 53, 34, 653, DateTimeKind.Utc).AddTicks(476),
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 653, DateTimeKind.Utc).AddTicks(477),
+                            BookingDate = new DateTime(2025, 9, 23, 3, 34, 9, 695, DateTimeKind.Utc).AddTicks(5883),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 695, DateTimeKind.Utc).AddTicks(5885),
                             DiscountAmount = 5.00m,
                             FinalAmount = 47.00m,
                             IsCheckedIn = false,
@@ -643,8 +643,8 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 5,
-                            BookingDate = new DateTime(2025, 9, 20, 15, 53, 34, 653, DateTimeKind.Utc).AddTicks(482),
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 653, DateTimeKind.Utc).AddTicks(484),
+                            BookingDate = new DateTime(2025, 9, 23, 3, 34, 9, 695, DateTimeKind.Utc).AddTicks(5888),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 695, DateTimeKind.Utc).AddTicks(5888),
                             DiscountAmount = 0m,
                             FinalAmount = 28.00m,
                             IsCheckedIn = false,
@@ -700,7 +700,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 1,
                             BookingId = 1,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 654, DateTimeKind.Utc).AddTicks(8288),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 696, DateTimeKind.Utc).AddTicks(7031),
                             IsDeleted = false,
                             SeatId = 1,
                             SeatPrice = 10.00m
@@ -709,7 +709,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 2,
                             BookingId = 1,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 655, DateTimeKind.Utc).AddTicks(1158),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 696, DateTimeKind.Utc).AddTicks(9223),
                             IsDeleted = false,
                             SeatId = 2,
                             SeatPrice = 10.00m
@@ -718,7 +718,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 3,
                             BookingId = 2,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 655, DateTimeKind.Utc).AddTicks(1168),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 696, DateTimeKind.Utc).AddTicks(9255),
                             IsDeleted = false,
                             SeatId = 11,
                             SeatPrice = 12.00m
@@ -727,7 +727,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 4,
                             BookingId = 2,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 655, DateTimeKind.Utc).AddTicks(1172),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 696, DateTimeKind.Utc).AddTicks(9260),
                             IsDeleted = false,
                             SeatId = 12,
                             SeatPrice = 12.00m
@@ -736,7 +736,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 5,
                             BookingId = 2,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 655, DateTimeKind.Utc).AddTicks(1176),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 696, DateTimeKind.Utc).AddTicks(9310),
                             IsDeleted = false,
                             SeatId = 13,
                             SeatPrice = 12.00m
@@ -745,7 +745,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 6,
                             BookingId = 3,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 655, DateTimeKind.Utc).AddTicks(1218),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 696, DateTimeKind.Utc).AddTicks(9351),
                             IsDeleted = false,
                             SeatId = 21,
                             SeatPrice = 11.50m
@@ -754,7 +754,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 7,
                             BookingId = 4,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 655, DateTimeKind.Utc).AddTicks(1224),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 696, DateTimeKind.Utc).AddTicks(9353),
                             IsDeleted = false,
                             SeatId = 31,
                             SeatPrice = 13.00m
@@ -763,7 +763,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 8,
                             BookingId = 4,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 655, DateTimeKind.Utc).AddTicks(1227),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 696, DateTimeKind.Utc).AddTicks(9356),
                             IsDeleted = false,
                             SeatId = 32,
                             SeatPrice = 13.00m
@@ -772,7 +772,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 9,
                             BookingId = 4,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 655, DateTimeKind.Utc).AddTicks(1230),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 696, DateTimeKind.Utc).AddTicks(9359),
                             IsDeleted = false,
                             SeatId = 33,
                             SeatPrice = 13.00m
@@ -781,7 +781,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 10,
                             BookingId = 4,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 655, DateTimeKind.Utc).AddTicks(1240),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 696, DateTimeKind.Utc).AddTicks(9363),
                             IsDeleted = false,
                             SeatId = 34,
                             SeatPrice = 13.00m
@@ -790,7 +790,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 11,
                             BookingId = 5,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 655, DateTimeKind.Utc).AddTicks(1243),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 696, DateTimeKind.Utc).AddTicks(9366),
                             IsDeleted = false,
                             SeatId = 41,
                             SeatPrice = 14.00m
@@ -799,7 +799,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 12,
                             BookingId = 5,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 655, DateTimeKind.Utc).AddTicks(1247),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 696, DateTimeKind.Utc).AddTicks(9368),
                             IsDeleted = false,
                             SeatId = 42,
                             SeatPrice = 14.00m
@@ -935,7 +935,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 639, DateTimeKind.Utc).AddTicks(9709),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 684, DateTimeKind.Utc).AddTicks(7223),
                             Description = "Action-packed movies",
                             IsActive = true,
                             IsDeleted = false,
@@ -945,7 +945,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 640, DateTimeKind.Utc).AddTicks(1992),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 684, DateTimeKind.Utc).AddTicks(9322),
                             Description = "Funny and entertaining movies",
                             IsActive = true,
                             IsDeleted = false,
@@ -955,7 +955,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 640, DateTimeKind.Utc).AddTicks(1998),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 684, DateTimeKind.Utc).AddTicks(9327),
                             Description = "Dramatic and emotional stories",
                             IsActive = true,
                             IsDeleted = false,
@@ -965,7 +965,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 640, DateTimeKind.Utc).AddTicks(2000),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 684, DateTimeKind.Utc).AddTicks(9329),
                             Description = "Scary and thrilling movies",
                             IsActive = true,
                             IsDeleted = false,
@@ -975,7 +975,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 640, DateTimeKind.Utc).AddTicks(2002),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 684, DateTimeKind.Utc).AddTicks(9330),
                             Description = "Science fiction movies",
                             IsActive = true,
                             IsDeleted = false,
@@ -985,7 +985,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 6,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 640, DateTimeKind.Utc).AddTicks(2013),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 684, DateTimeKind.Utc).AddTicks(9337),
                             Description = "Romantic movies",
                             IsActive = true,
                             IsDeleted = false,
@@ -995,7 +995,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 7,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 640, DateTimeKind.Utc).AddTicks(2026),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 684, DateTimeKind.Utc).AddTicks(9338),
                             Description = "Animated movies for all ages",
                             IsActive = true,
                             IsDeleted = false,
@@ -1005,7 +1005,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 8,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 640, DateTimeKind.Utc).AddTicks(2027),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 684, DateTimeKind.Utc).AddTicks(9350),
                             Description = "Exciting adventure movies",
                             IsActive = true,
                             IsDeleted = false,
@@ -1015,7 +1015,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 9,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 640, DateTimeKind.Utc).AddTicks(2029),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 684, DateTimeKind.Utc).AddTicks(9352),
                             Description = "Fantasy worlds and stories",
                             IsActive = true,
                             IsDeleted = false,
@@ -1025,7 +1025,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 10,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 640, DateTimeKind.Utc).AddTicks(2032),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 684, DateTimeKind.Utc).AddTicks(9355),
                             Description = "Suspenseful and thrilling movies",
                             IsActive = true,
                             IsDeleted = false,
@@ -1115,7 +1115,7 @@ namespace VoxTics.Migrations
                             Address = "123 Main Street",
                             City = "Metropolis",
                             Country = "USA",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 640, DateTimeKind.Utc).AddTicks(9882),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 685, DateTimeKind.Utc).AddTicks(6059),
                             Description = "A modern cinema located in the heart of the city with multiple halls and premium services.",
                             Email = "contact@voxcity.com",
                             ImageUrl = "https://example.com/images/cinema1.jpg",
@@ -1133,7 +1133,7 @@ namespace VoxTics.Migrations
                             Address = "456 Elm Street",
                             City = "Gotham",
                             Country = "USA",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 641, DateTimeKind.Utc).AddTicks(5920),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 686, DateTimeKind.Utc).AddTicks(2046),
                             Description = "Popular cinema known for IMAX and 3D showings.",
                             Email = "info@galaxy.com",
                             ImageUrl = "https://example.com/images/cinema2.jpg",
@@ -1151,7 +1151,7 @@ namespace VoxTics.Migrations
                             Address = "789 Oak Avenue",
                             City = "Star City",
                             Country = "USA",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 641, DateTimeKind.Utc).AddTicks(5928),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 686, DateTimeKind.Utc).AddTicks(2055),
                             Description = "Premium cinema experience with luxury seating and gourmet snacks.",
                             Email = "support@cinestar.com",
                             ImageUrl = "https://example.com/images/cinema3.jpg",
@@ -1230,7 +1230,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 1,
                             Code = "DISC10",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 657, DateTimeKind.Utc).AddTicks(356),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 698, DateTimeKind.Utc).AddTicks(6464),
                             DiscountPercentage = 10m,
                             IsActive = true,
                             IsApplied = false,
@@ -1241,7 +1241,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 2,
                             Code = "DISC20",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 657, DateTimeKind.Utc).AddTicks(2123),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 698, DateTimeKind.Utc).AddTicks(8614),
                             DiscountPercentage = 20m,
                             IsActive = true,
                             IsApplied = false,
@@ -1301,7 +1301,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 1,
                             CinemaId = 1,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 642, DateTimeKind.Utc).AddTicks(5128),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 686, DateTimeKind.Utc).AddTicks(9183),
                             Description = "Standard screen hall with surround sound",
                             IsActive = true,
                             IsDeleted = false,
@@ -1312,7 +1312,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 2,
                             CinemaId = 1,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 642, DateTimeKind.Utc).AddTicks(7843),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 687, DateTimeKind.Utc).AddTicks(1684),
                             Description = "3D projection hall with premium seating",
                             IsActive = true,
                             IsDeleted = false,
@@ -1323,7 +1323,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 3,
                             CinemaId = 2,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 642, DateTimeKind.Utc).AddTicks(7849),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 687, DateTimeKind.Utc).AddTicks(1689),
                             Description = "IMAX hall with ultra-large screen and Dolby Atmos",
                             IsActive = true,
                             IsDeleted = false,
@@ -1334,7 +1334,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 4,
                             CinemaId = 2,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 642, DateTimeKind.Utc).AddTicks(7852),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 687, DateTimeKind.Utc).AddTicks(1692),
                             Description = "Standard projection hall with comfortable seating",
                             IsActive = true,
                             IsDeleted = false,
@@ -1345,7 +1345,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 5,
                             CinemaId = 3,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 642, DateTimeKind.Utc).AddTicks(7855),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 687, DateTimeKind.Utc).AddTicks(1694),
                             Description = "Premium lounge with recliners and in-seat service",
                             IsActive = true,
                             IsDeleted = false,
@@ -1356,7 +1356,7 @@ namespace VoxTics.Migrations
                         {
                             Id = 6,
                             CinemaId = 3,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 642, DateTimeKind.Utc).AddTicks(7858),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 687, DateTimeKind.Utc).AddTicks(1697),
                             Description = "Large hall with state-of-the-art sound and visuals",
                             IsActive = true,
                             IsDeleted = false,
@@ -1460,7 +1460,7 @@ namespace VoxTics.Migrations
                             Id = 1,
                             CategoryId = 1,
                             Country = "USA",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 645, DateTimeKind.Utc).AddTicks(2108),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 689, DateTimeKind.Utc).AddTicks(3178),
                             Description = "Billionaire Tony Stark builds a high-tech suit to fight evil.",
                             Director = "Jon Favreau",
                             Duration = 126,
@@ -1482,7 +1482,7 @@ namespace VoxTics.Migrations
                             Id = 2,
                             CategoryId = 1,
                             Country = "USA",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 646, DateTimeKind.Utc).AddTicks(1950),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 690, DateTimeKind.Utc).AddTicks(8641),
                             Description = "Earth’s mightiest heroes unite against a common enemy.",
                             Director = "Joss Whedon",
                             Duration = 143,
@@ -1504,7 +1504,7 @@ namespace VoxTics.Migrations
                             Id = 3,
                             CategoryId = 2,
                             Country = "USA",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 646, DateTimeKind.Utc).AddTicks(1967),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 690, DateTimeKind.Utc).AddTicks(8697),
                             Description = "T'Challa fights for his kingdom of Wakanda.",
                             Director = "Ryan Coogler",
                             Duration = 134,
@@ -1526,7 +1526,7 @@ namespace VoxTics.Migrations
                             Id = 4,
                             CategoryId = 3,
                             Country = "USA",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 646, DateTimeKind.Utc).AddTicks(1975),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 690, DateTimeKind.Utc).AddTicks(8766),
                             Description = "Strange explores the multiverse with dangerous consequences.",
                             Director = "Sam Raimi",
                             Duration = 126,
@@ -1548,7 +1548,7 @@ namespace VoxTics.Migrations
                             Id = 5,
                             CategoryId = 2,
                             Country = "USA",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 646, DateTimeKind.Utc).AddTicks(1980),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 690, DateTimeKind.Utc).AddTicks(8772),
                             Description = "The misfit heroes face a new cosmic challenge.",
                             Director = "James Gunn",
                             Duration = 150,
@@ -1570,7 +1570,7 @@ namespace VoxTics.Migrations
                             Id = 6,
                             CategoryId = 3,
                             Country = "USA",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 646, DateTimeKind.Utc).AddTicks(2056),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 690, DateTimeKind.Utc).AddTicks(8777),
                             Description = "Thor faces Hela to save Asgard.",
                             Director = "Taika Waititi",
                             Duration = 130,
@@ -1592,7 +1592,7 @@ namespace VoxTics.Migrations
                             Id = 7,
                             CategoryId = 1,
                             Country = "USA",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 646, DateTimeKind.Utc).AddTicks(2062),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 690, DateTimeKind.Utc).AddTicks(8783),
                             Description = "Peter Parker faces the multiverse's chaos.",
                             Director = "Jon Watts",
                             Duration = 148,
@@ -1614,7 +1614,7 @@ namespace VoxTics.Migrations
                             Id = 8,
                             CategoryId = 2,
                             Country = "USA",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 646, DateTimeKind.Utc).AddTicks(2068),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 690, DateTimeKind.Utc).AddTicks(8788),
                             Description = "Carol Danvers becomes Captain Marvel.",
                             Director = "Anna Boden & Ryan Fleck",
                             Duration = 123,
@@ -1636,7 +1636,7 @@ namespace VoxTics.Migrations
                             Id = 9,
                             CategoryId = 3,
                             Country = "USA",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 646, DateTimeKind.Utc).AddTicks(2074),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 690, DateTimeKind.Utc).AddTicks(8794),
                             Description = "Scott Lang explores the Quantum Realm.",
                             Director = "Peyton Reed",
                             Duration = 125,
@@ -1658,7 +1658,7 @@ namespace VoxTics.Migrations
                             Id = 10,
                             CategoryId = 2,
                             Country = "USA",
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 646, DateTimeKind.Utc).AddTicks(2080),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 690, DateTimeKind.Utc).AddTicks(8799),
                             Description = "Immortal beings reunite to save humanity.",
                             Director = "Chloé Zhao",
                             Duration = 156,
@@ -1876,7 +1876,7 @@ namespace VoxTics.Migrations
                             Id = 1,
                             Amount = 20m,
                             BookingId = 1,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 656, DateTimeKind.Utc).AddTicks(384),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 697, DateTimeKind.Utc).AddTicks(6247),
                             IsDeleted = false,
                             Method = 1,
                             Status = 2,
@@ -1887,7 +1887,7 @@ namespace VoxTics.Migrations
                             Id = 2,
                             Amount = 30m,
                             BookingId = 2,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 656, DateTimeKind.Utc).AddTicks(5136),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 698, DateTimeKind.Utc).AddTicks(839),
                             IsDeleted = false,
                             Method = 2,
                             Status = 0,
@@ -1961,7 +1961,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 649, DateTimeKind.Utc).AddTicks(9707),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 693, DateTimeKind.Utc).AddTicks(7210),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -1974,7 +1974,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(5790),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1192),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -1987,7 +1987,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(5846),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1224),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2000,7 +2000,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(5861),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1231),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2013,7 +2013,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(5872),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1269),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2026,7 +2026,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 6,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(5900),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1280),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2039,7 +2039,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 7,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(5912),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1285),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2052,7 +2052,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 8,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(5923),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1290),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2065,7 +2065,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 9,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(5935),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1295),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2078,7 +2078,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 10,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(5952),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1301),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2091,7 +2091,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 11,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(5987),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1329),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2104,7 +2104,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 12,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6001),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1334),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2117,7 +2117,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 13,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6013),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1345),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2130,7 +2130,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 14,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6024),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1351),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2143,7 +2143,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 15,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6034),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1357),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2156,7 +2156,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 16,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6064),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1374),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2169,7 +2169,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 17,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6077),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1380),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2182,7 +2182,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 18,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6095),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1386),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2195,7 +2195,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 19,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6107),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1390),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2208,7 +2208,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 20,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6119),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1404),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2221,7 +2221,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 21,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6173),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1408),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2234,7 +2234,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 22,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6189),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1412),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2247,7 +2247,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 23,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6199),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1415),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2260,7 +2260,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 24,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6228),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1427),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2273,7 +2273,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 25,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6250),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1438),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2286,7 +2286,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 26,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6261),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1441),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2299,7 +2299,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 27,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6272),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1445),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2312,7 +2312,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 28,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6285),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1448),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2325,7 +2325,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 29,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6294),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1452),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2338,7 +2338,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 30,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6313),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1462),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2351,7 +2351,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 31,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6437),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1494),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2364,7 +2364,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 32,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6451),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1499),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2377,7 +2377,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 33,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6463),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1502),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2390,7 +2390,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 34,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6481),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1507),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2403,7 +2403,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 35,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6494),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1523),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2416,7 +2416,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 36,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6506),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1527),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2429,7 +2429,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 37,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6519),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1531),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2442,7 +2442,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 38,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6530),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1534),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2455,7 +2455,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 39,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6542),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1537),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2468,7 +2468,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 40,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6553),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1541),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2481,7 +2481,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 41,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6564),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1545),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2494,7 +2494,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 42,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6575),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1548),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2507,7 +2507,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 43,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6586),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1552),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2520,7 +2520,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 44,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6597),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1555),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2533,7 +2533,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 45,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6608),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1559),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2546,7 +2546,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 46,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6619),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1562),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2559,7 +2559,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 47,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6630),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1566),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2572,7 +2572,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 48,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6641),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1569),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2585,7 +2585,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 49,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6652),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1573),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2598,7 +2598,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 50,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6662),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1576),
                             HallId = 1,
                             IsActive = true,
                             IsAvailable = true,
@@ -2611,7 +2611,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 51,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6674),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1580),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2624,7 +2624,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 52,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6684),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1584),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2637,7 +2637,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 53,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6722),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1587),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2650,7 +2650,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 54,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6737),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1591),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2663,7 +2663,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 55,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6747),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1594),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2676,7 +2676,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 56,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6756),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1598),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2689,7 +2689,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 57,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6768),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1601),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2702,7 +2702,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 58,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6778),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1604),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2715,7 +2715,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 59,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6789),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1608),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2728,7 +2728,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 60,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6799),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1612),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2741,7 +2741,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 61,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6810),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1616),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2754,7 +2754,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 62,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6820),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1619),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2767,7 +2767,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 63,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6831),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1623),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2780,7 +2780,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 64,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6840),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1626),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2793,7 +2793,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 65,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6851),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1630),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2806,7 +2806,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 66,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6872),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1647),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2819,7 +2819,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 67,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6884),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1652),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2832,7 +2832,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 68,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6895),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1655),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2845,7 +2845,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 69,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6905),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1658),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2858,7 +2858,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 70,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6915),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1662),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2871,7 +2871,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 71,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6927),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1666),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2884,7 +2884,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 72,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6936),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1669),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2897,7 +2897,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 73,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6947),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1672),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2910,7 +2910,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 74,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6957),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1676),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2923,7 +2923,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 75,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6968),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1679),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2936,7 +2936,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 76,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6978),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1683),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2949,7 +2949,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 77,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6988),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1686),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2962,7 +2962,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 78,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(6998),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1690),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2975,7 +2975,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 79,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7009),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1693),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -2988,7 +2988,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 80,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7019),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1697),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -3001,7 +3001,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 81,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7031),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1700),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -3014,7 +3014,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 82,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7042),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1704),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -3027,7 +3027,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 83,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7079),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1707),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -3040,7 +3040,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 84,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7098),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1711),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -3053,7 +3053,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 85,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7108),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1715),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -3066,7 +3066,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 86,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7118),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1718),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -3079,7 +3079,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 87,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7128),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1721),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -3092,7 +3092,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 88,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7138),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1725),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -3105,7 +3105,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 89,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7148),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1728),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -3118,7 +3118,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 90,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7158),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1732),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -3131,7 +3131,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 91,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7167),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1735),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -3144,7 +3144,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 92,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7177),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1739),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -3157,7 +3157,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 93,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7187),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1742),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -3170,7 +3170,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 94,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7197),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1746),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -3183,7 +3183,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 95,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7206),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1750),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -3196,7 +3196,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 96,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7215),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1753),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -3209,7 +3209,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 97,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7225),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1756),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -3222,7 +3222,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 98,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7237),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1760),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -3235,7 +3235,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 99,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7248),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1778),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -3248,7 +3248,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 100,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7257),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1782),
                             HallId = 2,
                             IsActive = true,
                             IsAvailable = true,
@@ -3261,7 +3261,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 101,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7266),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1786),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3274,7 +3274,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 102,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7275),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1789),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3287,7 +3287,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 103,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7285),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1793),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3300,7 +3300,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 104,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7296),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1796),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3313,7 +3313,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 105,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7306),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1800),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3326,7 +3326,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 106,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7316),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1804),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3339,7 +3339,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 107,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7326),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1807),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3352,7 +3352,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 108,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7335),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1810),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3365,7 +3365,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 109,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7345),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1814),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3378,7 +3378,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 110,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7357),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1818),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3391,7 +3391,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 111,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7368),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1821),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3404,7 +3404,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 112,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7378),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1825),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3417,7 +3417,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 113,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7390),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1828),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3430,7 +3430,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 114,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7401),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1832),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3443,7 +3443,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 115,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7412),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1835),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3456,7 +3456,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 116,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7422),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1839),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3469,7 +3469,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 117,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7455),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1842),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3482,7 +3482,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 118,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7471),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1845),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3495,7 +3495,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 119,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7481),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1849),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3508,7 +3508,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 120,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7490),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1852),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3521,7 +3521,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 121,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7501),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1856),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3534,7 +3534,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 122,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7511),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1860),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3547,7 +3547,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 123,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7521),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1863),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3560,7 +3560,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 124,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7535),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1866),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3573,7 +3573,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 125,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7546),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1870),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3586,7 +3586,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 126,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7557),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1873),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3599,7 +3599,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 127,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7567),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1877),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3612,7 +3612,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 128,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7577),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1880),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3625,7 +3625,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 129,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7587),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1884),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3638,7 +3638,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 130,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7634),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1913),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3651,7 +3651,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 131,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7652),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1918),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3664,7 +3664,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 132,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7663),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1921),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3677,7 +3677,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 133,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7672),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1925),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3690,7 +3690,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 134,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7683),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1929),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3703,7 +3703,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 135,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7694),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1932),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3716,7 +3716,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 136,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7703),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1936),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3729,7 +3729,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 137,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7714),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1939),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3742,7 +3742,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 138,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7725),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1943),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3755,7 +3755,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 139,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7738),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1946),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3768,7 +3768,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 140,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7749),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1950),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3781,7 +3781,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 141,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7761),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1954),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3794,7 +3794,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 142,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7771),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1957),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3807,7 +3807,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 143,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7808),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1960),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3820,7 +3820,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 144,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7818),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1964),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3833,7 +3833,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 145,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7828),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1967),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3846,7 +3846,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 146,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7838),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1971),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3859,7 +3859,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 147,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7848),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1974),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3872,7 +3872,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 148,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7859),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1978),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3885,7 +3885,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 149,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7873),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1981),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3898,7 +3898,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 150,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7883),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1985),
                             HallId = 3,
                             IsActive = true,
                             IsAvailable = true,
@@ -3911,7 +3911,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 151,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7894),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1989),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -3924,7 +3924,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 152,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7905),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1992),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -3937,7 +3937,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 153,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7914),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1996),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -3950,7 +3950,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 154,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7925),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(1999),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -3963,7 +3963,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 155,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7935),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2003),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -3976,7 +3976,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 156,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7946),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2006),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -3989,7 +3989,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 157,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7957),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2010),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4002,7 +4002,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 158,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7968),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2014),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4015,7 +4015,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 159,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7978),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2028),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4028,7 +4028,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 160,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7988),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2032),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4041,7 +4041,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 161,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(7998),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2036),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4054,7 +4054,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 162,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8009),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2040),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4067,7 +4067,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 163,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8020),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2043),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4080,7 +4080,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 164,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8030),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2047),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4093,7 +4093,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 165,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8042),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2050),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4106,7 +4106,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 166,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8052),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2054),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4119,7 +4119,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 167,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8062),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2057),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4132,7 +4132,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 168,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8071),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2061),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4145,7 +4145,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 169,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8081),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2064),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4158,7 +4158,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 170,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8091),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2068),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4171,7 +4171,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 171,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8101),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2071),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4184,7 +4184,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 172,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8110),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2075),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4197,7 +4197,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 173,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8122),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2078),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4210,7 +4210,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 174,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8131),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2082),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4223,7 +4223,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 175,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8142),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2085),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4236,7 +4236,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 176,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8152),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2089),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4249,7 +4249,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 177,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8186),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2092),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4262,7 +4262,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 178,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8200),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2095),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4275,7 +4275,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 179,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8213),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2099),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4288,7 +4288,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 180,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8222),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2102),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4301,7 +4301,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 181,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8234),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2106),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4314,7 +4314,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 182,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8245),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2110),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4327,7 +4327,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 183,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8255),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2113),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4340,7 +4340,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 184,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8265),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2117),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4353,7 +4353,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 185,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8275),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2120),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4366,7 +4366,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 186,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8284),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2124),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4379,7 +4379,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 187,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8295),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2127),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4392,7 +4392,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 188,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8304),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2130),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4405,7 +4405,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 189,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8315),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2134),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4418,7 +4418,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 190,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8325),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2137),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4431,7 +4431,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 191,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8336),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2141),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4444,7 +4444,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 192,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8346),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2145),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4457,7 +4457,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 193,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8357),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2158),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4470,7 +4470,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 194,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8366),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2162),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4483,7 +4483,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 195,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8375),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2166),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4496,7 +4496,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 196,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8386),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2169),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4509,7 +4509,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 197,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8397),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2172),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4522,7 +4522,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 198,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8408),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2176),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4535,7 +4535,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 199,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8418),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2179),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4548,7 +4548,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 200,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8428),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2183),
                             HallId = 4,
                             IsActive = true,
                             IsAvailable = true,
@@ -4561,7 +4561,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 201,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8438),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2186),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4574,7 +4574,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 202,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8450),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2190),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4587,7 +4587,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 203,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8460),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2193),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4600,7 +4600,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 204,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8470),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2197),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4613,7 +4613,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 205,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8482),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2201),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4626,7 +4626,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 206,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8492),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2204),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4639,7 +4639,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 207,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8502),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2208),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4652,7 +4652,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 208,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8513),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2211),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4665,7 +4665,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 209,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8524),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2215),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4678,7 +4678,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 210,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8535),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2218),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4691,7 +4691,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 211,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8569),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2222),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4704,7 +4704,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 212,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8585),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2225),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4717,7 +4717,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 213,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8595),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2229),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4730,7 +4730,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 214,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8605),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2233),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4743,7 +4743,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 215,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8615),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2236),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4756,7 +4756,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 216,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8625),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2241),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4769,7 +4769,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 217,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8635),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2244),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4782,7 +4782,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 218,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8646),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2248),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4795,7 +4795,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 219,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8656),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2251),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4808,7 +4808,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 220,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8667),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2255),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4821,7 +4821,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 221,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8680),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2259),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4834,7 +4834,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 222,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8690),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2262),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4847,7 +4847,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 223,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8700),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2265),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4860,7 +4860,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 224,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8711),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2269),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4873,7 +4873,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 225,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8721),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2272),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4886,7 +4886,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 226,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8731),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2276),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4899,7 +4899,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 227,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8744),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2290),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4912,7 +4912,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 228,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8755),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2293),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4925,7 +4925,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 229,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8764),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2297),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4938,7 +4938,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 230,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8773),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2300),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4951,7 +4951,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 231,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8784),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2304),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4964,7 +4964,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 232,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8796),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2307),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4977,7 +4977,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 233,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8808),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2311),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -4990,7 +4990,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 234,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8818),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2315),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -5003,7 +5003,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 235,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8830),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2318),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -5016,7 +5016,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 236,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8840),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2322),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -5029,7 +5029,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 237,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8851),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2326),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -5042,7 +5042,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 238,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8861),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2329),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -5055,7 +5055,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 239,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8873),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2332),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -5068,7 +5068,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 240,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8883),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2336),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -5081,7 +5081,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 241,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8894),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2340),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -5094,7 +5094,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 242,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8904),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2343),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -5107,7 +5107,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 243,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8915),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2347),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -5120,7 +5120,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 244,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8925),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2350),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -5133,7 +5133,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 245,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8956),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2354),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -5146,7 +5146,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 246,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8969),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2357),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -5159,7 +5159,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 247,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8980),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2361),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -5172,7 +5172,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 248,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(8990),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2364),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -5185,7 +5185,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 249,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9000),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2368),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -5198,7 +5198,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 250,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9011),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2371),
                             HallId = 5,
                             IsActive = true,
                             IsAvailable = true,
@@ -5211,7 +5211,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 251,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9022),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2375),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5224,7 +5224,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 252,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9032),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2379),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5237,7 +5237,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 253,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9042),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2382),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5250,7 +5250,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 254,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9052),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2385),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5263,7 +5263,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 255,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9063),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2389),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5276,7 +5276,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 256,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9074),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2392),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5289,7 +5289,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 257,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9084),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2396),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5302,7 +5302,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 258,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9109),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2411),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5315,7 +5315,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 259,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9123),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2415),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5328,7 +5328,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 260,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9133),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2419),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5341,7 +5341,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 261,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9145),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2423),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5354,7 +5354,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 262,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9174),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2427),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5367,7 +5367,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 263,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9187),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2430),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5380,7 +5380,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 264,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9197),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2433),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5393,7 +5393,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 265,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9209),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2437),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5406,7 +5406,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 266,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9220),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2441),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5419,7 +5419,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 267,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9230),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2444),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5432,7 +5432,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 268,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9241),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2448),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5445,7 +5445,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 269,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9252),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2451),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5458,7 +5458,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 270,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9263),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2455),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5471,7 +5471,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 271,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9273),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2458),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5484,7 +5484,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 272,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9283),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2462),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5497,7 +5497,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 273,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9293),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2465),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5510,7 +5510,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 274,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9304),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2469),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5523,7 +5523,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 275,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9314),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2472),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5536,7 +5536,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 276,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9325),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2476),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5549,7 +5549,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 277,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9337),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2479),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5562,7 +5562,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 278,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9348),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2492),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5575,7 +5575,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 279,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9359),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2496),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5588,7 +5588,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 280,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9369),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2500),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5601,7 +5601,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 281,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9379),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2503),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5614,7 +5614,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 282,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9391),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2507),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5627,7 +5627,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 283,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9401),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2510),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5640,7 +5640,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 284,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9412),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2514),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5653,7 +5653,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 285,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9424),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2517),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5666,7 +5666,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 286,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9434),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2521),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5679,7 +5679,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 287,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9445),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2524),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5692,7 +5692,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 288,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9455),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2527),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5705,7 +5705,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 289,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9466),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2531),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5718,7 +5718,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 290,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9476),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2534),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5731,7 +5731,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 291,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9488),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2538),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5744,7 +5744,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 292,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9498),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2542),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5757,7 +5757,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 293,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9511),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2545),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5770,7 +5770,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 294,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9522),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2549),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5783,7 +5783,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 295,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9534),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2552),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5796,7 +5796,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 296,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9562),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2555),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5809,7 +5809,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 297,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9576),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2559),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5822,7 +5822,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 298,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9587),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2562),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5835,7 +5835,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 299,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9599),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2566),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5848,7 +5848,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 300,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 650, DateTimeKind.Utc).AddTicks(9610),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 694, DateTimeKind.Utc).AddTicks(2569),
                             HallId = 6,
                             IsActive = true,
                             IsAvailable = true,
@@ -5951,7 +5951,7 @@ namespace VoxTics.Migrations
                             Id = 1,
                             AvailableSeats = 150,
                             CinemaId = 1,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 647, DateTimeKind.Utc).AddTicks(8259),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 692, DateTimeKind.Utc).AddTicks(4568),
                             Duration = 126,
                             HallId = 1,
                             Is3D = false,
@@ -5969,7 +5969,7 @@ namespace VoxTics.Migrations
                             Id = 2,
                             AvailableSeats = 200,
                             CinemaId = 1,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 648, DateTimeKind.Utc).AddTicks(8751),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 693, DateTimeKind.Utc).AddTicks(523),
                             Duration = 143,
                             HallId = 2,
                             Is3D = true,
@@ -5987,7 +5987,7 @@ namespace VoxTics.Migrations
                             Id = 3,
                             AvailableSeats = 250,
                             CinemaId = 2,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 648, DateTimeKind.Utc).AddTicks(8771),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 693, DateTimeKind.Utc).AddTicks(533),
                             Duration = 134,
                             HallId = 3,
                             Is3D = false,
@@ -6005,7 +6005,7 @@ namespace VoxTics.Migrations
                             Id = 4,
                             AvailableSeats = 180,
                             CinemaId = 2,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 648, DateTimeKind.Utc).AddTicks(8781),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 693, DateTimeKind.Utc).AddTicks(538),
                             Duration = 126,
                             HallId = 4,
                             Is3D = true,
@@ -6023,7 +6023,7 @@ namespace VoxTics.Migrations
                             Id = 5,
                             AvailableSeats = 120,
                             CinemaId = 3,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 648, DateTimeKind.Utc).AddTicks(8787),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 693, DateTimeKind.Utc).AddTicks(542),
                             Duration = 150,
                             HallId = 5,
                             Is3D = false,
@@ -6041,7 +6041,7 @@ namespace VoxTics.Migrations
                             Id = 6,
                             AvailableSeats = 200,
                             CinemaId = 3,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 648, DateTimeKind.Utc).AddTicks(8819),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 693, DateTimeKind.Utc).AddTicks(551),
                             Duration = 130,
                             HallId = 6,
                             Is3D = true,
@@ -6130,7 +6130,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 657, DateTimeKind.Utc).AddTicks(7243),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 699, DateTimeKind.Utc).AddTicks(4251),
                             IsDeleted = false,
                             Name = "Favorites",
                             UserId = "user1"
@@ -6138,7 +6138,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 657, DateTimeKind.Utc).AddTicks(8431),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 699, DateTimeKind.Utc).AddTicks(5761),
                             IsDeleted = false,
                             Name = "Must Watch",
                             UserId = "user2"
@@ -6146,7 +6146,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 657, DateTimeKind.Utc).AddTicks(8435),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 699, DateTimeKind.Utc).AddTicks(5767),
                             IsDeleted = false,
                             Name = "Weekend Picks",
                             UserId = "user3"
@@ -6154,7 +6154,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 657, DateTimeKind.Utc).AddTicks(8437),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 699, DateTimeKind.Utc).AddTicks(5769),
                             IsDeleted = false,
                             Name = "Top Movies",
                             UserId = "user4"
@@ -6162,7 +6162,7 @@ namespace VoxTics.Migrations
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2025, 9, 20, 15, 53, 34, 657, DateTimeKind.Utc).AddTicks(8438),
+                            CreatedAt = new DateTime(2025, 9, 23, 3, 34, 9, 699, DateTimeKind.Utc).AddTicks(5771),
                             IsDeleted = false,
                             Name = "Action Collection",
                             UserId = "user5"

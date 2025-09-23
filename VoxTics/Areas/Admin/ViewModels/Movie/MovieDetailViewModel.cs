@@ -25,5 +25,7 @@ namespace VoxTics.Areas.Admin.ViewModels.Movie
         public MovieStatus Status { get; set; }
         public string Slug { get; set; } = string.Empty;
         public string CategoryName { get; set; } = string.Empty;
+        public List<string> AdditionalImageUrls { get; set; } = new();
+
     }
 }

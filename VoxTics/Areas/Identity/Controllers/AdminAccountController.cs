@@ -14,11 +14,18 @@ namespace VoxTics.Areas.Identity.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _emailSender;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public AdminAccountController(UserManager<ApplicationUser> userManager, IEmailSender emailSender)
+        public AdminAccountController(
+            UserManager<ApplicationUser> userManager, 
+            IEmailSender emailSender, 
+            SignInManager<ApplicationUser> signInManager
+            )
         {
             _userManager = userManager;
             _emailSender = emailSender;
+            _signInManager = signInManager;
+
         }
 
         // List all users
@@ -127,5 +134,71 @@ namespace VoxTics.Areas.Identity.Controllers
             await _userManager.UpdateAsync(user);
             return RedirectToAction("Index");
         }
+        [AllowAnonymous]
+        [HttpGet]
+        public IActionResult Login(string? returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginVM loginVM, string? returnUrl = null)
+        {
+            if (!ModelState.IsValid) return View(loginVM);
+
+            var user = await _userManager.FindByEmailAsync(loginVM.EmailORUserName);
+            if (user == null)
+            {
+                ModelState.AddModelError("", "Invalid login attempt.");
+                return View(loginVM);
+            }
+
+            if (!await _userManager.IsEmailConfirmedAsync(user))
+            {
+                ModelState.AddModelError("", "Email not confirmed.");
+                return View(loginVM);
+            }
+
+            var result = await _signInManager.PasswordSignInAsync(
+                user.UserName,
+                loginVM.Password,
+                loginVM.RememberMe,
+                lockoutOnFailure: true);
+
+            if (result.Succeeded)
+            {
+                return RedirectToLocal(returnUrl);
+            }
+
+            if (result.IsLockedOut)
+            {
+                ModelState.AddModelError("", "Account locked out.");
+                return View(loginVM);
+            }
+
+            ModelState.AddModelError("", "Invalid login attempt.");
+            return View(loginVM);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Login", "AdminAccount", new { area = "Identity" });
+        }
+
+        // Helper method
+        private IActionResult RedirectToLocal(string? returnUrl)
+        {
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return Redirect(returnUrl);
+
+            return RedirectToAction("Index", "Home", new { area = "" });
+        }
+
     }
 }
