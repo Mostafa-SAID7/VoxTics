@@ -1,34 +1,29 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using VoxTics.Areas.Admin.ViewModels.Category;
 using VoxTics.Models.Entities;
 
 namespace VoxTics.Services.Interfaces
 {
-    /// <summary>
-    /// Service interface for admin-side category operations.
-    /// </summary>
-    public interface IAdminCategoryService
+    public interface IAdminCategoriesService
     {
-        Task<(IEnumerable<Category> Categories, int TotalCount)> GetPagedCategoriesAsync(
+        Task<PaginatedList<CategoryViewModel>> GetPagedAsync(
             int pageIndex,
             int pageSize,
-            string? searchTerm = null,
+            string searchString = null,
+            string sortColumn = null,
+            bool sortDescending = false,
             CancellationToken cancellationToken = default);
 
-        Task<bool> CategoryNameExistsAsync(
-            string name,
-            int? excludeId = null,
-            CancellationToken cancellationToken = default);
+        Task<CategoryDetailsViewModel?> GetDetailsByIdAsync(int id, CancellationToken cancellationToken = default);
 
-        Task<(int Total, int Active)> GetCategoryStatsAsync(CancellationToken cancellationToken = default);
+        Task CreateAsync(CategoryCreateEditViewModel model, CancellationToken cancellationToken = default);
 
-        Task<Category?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+        Task UpdateAsync(CategoryCreateEditViewModel model, CancellationToken cancellationToken = default);
 
-        Task AddCategoryAsync(Category category, CancellationToken cancellationToken = default);
+        Task DeleteAsync(int id, CancellationToken cancellationToken = default);
 
-        Task UpdateCategoryAsync(Category category, CancellationToken cancellationToken = default);
-
-        Task DeleteCategoryAsync(int id, CancellationToken cancellationToken = default);
+        Task<bool> SlugExistsAsync(string slug, int? excludeId = null, CancellationToken cancellationToken = default);
     }
 }

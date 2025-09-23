@@ -15,6 +15,7 @@ namespace VoxTics.Models.Entities
         public string? Description { get; set; }
 
         public bool IsActive { get; set; } = true;
+        public int MovieCount { get; set; } = 0;
 
     }
 }

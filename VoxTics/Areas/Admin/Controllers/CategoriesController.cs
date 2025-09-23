@@ -1,156 +1,138 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading;
-using System.Threading.Tasks;
+using VoxTics.Areas.Admin.Services.Interfaces;
 using VoxTics.Areas.Admin.ViewModels.Category;
-using VoxTics.Models.Entities;
-using VoxTics.Services.Interfaces;
+using VoxTics.Models.Enums;
 
 namespace VoxTics.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = $"{SD.SuperAdminRole}")]
-
+    [Authorize(Roles = SD.SuperAdminRole)]
+    [Route("admin/categories")]
     public class CategoriesController : Controller
     {
-        private readonly IAdminCategoryService _categoryService;
+        private readonly IAdminCategoriesService _categoriesService;
 
-        public CategoriesController(IAdminCategoryService categoryService)
+        public CategoriesController(IAdminCategoriesService categoriesService)
         {
-            _categoryService = categoryService ?? throw new System.ArgumentNullException(nameof(categoryService));
+            _categoriesService = categoriesService;
         }
 
-        // GET: Admin/Categories
+        // GET: admin/categories
+        [HttpGet("")]
         public async Task<IActionResult> Index(
-     int pageIndex = 0,
-     int pageSize = 10,
-     string? search = null,
-     CancellationToken cancellationToken = default)
+            int page = 1,
+            int pageSize = 10,
+            string search = null,
+            string sortColumn = null,
+            bool sortDescending = false)
         {
-            var (categories, totalCount) = await _categoryService
-                .GetPagedCategoriesAsync(pageIndex, pageSize, search, cancellationToken)
-                .ConfigureAwait(false);
-
-            categories ??= new List<Category>();
-
-            var tableViewModels = categories.Select(c => new CategoryTableViewModel
-            {
-                Id = c.Id,
-                Name = c.Name ?? "",
-                Slug = c.Slug ?? "",
-                IsActive = c.IsActive,
-            }).ToList();
-
-            ViewBag.PageIndex = pageIndex;
-            ViewBag.PageSize = pageSize;
-            ViewBag.TotalCount = totalCount;
+            var categories = await _categoriesService.GetPagedAsync(page, pageSize, search, sortColumn, sortDescending);
             ViewBag.Search = search;
-
-            return View(tableViewModels);
+            ViewBag.SortColumn = sortColumn;
+            ViewBag.SortDescending = sortDescending;
+            return View(categories);
         }
 
+        // GET: admin/categories/details/5
+        [HttpGet("details/{id:int}")]
+        public async Task<IActionResult> Details(int id)
+        {
+            var category = await _categoriesService.GetDetailsByIdAsync(id);
+            if (category == null) return NotFound();
+            return View(category);
+        }
 
-        // GET: Admin/Categories/Create
+        // GET: admin/categories/create
+        [HttpGet("create")]
         public IActionResult Create()
         {
-            // Pass a new ViewModel instance to the view
-            var model = new CategoryCreateEditViewModel();
-            return View(model);
+            return View(new CategoryCreateEditViewModel());
         }
 
-        // POST: Admin/Categories/Create
-        [HttpPost]
+        // POST: admin/categories/create
+        [HttpPost("create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CategoryCreateEditViewModel model, CancellationToken cancellationToken)
+        public async Task<IActionResult> Create(CategoryCreateEditViewModel model)
         {
             if (!ModelState.IsValid) return View(model);
 
-            // Check if category name exists
-            if (await _categoryService.CategoryNameExistsAsync(model.Name, null, cancellationToken))
+            if (await _categoriesService.SlugExistsAsync(model.Slug))
             {
-                ModelState.AddModelError(nameof(model.Name), "Category name already exists.");
+                ModelState.AddModelError(nameof(model.Slug), "Slug already exists.");
                 return View(model);
             }
 
-            // Map ViewModel → Entity
-            var category = new Category
-            {
-                Name = model.Name,
-                Slug = model.Slug,
-                Description = model.Description,
-                IsActive = model.IsActive
-            };
-
-            await _categoryService.AddCategoryAsync(category, cancellationToken).ConfigureAwait(false);
-
+            await _categoriesService.CreateAsync(model);
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Admin/Categories/Edit/5
-        public async Task<IActionResult> Edit(int id, CancellationToken cancellationToken)
+        // GET: admin/categories/edit/5
+        [HttpGet("edit/{id:int}")]
+        public async Task<IActionResult> Edit(int id)
         {
-            var category = await _categoryService.GetByIdAsync(id, cancellationToken)
-                .ConfigureAwait(false);
-
+            var category = await _categoriesService.GetDetailsByIdAsync(id);
             if (category == null) return NotFound();
 
-            // Map Entity → ViewModel
             var model = new CategoryCreateEditViewModel
             {
                 Id = category.Id,
                 Name = category.Name,
                 Slug = category.Slug,
                 Description = category.Description,
-                IsActive = category.IsActive
+                IsActive = category.IsActive,
+                MovieCount = category.MovieCount
             };
-
             return View(model);
         }
 
-        // POST: Admin/Categories/Edit/5
-        [HttpPost]
+        // POST: admin/categories/edit/5
+        [HttpPost("edit/{id:int}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, CategoryCreateEditViewModel model, CancellationToken cancellationToken)
+        public async Task<IActionResult> Edit(CategoryCreateEditViewModel model)
         {
-            if (id != model.Id) return BadRequest();
-
             if (!ModelState.IsValid) return View(model);
 
-            // Check if another category with the same name exists
-            if (await _categoryService.CategoryNameExistsAsync(model.Name, model.Id, cancellationToken))
+            if (await _categoriesService.SlugExistsAsync(model.Slug, model.Id))
             {
-                ModelState.AddModelError(nameof(model.Name), "Category name already exists.");
+                ModelState.AddModelError(nameof(model.Slug), "Slug already exists.");
                 return View(model);
             }
 
-            // Map ViewModel → Entity
-            var category = new Category
-            {
-                Id = model.Id,
-                Name = model.Name,
-                Slug = model.Slug,
-                Description = model.Description,
-                IsActive = model.IsActive
-            };
-
-            await _categoryService.UpdateCategoryAsync(category, cancellationToken).ConfigureAwait(false);
-
+            await _categoriesService.UpdateAsync(model);
             return RedirectToAction(nameof(Index));
         }
-        // POST: Admin/Categories/Delete/5
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> Delete(int id)
         {
-            await _categoryService.DeleteCategoryAsync(id, cancellationToken).ConfigureAwait(false);
+            try
+            {
+                await _categoriesService.DeleteAsync(id);
+                TempData["SuccessMessage"] = "Category deleted successfully.";
+            }
+            catch (DbUpdateException ex)
+            {
+                // Check if the inner exception mentions a foreign key conflict
+                if (ex.InnerException?.Message.Contains("REFERENCE constraint") == true)
+                {
+                    TempData["ErrorMessage"] =
+                        "This category cannot be deleted because there are records linked to it. " +
+                        "Please remove or reassign related items first.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "An error occurred while deleting the category.";
+                }
+            }
+            catch (Exception)
+            {
+                TempData["ErrorMessage"] = "An unexpected error occurred.";
+            }
+
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Admin/Categories/Stats
-        public async Task<IActionResult> Stats(CancellationToken cancellationToken)
-        {
-            var stats = await _categoryService.GetCategoryStatsAsync(cancellationToken).ConfigureAwait(false);
-            return Json(new { stats.Total, stats.Active });
-        }
     }
 }

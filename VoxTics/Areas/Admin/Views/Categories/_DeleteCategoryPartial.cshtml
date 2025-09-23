@@ -1,0 +1,7 @@
+﻿@model int
+<form asp-action="Delete" asp-route-id="@Model" method="post" class="d-inline">
+    <button type="submit" class="btn btn-danger btn-sm"
+            onclick="return confirm('Are you sure you want to delete this category?');">
+        Delete
+    </button>
+</form>

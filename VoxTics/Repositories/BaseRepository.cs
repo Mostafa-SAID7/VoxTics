@@ -70,7 +70,20 @@ namespace VoxTics.Repositories
         public async Task<T?> FindByKeysAsync(object[] keys, CancellationToken cancellationToken = default)
             => await _dbSet.FindAsync(keys, cancellationToken);
 
+        public async Task CommitAsync(CancellationToken cancellationToken = default)
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+     
+
+        public void Remove(T entity)
+        {
+            _context.Set<T>().Remove(entity);
+        }
+
         public async Task CommitAsync()
-            => await _context.SaveChangesAsync();
+        {
+            await _context.SaveChangesAsync();
+        }
     }
 }

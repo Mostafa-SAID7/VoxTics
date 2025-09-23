@@ -1,4 +1,7 @@
-﻿namespace VoxTics.Areas.Admin.ViewModels.Category
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+
+namespace VoxTics.Areas.Admin.ViewModels.Category
 {
     public class CategoryDetailsViewModel
     {
@@ -13,21 +16,20 @@
         [Display(Name = "Description")]
         public string? Description { get; set; }
 
-        [Display(Name = "Category Image")]
-
-
+        [Display(Name = "Slug")]
         public string Slug { get; set; } = string.Empty;
 
         [Display(Name = "Is Active")]
         public bool IsActive { get; set; } = true;
 
-        public DateTime CreatedAt { get; set; }
+        public int MovieCount { get; set; } = 0;
+
+        public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public int MovieCount { get; set; }
-
         // Display-friendly properties
-        public string CreatedAtFormatted => CreatedAt.ToString("MMM dd, yyyy");
-        public string? UpdatedAtFormatted => UpdatedAt?.ToString("MMM dd, yyyy");
+        public string CreatedAtFormatted => CreatedAt.HasValue ? CreatedAt.Value.ToString("MMM dd, yyyy") : string.Empty;
+        public string UpdatedAtFormatted => UpdatedAt.HasValue ? UpdatedAt.Value.ToString("MMM dd, yyyy") : string.Empty;
+        public string StatusBadge => IsActive ? "badge bg-success" : "badge bg-secondary";
     }
 }

@@ -1,72 +1,95 @@
 ﻿using VoxTics.Areas.Admin.Repositories.IRepositories;
+using VoxTics.Areas.Admin.ViewModels.Category;
 using VoxTics.Repositories;
 
 namespace VoxTics.Areas.Admin.Repositories
 {
-    /// <summary>
-    /// Repository for category management in Admin Area.
-    /// </summary>
-    public class AdminCategoriesRepository : BaseRepository<Category>, IAdminCategoriesRepository
+    public class AdminCategoriesRepository : IAdminCategoriesRepository
     {
-        private readonly MovieDbContext _context;
+        private readonly IBaseRepository<Category> _baseRepository;
+        private readonly IMapper _mapper;
 
-        public AdminCategoriesRepository(MovieDbContext context) : base(context)
+        public AdminCategoriesRepository(IBaseRepository<Category> baseRepository, IMapper mapper)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _baseRepository = baseRepository;
+            _mapper = mapper;
         }
 
-        public async Task<(IEnumerable<Category> Categories, int TotalCount)> GetPagedCategoriesAsync(
+        public async Task<PaginatedList<CategoryViewModel>> GetPagedAsync(
             int pageIndex,
             int pageSize,
-            string? searchTerm = null,
+            string searchString = null,
+            string sortColumn = null,
+            bool sortDescending = false,
             CancellationToken cancellationToken = default)
         {
-            if (pageIndex < 0) pageIndex = 0;
-            if (pageSize <= 0) pageSize = 10;
+            // Start query
+            var query = _baseRepository.Query();
 
-            IQueryable<Category> query = _context.Categories.AsNoTracking();
-
-            if (!string.IsNullOrWhiteSpace(searchTerm))
+            // Search
+            if (!string.IsNullOrEmpty(searchString))
             {
-                searchTerm = searchTerm.Trim().ToLower();
-                query = query.Where(c => c.Name.ToLower().Contains(searchTerm));
+                query = query.Where(c => c.Name.Contains(searchString) || c.Slug.Contains(searchString));
             }
 
-            int totalCount = await query.CountAsync(cancellationToken).ConfigureAwait(false);
+            // Sorting
+            if (!string.IsNullOrEmpty(sortColumn))
+            {
+                query = query.ApplySorting(sortColumn, sortDescending);
+            }
+            else
+            {
+                query = query.OrderBy(c => c.Name); // default sorting
+            }
 
-            var categories = await query
-                .OrderBy(c => c.Name)
-                .Skip(pageIndex * pageSize)
-                .Take(pageSize)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+            // Pagination
+            var pagedEntities = await query.ToPaginatedListAsync(pageIndex, pageSize, cancellationToken);
 
-            return (categories, totalCount);
+            // Map to ViewModel
+            var pagedViewModels = pagedEntities.Items
+                .Select(c => _mapper.Map<CategoryViewModel>(c))
+                .ToList();
+
+            return new PaginatedList<CategoryViewModel>(pagedViewModels, pagedEntities.TotalCount, pageIndex, pageSize);
         }
 
-        public async Task<bool> CategoryNameExistsAsync(
-            string name,
-            int? excludeId = null,
-            CancellationToken cancellationToken = default)
+        public async Task<CategoryDetailsViewModel?> GetDetailsByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Category name cannot be empty.", nameof(name));
-
-            name = name.Trim().ToLower();
-            return await _context.Categories
-                .AnyAsync(c =>
-                    c.Name.ToLower() == name &&
-                    (!excludeId.HasValue || c.Id != excludeId.Value),
-                    cancellationToken)
-                .ConfigureAwait(false);
+            var category = await _baseRepository.GetByIdAsync(id, cancellationToken);
+            return category == null ? null : _mapper.Map<CategoryDetailsViewModel>(category);
         }
 
-        public async Task<(int Total, int Active)> GetCategoryStatsAsync(
-            CancellationToken cancellationToken = default)
+        public async Task CreateAsync(CategoryCreateEditViewModel model, CancellationToken cancellationToken = default)
         {
-            int total = await _context.Categories.CountAsync(cancellationToken).ConfigureAwait(false);
-            int active = await _context.Categories.CountAsync(c => c.IsActive, cancellationToken).ConfigureAwait(false);
-            return (total, active);
+            var category = _mapper.Map<Category>(model);
+            await _baseRepository.AddAsync(category, cancellationToken);
+            await _baseRepository.CommitAsync();
+        }
+
+        public async Task UpdateAsync(CategoryCreateEditViewModel model, CancellationToken cancellationToken = default)
+        {
+            var category = await _baseRepository.GetByIdAsync(model.Id, cancellationToken);
+            if (category == null)
+                throw new KeyNotFoundException($"Category with ID {model.Id} not found.");
+
+            _mapper.Map(model, category);
+            await _baseRepository.UpdateAsync(category, cancellationToken);
+            await _baseRepository.CommitAsync();
+        }
+
+        public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var category = await _baseRepository.GetByIdAsync(id, cancellationToken);
+            if (category == null)
+                throw new KeyNotFoundException($"Category with ID {id} not found.");
+
+            await _baseRepository.RemoveAsync(category, cancellationToken);
+            await _baseRepository.CommitAsync();
+        }
+
+        public async Task<bool> SlugExistsAsync(string slug, int? excludeId = null, CancellationToken cancellationToken = default)
+        {
+            return await _baseRepository.AnyAsync(c => c.Slug == slug && (!excludeId.HasValue || c.Id != excludeId.Value), cancellationToken);
         }
     }
 }

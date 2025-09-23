@@ -1,0 +1,42 @@
+/* Category Card */
+.category-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+    }
+
+/* Gradient buttons */
+.btn-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+    .btn-gradient:hover {
+        filter: brightness(1.1);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+/* Floating label enhancement */
+.form-floating input:focus,
+.form-floating textarea:focus {
+    border-color: #764ba2;
+    box-shadow: 0 0 0 0.2rem rgba(118, 75, 162, 0.25);
+}
+
+/* Animated fade-in */
+.animated-fade-in {
+    animation: fadeInUp 0.6s ease-out;
+}

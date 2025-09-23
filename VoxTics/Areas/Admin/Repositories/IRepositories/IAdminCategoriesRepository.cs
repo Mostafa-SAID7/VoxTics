@@ -1,33 +1,23 @@
-﻿using VoxTics.Repositories.IRepositories;
+﻿using VoxTics.Areas.Admin.ViewModels.Category;
+using VoxTics.Repositories.IRepositories;
 
 namespace VoxTics.Areas.Admin.Repositories.IRepositories
 {
-    /// <summary>
-    /// Repository interface for category management in the Admin Area.
-    /// </summary>
-    public interface IAdminCategoriesRepository : IBaseRepository<Category>
+    public interface IAdminCategoriesRepository
     {
-        /// <summary>
-        /// Retrieves paginated categories with optional search term.
-        /// </summary>
-        Task<(IEnumerable<Category> Categories, int TotalCount)> GetPagedCategoriesAsync(
+        // Get paginated categories with search and sorting
+        Task<PaginatedList<CategoryViewModel>> GetPagedAsync(
             int pageIndex,
             int pageSize,
-            string? searchTerm = null,
+            string searchString = null,
+            string sortColumn = null,
+            bool sortDescending = false,
             CancellationToken cancellationToken = default);
 
-        /// <summary>
-        /// Checks if a category name already exists (to prevent duplicates).
-        /// </summary>
-        Task<bool> CategoryNameExistsAsync(
-            string name,
-            int? excludeId = null,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Gets statistics for categories (e.g., total count, active count).
-        /// </summary>
-        Task<(int Total, int Active)> GetCategoryStatsAsync(
-            CancellationToken cancellationToken = default);
+        Task<CategoryDetailsViewModel?> GetDetailsByIdAsync(int id, CancellationToken cancellationToken = default);
+        Task CreateAsync(CategoryCreateEditViewModel model, CancellationToken cancellationToken = default);
+        Task UpdateAsync(CategoryCreateEditViewModel model, CancellationToken cancellationToken = default);
+        Task DeleteAsync(int id, CancellationToken cancellationToken = default);
+        Task<bool> SlugExistsAsync(string slug, int? excludeId = null, CancellationToken cancellationToken = default);
     }
 }

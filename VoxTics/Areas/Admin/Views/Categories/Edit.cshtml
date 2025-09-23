@@ -1,41 +1,15 @@
 ﻿@model VoxTics.Areas.Admin.ViewModels.Category.CategoryCreateEditViewModel
-
 @{
-    ViewData["Title"] = Model.Id > 0 ? "Edit Category" : "Create Category";
+    ViewData["Title"] = "Edit Category";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="category-card card-glass p-4 shadow-lg animated-fade-in">
+    <h2 class="mb-4">@ViewData["Title"]</h2>
 
-<form asp-action="@(Model.Id > 0 ? "Edit" : "Create")" method="post">
-    <input type="hidden" asp-for="Id" />
-
-    <div class="mb-3">
-        <label asp-for="Name" class="form-label"></label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Slug" class="form-label"></label>
-        <input asp-for="Slug" class="form-control" />
-        <span asp-validation-for="Slug" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Description" class="form-label"></label>
-        <textarea asp-for="Description" class="form-control"></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
-
-    <div class="form-check mb-3">
-        <input asp-for="IsActive" class="form-check-input" />
-        <label asp-for="IsActive" class="form-check-label"></label>
-    </div>
-
-    <button type="submit" class="btn btn-success">Save</button>
-    <a asp-action="Index" class="btn btn-secondary">Back</a>
-</form>
+    @await Html.PartialAsync("_CategoryForm", Model)
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/admin/category/category-form.js"></script>
 }

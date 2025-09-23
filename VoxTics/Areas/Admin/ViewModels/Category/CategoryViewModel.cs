@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Http;
+﻿using System.Collections.Generic;
 
 namespace VoxTics.Areas.Admin.ViewModels.Category
 {
@@ -11,10 +10,12 @@ namespace VoxTics.Areas.Admin.ViewModels.Category
         public string? Description { get; set; }
         public bool IsActive { get; set; }
 
-        // Display-friendly property for UI
+        public int MovieCount { get; set; } = 0;
+
+        // Display-friendly property
         public string StatusBadge => IsActive ? "badge bg-success" : "badge bg-secondary";
 
-        // List of associated movies
+        // List of associated movies (can populate manually)
         public ICollection<string> Movies { get; set; } = new List<string>();
     }
 }

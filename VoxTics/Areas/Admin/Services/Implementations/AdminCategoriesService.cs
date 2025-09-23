@@ -1,84 +1,123 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using VoxTics.Areas.Admin.Repositories.IRepositories;
-using VoxTics.Models.Entities;
+using VoxTics.Areas.Admin.ViewModels.Category;
+using VoxTics.Helpers;
 using VoxTics.Services.Interfaces;
 
 namespace VoxTics.Services.Implementations
 {
-    /// <summary>
-    /// Service implementation for admin-side category management.
-    /// Handles business logic, validation, and interaction with repository.
-    /// </summary>
-    public class AdminCategoryService : IAdminCategoryService
+    public class AdminCategoriesService : IAdminCategoriesService
     {
-        private readonly IAdminCategoriesRepository _categoryRepository;
+        private readonly IAdminCategoriesRepository _repository;
 
-        public AdminCategoryService(IAdminCategoriesRepository categoryRepository)
+        public AdminCategoriesService(IAdminCategoriesRepository repository)
         {
-            _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
+            _repository = repository;
         }
 
-        public async Task<(IEnumerable<Category> Categories, int TotalCount)> GetPagedCategoriesAsync(
+        public async Task<PaginatedList<CategoryViewModel>> GetPagedAsync(
             int pageIndex,
             int pageSize,
-            string? searchTerm = null,
+            string searchString = null,
+            string sortColumn = null,
+            bool sortDescending = false,
             CancellationToken cancellationToken = default)
         {
-            return await _categoryRepository
-                .GetPagedCategoriesAsync(pageIndex, pageSize, searchTerm, cancellationToken)
-                .ConfigureAwait(false);
+            try
+            {
+                return await _repository.GetPagedAsync(
+                    pageIndex, pageSize, searchString, sortColumn, sortDescending, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Failed to load categories.", ex);
+            }
         }
 
-        public async Task<bool> CategoryNameExistsAsync(
-            string name,
+        public async Task<CategoryDetailsViewModel?> GetDetailsByIdAsync(
+            int id,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await _repository.GetDetailsByIdAsync(id, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Failed to fetch details for Category ID {id}.", ex);
+            }
+        }
+
+        public async Task CreateAsync(
+            CategoryCreateEditViewModel model,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (await SlugExistsAsync(model.Slug, null, cancellationToken))
+                    throw new InvalidOperationException($"Slug '{model.Slug}' already exists.");
+
+                await _repository.CreateAsync(model, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Failed to create category.", ex);
+            }
+        }
+
+        public async Task UpdateAsync(
+            CategoryCreateEditViewModel model,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (await SlugExistsAsync(model.Slug, model.Id, cancellationToken))
+                    throw new InvalidOperationException($"Slug '{model.Slug}' already exists.");
+
+                await _repository.UpdateAsync(model, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Failed to update Category ID {model.Id}.", ex);
+            }
+        }
+
+        public async Task DeleteAsync(
+            int id,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await _repository.DeleteAsync(id, cancellationToken);
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException dbEx) when
+                (dbEx.InnerException?.Message.Contains("REFERENCE constraint") == true)
+            {
+                // Handle foreign key conflicts gracefully
+                throw new InvalidOperationException(
+                    "This category cannot be deleted because related records exist. Remove or reassign them first.", dbEx);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Failed to delete Category ID {id}.", ex);
+            }
+        }
+
+        public async Task<bool> SlugExistsAsync(
+            string slug,
             int? excludeId = null,
             CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Category name cannot be empty.", nameof(name));
-
-            return await _categoryRepository
-                .CategoryNameExistsAsync(name, excludeId, cancellationToken)
-                .ConfigureAwait(false);
+            try
+            {
+                return await _repository.SlugExistsAsync(slug, excludeId, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Failed to check if slug '{slug}' exists.", ex);
+            }
         }
-
-        public async Task<(int Total, int Active)> GetCategoryStatsAsync(CancellationToken cancellationToken = default)
-        {
-            return await _categoryRepository
-                .GetCategoryStatsAsync(cancellationToken)
-                .ConfigureAwait(false);
-        }
-
-        public async Task<Category?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
-        {
-            return await _categoryRepository.GetByIdAsync(id, cancellationToken)
-                .ConfigureAwait(false);
-        }
-
-        public async Task AddCategoryAsync(Category category, CancellationToken cancellationToken = default)
-        {
-            if (category == null) throw new ArgumentNullException(nameof(category));
-
-            await _categoryRepository.AddAsync(category, cancellationToken).ConfigureAwait(false);
-        }
-
-        public async Task UpdateCategoryAsync(Category category, CancellationToken cancellationToken = default)
-        {
-            if (category == null) throw new ArgumentNullException(nameof(category));
-
-            await _categoryRepository.UpdateAsync(category, cancellationToken).ConfigureAwait(false);
-        }
-
-        public async Task DeleteCategoryAsync(int id, CancellationToken cancellationToken = default)
-        {
-            var category = await _categoryRepository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
-            if (category == null) return; // or throw if you prefer
-
-            await _categoryRepository.RemoveAsync(category, cancellationToken).ConfigureAwait(false);
-        }
-
     }
 }
