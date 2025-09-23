@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using VoxTics.Areas.Admin.ViewModels.Movie;
 using VoxTics.Helpers;
 
 namespace VoxTics.Areas.Admin.Services.Interfaces
@@ -14,6 +13,7 @@ namespace VoxTics.Areas.Admin.Services.Interfaces
             string? search = null,
             string? sortColumn = null,
             bool sortDescending = false);
+        Task<bool> MovieHasBookingsAsync(int movieId);
 
         // 🔹 Get movie details for viewing
         Task<MovieDetailViewModel?> GetMovieDetailsAsync(int id);

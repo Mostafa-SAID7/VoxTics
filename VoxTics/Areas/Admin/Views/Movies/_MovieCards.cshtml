@@ -1,0 +1,37 @@
+﻿@model VoxTics.Areas.Admin.ViewModels.Movie.MovieListItemViewModel
+@using VoxTics.Models.Enums
+@inject VoxTics.Helpers.ImgsHelper.ImageManager ImgManager
+
+@{
+    string imgUrl;
+    if (!string.IsNullOrWhiteSpace(Model.MainImageUrl))
+    {
+        imgUrl = Uri.IsWellFormedUriString(Model.MainImageUrl, UriKind.Absolute)
+            ? Model.MainImageUrl
+            : ImgManager.GetImageWebPath(ImageType.Movie, Model.Slug, Model.MainImageUrl);
+    }
+    else
+    {
+        imgUrl = ImgManager.GetImageWebPath(ImageType.Movie, Model.Slug, null);
+    }
+}
+
+<div class="card shadow-sm h-100 mb-3">
+    <img src="@imgUrl"
+         class="card-img-top"
+         alt="@Model.Title"
+         onerror="this.onerror=null;this.src='@Url.Content("~/images/defaults/placeholder.png")';" />
+
+    <div class="card-body d-flex flex-column">
+        <h5 class="card-title">@Model.Title</h5>
+        <p class="card-text text-muted">@Model.CategoryName</p>
+        <p class="small">Showtimes: @Model.ShowtimeCount</p>
+        <p class="small">Price: @Model.Price.ToString("C")</p>
+        <p class="small">Status: @Model.Status</p>
+        <div class="mt-auto">
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-sm btn-primary">Details</a>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-warning">Edit</a>
+            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-sm btn-danger">Delete</a>
+        </div>
+    </div>
+</div>

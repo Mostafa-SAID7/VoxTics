@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using VoxTics.Areas.Admin.Services.Interfaces;
-using VoxTics.Areas.Admin.ViewModels.Movie;
 using VoxTics.Data.UoW;
 using VoxTics.Helpers;
 using VoxTics.Helpers.ImgsHelper;
@@ -24,25 +24,46 @@ namespace VoxTics.Areas.Admin.Services.Implementations
         }
 
         public async Task<PaginatedList<MovieListItemViewModel>> GetPagedMoviesAsync(
-            int pageIndex, int pageSize, string? search = null, string? sortColumn = null, bool sortDescending = false)
+    int pageIndex, int pageSize, string? search = null, string? sortColumn = null, bool sortDescending = false)
         {
-            var query = _uow.AdminMovies.GetMoviesWithCategory();
+            // base movies query with category (must return IQueryable<Movie>)
+            var moviesQuery = _uow.AdminMovies.GetMoviesWithCategory().AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(search))
-                query = query.Where(m => m.Title.Contains(search) || m.Category.Name.Contains(search));
+                moviesQuery = moviesQuery.Where(m => m.Title.Contains(search) || m.Category.Name.Contains(search));
 
-            query = query.ApplySorting(sortColumn ?? nameof(Movie.ReleaseDate), sortDescending);
+            // apply sorting on movie entity (ApplySorting is assumed to return IQueryable<Movie>)
+            moviesQuery = moviesQuery.ApplySorting(sortColumn ?? nameof(Movie.ReleaseDate), sortDescending);
 
-            var items = await query
-                .Select(m => new MovieListItemViewModel
+            // get showtimes queryable (must be IQueryable<Showtime>)
+            var showtimesQuery = _uow.AdminShowtimes.Query().AsNoTracking();
+
+            // group join movies with showtimes to calculate counts on the database side
+            var projected = moviesQuery
+                .GroupJoin(
+                    showtimesQuery,
+                    m => m.Id,
+                    s => s.MovieId,
+                    (m, sGroup) => new { Movie = m, ShowtimeCount = sGroup.Count() } // sGroup is translated to SQL COUNT
+                )
+                .Select(x => new MovieListItemViewModel
                 {
-                    Id = m.Id,
-                    Title = m.Title,
-                    ReleaseDate = m.ReleaseDate,
-                    CategoryName = m.Category.Name,
-                    MainImageUrl = m.MainImage
-                })
-                .ToPaginatedListAsync(pageIndex, pageSize);
+                    Id = x.Movie.Id,
+                    Title = x.Movie.Title,
+                    CategoryName = x.Movie.Category.Name,
+                    Status = x.Movie.Status,
+                    ReleaseDate = x.Movie.ReleaseDate,
+                    Price = x.Movie.Price,
+                    IsFeatured = x.Movie.IsFeatured,
+                    MainImageUrl = x.Movie.MainImage,
+                    Slug = x.Movie.Slug,
+                    ShowtimeCount = x.ShowtimeCount
+                });
+
+            // Use your existing ToPaginatedListAsync extension (works on IQueryable<T>)
+            var items = await projected
+                .ToPaginatedListAsync(pageIndex, pageSize)
+                .ConfigureAwait(false);
 
             return items;
         }
@@ -227,7 +248,18 @@ namespace VoxTics.Areas.Admin.Services.Implementations
                         movie.MovieImages.Add(new MovieImg { ImageUrl = url });
                 }
             }
+
         }
+        public async Task<bool> MovieHasBookingsAsync(int movieId)
+        {
+            // Get all showtimes for this movie
+            var showtimes = _uow.AdminShowtimes.Query().Where(s => s.MovieId == movieId);
+
+            // Check if any showtime has bookings
+            return await showtimes.AnyAsync(s => s.Bookings.Any());
+        }
+
+
         #endregion
     }
 }

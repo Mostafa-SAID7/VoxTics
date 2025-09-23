@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using VoxTics.Areas.Admin.ViewModels.Movie;
 using VoxTics.Models.Entities;
 using System.Linq;
 

@@ -1,9 +1,21 @@
 ﻿@model VoxTics.Areas.Admin.ViewModels.Movie.MovieCreateEditViewModel
 
-<h1>@ViewData["Title"]</h1>
-<partial name="_NotificationPartial" />
+@{
+    ViewData["Title"] = "Edit Movie";
+}
+
+<h1>Edit Movie</h1>
 
 <form asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
     @Html.AntiForgeryToken()
     @await Html.PartialAsync("_MovieForm", Model)
+
+    <div class="mt-3">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </div>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
