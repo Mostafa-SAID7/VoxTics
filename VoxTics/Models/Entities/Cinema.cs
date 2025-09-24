@@ -42,10 +42,12 @@ namespace VoxTics.Models.Entities
 
         public bool IsActive { get; set; } = true;
 
+        // --- Navigation Properties ---
         public virtual ICollection<Hall> Halls { get; set; } = new List<Hall>();
         public virtual ICollection<Showtime> Showtimes { get; set; } = new List<Showtime>();
         public virtual ICollection<SocialMediaLink> SocialMediaLinks { get; set; } = new List<SocialMediaLink>();
 
+        // --- Computed Properties ---
         [NotMapped]
         public int TotalSeats => Halls?.Sum(h => h.Seats?.Count ?? 0) ?? 0;
 
@@ -58,4 +60,5 @@ namespace VoxTics.Models.Entities
         [NotMapped]
         public string DisplayImage => !string.IsNullOrEmpty(ImageUrl) ? ImageUrl : "/images/defaults/placeholder.jpg";
     }
+
 }

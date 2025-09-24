@@ -45,7 +45,6 @@
 
 	<ItemGroup>
 		<!-- Static files / libraries -->
-		<Folder Include="Areas\Admin\Services\" />
 		<Folder Include="Areas\Admin\Views\Shared\Components\" />
 		<Folder Include="Areas\Identity\Repositories\IRepositories\" />
 		<Folder Include="Views\Shared\Components\" />

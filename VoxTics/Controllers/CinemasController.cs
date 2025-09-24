@@ -102,7 +102,6 @@ namespace VoxTics.Controllers
                     return View(emptyCinema);
                 }
 
-                // تحويل Entity → ViewModel
                 var cinema = new CinemaDetailsVM
                 {
                     Id = cinemaEntity.Id,
@@ -141,7 +140,6 @@ namespace VoxTics.Controllers
             }
             catch (TaskCanceledException)
             {
-                // المهمة أُلغيّت، إنشاء نموذج افتراضي للعرض
                 var canceledCinema = new CinemaDetailsVM
                 {
                     Id = id,

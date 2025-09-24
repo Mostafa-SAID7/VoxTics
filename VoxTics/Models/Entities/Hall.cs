@@ -9,22 +9,24 @@ namespace VoxTics.Models.Entities
         [Required, MaxLength(50)]
         public string Name { get; set; } = string.Empty;
 
-        [Required, Range(1, 1000, ErrorMessage = "Total seats must be between 1 and 1000")]
+        [Required, Range(1, 1000)]
         public int TotalSeats { get; set; }
 
         [Required]
-        public int CinemaId { get; set; }
+        public int CinemaId { get; set; } // FK
+
+        public virtual Cinema Cinema { get; set; } = null!; // Navigation back to Cinema
 
         [MaxLength(500)]
         public string? Description { get; set; }
 
         public bool IsActive { get; set; } = true;
 
-        public virtual Cinema Cinema { get; set; } = null!;
         public virtual ICollection<Seat> Seats { get; set; } = new List<Seat>();
         public virtual ICollection<Showtime> Showtimes { get; set; } = new List<Showtime>();
 
         [NotMapped]
         public int SeatCount => Seats?.Count ?? 0;
     }
+
 }

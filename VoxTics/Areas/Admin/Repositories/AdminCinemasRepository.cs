@@ -1,127 +1,156 @@
-﻿using VoxTics.Areas.Admin.Repositories.IRepositories;
-using VoxTics.Data.UoW;
-using VoxTics.Repositories;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using VoxTics.Areas.Admin.Repositories.IRepositories;
+using VoxTics.Areas.Admin.ViewModels.Cinema;
+using VoxTics.Helpers;
+using VoxTics.Models.Entities;
+using VoxTics.Repositories.IRepositories;
 
 namespace VoxTics.Areas.Admin.Repositories
 {
-    /// <summary>
-    /// Admin-specific repository for managing cinemas with advanced functionality.
-    /// </summary>
-    public class AdminCinemasRepository : BaseRepository<Cinema>, IAdminCinemasRepository
+    public class AdminCinemasRepository : IAdminCinemasRepository
     {
-        private readonly MovieDbContext _context;
-        private readonly ILogger<AdminCinemasRepository> _logger;
+        private readonly IBaseRepository<Cinema> _repository;
+        private readonly IMapper _mapper;
 
-        public AdminCinemasRepository(MovieDbContext context, ILogger<AdminCinemasRepository> logger) : base(context)
+        public AdminCinemasRepository(IBaseRepository<Cinema> repository, IMapper mapper)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger)); // assign logger
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
+        // ----------------- Helpers -----------------
+        private static IQueryable<Cinema> ApplySorting(
+            IQueryable<Cinema> query,
+            string? sortColumn,
+            bool sortDescending)
+        {
+            return sortColumn?.ToLower() switch
+            {
+                "name" => sortDescending ? query.OrderByDescending(c => c.Name) : query.OrderBy(c => c.Name),
+                "city" => sortDescending ? query.OrderByDescending(c => c.City) : query.OrderBy(c => c.City),
+                _ => query.OrderBy(c => c.Id)
+            };
+        }
 
+        private static string NormalizeSlug(string name) =>
+            name.ToLower().Replace(" ", "-");
 
-        public async Task<(IEnumerable<Cinema> Cinemas, int TotalCount)> GetPagedCinemasAsync(
+        private async Task<Cinema> GetCinemaOrThrowAsync(int id, CancellationToken cancellationToken)
+        {
+            var entity = await _repository.GetByIdAsync(id, cancellationToken);
+            return entity ?? throw new InvalidOperationException("Cinema not found");
+        }
+
+        // ----------------- Paging -----------------
+        public async Task<PaginatedList<Cinema>> GetPagedAsync(
             int pageIndex,
             int pageSize,
-            string? searchTerm = null,
-            string? city = null,
-            bool? isActive = null,
+            string? search,
+            string? sortColumn,
+            bool sortDescending,
             CancellationToken cancellationToken = default)
         {
-            if (pageIndex < 0) pageIndex = 0;
-            if (pageSize <= 0) pageSize = 10;
+            var query = _repository.Query();
 
-            IQueryable<Cinema> query = _context.Cinemas.AsNoTracking();
+            if (!string.IsNullOrWhiteSpace(search))
+                query = query.Where(c => c.Name.Contains(search));
 
-            if (!string.IsNullOrWhiteSpace(searchTerm))
-            {
-                string term = searchTerm.Trim().ToLower();
-                query = query.Where(c => c.Name.ToLower().Contains(term));
-            }
+            query = ApplySorting(query, sortColumn, sortDescending);
 
-            if (!string.IsNullOrWhiteSpace(city))
-            {
-                string cityTerm = city.Trim().ToLower();
-                query = query.Where(c => c.City.ToLower().Contains(cityTerm));
-            }
+            var totalCount = await query.CountAsync(cancellationToken);
 
-            if (isActive.HasValue)
-            {
-                query = query.Where(c => c.IsActive == isActive.Value);
-            }
-
-            int totalCount = await query.CountAsync(cancellationToken).ConfigureAwait(false);
-
-            var cinemas = await query
-                .OrderBy(c => c.Name)
-                .Skip(pageIndex * pageSize)
+            var items = await query
+                .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
 
-            _logger.LogInformation("Fetched {Count} cinemas for admin paging (Search: {SearchTerm}, City: {City}, Active: {Active})",
-                cinemas.Count, searchTerm, city, isActive);
-
-            return (cinemas, totalCount);
+            return new PaginatedList<Cinema>(items, totalCount, pageIndex, pageSize);
         }
 
-        public async Task<bool> SetCinemaStatusAsync(
-            int cinemaId,
-            bool isActive,
+        // ----------------- CRUD -----------------
+        public async Task<Cinema?> GetByIdAsync(
+            int id,
             CancellationToken cancellationToken = default)
         {
-            var cinema = await _context.Cinemas.FirstOrDefaultAsync(c => c.Id == cinemaId, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (cinema == null)
-            {
-                _logger.LogWarning("Cinema ID {Id} not found for status change.", cinemaId);
-                return false;
-            }
-
-            cinema.IsActive = isActive;
-            _context.Cinemas.Update(cinema);
-
-            _logger.LogInformation("Cinema ID {Id} status set to {Status}.", cinemaId, isActive);
-            return true; // SaveChanges handled by UnitOfWork
+            return await _repository.GetByIdAsync(id, cancellationToken);
         }
 
+        public async Task AddAsync(Cinema entity, CancellationToken cancellationToken = default)
+        {
+            await _repository.AddAsync(entity, cancellationToken);
+        }
 
+        public async Task UpdateAsync(Cinema entity, CancellationToken cancellationToken = default)
+        {
+            await _repository.UpdateAsync(entity, cancellationToken);
+        }
 
-    
+        public async Task RemoveAsync(Cinema entity, CancellationToken cancellationToken = default)
+        {
+            await _repository.RemoveAsync(entity, cancellationToken);
+        }
 
-        public async Task<bool> HardDeleteCinemaAsync(
-            int cinemaId,
+        public async Task CommitAsync()
+        {
+            await _repository.CommitAsync();
+        }
+
+        // ----------------- Validation -----------------
+        public async Task<bool> SlugExistsAsync(
+            string slug,
+            int? excludeId = null,
             CancellationToken cancellationToken = default)
         {
-            var cinema = await _context.Cinemas
-                .Include(c => c.Showtimes)
-                    .ThenInclude(s => s.Bookings)
-                .FirstOrDefaultAsync(c => c.Id == cinemaId, cancellationToken)
-                .ConfigureAwait(false);
+            // Normalize slug for comparison using EF Core supported methods
+            slug = slug.ToLower();
 
-            if (cinema == null)
-            {
-                _logger.LogWarning("Cinema ID {Id} not found for hard delete.", cinemaId);
-                return false;
-            }
+            var query = _repository.Query()
+                .Where(c => c.Name.ToLower().Replace(" ", "-") == slug);
 
-            _context.Bookings.RemoveRange(cinema.Showtimes.SelectMany(s => s.Bookings));
-            _context.Showtimes.RemoveRange(cinema.Showtimes);
-            _context.Cinemas.Remove(cinema);
+            if (excludeId.HasValue)
+                query = query.Where(c => c.Id != excludeId.Value);
 
-            _logger.LogCritical("Cinema ID {Id} and all related data were permanently deleted.", cinemaId);
-            return true; // Commit handled by UnitOfWork
+            return await query.AnyAsync(cancellationToken);
         }
 
-        public Task<(int TotalShowtimes, int UpcomingMovies, decimal Revenue)> GetCinemaDetailsStatsAsync(int cinemaId, CancellationToken cancellationToken = default)
+
+        // ----------------- Convenience Methods -----------------
+        public async Task CreateAsync(
+            CinemaCreateEditViewModel model,
+            CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var entity = _mapper.Map<Cinema>(model);
+            await AddAsync(entity, cancellationToken);
+            await CommitAsync();
         }
 
-        public Task<(DateTime CreatedAt, DateTime? UpdatedAt, DateTime? LastShowtime)> GetCinemaAuditInfoAsync(int cinemaId, CancellationToken cancellationToken = default)
+        public async Task UpdateFromViewModelAsync(
+            CinemaCreateEditViewModel model,
+            CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var entity = await GetCinemaOrThrowAsync(model.Id, cancellationToken);
+            _mapper.Map(model, entity);
+            await UpdateAsync(entity, cancellationToken);
+            await CommitAsync();
+        }
+
+        public async Task DeleteAsync(
+            int id,
+            CancellationToken cancellationToken = default)
+        {
+            var entity = await GetCinemaOrThrowAsync(id, cancellationToken);
+            await RemoveAsync(entity, cancellationToken);
+            await CommitAsync();
+        }
+
+        public async Task<CinemaDetailsViewModel?> GetDetailsByIdAsync(
+            int id,
+            CancellationToken cancellationToken = default)
+        {
+            var entity = await GetByIdAsync(id, cancellationToken);
+            return entity == null ? null : _mapper.Map<CinemaDetailsViewModel>(entity);
         }
     }
 }

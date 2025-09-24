@@ -1,4 +1,6 @@
-﻿namespace VoxTics.Areas.Admin.ViewModels.Cinema
+﻿using System.Collections.Generic;
+
+namespace VoxTics.Areas.Admin.ViewModels.Cinema
 {
     public class CinemaDetailsViewModel
     {
@@ -15,18 +17,19 @@
         public string? Website { get; set; }
         public string? ImageUrl { get; set; }
         public bool IsActive { get; set; }
+        public string Slug { get; set; } = string.Empty;
 
-        // Navigation collections (display names)
+        // Navigation
         public ICollection<string> Halls { get; set; } = new List<string>();
         public ICollection<string> Showtimes { get; set; } = new List<string>();
         public ICollection<string> SocialMediaLinks { get; set; } = new List<string>();
 
-        // Computed properties
+        // Computed
         public int TotalSeats { get; set; }
         public int HallCount { get; set; }
         public int ShowtimeCount { get; set; }
 
         public string StatusBadge => IsActive ? "badge bg-success" : "badge bg-secondary";
-        public string DisplayImage => !string.IsNullOrEmpty(ImageUrl) ? ImageUrl : "/images/default-cinema.jpg";
+        public string DisplayImage => !string.IsNullOrEmpty(ImageUrl) ? ImageUrl : "/images/defaults/placeholder.png";
     }
 }

@@ -9,6 +9,8 @@ namespace VoxTics.Models.Entities
         [Required]
         public int HallId { get; set; }
 
+        public virtual Hall Hall { get; set; } = null!; // Navigation
+
         [Required, MaxLength(1)]
         public string Row { get; set; } = string.Empty;
 
@@ -21,11 +23,10 @@ namespace VoxTics.Models.Entities
         public bool IsActive { get; set; } = true;
         public bool IsAvailable { get; set; } = true;
 
-        [ForeignKey(nameof(HallId))]
-        public virtual Hall Hall { get; set; } = null!;
-        [Required]
-        [StringLength(10)]
+        [Required, StringLength(10)]
         public string SeatNumber { get; set; } = string.Empty;
+
         public virtual ICollection<BookingSeat> BookingSeats { get; set; } = new HashSet<BookingSeat>();
     }
+
 }

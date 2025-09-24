@@ -107,7 +107,7 @@ namespace VoxTics.Areas.Admin.ViewModels.Admin
       
 
             PopularCinemas = (await _dashboardRepository.GetPopularCinemasAsync(popularCount))
-                .Select(c => new CinemaViewModel(c))
+                .Select(c => new CinemaViewModel())
                 .ToList();
 
             // Chart data

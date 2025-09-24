@@ -33,7 +33,7 @@ namespace VoxTics
             // 🟢 Admin Services
             services.AddScoped<IAdminBookingsService, AdminBookingsService>();
             services.AddScoped<IAdminCategoriesService, AdminCategoriesService>();
-            services.AddScoped<IAdminCinemaService, AdminCinemaService>();
+            services.AddScoped<IAdminCinemasService, AdminCinemasService>();
             services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<IAdminMovieService, AdminMovieService>();
             services.AddScoped<IAdminShowtimeService, AdminShowtimeService>();

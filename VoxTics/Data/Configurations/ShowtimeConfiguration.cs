@@ -21,7 +21,6 @@ namespace VoxTics.Data.Configurations
             builder.Property(s => s.Language).HasMaxLength(50).HasDefaultValue("EN");
             builder.Property(s => s.ScreenType).HasMaxLength(50).HasDefaultValue("Standard");
             builder.Property(s => s.AvailableSeats).IsRequired();
-            builder.Property(s => s.RowVersion).IsRowVersion();
             builder.Property(s => s.IsCancelled).HasDefaultValue(false);
 
             // Relationships

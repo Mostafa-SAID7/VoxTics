@@ -1,59 +1,55 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace VoxTics.Areas.Admin.ViewModels.Cinema
 {
     public class CinemaCreateEditViewModel
     {
-        public int Id { get; set; } // For edit scenarios
+        public int Id { get; set; } // For Edit scenarios
 
         [Required(ErrorMessage = "Cinema name is required")]
-        [StringLength(120, ErrorMessage = "Name cannot exceed 120 characters")]
+        [StringLength(120)]
         public string Name { get; set; } = string.Empty;
 
-        [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters")]
+        [StringLength(500)]
         public string? Description { get; set; }
 
-        [EmailAddress(ErrorMessage = "Invalid email format")]
-        [StringLength(100, ErrorMessage = "Email cannot exceed 100 characters")]
+        [EmailAddress]
+        [StringLength(100)]
         public string? Email { get; set; }
 
-        [Phone(ErrorMessage = "Invalid phone number")]
-        [StringLength(20, ErrorMessage = "Phone number cannot exceed 20 characters")]
+        [Phone]
+        [StringLength(20)]
         public string? Phone { get; set; }
 
-        [StringLength(200, ErrorMessage = "Address cannot exceed 200 characters")]
+        [StringLength(200)]
         public string? Address { get; set; }
 
-        [StringLength(100, ErrorMessage = "City cannot exceed 100 characters")]
+        [StringLength(100)]
         public string? City { get; set; }
 
-        [StringLength(100, ErrorMessage = "State cannot exceed 100 characters")]
+        [StringLength(100)]
         public string? State { get; set; }
 
-        [StringLength(100, ErrorMessage = "Country cannot exceed 100 characters")]
+        [StringLength(100)]
         public string? Country { get; set; }
 
-        [StringLength(20, ErrorMessage = "Postal code cannot exceed 20 characters")]
+        [StringLength(20)]
         public string? PostalCode { get; set; }
 
-        [Url(ErrorMessage = "Invalid website URL")]
-        [StringLength(200, ErrorMessage = "Website URL cannot exceed 200 characters")]
+        [Url]
+        [StringLength(200)]
         public string? Website { get; set; }
 
-        [Url(ErrorMessage = "Invalid image URL")]
-        [StringLength(200, ErrorMessage = "Image URL cannot exceed 200 characters")]
+        [Url]
+        [StringLength(200)]
         public string? ImageUrl { get; set; }
 
+        public IFormFile? ImageFile { get; set; }
+        public string Slug { get; set; } = string.Empty;
         public bool IsActive { get; set; } = true;
 
-        // -------------------------
-        // Optional display properties
-        // -------------------------
-        public int HallCount { get; set; } = 0;
-        public int TotalSeats { get; set; } = 0;
-        public int ShowtimeCount { get; set; } = 0;
-
-        public string DisplayImage => !string.IsNullOrEmpty(ImageUrl) ? ImageUrl : "/images/default-cinema.jpg";
+        // Display fallback for image
+        public string DisplayImage => !string.IsNullOrEmpty(ImageUrl) ? ImageUrl : "/images/defaults/placeholder.png";
     }
 }

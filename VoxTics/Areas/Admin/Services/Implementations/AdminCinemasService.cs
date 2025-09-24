@@ -1,142 +1,116 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using VoxTics.Areas.Admin.Repositories.IRepositories;
-using VoxTics.Helpers;
+using VoxTics.Areas.Admin.Services.Interfaces;
+using VoxTics.Areas.Admin.ViewModels.Cinema;
+using VoxTics.Helpers.ImgsHelper;
 using VoxTics.Models.Entities;
-using VoxTics.Services.Interfaces;
-using VoxTics.Data.UoW;
 
-namespace VoxTics.Services.Implementations
+namespace VoxTics.Areas.Admin.Services.Implementations
 {
-    /// <summary>
-    /// Service for admin-side cinema management.
-    /// Handles CRUD, validation, status, stats, and audit info.
-    /// </summary>
-    public class AdminCinemaService : IAdminCinemaService
+    public class AdminCinemasService : IAdminCinemasService
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IAdminCinemasRepository _cinemaRepository;
+        private readonly IAdminCinemasRepository _cinemaRepo;
+        private readonly IMapper _mapper;
+        private readonly ImageManager _imageManager;
 
-        public AdminCinemaService(IUnitOfWork unitOfWork, IAdminCinemasRepository cinemaRepository)
+        public AdminCinemasService(
+            IAdminCinemasRepository cinemaRepo,
+            IMapper mapper,
+            ImageManager imageManager)
         {
-            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-            _cinemaRepository = cinemaRepository ?? throw new ArgumentNullException(nameof(cinemaRepository));
+            _cinemaRepo = cinemaRepo ?? throw new ArgumentNullException(nameof(cinemaRepo));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _imageManager = imageManager ?? throw new ArgumentNullException(nameof(imageManager));
         }
 
-        #region Paging & Listing
-
-        public async Task<(IEnumerable<Cinema> Cinemas, int TotalCount)> GetPagedCinemasAsync(
+        // ---------- Paging ----------
+        public async Task<PaginatedList<CinemaViewModel>> GetPagedAsync(
             int pageIndex,
             int pageSize,
-            string? searchTerm = null,
-            string? city = null,
-            bool? isActive = null,
+            string? search = null,
+            string? sortColumn = null,
+            bool sortDescending = false,
             CancellationToken cancellationToken = default)
         {
-            return await _cinemaRepository.GetPagedCinemasAsync(pageIndex, pageSize, searchTerm, city, isActive, cancellationToken)
-                .ConfigureAwait(false);
+            var pagedEntities = await _cinemaRepo.GetPagedAsync(pageIndex, pageSize, search, sortColumn, sortDescending, cancellationToken);
+            var vms = pagedEntities.Items.Select(c => _mapper.Map<CinemaViewModel>(c)).ToList();
+            return new PaginatedList<CinemaViewModel>(vms, pagedEntities.TotalCount, pageIndex, pageSize);
         }
 
-        #endregion
-
-        #region CRUD Operations
-
-        public async Task<Cinema?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        // ---------- Details ----------
+        public async Task<CinemaDetailsViewModel?> GetDetailsByIdAsync(
+            int id,
+            CancellationToken cancellationToken = default)
         {
-            return await _cinemaRepository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
+            var entity = await _cinemaRepo.GetByIdAsync(id, cancellationToken);
+            return entity == null ? null : _mapper.Map<CinemaDetailsViewModel>(entity);
         }
 
-        public async Task<List<string>> AddCinemaAsync(Cinema cinema, CancellationToken cancellationToken = default)
+        // ---------- Create ----------
+        public async Task CreateAsync(
+            CinemaCreateEditViewModel model,
+            CancellationToken cancellationToken = default)
         {
-            var errors = ValidateCinema(cinema);
-            if (errors.Any()) return errors;
+            var entity = _mapper.Map<Cinema>(model);
 
-            await _cinemaRepository.AddAsync(cinema, cancellationToken).ConfigureAwait(false);
-            await _unitOfWork.CommitAsync(cancellationToken).ConfigureAwait(false);
-            return errors;
-        }
-
-        public async Task<List<string>> UpdateCinemaAsync(Cinema cinema, CancellationToken cancellationToken = default)
-        {
-            var errors = ValidateCinema(cinema);
-            if (errors.Any()) return errors;
-
-            await _cinemaRepository.UpdateAsync(cinema, cancellationToken).ConfigureAwait(false);
-            await _unitOfWork.CommitAsync(cancellationToken).ConfigureAwait(false);
-            return errors;
-        }
-
-        public async Task<bool> DeleteCinemaAsync(int cinemaId, CancellationToken cancellationToken = default)
-        {
-            var success = await _cinemaRepository.HardDeleteCinemaAsync(cinemaId, cancellationToken).ConfigureAwait(false);
-            if (success)
-                await _unitOfWork.CommitAsync(cancellationToken).ConfigureAwait(false);
-            return success;
-        }
-
-        #endregion
-
-        #region Status Management
-
-        public async Task<bool> SetCinemaStatusAsync(int cinemaId, bool isActive, CancellationToken cancellationToken = default)
-        {
-            var success = await _cinemaRepository.SetCinemaStatusAsync(cinemaId, isActive, cancellationToken).ConfigureAwait(false);
-            if (success)
-                await _unitOfWork.CommitAsync(cancellationToken).ConfigureAwait(false);
-            return success;
-        }
-
-        #endregion
-
-        #region Statistics & Audit
-
-        public async Task<(int TotalShowtimes, int UpcomingMovies, decimal Revenue)> GetCinemaStatsAsync(int cinemaId, CancellationToken cancellationToken = default)
-        {
-            return await _cinemaRepository.GetCinemaDetailsStatsAsync(cinemaId, cancellationToken).ConfigureAwait(false);
-        }
-
-        public async Task<(DateTime CreatedAt, DateTime? UpdatedAt, DateTime? LastShowtime)> GetCinemaAuditInfoAsync(int cinemaId, CancellationToken cancellationToken = default)
-        {
-            return await _cinemaRepository.GetCinemaAuditInfoAsync(cinemaId, cancellationToken).ConfigureAwait(false);
-        }
-
-        #endregion
-
-        #region Private Helpers
-
-        /// <summary>
-        /// Validates a Cinema entity and returns a list of validation errors.
-        /// </summary>
-        private List<string> ValidateCinema(Cinema cinema)
-        {
-            var errors = new List<string>();
-
-            if (cinema == null)
+            // Handle optional image upload
+            if (model.ImageFile != null && _imageManager.IsValidImageFile(model.ImageFile))
             {
-                errors.Add("Cinema cannot be null.");
-                return errors;
+                var fileName = await _imageManager.SaveImageAsync(model.ImageFile, ImageType.Cinema, entity.Name);
+                entity.ImageUrl = fileName;
             }
 
-            if (string.IsNullOrWhiteSpace(cinema.Name))
-                errors.Add("Cinema name is required.");
-
-            if (!string.IsNullOrWhiteSpace(cinema.Email) && !ValidationHelpers.IsValidEmail(cinema.Email))
-                errors.Add("Invalid email format.");
-
-            if (!string.IsNullOrWhiteSpace(cinema.Phone) && !ValidationHelpers.IsValidPhoneNumber(cinema.Phone))
-                errors.Add("Invalid phone number.");
-
-            if (cinema.TotalSeats <= 0)
-                errors.Add("Total seats must be greater than zero.");
-
-        
-
-            return errors;
+            await _cinemaRepo.AddAsync(entity, cancellationToken);
+            await _cinemaRepo.CommitAsync();
         }
 
-        #endregion
+        // ---------- Update ----------
+        public async Task UpdateAsync(
+            CinemaCreateEditViewModel model,
+            CancellationToken cancellationToken = default)
+        {
+            var entity = await _cinemaRepo.GetByIdAsync(model.Id, cancellationToken)
+                         ?? throw new InvalidOperationException("Cinema not found");
+
+            // Map updated fields
+            _mapper.Map(model, entity);
+
+            // Handle image update
+            if (model.ImageFile != null && _imageManager.IsValidImageFile(model.ImageFile))
+            {
+                if (!string.IsNullOrEmpty(entity.ImageUrl))
+                    _imageManager.DeleteFile(ImageType.Cinema, entity.Name, entity.ImageUrl);
+
+                var fileName = await _imageManager.SaveImageAsync(model.ImageFile, ImageType.Cinema, entity.Name);
+                entity.ImageUrl = fileName;
+            }
+
+            await _cinemaRepo.UpdateAsync(entity, cancellationToken);
+            await _cinemaRepo.CommitAsync();
+        }
+
+        // ---------- Delete ----------
+        public async Task DeleteAsync(
+            int id,
+            CancellationToken cancellationToken = default)
+        {
+            var entity = await _cinemaRepo.GetByIdAsync(id, cancellationToken)
+                         ?? throw new InvalidOperationException("Cinema not found");
+
+            _imageManager.DeleteFolder(ImageType.Cinema, entity.Name);
+
+            await _cinemaRepo.RemoveAsync(entity, cancellationToken);
+            await _cinemaRepo.CommitAsync();
+        }
+
+        // ---------- Slug Check ----------
+        public async Task<bool> SlugExistsAsync(
+            string slug,
+            int? excludeId = null,
+            CancellationToken cancellationToken = default)
+        {
+            return await _cinemaRepo.SlugExistsAsync(slug, excludeId, cancellationToken);
+        }
     }
 }

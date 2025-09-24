@@ -1,232 +1,118 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using VoxTics.Areas.Admin.Services.Interfaces;
 using VoxTics.Areas.Admin.ViewModels.Cinema;
-using VoxTics.Models.Entities;
-using VoxTics.Services.Interfaces;
 
 namespace VoxTics.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = $"{SD.SuperAdminRole}")]
-
+    [Route("admin/cinemas")]
+    [Authorize(Roles = "SuperAdmin")] // Adjust role if needed
     public class CinemasController : Controller
     {
-        private readonly IAdminCinemaService _cinemaService;
+        private readonly IAdminCinemasService _cinemaService;
 
-        public CinemasController(IAdminCinemaService cinemaService)
+        public CinemasController(IAdminCinemasService cinemaService)
         {
             _cinemaService = cinemaService ?? throw new ArgumentNullException(nameof(cinemaService));
         }
 
-        #region List & Search
-        public async Task<IActionResult> Index(
-            string? searchTerm,
-            string? city,
-            bool? isActive,
-            int pageIndex = 1,
-            int pageSize = 10,
-            CancellationToken cancellationToken = default)
+        // ---------- Index ----------
+        [HttpGet("")]
+        public async Task<IActionResult> Index(string? search, int page = 1, int pageSize = 10)
         {
-            var (cinemas, totalCount) = await _cinemaService.GetPagedCinemasAsync(
-                pageIndex - 1,
-                pageSize,
-                searchTerm,
-                city,
-                isActive,
-                cancellationToken);
-
-            var vm = cinemas.Select(c => new CinemaTableViewModel
-            {
-                Id = c.Id,
-                Name = c.Name,
-                City = c.City ?? string.Empty,
-                State = c.State ?? string.Empty,
-                Country = c.Country ?? string.Empty,
-                IsActive = c.IsActive,
-                HallCount = c.Halls?.Count ?? 0,
-                TotalSeats = c.TotalSeats,
-                ShowtimeCount = c.Showtimes?.Count ?? 0
-            }).ToList();
-
-            ViewBag.TotalCount = totalCount;
-            ViewBag.PageIndex = pageIndex;
-            ViewBag.PageSize = pageSize;
-
-            return View(vm);
+            var pagedCinemas = await _cinemaService.GetPagedAsync(page, pageSize, search);
+            ViewBag.Search = search;
+            return View(pagedCinemas);
         }
-        #endregion
 
-        #region Details
-        public async Task<IActionResult> Details(int id, CancellationToken cancellationToken = default)
+        // ---------- Details ----------
+        [HttpGet("details/{id:int}")]
+        public async Task<IActionResult> Details(int id)
         {
-            var cinema = await _cinemaService.GetByIdAsync(id, cancellationToken);
+            var cinema = await _cinemaService.GetDetailsByIdAsync(id);
             if (cinema == null) return NotFound();
-
-            var vm = new CinemaDetailsViewModel
-            {
-                Id = cinema.Id,
-                Name = cinema.Name,
-                Description = cinema.Description,
-                Email = cinema.Email,
-                Phone = cinema.Phone,
-                Address = cinema.Address,
-                City = cinema.City,
-                State = cinema.State,
-                Country = cinema.Country,
-                PostalCode = cinema.PostalCode,
-                Website = cinema.Website,
-                ImageUrl = cinema.ImageUrl,
-                IsActive = cinema.IsActive,
-                HallCount = cinema.Halls?.Count ?? 0,
-                ShowtimeCount = cinema.Showtimes?.Count ?? 0,
-                TotalSeats = cinema.TotalSeats,
-                Halls = cinema.Halls?.Select(h => h.Name).ToList() ?? new List<string>(),
-                Showtimes = cinema.Showtimes?.Select(s => s.Movie?.Title ?? string.Empty).ToList() ?? new List<string>()
-            };
-
-            return View(vm);
+            return View(cinema);
         }
-        #endregion
 
-        #region Create
-        [HttpGet]
+        // ---------- Create ----------
+        [HttpGet("create")]
         public IActionResult Create()
         {
             return View(new CinemaCreateEditViewModel());
         }
 
-        [HttpPost]
+        [HttpPost("create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CinemaCreateEditViewModel vm, CancellationToken cancellationToken)
+        public async Task<IActionResult> Create(CinemaCreateEditViewModel model)
         {
-            if (!ModelState.IsValid)
-                return View(vm);
+            if (!ModelState.IsValid) return View(model);
 
-            var cinema = new Cinema
+            if (await _cinemaService.SlugExistsAsync(model.Slug))
             {
-                Name = vm.Name,
-                Description = vm.Description,
-                Email = vm.Email,
-                Phone = vm.Phone,
-                Address = vm.Address,
-                City = vm.City,
-                State = vm.State,
-                Country = vm.Country,
-                PostalCode = vm.PostalCode,
-                Website = vm.Website,
-                ImageUrl = vm.ImageUrl,
-                IsActive = vm.IsActive,
-            };
-
-            var errors = await _cinemaService.AddCinemaAsync(cinema, cancellationToken);
-            if (errors.Any())
-            {
-                foreach (var error in errors)
-                    ModelState.AddModelError(string.Empty, error);
-
-                return View(vm);
+                ModelState.AddModelError("Slug", "Slug already exists.");
+                return View(model);
             }
 
+            await _cinemaService.CreateAsync(model);
+            TempData["Success"] = "Cinema created successfully.";
             return RedirectToAction(nameof(Index));
         }
-        #endregion
 
-        #region Edit
-        [HttpGet]
-        public async Task<IActionResult> Edit(int id, CancellationToken cancellationToken)
+        // ---------- Edit ----------
+        [HttpGet("edit/{id:int}")]
+        public async Task<IActionResult> Edit(int id)
         {
-            var cinema = await _cinemaService.GetByIdAsync(id, cancellationToken);
-            if (cinema == null) return NotFound();
+            var details = await _cinemaService.GetDetailsByIdAsync(id);
+            if (details == null) return NotFound();
 
-            var vm = new CinemaCreateEditViewModel
+            var model = new CinemaCreateEditViewModel
             {
-                Id = cinema.Id,
-                Name = cinema.Name,
-                Description = cinema.Description,
-                Email = cinema.Email,
-                Phone = cinema.Phone,
-                Address = cinema.Address,
-                City = cinema.City,
-                State = cinema.State,
-                Country = cinema.Country,
-                PostalCode = cinema.PostalCode,
-                Website = cinema.Website,
-                ImageUrl = cinema.ImageUrl,
-                IsActive = cinema.IsActive,
-                TotalSeats = cinema.TotalSeats
+                Id = details.Id,
+                Name = details.Name,
+                Description = details.Description,
+                Email = details.Email,
+                Phone = details.Phone,
+                Address = details.Address,
+                City = details.City,
+                State = details.State,
+                Country = details.Country,
+                PostalCode = details.PostalCode,
+                Website = details.Website,
+                ImageUrl = details.ImageUrl,
+                Slug = details.Slug,
+                IsActive = details.IsActive
             };
 
-            return View(vm);
+            return View(model);
         }
 
-        [HttpPost]
+        [HttpPost("edit/{id:int}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, CinemaCreateEditViewModel vm, CancellationToken cancellationToken)
+        public async Task<IActionResult> Edit(int id, CinemaCreateEditViewModel model)
         {
-            if (id != vm.Id) return BadRequest();
+            if (id != model.Id) return BadRequest();
+            if (!ModelState.IsValid) return View(model);
 
-            if (!ModelState.IsValid)
-                return View(vm);
-
-            var cinema = new Cinema
+            if (await _cinemaService.SlugExistsAsync(model.Slug, id))
             {
-                Id = vm.Id,
-                Name = vm.Name,
-                Description = vm.Description,
-                Email = vm.Email,
-                Phone = vm.Phone,
-                Address = vm.Address,
-                City = vm.City,
-                State = vm.State,
-                Country = vm.Country,
-                PostalCode = vm.PostalCode,
-                Website = vm.Website,
-                ImageUrl = vm.ImageUrl,
-                IsActive = vm.IsActive,
-            };
-
-            var errors = await _cinemaService.UpdateCinemaAsync(cinema, cancellationToken);
-            if (errors.Any())
-            {
-                foreach (var error in errors)
-                    ModelState.AddModelError(string.Empty, error);
-
-                return View(vm);
+                ModelState.AddModelError("Slug", "Slug already exists.");
+                return View(model);
             }
 
+            await _cinemaService.UpdateAsync(model);
+            TempData["Success"] = "Cinema updated successfully.";
             return RedirectToAction(nameof(Index));
         }
-        #endregion
 
-        #region Activate / Deactivate
-        [HttpPost]
+        // ---------- Delete ----------
+        [HttpPost("delete/{id:int}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ToggleStatus(int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> Delete(int id)
         {
-            var cinema = await _cinemaService.GetByIdAsync(id, cancellationToken);
-            if (cinema == null) return NotFound();
-
-            var result = await _cinemaService.SetCinemaStatusAsync(id, !cinema.IsActive, cancellationToken);
-            if (!result) return BadRequest("Could not change cinema status.");
-
+            await _cinemaService.DeleteAsync(id);
+            TempData["Success"] = "Cinema deleted successfully.";
             return RedirectToAction(nameof(Index));
         }
-        #endregion
-
-        #region Delete
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
-        {
-            var result = await _cinemaService.DeleteCinemaAsync(id, cancellationToken);
-            if (!result) return BadRequest("Could not delete cinema.");
-
-            return RedirectToAction(nameof(Index));
-        }
-        #endregion
     }
 }

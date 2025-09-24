@@ -1,56 +1,36 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using Microsoft.AspNetCore.Http;
-using VoxTics.Models.ViewModels.Showtime;
 
 namespace VoxTics.Areas.Admin.ViewModels.Cinema
 {
     public class CinemaViewModel
     {
-        private Models.Entities.Cinema c;
-
-        public CinemaViewModel(Models.Entities.Cinema c)
-        {
-            this.c = c;
-        }
-
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Cinema name is required")]
-        [StringLength(200, ErrorMessage = "Cinema name cannot exceed 200 characters")]
         [Display(Name = "Cinema Name")]
         public string Name { get; set; } = string.Empty;
-        [EmailAddress]
+
+        [Display(Name = "Email")]
         public string? Email { get; set; }
-        [StringLength(500, ErrorMessage = "Address cannot exceed 500 characters")]
-        [Display(Name = "Address")]
-        public string? Address { get; set; } = string.Empty;
 
-
-        [Phone(ErrorMessage = "Invalid phone number format")]
-        [StringLength(20, ErrorMessage = "Phone number cannot exceed 20 characters")]
-        [Display(Name = "Phone Number")]
+        [Display(Name = "Phone")]
         public string? Phone { get; set; }
 
+        [Display(Name = "Address")]
+        public string? Address { get; set; }
 
-
-        [Display(Name = "Cinema Image")]
-        public IFormFile? ImageFile { get; set; }
-
-        [Display(Name = "Image URL")]
-        public Uri? ImageUrl { get; set; }
-
-        [Display(Name = "Is Active")]
-        public bool IsActive { get; set; } = true;
-
-
+        [Display(Name = "Total Seats")]
         public int TotalSeats { get; set; }
+
+        [Display(Name = "Halls")]
         public int HallCount { get; set; }
+
+        [Display(Name = "Showtimes")]
         public int ShowtimeCount { get; set; }
 
+        [Display(Name = "Is Active")]
+        public bool IsActive { get; set; }
 
-        public List<ShowtimeVM> Showtimes { get; set; } = new List<ShowtimeVM>();
-        public object MovieCount { get; internal set; }
-        public object Movies { get; internal set; }
+        [Display(Name = "Image")]
+        public string DisplayImage { get; set; } = "/images/defaults/placeholder.png";
     }
 }
