@@ -1,4 +1,5 @@
 ﻿
+
 namespace VoxTics
 {
     public static class ServiceCollectionExtensions
@@ -40,6 +41,7 @@ namespace VoxTics
 
             // 🟢 General Services
             services.AddScoped<IBookingService, BookingService>();
+            services.AddScoped<IHallService, HallService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<ICinemaService, CinemaService>();
             services.AddScoped<IHomeService, HomeService>();

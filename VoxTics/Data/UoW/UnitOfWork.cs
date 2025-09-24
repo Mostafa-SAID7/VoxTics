@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using VoxTics.Data;
-using VoxTics.Data.UoW;
-using VoxTics.Repositories.IRepositories;
 using VoxTics.Areas.Admin.Repositories.IRepositories;
+using VoxTics.Data;
+using VoxTics.Repositories.IRepositories;
 
 namespace VoxTics.Repositories
 {
@@ -19,8 +18,6 @@ namespace VoxTics.Repositories
         public IShowtimesRepository Showtimes { get; }
         public IHomeRepository Home { get; }
 
-        // Identity
-
         // Admin
         public IAdminBookingsRepository AdminBookings { get; }
         public IAdminCategoriesRepository AdminCategories { get; }
@@ -29,6 +26,7 @@ namespace VoxTics.Repositories
         public IAdminShowtimesRepository AdminShowtimes { get; }
         public IDashboardRepository Dashboard { get; }
 
+        // NOTE: We _do not_ new-up repositories here. Repositories are injected by DI.
         public UnitOfWork(
             MovieDbContext context,
             IBookingRepository bookings,
@@ -43,57 +41,56 @@ namespace VoxTics.Repositories
             IAdminMoviesRepository adminMovies,
             IAdminShowtimesRepository adminShowtimes,
             IDashboardRepository dashboard)
-
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
 
-            Bookings = bookings;
-            Categories = categories;
-            Cinemas = cinemas;
-            Movies = movies;
-            Showtimes = showtimes;
-            Home = home;
+            Bookings = bookings ?? throw new ArgumentNullException(nameof(bookings));
+            Categories = categories ?? throw new ArgumentNullException(nameof(categories));
+            Cinemas = cinemas ?? throw new ArgumentNullException(nameof(cinemas));
+            Movies = movies ?? throw new ArgumentNullException(nameof(movies));
+            Showtimes = showtimes ?? throw new ArgumentNullException(nameof(showtimes));
+            Home = home ?? throw new ArgumentNullException(nameof(home));
 
-
-            AdminBookings = adminBookings;
-            AdminCategories = adminCategories;
-            AdminCinemas = adminCinemas;
-            AdminMovies = adminMovies;
-            AdminShowtimes = adminShowtimes;
-            Dashboard = dashboard;
+            AdminBookings = adminBookings ?? throw new ArgumentNullException(nameof(adminBookings));
+            AdminCategories = adminCategories ?? throw new ArgumentNullException(nameof(adminCategories));
+            AdminCinemas = adminCinemas ?? throw new ArgumentNullException(nameof(adminCinemas));
+            AdminMovies = adminMovies ?? throw new ArgumentNullException(nameof(adminMovies));
+            AdminShowtimes = adminShowtimes ?? throw new ArgumentNullException(nameof(adminShowtimes));
+            Dashboard = dashboard ?? throw new ArgumentNullException(nameof(dashboard));
         }
 
-        public async Task<int> CompleteAsync() => await _context.SaveChangesAsync();
+        public async Task CommitAsync() => await _context.SaveChangesAsync().ConfigureAwait(false);
+
         public async Task CommitAsync<T>(T entity)
         {
-            _context.Update(entity); 
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            _context.Update(entity);
             await _context.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        public async Task CommitAsync()
-        {
-            await _context.SaveChangesAsync();
-        }
         #region Dispose
         private bool _disposed = false;
+
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposed)
             {
-                if (disposing) _context.Dispose();
+                if (disposing) _context?.Dispose();
                 _disposed = true;
             }
         }
+
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
         public async ValueTask DisposeAsync()
         {
             if (!_disposed)
             {
-                await _context.DisposeAsync();
+                if (_context != null) await _context.DisposeAsync().ConfigureAwait(false);
                 _disposed = true;
                 GC.SuppressFinalize(this);
             }

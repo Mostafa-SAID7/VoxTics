@@ -1,9 +1,16 @@
-﻿@model VoxTics.Models.Entities.Showtime
+﻿@model VoxTics.Areas.Admin.ViewModels.Showtime.ShowtimeDetailsViewModel
+
+@{
+    ViewData["Title"] = "Delete Showtime";
+}
 
 <h1>Delete Showtime</h1>
-<p>Are you sure you want to delete the showtime for <strong>@Model.Movie.Title</strong> at <strong>@Model.Cinema.Name</strong>?</p>
 
-<form asp-action="Delete" method="post">
+<div class="alert alert-danger">
+    Are you sure you want to delete the showtime for <strong>@Model.MovieTitle</strong> at <strong>@Model.CinemaName</strong> in hall <strong>@Model.HallName</strong> starting at <strong>@Model.StartTime.ToString("yyyy-MM-dd HH:mm")</strong>?
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
     <input type="hidden" asp-for="Id" />
     <button type="submit" class="btn btn-danger">Delete</button>
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>

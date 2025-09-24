@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using VoxTics.Areas.Admin.Repositories.IRepositories;
-using VoxTics.Repositories;
 using VoxTics.Repositories.IRepositories;
 
 namespace VoxTics.Data.UoW
@@ -16,8 +15,6 @@ namespace VoxTics.Data.UoW
         IShowtimesRepository Showtimes { get; }
         IHomeRepository Home { get; }
 
-        // Identity
-
         // Admin
         IAdminBookingsRepository AdminBookings { get; }
         IAdminCategoriesRepository AdminCategories { get; }
@@ -26,7 +23,10 @@ namespace VoxTics.Data.UoW
         IAdminShowtimesRepository AdminShowtimes { get; }
         IDashboardRepository Dashboard { get; }
 
+        /// <summary>Update entity then save (helper)</summary>
         Task CommitAsync<T>(T entity);
+
+        /// <summary>Save pending changes in DbContext</summary>
         Task CommitAsync();
     }
 }

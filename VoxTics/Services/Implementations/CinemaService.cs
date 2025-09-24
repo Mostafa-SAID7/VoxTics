@@ -1,68 +1,132 @@
-﻿using System;
+﻿using AutoMapper;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using VoxTics.Areas.Identity.Models.Entities;
-using VoxTics.Data.UoW;
-using VoxTics.Helpers;
+using VoxTics.Helpers.ImgsHelper;
+using VoxTics.Models.ViewModels.Cinema;
 using VoxTics.Services.Interfaces;
 
 namespace VoxTics.Services.Implementations
 {
     public class CinemaService : ICinemaService
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<CinemaService> _logger;
+        private readonly ICinemasRepository _cinemasRepository;
+        private readonly IMapper _mapper;
+        private readonly ImageManager _imageManager;
 
-        public CinemaService(IUnitOfWork unitOfWork, ILogger<CinemaService> logger)
+        public CinemaService(
+            ICinemasRepository cinemasRepository,
+            IMapper mapper,
+            ImageManager imageManager)
         {
-            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _cinemasRepository = cinemasRepository ?? throw new ArgumentNullException(nameof(cinemasRepository));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _imageManager = imageManager ?? throw new ArgumentNullException(nameof(imageManager));
         }
 
-        public async Task<IEnumerable<Cinema>> GetActiveCinemasAsync(CancellationToken cancellationToken = default)
-        {
-            return await _unitOfWork.Cinemas
-                .FindAsync(c => c.IsActive, cancellationToken)
-                .ConfigureAwait(false);
-        }
+        // ---------------------------
+        // PUBLIC METHODS
+        // ---------------------------
 
-        public async Task<PaginatedList<Cinema>> GetPagedCinemasAsync(
-            int pageIndex,
-            int pageSize,
-            string? searchTerm = null,
-            string? sortOrder = null,
-            CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<CinemaVM>> GetActiveCinemasAsync(CancellationToken cancellationToken = default)
         {
-            var query = _unitOfWork.Cinemas.Query().Where(c => c.IsActive);
+            var cinemas = await _cinemasRepository.GetActiveCinemasAsync(cancellationToken);
+            var mapped = _mapper.Map<IEnumerable<CinemaVM>>(cinemas);
 
-            if (!string.IsNullOrWhiteSpace(searchTerm))
+            // Attach display image paths
+            foreach (var cinema in mapped)
             {
-                string sanitized = ValidationHelpers.SanitizeInput(searchTerm);
-                query = query.Where(c => c.Name.Contains(sanitized) || c.City.Contains(sanitized));
+                cinema.DisplayImage = _imageManager.GetImageWebPath(
+                    ImageType.Cinema,
+                    cinema.Id.ToString(),
+                    cinema.DisplayImage);
+            }
+            return mapped;
+        }
+
+        public async Task<(IEnumerable<CinemaVM> Items, int TotalCount)> GetPagedCinemasAsync(
+            int page, int pageSize, string? search, string? sort, CancellationToken cancellationToken = default)
+        {
+            var (items, totalCount) = await _cinemasRepository.GetPagedCinemasAsync(page, pageSize, search, sort, cancellationToken);
+            var mapped = _mapper.Map<IEnumerable<CinemaVM>>(items);
+
+            foreach (var cinema in mapped)
+            {
+                cinema.DisplayImage = _imageManager.GetImageWebPath(
+                    ImageType.Cinema,
+                    cinema.Id.ToString(),
+                    cinema.DisplayImage);
             }
 
-            //query = query.ApplySorting(sortOrder ?? "Name", c => c.Name);
-
-            return await query.ToPaginatedListAsync(pageIndex, pageSize, cancellationToken);
+            return (mapped, totalCount);
         }
 
-        public async Task<Cinema?> GetCinemaDetailsAsync(int cinemaId, CancellationToken cancellationToken = default)
-        {
-            return await _unitOfWork.Cinemas.GetByIdAsync(cinemaId, cancellationToken);
-        }
-
-        public async Task<IEnumerable<Showtime>> GetUpcomingShowtimesAsync(
-            int cinemaId,
-            int daysAhead = 7,
+        public async Task<CinemaDetailsVM?> GetCinemaDetailsAsync(
+            int id,
             CancellationToken cancellationToken = default)
         {
-            var startDate = DateTime.UtcNow;
-            var endDate = startDate.AddDays(daysAhead);
+            var cinema = await _cinemasRepository.GetCinemaDetailsAsync(id, cancellationToken);
+            if (cinema == null) return null;
 
-            return await _unitOfWork.Showtimes.GetByCinemaAndDateRangeAsync(cinemaId, startDate, endDate, cancellationToken);
+            var mapped = _mapper.Map<CinemaDetailsVM>(cinema);
+
+            var files = _imageManager.GetImageFileNames(ImageType.Cinema, id.ToString());
+            Console.WriteLine($"[DEBUG] Found files: {string.Join(", ", files)}");
+
+            if (!string.IsNullOrWhiteSpace(cinema.DisplayImage) &&
+                !cinema.DisplayImage.Contains("placeholder", StringComparison.OrdinalIgnoreCase))
+            {
+                mapped.DisplayImage = _imageManager.GetImageWebPath(
+                    ImageType.Cinema,
+                    id.ToString(),
+                    cinema.DisplayImage);
+            }
+            else if (files.Length > 0)
+            {
+                mapped.DisplayImage = _imageManager.GetImageWebPath(
+                    ImageType.Cinema,
+                    id.ToString(),
+                    files[0]);
+            }
+            else
+            {
+                mapped.DisplayImage = _imageManager.GetImageWebPath(
+                    ImageType.Cinema,
+                    id.ToString(),
+                    null);
+            }
+
+            return mapped;
+        }
+
+
+        public async Task<string[]> GetCinemaImagesAsync(int cinemaId)
+        {
+            var cinema = await _cinemasRepository.GetByIdAsync(cinemaId);
+            if (cinema == null) return Array.Empty<string>();
+
+            return _imageManager.GetImageFileNames(ImageType.Cinema, cinema.Id.ToString());
+        }
+
+        public string GetCinemaImageWebPath(int cinemaId, string? imageName = null)
+        {
+            return _imageManager.GetImageWebPath(ImageType.Cinema, cinemaId.ToString(), imageName);
+        }
+
+        public string GetMainCinemaImagePath(int cinemaId, string? displayImage)
+        {
+            // Ensure non-empty image
+            if (string.IsNullOrWhiteSpace(displayImage) || displayImage == "/images/defaults/placeholder.png")
+            {
+                // Try to find any gallery image first
+                var images = _imageManager.GetImageFileNames(ImageType.Cinema, cinemaId.ToString());
+                if (images.Length > 0)
+                    return _imageManager.GetImageWebPath(ImageType.Cinema, cinemaId.ToString(), images[0]);
+            }
+            
+            // Validate given display image path
+            return _imageManager.GetImageWebPath(ImageType.Cinema, cinemaId.ToString(), displayImage);
         }
     }
 }

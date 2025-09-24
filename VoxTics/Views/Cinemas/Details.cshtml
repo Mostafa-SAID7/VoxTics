@@ -1,472 +1,45 @@
 ﻿@model VoxTics.Models.ViewModels.Cinema.CinemaDetailsVM
+
 @{
     ViewData["Title"] = Model.Name;
+    var images = ViewBag.Images as string[] ?? Array.Empty<string>();
 }
 
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        color: #333;
-        line-height: 1.6;
-    }
-
-    .cinema-details-container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 2rem;
-    }
-
-    .back-button {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.8rem 1.5rem;
-        background: rgba(255,255,255,0.1);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.2);
-        border-radius: 50px;
-        color: white;
-        text-decoration: none;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        margin-bottom: 2rem;
-    }
-
-        .back-button:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateY(-2px);
-            color: white;
-            text-decoration: none;
-        }
-
-    .cinema-hero {
-        background: rgba(255,255,255,0.1);
-        backdrop-filter: blur(20px);
-        border-radius: 30px;
-        padding: 0;
-        margin-bottom: 2rem;
-        overflow: hidden;
-        border: 1px solid rgba(255,255,255,0.2);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-    }
-
-    .cinema-image-container {
-        position: relative;
-        height: 400px;
-        overflow: hidden;
-        border-radius: 30px 30px 0 0;
-    }
-
-    .cinema-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.5s ease;
-    }
-
-        .cinema-image:hover {
-            transform: scale(1.05);
-        }
-
-    .cinema-overlay {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: linear-gradient(transparent, rgba(0,0,0,0.8));
-        padding: 3rem 2rem 2rem;
-        color: white;
-    }
-
-    .cinema-title {
-        font-size: 3rem;
-        font-weight: 800;
-        margin-bottom: 0.5rem;
-        text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-    }
-
-    .cinema-location {
-        font-size: 1.2rem;
-        opacity: 0.9;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .cinema-content {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 2rem;
-        margin-bottom: 2rem;
-    }
-
-    .main-content {
-        display: flex;
-        flex-direction: column;
-        gap: 2rem;
-    }
-
-    .sidebar {
-        display: flex;
-        flex-direction: column;
-        gap: 2rem;
-    }
-
-    .info-card {
-        background: rgba(255,255,255,0.1);
-        backdrop-filter: blur(20px);
-        border-radius: 20px;
-        padding: 2rem;
-        border: 1px solid rgba(255,255,255,0.2);
-        transition: all 0.3s ease;
-    }
-
-        .info-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-        }
-
-        .info-card h3 {
-            color: white;
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-    .description-card {
-        grid-column: 1 / -1;
-    }
-
-    .description-text {
-        color: rgba(255,255,255,0.9);
-        font-size: 1.1rem;
-        line-height: 1.8;
-    }
-
-    .contact-info {
-        color: rgba(255,255,255,0.9);
-    }
-
-    .contact-item {
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-        margin-bottom: 1rem;
-        padding: 0.8rem;
-        background: rgba(255,255,255,0.05);
-        border-radius: 10px;
-        transition: all 0.3s ease;
-    }
-
-        .contact-item:hover {
-            background: rgba(255,255,255,0.1);
-            transform: translateX(5px);
-        }
-
-    .contact-icon {
-        width: 40px;
-        height: 40px;
-        background: linear-gradient(45deg, #4facfe, #00f2fe);
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.2rem;
-        flex-shrink: 0;
-    }
-
-    .contact-item a {
-        color: #4facfe;
-        text-decoration: none;
-        transition: color 0.3s ease;
-    }
-
-        .contact-item a:hover {
-            color: #00f2fe;
-        }
-
-    .halls-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 1rem;
-        margin-top: 1rem;
-    }
-
-    .hall-card {
-        background: rgba(255,255,255,0.05);
-        border-radius: 15px;
-        padding: 1.5rem;
-        border: 1px solid rgba(255,255,255,0.1);
-        transition: all 0.3s ease;
-    }
-
-        .hall-card:hover {
-            background: rgba(255,255,255,0.1);
-            transform: translateY(-3px);
-        }
-
-    .hall-name {
-        color: white;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        font-size: 1.1rem;
-    }
-
-    .hall-seats {
-        color: rgba(255,255,255,0.7);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .showtimes-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 1rem;
-        margin-top: 1rem;
-    }
-
-    .showtime-card {
-        background: rgba(255,255,255,0.05);
-        border-radius: 15px;
-        padding: 1.5rem;
-        border: 1px solid rgba(255,255,255,0.1);
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-
-        .showtime-card:hover {
-            background: rgba(255,255,255,0.1);
-            transform: translateY(-3px);
-            border-color: rgba(79,172,254,0.5);
-        }
-
-    .movie-title {
-        color: white;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        font-size: 1.1rem;
-    }
-
-    .showtime {
-        color: #4facfe;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .social-links {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        margin-top: 1rem;
-    }
-
-    .social-link {
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-        padding: 1rem 1.5rem;
-        background: rgba(255,255,255,0.05);
-        border-radius: 50px;
-        text-decoration: none;
-        color: rgba(255,255,255,0.9);
-        font-weight: 500;
-        transition: all 0.3s ease;
-        border: 1px solid rgba(255,255,255,0.1);
-    }
-
-        .social-link:hover {
-            background: rgba(255,255,255,0.15);
-            transform: translateY(-2px);
-            color: white;
-            text-decoration: none;
-        }
-
-    .social-icon {
-        width: 24px;
-        height: 24px;
-        font-size: 1.2rem;
-    }
-
-    .stats-cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 1rem;
-        margin-bottom: 2rem;
-    }
-
-    .stat-card {
-        background: rgba(255,255,255,0.1);
-        backdrop-filter: blur(20px);
-        border-radius: 20px;
-        padding: 1.5rem;
-        text-align: center;
-        border: 1px solid rgba(255,255,255,0.2);
-        transition: all 0.3s ease;
-    }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-        }
-
-    .stat-number {
-        font-size: 2.5rem;
-        font-weight: 800;
-        color: #4facfe;
-        display: block;
-        margin-bottom: 0.5rem;
-    }
-
-    .stat-label {
-        color: rgba(255,255,255,0.8);
-        font-weight: 500;
-        text-transform: uppercase;
-        font-size: 0.9rem;
-        letter-spacing: 0.5px;
-    }
-
-    .action-buttons {
-        display: flex;
-        gap: 1rem;
-        margin: 2rem 0;
-        flex-wrap: wrap;
-    }
-
-    .btn {
-        padding: 1rem 2rem;
-        border: none;
-        border-radius: 50px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        text-align: center;
-    }
-
-    .btn-primary {
-        background: linear-gradient(45deg, #4facfe, #00f2fe);
-        color: white;
-        box-shadow: 0 4px 15px rgba(79,172,254,0.4);
-    }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(79,172,254,0.6);
-            color: white;
-            text-decoration: none;
-        }
-
-    .btn-secondary {
-        background: rgba(255,255,255,0.1);
-        color: white;
-        border: 1px solid rgba(255,255,255,0.3);
-    }
-
-        .btn-secondary:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateY(-2px);
-            color: white;
-            text-decoration: none;
-        }
-
-    .loading-skeleton {
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-        background-size: 200% 100%;
-        animation: loading 1.5s infinite;
-    }
-
-    @@keyframes loading {
-        0%
-
-    {
-        background-position: -200% 0;
-    }
-
-    100% {
-        background-position: 200% 0;
-    }
-
-    }
-
-    @@media (max-width: 1024px) {
-        .cinema-content
-
-    {
-        grid-template-columns: 1fr;
-    }
-
-    .cinema-title {
-        font-size: 2.5rem;
-    }
-
-    }
-
-    @@media (max-width: 768px) {
-        .cinema-details-container
-
-    {
-        padding: 1rem;
-    }
-
-    .cinema-title {
-        font-size: 2rem;
-    }
-
-    .cinema-image-container {
-        height: 250px;
-    }
-
-    .stats-cards {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .action-buttons {
-        flex-direction: column;
-    }
-
-    .halls-grid,
-    .showtimes-grid {
-        grid-template-columns: 1fr;
-    }
-
-    }
-</style>
+@section Styles {
+    <link rel="stylesheet" href="~/css/main/cinemas/cinema-details.css" />
+}
 
 <div class="cinema-details-container">
-    <a href="@Url.Action("Index")" class="back-button">
-        ← Back to Cinemas
-    </a>
+    <a href="@Url.Action("Index")" class="back-button">← Back to Cinemas</a>
 
+    <!-- Main Image -->
     <div class="cinema-hero">
         <div class="cinema-image-container">
-            <img src="@Model.DisplayImage" class="cinema-image" alt="@Model.Name" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iIzY2N2VlYSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+🎬 @Model.Name</dGV4dD48L3N2Zz4='">
+            <img src="@Model.DisplayImage" alt="@Model.Name" class="cinema-image" />
             <div class="cinema-overlay">
-                <h1 class="cinema-title">@Model.Name</h1>
-                <div class="cinema-location">
-                    📍 @Model.City, @Model.Country
-                </div>
+                <h1>@Model.Name</h1>
+                <div>📍 @Model.City, @Model.Country</div>
             </div>
         </div>
     </div>
 
+    <!-- Gallery -->
+    @if (images.Any())
+    {
+        <div class="cinema-image-gallery">
+            <h3>📸 Gallery</h3>
+            <div class="gallery-grid">
+                @foreach (var img in images)
+                {
+                    <div class="gallery-item">
+                        <img src="@Url.Content($"~/uploads/cinemas/{Model.Id}/{img}")" alt="@Model.Name" />
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- Stats Cards -->
     <div class="stats-cards">
         <div class="stat-card">
             <span class="stat-number">@Model.HallCount</span>
@@ -477,7 +50,7 @@
             <span class="stat-label">Showtimes</span>
         </div>
         <div class="stat-card">
-            <span class="stat-number">@Model.Halls.Sum(h => h.SeatCount)</span>
+            <span class="stat-number">@Model.TotalSeats</span>
             <span class="stat-label">Total Seats</span>
         </div>
         <div class="stat-card">
@@ -486,222 +59,72 @@
         </div>
     </div>
 
-    <div class="action-buttons">
-        <a href="tel:@Model.Phone" class="btn btn-primary">
-            📞 Call Now
-        </a>
-        <a href="mailto:@Model.Email" class="btn btn-secondary">
-            ✉️ Send Email
-        </a>
-        <a href="@Model.Website" target="_blank" class="btn btn-secondary">
-            🌐 Visit Website
-        </a>
-    </div>
-
     <div class="cinema-content">
         <div class="main-content">
             <div class="info-card description-card">
                 <h3>📝 About This Cinema</h3>
-                <div class="description-text">
-                    @Model.Description
-                </div>
+                <p>@Model.Description</p>
             </div>
 
-            <div class="info-card">
-                <h3>🎭 Halls (@Model.HallCount)</h3>
-                <div class="halls-grid">
-                    @foreach (var hall in Model.Halls)
-                    {
-                        <div class="hall-card">
-                            <div class="hall-name">@hall.Name</div>
-                            <div class="hall-seats">
-                                🪑 @hall.SeatCount seats
+            @if (Model.Halls.Any())
+            {
+                <div class="info-card">
+                    <h3>🎭 Halls (@Model.HallCount)</h3>
+                    <div class="halls-grid">
+                        @foreach (var hall in Model.Halls)
+                        {
+                            <div class="hall-card">
+                                <div>@hall.Name</div>
+                                <div>🪑 @hall.SeatCount seats</div>
                             </div>
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
-            </div>
+            }
 
-            <div class="info-card">
-                <h3>🎬 Upcoming Showtimes (@Model.ShowtimeCount)</h3>
-                <div class="showtimes-grid">
-                    @foreach (var showtime in Model.Showtimes)
-                    {
-                        <div class="showtime-card" onclick="selectShowtime('@showtime.MovieTitle', '@showtime.StartTime')">
-                            <div class="movie-title">@showtime.MovieTitle</div>
-                            <div class="showtime">
-                                🕒 @showtime.StartTime.ToString("MMM dd, yyyy 'at' h:mm tt")
-                            </div>
-                        </div>
-                    }
+            @if (Model.Showtimes.Any())
+            {
+                <div class="info-card">
+                    <h3>🎬 Upcoming Showtimes (@Model.ShowtimeCount)</h3>
+                    <ul>
+                        @foreach (var s in Model.Showtimes)
+                        {
+                            <li>@s.StartTime.ToString("MMM dd, yyyy 'at' h:mm tt") - @s.MovieTitle</li>
+                        }
+                    </ul>
                 </div>
-            </div>
+            }
         </div>
 
         <div class="sidebar">
             <div class="info-card">
                 <h3>📱 Contact Information</h3>
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <div class="contact-icon">✉️</div>
-                        <div>
-                            <strong>Email:</strong><br>
-                            <a href="mailto:@Model.Email">@Model.Email</a>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <div class="contact-icon">📞</div>
-                        <div>
-                            <strong>Phone:</strong><br>
-                            <a href="tel:@Model.Phone">@Model.Phone</a>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <div class="contact-icon">🌐</div>
-                        <div>
-                            <strong>Website:</strong><br>
-                            <a href="@Model.Website" target="_blank">Visit Website</a>
-                        </div>
-                    </div>
-                </div>
+                <p>Email: <a href="mailto:@Model.Email">@Model.Email</a></p>
+                <p>Phone: <a href="tel:@Model.Phone">@Model.Phone</a></p>
+                <p>Website: <a href="@Model.Website" target="_blank">Visit Website</a></p>
             </div>
 
             <div class="info-card">
                 <h3>📍 Address</h3>
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <div class="contact-icon">🏢</div>
-                        <div>
-                            @Model.Address<br>
-                            @Model.City, @Model.State<br>
-                            @Model.Country @Model.PostalCode
-                        </div>
-                    </div>
-                </div>
+                <p>@Model.Address, @Model.City, @Model.State, @Model.Country, @Model.PostalCode</p>
             </div>
 
             @if (Model.SocialMediaLinks.Any())
             {
                 <div class="info-card">
                     <h3>🌐 Social Media</h3>
-                    <div class="social-links">
-                        @foreach (var link in Model.SocialMediaLinks)
-                        {
-                            <a href="@link.Url" target="_blank" class="social-link">
-                                <span class="social-icon">@GetSocialIcon(link.Platform)</span>
-                                @link.Platform
-                            </a>
-                        }
-                    </div>
+                    @foreach (var link in Model.SocialMediaLinks)
+                    {
+                        <a href="@link.Url" target="_blank">@link.Platform</a>
+                
+                        <br />
+                    }
                 </div>
             }
         </div>
     </div>
 </div>
 
-<script>
-    // Showtime selection functionality
-    function selectShowtime(movieTitle, startTime) {
-        showNotification(`Selected: ${movieTitle} at ${startTime}`);
-        // Here you would typically navigate to booking page or open a modal
-        // window.location.href = `/Booking?movie=${encodeURIComponent(movieTitle)}&time=${encodeURIComponent(startTime)}`;
-    }
-
-    // Notification system
-    function showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        const bgColor = type === 'success' ? 'rgba(46, 204, 113, 0.9)' :
-                        type === 'error' ? 'rgba(231, 76, 60, 0.9)' :
-                        'rgba(52, 152, 219, 0.9)';
-
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${bgColor};
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 15px;
-            z-index: 1000;
-            animation: slideInRight 0.3s ease-out;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            max-width: 400px;
-            font-weight: 500;
-        `;
-        notification.textContent = message;
-        document.body.appendChild(notification);
-
-        setTimeout(() => {
-            notification.style.animation = 'slideOutRight 0.3s ease-in';
-            setTimeout(() => notification.remove(), 300);
-        }, 3000);
-    }
-
-    // Image loading with fallback
-    document.querySelector('.cinema-image').addEventListener('error', function() {
-        this.src = `data:image/svg+xml;base64,${btoa(`
-            <svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
-                <rect width="400" height="400" fill="#667eea"/>
-                <text x="50%" y="50%" font-family="Arial" font-size="24" fill="white" text-anchor="middle" dy=".3em">
-                    🎬 ${this.alt}
-                </text>
-            </svg>
-        `)}`;
-    });
-
-    // Smooth loading animation
-    window.addEventListener('load', function() {
-        const cards = document.querySelectorAll('.info-card, .stat-card');
-        cards.forEach((card, index) => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(30px)';
-
-            setTimeout(() => {
-                card.style.transition = 'all 0.6s ease-out';
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, index * 100);
-        });
-    });
-
-    // Interactive hover effects
-    document.querySelectorAll('.showtime-card').forEach(card => {
-        card.addEventListener('click', function() {
-            this.style.transform = 'scale(0.98)';
-            setTimeout(() => {
-                this.style.transform = 'translateY(-3px)';
-            }, 150);
-        });
-    });
-
-    // Add slide animations
-    const style = document.createElement('style');
-    style.textContent = `
-       @@keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        @@keyframes slideOutRight {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
-    `;
-    document.head.appendChild(style);
-</script>
-
-@functions {
-    string GetSocialIcon(string platform)
-    {
-        return platform.ToLower() switch
-        {
-            "facebook" => "📘",
-            "twitter" => "🐦",
-            "instagram" => "📷",
-            "youtube" => "📺",
-            "linkedin" => "💼",
-            "tiktok" => "🎵",
-            _ => "🌐"
-        };
-    }
+@section Scripts {
+    <script src="~/js/main/cinemas/cinema-details.js"></script>
 }

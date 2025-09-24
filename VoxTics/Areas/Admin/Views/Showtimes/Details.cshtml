@@ -1,5 +1,4 @@
-﻿@model VoxTics.Models.Entities.Showtime
-@using VoxTics.Models.Enums
+﻿@model VoxTics.Areas.Admin.ViewModels.Showtime.ShowtimeDetailsViewModel
 
 @{
     ViewData["Title"] = "Showtime Details";
@@ -11,36 +10,40 @@
     <div class="card-body">
         <dl class="row">
             <dt class="col-sm-3">Movie</dt>
-            <dd class="col-sm-9">@Model.Movie.Title</dd>
+            <dd class="col-sm-9">@Model.MovieTitle</dd>
 
             <dt class="col-sm-3">Cinema</dt>
-            <dd class="col-sm-9">@Model.Cinema.Name</dd>
+            <dd class="col-sm-9">@Model.CinemaName</dd>
 
             <dt class="col-sm-3">Hall</dt>
-            <dd class="col-sm-9">@Model.Hall.Name</dd>
+            <dd class="col-sm-9">@Model.HallName</dd>
 
             <dt class="col-sm-3">Start Time</dt>
             <dd class="col-sm-9">@Model.StartTime.ToString("yyyy-MM-dd HH:mm")</dd>
 
             <dt class="col-sm-3">End Time</dt>
-            <dd class="col-sm-9">@Model.StartTime.AddMinutes(Model.Duration).ToString("yyyy-MM-dd HH:mm")</dd>
+            <dd class="col-sm-9">@Model.EndTime.ToString("yyyy-MM-dd HH:mm")</dd>
 
             <dt class="col-sm-3">Duration</dt>
-            <dd class="col-sm-9">@Model.Duration mins</dd>
+            <dd class="col-sm-9">@Model.Duration minutes</dd>
 
             <dt class="col-sm-3">Price</dt>
             <dd class="col-sm-9">@Model.Price.ToString("C")</dd>
 
+            <dt class="col-sm-3">Language</dt>
+            <dd class="col-sm-9">@Model.Language</dd>
+
+            <dt class="col-sm-3">3D</dt>
+            <dd class="col-sm-9">@(Model.Is3D ? "Yes" : "No")</dd>
+
+            <dt class="col-sm-3">Screen Type</dt>
+            <dd class="col-sm-9">@Model.ScreenType</dd>
+
             <dt class="col-sm-3">Status</dt>
-            <dd class="col-sm-9">
-                <span class="badge @(Model.Status switch {
-                    ShowtimeStatus.Scheduled => "bg-info",
-                    ShowtimeStatus.Active => "bg-success",
-                    ShowtimeStatus.Cancelled => "bg-danger",
-                    _ => "bg-secondary"
-                })">@Model.Status</span>
-            </dd>
+            <dd class="col-sm-9">@Model.Status</dd>
         </dl>
+
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
         <a asp-action="Index" class="btn btn-secondary">Back to List</a>
     </div>
 </div>

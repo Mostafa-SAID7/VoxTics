@@ -1,58 +1,86 @@
 ﻿@model VoxTics.Areas.Admin.ViewModels.Showtime.ShowtimeCreateEditViewModel
+
 @{
-    ViewData["Title"] = "Edit Showtime";
+    ViewData["Title"] = Model.Id == 0 ? "Create Showtime" : "Edit Showtime";
 }
 
-<h1>Edit Showtime</h1>
+<h1>@ViewData["Title"]</h1>
 
-<form asp-action="Edit" method="post">
+<form asp-action="@((Model.Id == 0) ? "Create" : "Edit")" method="post">
     <input type="hidden" asp-for="Id" />
+
     <div class="mb-3">
         <label asp-for="MovieId" class="form-label"></label>
-        <input asp-for="MovieId" class="form-control" />
+        <select asp-for="MovieId" class="form-select" asp-items="Model.Movies">
+            <option value="">-- Select Movie --</option>
+        </select>
         <span asp-validation-for="MovieId" class="text-danger"></span>
     </div>
+
     <div class="mb-3">
         <label asp-for="CinemaId" class="form-label"></label>
-        <input asp-for="CinemaId" class="form-control" />
+        <select asp-for="CinemaId" class="form-select" asp-items="Model.Cinemas">
+            <option value="">-- Select Cinema --</option>
+        </select>
         <span asp-validation-for="CinemaId" class="text-danger"></span>
     </div>
+
     <div class="mb-3">
         <label asp-for="HallId" class="form-label"></label>
-        <input asp-for="HallId" class="form-control" />
+        <select asp-for="HallId" class="form-select" asp-items="Model.Halls">
+            <option value="">-- Select Hall --</option>
+        </select>
         <span asp-validation-for="HallId" class="text-danger"></span>
     </div>
+
     <div class="mb-3">
         <label asp-for="StartTime" class="form-label"></label>
         <input asp-for="StartTime" class="form-control" type="datetime-local" />
         <span asp-validation-for="StartTime" class="text-danger"></span>
     </div>
+
     <div class="mb-3">
         <label asp-for="Duration" class="form-label"></label>
         <input asp-for="Duration" class="form-control" />
         <span asp-validation-for="Duration" class="text-danger"></span>
     </div>
+
     <div class="mb-3">
         <label asp-for="Price" class="form-label"></label>
         <input asp-for="Price" class="form-control" />
         <span asp-validation-for="Price" class="text-danger"></span>
     </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="Is3D" class="form-check-input" />
+        <label asp-for="Is3D" class="form-check-label"></label>
+    </div>
+
     <div class="mb-3">
         <label asp-for="Language" class="form-label"></label>
         <input asp-for="Language" class="form-control" />
         <span asp-validation-for="Language" class="text-danger"></span>
     </div>
+
     <div class="mb-3">
         <label asp-for="ScreenType" class="form-label"></label>
         <input asp-for="ScreenType" class="form-control" />
         <span asp-validation-for="ScreenType" class="text-danger"></span>
     </div>
+
     <div class="mb-3">
         <label asp-for="Status" class="form-label"></label>
-        <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<ShowtimeStatus>()"></select>
-        <span asp-validation-for="Status" class="text-danger"></span>
+        <select asp-for="Status" class="form-select">
+            <option value="Scheduled">Scheduled</option>
+            <option value="Cancelled">Cancelled</option>
+            <option value="Completed">Completed</option>
+        </select>
     </div>
 
-    <button type="submit" class="btn btn-primary">Edit</button>
+    <button type="submit" class="btn btn-success">Save</button>
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

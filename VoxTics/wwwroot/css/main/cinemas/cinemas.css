@@ -222,7 +222,7 @@ body {
     font-weight: 600;
 }
 
-@@keyframes fadeInDown {
+@keyframes fadeInDown {
     from {
         opacity: 0;
         transform: translateY(-30px);
@@ -234,7 +234,7 @@ body {
     }
 }
 
-@@keyframes fadeInUp {
+@keyframes fadeInUp {
     from {
         opacity: 0;
         transform: translateY(30px);
@@ -246,7 +246,7 @@ body {
     }
 }
 
-@@media (max-width: 768px) {
+@media (max-width: 768px) {
     .cinema-container {
         padding: 1rem;
     }

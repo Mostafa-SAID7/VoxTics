@@ -1,182 +1,130 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
-using VoxTics.Areas.Identity.Models.Entities;
+using VoxTics.Models.Entities;
 using VoxTics.Repositories.IRepositories;
 
 namespace VoxTics.Repositories
 {
-    /// <summary>
-    /// Repository for handling cinema operations with advanced queries, caching, and logging.
-    /// </summary>
     public class CinemasRepository : BaseRepository<Cinema>, ICinemasRepository
     {
-        private readonly MovieDbContext _context;
         private readonly ILogger<CinemasRepository> _logger;
         private readonly IMemoryCache? _cache;
 
-        private static readonly string ActiveCinemasCacheKey = "ActiveCinemas";
-        private static readonly string CinemaStatsCacheKey = "CinemaStats";
+        private const string ActiveCinemasCacheKey = "ActiveCinemas";
+        private const string CinemaStatsCacheKey = "CinemaStats";
 
         public CinemasRepository(
             MovieDbContext context,
             ILogger<CinemasRepository> logger,
             IMemoryCache? cache = null) : base(context)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _cache = cache;
         }
 
+        // Optional parameterless constructor if needed
         public CinemasRepository(MovieDbContext context) : base(context)
         {
         }
 
-        public async Task<IEnumerable<Cinema>> GetActiveCinemasAsync(
-            bool useCache = true,
-            CancellationToken cancellationToken = default)
+        // --- Custom Methods ---
+
+        /// <summary>
+        /// Get all active cinemas with caching
+        /// </summary>
+        public async Task<IEnumerable<Cinema>> GetActiveCinemasAsync(CancellationToken cancellationToken = default)
         {
-            if (useCache && _cache != null && _cache.TryGetValue(ActiveCinemasCacheKey, out IEnumerable<Cinema> cached))
+            if (_cache != null && _cache.TryGetValue(ActiveCinemasCacheKey, out IEnumerable<Cinema> cachedCinemas))
             {
-                _logger.LogDebug("Returning active cinemas from cache.");
-                return cached;
+                return cachedCinemas;
             }
 
-            var cinemas = await _context.Cinemas
-                .AsNoTracking()
-                .Where(c => c.IsActive)
-                .OrderBy(c => c.Name)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
-
-            if (useCache && _cache != null)
+            try
             {
-                _cache.Set(ActiveCinemasCacheKey, cinemas, TimeSpan.FromMinutes(5));
-            }
+                var cinemas = await Query()
+                    .Where(c => c.IsActive)
+                    .AsNoTracking()
+                    .ToListAsync(cancellationToken);
 
-            _logger.LogInformation("Fetched {Count} active cinemas from database.", cinemas.Count);
-            return cinemas;
+                _cache?.Set(ActiveCinemasCacheKey, cinemas, TimeSpan.FromMinutes(10));
+
+                return cinemas;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching active cinemas");
+                return Enumerable.Empty<Cinema>();
+            }
         }
 
-        public async Task<(IEnumerable<Cinema> Cinemas, int TotalCount)> SearchCinemasAsync(
-            int pageIndex,
+        /// <summary>
+        /// Get paged cinemas for browse pages
+        /// </summary>
+        public async Task<(IEnumerable<Cinema> Items, int TotalCount)> GetPagedCinemasAsync(
+            int page,
             int pageSize,
-            string? searchTerm = null,
-            string? city = null,
+            string? search = null,
+            string? sort = null,
             CancellationToken cancellationToken = default)
         {
-            if (pageIndex < 0) pageIndex = 0;
-            if (pageSize <= 0) pageSize = 10;
-
-            IQueryable<Cinema> query = _context.Cinemas.AsNoTracking();
-
-            if (!string.IsNullOrWhiteSpace(searchTerm))
+            try
             {
-                string term = searchTerm.Trim().ToLower();
-                query = query.Where(c => c.Name.ToLower().Contains(term));
-            }
+                var query = Query().AsNoTracking().Where(c => c.IsActive);
 
-            if (!string.IsNullOrWhiteSpace(city))
+                if (!string.IsNullOrWhiteSpace(search))
+                    query = query.Where(c => c.Name.Contains(search));
+
+                if (!string.IsNullOrWhiteSpace(sort))
+                {
+                    query = sort.ToLower() switch
+                    {
+                        "name" => query.OrderBy(c => c.Name),
+                        "name_desc" => query.OrderByDescending(c => c.Name),
+                        _ => query
+                    };
+                }
+
+                var totalCount = await query.CountAsync(cancellationToken);
+
+                var items = await query
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync(cancellationToken);
+
+                return (items, totalCount);
+            }
+            catch (Exception ex)
             {
-                string cityFilter = city.Trim().ToLower();
-                query = query.Where(c => c.City.ToLower().Contains(cityFilter));
+                _logger.LogError(ex, "Error fetching paged cinemas");
+                return (Enumerable.Empty<Cinema>(), 0);
             }
-
-            int totalCount = await query.CountAsync(cancellationToken).ConfigureAwait(false);
-
-            var cinemas = await query
-                .OrderBy(c => c.Name)
-                .Skip(pageIndex * pageSize)
-                .Take(pageSize)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
-
-            _logger.LogInformation("Searched cinemas: {SearchTerm}, {City}, Page {PageIndex}", searchTerm, city, pageIndex);
-            return (cinemas, totalCount);
         }
 
-        public async Task<Cinema?> GetCinemaDetailsAsync(
-            int cinemaId,
-            bool useCache = true,
-            CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Get cinema by id including halls, showtimes, and social links
+        /// </summary>
+        public async Task<Cinema?> GetCinemaDetailsAsync(int id, CancellationToken cancellationToken = default)
         {
-            string cacheKey = $"CinemaDetails_{cinemaId}";
-
-            if (useCache && _cache != null && _cache.TryGetValue(cacheKey, out Cinema cached))
+            try
             {
-                _logger.LogDebug("Returning cinema details from cache for ID {CinemaId}", cinemaId);
-                return cached;
+                return await Query()
+                    .Include(c => c.Halls)
+                        .ThenInclude(h => h.Seats)
+                    .Include(c => c.Showtimes)
+                    .Include(c => c.SocialMediaLinks)
+                    .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
             }
-
-            var cinema = await _context.Cinemas
-                .AsNoTracking()
-                .Include(c => c.Showtimes)
-                    .ThenInclude(s => s.Movie)
-                .FirstOrDefaultAsync(c => c.Id == cinemaId, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (cinema != null && useCache && _cache != null)
+            catch (Exception ex)
             {
-                _cache.Set(cacheKey, cinema, TimeSpan.FromMinutes(10));
+                _logger.LogError(ex, "Error fetching cinema details for Id {CinemaId}", id);
+                return null;
             }
-
-            return cinema;
-        }
-
-        public async Task<bool> CinemaNameExistsAsync(
-            string name,
-            int? excludeId = null,
-            CancellationToken cancellationToken = default)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Cinema name cannot be empty.", nameof(name));
-
-            string normalized = name.Trim().ToLower();
-            bool exists = await _context.Cinemas
-                .AnyAsync(c =>
-                    c.Name.ToLower() == normalized &&
-                    (!excludeId.HasValue || c.Id != excludeId.Value),
-                    cancellationToken)
-                .ConfigureAwait(false);
-
-            if (exists)
-                _logger.LogWarning("Cinema name '{Name}' already exists.", name);
-
-            return exists;
-        }
-
-        public async Task<(int Total, int Active, int WithUpcomingShowtimes)> GetCinemaStatsAsync(
-            bool useCache = true,
-            CancellationToken cancellationToken = default)
-        {
-            if (useCache && _cache != null && _cache.TryGetValue(CinemaStatsCacheKey, out (int, int, int) cachedStats))
-            {
-                _logger.LogDebug("Returning cinema stats from cache.");
-                return cachedStats;
-            }
-
-            int total = await _context.Cinemas.CountAsync(cancellationToken).ConfigureAwait(false);
-            int active = await _context.Cinemas.CountAsync(c => c.IsActive, cancellationToken).ConfigureAwait(false);
-            var now = DateTime.UtcNow;
-            int withUpcoming = await _context.Cinemas
-                .Include(c => c.Showtimes)
-                .CountAsync(c => c.Showtimes.Any(s => s.StartTime > now), cancellationToken)
-                .ConfigureAwait(false);
-
-            var stats = (total, active, withUpcoming);
-
-            if (useCache && _cache != null)
-            {
-                _cache.Set(CinemaStatsCacheKey, stats, TimeSpan.FromMinutes(3));
-            }
-
-            _logger.LogInformation("Fetched cinema stats: Total={Total}, Active={Active}, Upcoming={Upcoming}", total, active, withUpcoming);
-            return stats;
         }
     }
 }

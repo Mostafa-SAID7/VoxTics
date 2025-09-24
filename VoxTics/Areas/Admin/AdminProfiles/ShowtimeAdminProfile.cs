@@ -1,9 +1,6 @@
 ﻿using AutoMapper;
-using System;
-using System.Linq;
-using VoxTics.Areas.Admin.ViewModels.Showtime;
 using VoxTics.Models.Entities;
-using VoxTics.Models.Enums;
+using VoxTics.Areas.Admin.ViewModels.Showtime;
 
 namespace VoxTics.Areas.Admin.AdminProfiles
 {
@@ -11,42 +8,37 @@ namespace VoxTics.Areas.Admin.AdminProfiles
     {
         public ShowtimeAdminProfile()
         {
-            // Showtime -> ShowtimeTableViewModel
-            CreateMap<Showtime, ShowtimeTableViewModel>()
-                .ForMember(dest => dest.MovieTitle, opt => opt.MapFrom(src => src.Movie.Title))
-                .ForMember(dest => dest.CinemaName, opt => opt.MapFrom(src => src.Cinema.Name))
-                .ForMember(dest => dest.HallName, opt => opt.MapFrom(src => src.Hall.Name))
-                .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.StartTime.AddMinutes(src.Duration)))
-                .ForMember(dest => dest.StatusBadge, opt => opt.MapFrom(src =>
-                    src.Status == ShowtimeStatus.Scheduled ? "badge bg-info" :
-                    src.Status == ShowtimeStatus.Active ? "badge bg-success" :
-                    src.Status == ShowtimeStatus.Cancelled ? "badge bg-danger" :
-                    "badge bg-secondary"));
-
-            // Showtime -> ShowtimeViewModel
+            // Entity -> ViewModel (List)
             CreateMap<Showtime, ShowtimeViewModel>()
                 .ForMember(dest => dest.MovieTitle, opt => opt.MapFrom(src => src.Movie.Title))
                 .ForMember(dest => dest.CinemaName, opt => opt.MapFrom(src => src.Cinema.Name))
                 .ForMember(dest => dest.HallName, opt => opt.MapFrom(src => src.Hall.Name))
-                .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.StartTime.AddMinutes(src.Duration)))
-                .ForMember(dest => dest.TotalSeats, opt => opt.MapFrom(src => src.Hall.Seats.Count))
-                .ForMember(dest => dest.AvailableSeats, opt => opt.MapFrom(src => src.Hall.Seats.Count - src.Bookings.Sum(b => b.BookingSeats.Count)))
-                .ForMember(dest => dest.BookedUsers, opt => opt.MapFrom(src => src.Bookings.SelectMany(b => b.BookingSeats.Select(bs => bs.Booking.User.Name))))
-                .ForMember(dest => dest.StatusBadge, opt => opt.MapFrom(src =>
-                    src.Status == ShowtimeStatus.Scheduled ? "badge bg-info" :
-                    src.Status == ShowtimeStatus.Active ? "badge bg-success" :
-                    src.Status == ShowtimeStatus.Cancelled ? "badge bg-danger" :
-                    "badge bg-secondary"));
+                .ForMember(dest => dest.AvailableSeats, opt => opt.MapFrom(src => src.AvailableSeats))
+                .ForMember(dest => dest.BookedUsers, opt => opt.MapFrom(src => src.Bookings.Select(b => b.User.Name)))
+                .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.EndTime));
 
-            // ShowtimeCreateEditViewModel -> Showtime
-            CreateMap<ShowtimeCreateEditViewModel, Showtime>()
+            // Entity -> ViewModel (Details)
+            CreateMap<Showtime, ShowtimeDetailsViewModel>()
+                .ForMember(dest => dest.MovieTitle, opt => opt.MapFrom(src => src.Movie.Title))
+                .ForMember(dest => dest.CinemaName, opt => opt.MapFrom(src => src.Cinema.Name))
+                .ForMember(dest => dest.HallName, opt => opt.MapFrom(src => src.Hall.Name))
+                .ForMember(dest => dest.BookedSeats, opt => opt.MapFrom(src => src.Bookings.Count))
+                .ForMember(dest => dest.AvailableSeats, opt => opt.MapFrom(src => src.AvailableSeats))
                 .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.StartTime))
-                .ForMember(dest => dest.Duration, opt => opt.MapFrom(src => src.Duration))
-                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
-                .ForMember(dest => dest.Is3D, opt => opt.MapFrom(src => src.Is3D))
-                .ForMember(dest => dest.Language, opt => opt.MapFrom(src => src.Language))
-                .ForMember(dest => dest.ScreenType, opt => opt.MapFrom(src => src.ScreenType))
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status));
+                .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.EndTime))
+                .ForMember(dest => dest.ShowDateTime, opt => opt.MapFrom(src => src.StartTime));
+
+            // ViewModel (Create/Edit) -> Entity
+            CreateMap<ShowtimeCreateEditViewModel, Showtime>()
+                .ForMember(dest => dest.EndTime, opt => opt.Ignore()) // Computed in entity
+                .ForMember(dest => dest.AvailableSeats, opt => opt.Ignore()) // Initialize separately
+                .ForMember(dest => dest.Bookings, opt => opt.Ignore())
+                .ForMember(dest => dest.CartItems, opt => opt.Ignore())
+                .ForMember(dest => dest.Id, opt => opt.Condition(src => src.Id != 0));
+
+            // Entity -> ViewModel (Create/Edit) for editing scenario
+            CreateMap<Showtime, ShowtimeCreateEditViewModel>()
+                .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.EndTime));
         }
     }
 }
