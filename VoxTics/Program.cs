@@ -38,7 +38,6 @@ builder.Services.AddRazorPages();
 // Register custom services, repositories, UnitOfWork, etc.
 builder.Services.AddVoxTicsServices(builder.Configuration);
 
-// AutoMapper profiles (if your profiles are in the same assembly)
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.ConfigureApplicationCookie(option =>
 {
@@ -51,7 +50,6 @@ StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
 var app = builder.Build();
 
-// Configure middleware pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
