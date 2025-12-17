@@ -2,628 +2,154 @@
 @using System.Linq
 
 @{
-    ViewData["Title"] = "Home - MovieHub";
+    ViewData["Title"] = "Home - VoxTics Cinema";
 }
 
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        color: #333;
-        line-height: 1.6;
-    }
-
-    .home-container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 2rem;
-    }
-
-    /* Hero Section */
-    .hero-section {
-        background: rgba(255,255,255,0.1);
-        backdrop-filter: blur(20px);
-        color: white;
-        padding: 4rem 2rem;
-        margin-bottom: 3rem;
-        border-radius: 25px;
-        text-align: center;
-        border: 1px solid rgba(255,255,255,0.2);
-        position: relative;
-        overflow: hidden;
-        animation: fadeInDown 0.8s ease-out;
-        z-index:-1;
-    }
-
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, rgba(255,255,255,0.1), transparent);
-            pointer-events: none;
-        }
-
-    .hero-title {
-        font-size: 3.5rem;
-        font-weight: 800;
-        margin-bottom: 1rem;
-        background: linear-gradient(45deg, #fff, #f0f0f0);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        text-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    }
-
-    .hero-subtitle {
-        font-size: 1.3rem;
-        color: rgba(255,255,255,0.9);
-        font-weight: 300;
-        margin-bottom: 2rem;
-    }
-
-    /* Search Box */
-    .search-section {
-        background: rgba(255,255,255,0.1);
-        backdrop-filter: blur(20px);
-        border-radius: 20px;
-        padding: 2rem;
-        margin-bottom: 3rem;
-        border: 1px solid rgba(255,255,255,0.2);
-        animation: fadeInUp 0.8s ease-out 0.2s both;
-    }
-
-    .search-box {
-        position: relative;
-        max-width: 600px;
-        margin: 0 auto;
-    }
-
-    .search-input {
-        width: 100%;
-        padding: 1.2rem 1.5rem 1.2rem 4rem;
-        border: none;
-        border-radius: 50px;
-        background: rgba(255,255,255,0.1);
-        backdrop-filter: blur(10px);
-        color: white;
-        font-size: 1.1rem;
-        transition: all 0.3s ease;
-        border: 1px solid rgba(255,255,255,0.2);
-    }
-
-        .search-input:focus {
-            outline: none;
-            background: rgba(255,255,255,0.2);
-            border-color: #4facfe;
-            box-shadow: 0 0 0 3px rgba(79,172,254,0.2);
-        }
-
-        .search-input::placeholder {
-            color: rgba(255,255,255,0.6);
-        }
-
-    .search-icon {
-        position: absolute;
-        left: 1.5rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: rgba(255,255,255,0.7);
-        font-size: 1.2rem;
-    }
-
-    /* Section Headers */
-    .section-header {
-        margin-bottom: 2rem;
-        animation: fadeInUp 0.8s ease-out 0.4s both;
-    }
-
-    .section-title {
-        font-size: 2rem;
-        font-weight: 700;
-        color: white;
-        text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        margin-bottom: 0.5rem;
-    }
-
-    .section-subtitle {
-        color: rgba(255,255,255,0.8);
-        font-size: 1rem;
-        font-weight: 300;
-    }
-
-    /* Movie Cards */
-    .movies-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 2rem;
-        margin-bottom: 3rem;
-    }
-
-    .movie-card {
-        background: rgba(255,255,255,0.1);
-        backdrop-filter: blur(20px);
-        border-radius: 20px;
-        overflow: hidden;
-        border: 1px solid rgba(255,255,255,0.2);
-        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        position: relative;
-        cursor: pointer;
-        height: 100%;
-    }
-
-        .movie-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, rgba(255,255,255,0.1), transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .movie-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
-            border-color: rgba(79,172,254,0.5);
-        }
-
-            .movie-card:hover::before {
-                opacity: 1;
-            }
-
-    .movie-poster {
-        width: 100%;
-        height: 300px;
-        object-fit: cover;
-        transition: transform 0.4s ease;
-    }
-
-    .movie-card:hover .movie-poster {
-        transform: scale(1.05);
-    }
-
-    .card-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(transparent 60%, rgba(0,0,0,0.9));
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        display: flex;
-        align-items: end;
-        padding: 1.5rem;
-        z-index: 2;
-    }
-
-    .movie-card:hover .card-overlay {
-        opacity: 1;
-    }
-
-    .play-btn {
-        background: linear-gradient(45deg, #4facfe, #00f2fe);
-        border: none;
-        border-radius: 50%;
-        width: 60px;
-        height: 60px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        color: white;
-        transition: all 0.3s ease;
-        box-shadow: 0 8px 25px rgba(79,172,254,0.4);
-    }
-
-        .play-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 12px 35px rgba(79,172,254,0.6);
-        }
-
-    .card-body {
-        padding: 1.5rem;
-        position: relative;
-        z-index: 2;
-    }
-
-    .card-title {
-        font-size: 1.3rem;
-        font-weight: 600;
-        color: white;
-        margin-bottom: 1rem;
-        line-height: 1.2;
-    }
-
-    .card-meta {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .badge-custom {
-        background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-        color: white;
-        padding: 0.4rem 1rem;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .rating {
-        color: #ffd700;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 0.3rem;
-    }
-
-    /* List Items */
-    .content-section {
-        background: rgba(255,255,255,0.1);
-        backdrop-filter: blur(20px);
-        border-radius: 20px;
-        padding: 2rem;
-        margin-bottom: 3rem;
-        border: 1px solid rgba(255,255,255,0.2);
-        animation: fadeInUp 0.8s ease-out 0.6s both;
-    }
-
-    .movies-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-        gap: 1rem;
-    }
-
-    .movie-list-item {
-        background: rgba(255,255,255,0.1);
-        backdrop-filter: blur(10px);
-        padding: 1.5rem;
-        border-radius: 15px;
-        border: 1px solid rgba(255,255,255,0.2);
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        cursor: pointer;
-    }
-
-        .movie-list-item:hover {
-            transform: translateX(5px);
-            background: rgba(255,255,255,0.15);
-            border-color: rgba(79,172,254,0.5);
-        }
-
-    .movie-info {
-        flex: 1;
-    }
-
-    .movie-title {
-        font-weight: 600;
-        color: white;
-        margin-bottom: 0.3rem;
-        font-size: 1.1rem;
-    }
-
-    .movie-meta {
-        color: rgba(255,255,255,0.7);
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .status-badge {
-        padding: 0.3rem 0.8rem;
-        border-radius: 15px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .badge-success {
-        background: linear-gradient(45deg, #56ab2f, #a8e6cf);
-        color: white;
-    }
-
-    .badge-info {
-        background: linear-gradient(45deg, #4facfe, #00f2fe);
-        color: white;
-    }
-
-    /* Cinema Cards */
-    .cinemas-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 1.5rem;
-    }
-
-    .cinema-card {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        color: white;
-        padding: 2rem;
-        border-radius: 20px;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
-    }
-
-        .cinema-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, rgba(255,255,255,0.1), transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-        }
-
-        .cinema-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 15px 40px rgba(245,87,108,0.3);
-        }
-
-            .cinema-card:hover::before {
-                opacity: 1;
-            }
-
-    .cinema-name {
-        font-size: 1.4rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-    }
-
-    .cinema-location {
-        opacity: 0.9;
-        font-size: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    /* Animations */
-    @@keyframes fadeInDown {
-        from
-
-    {
-        opacity: 0;
-        transform: translateY(-30px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    }
-
-    @@keyframes fadeInUp {
-        from
-
-    {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    }
-
-    .fade-in-card {
-        opacity: 0;
-        transform: translateY(30px);
-        animation: fadeInUp 0.6s ease-out forwards;
-    }
-
-    /* Responsive Design */
-    @@media (max-width: 1024px) {
-        .movies-grid
-
-    {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    }
-
-    .movies-list {
-        grid-template-columns: 1fr;
-    }
-
-    }
-
-    @@media (max-width: 768px) {
-        .home-container
-
-    {
-        padding: 1rem;
-    }
-
-    .hero-title {
-        font-size: 2.5rem;
-    }
-
-    .hero-subtitle {
-        font-size: 1.1rem;
-    }
-
-    .movies-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .cinemas-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .movie-list-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
-
-    }
-
-
-
-    /* Notification System */
-    .notification {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: rgba(79,172,254,0.9);
-        color: white;
-        padding: 1rem 2rem;
-        border-radius: 15px;
-        z-index: 1000;
-        animation: slideInRight 0.3s ease-out;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        max-width: 400px;
-        font-weight: 500;
-    }
-
-    @@keyframes slideInRight {
-        from
-
-    {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-
-    }
-</style>
-
-<div class="home-container">
-    <!-- Hero Section -->
-    <div class="hero-section">
-        <h1 class="hero-title">Welcome to MovieHub</h1>
-        <p class="hero-subtitle">Discover the latest movies and find your perfect cinema experience</p>
+<div class="container-fluid">
+    <!-- Apple Keyboard+ Hero Section -->
+    <div class="home-hero">
+        <div class="home-hero-content">
+            <h1>Welcome to VoxTics Cinema</h1>
+            <p>Discover the latest movies and find your perfect cinema experience</p>
+        </div>
     </div>
 
-    <!-- Search Section -->
-    <div class="search-section">
-        <div class="search-box">
-            <i class="fas fa-search search-icon"></i>
-            <input type="text" class="search-input" placeholder="Search for movies, cinemas, or showtimes..." id="searchInput">
+    <!-- Apple Keyboard+ Search Section -->
+    <div class="container">
+        <div class="search-container mx-auto mb-5" style="max-width: 600px;">
+            <form class="search-form" method="get" asp-controller="Movies" asp-action="Index">
+                <i class="bi bi-search search-icon"></i>
+                <input type="search" name="search" class="search-input"
+                       placeholder="Search for movies, cinemas, or showtimes..."
+                       value="@Context.Request.Query["search"]" id="searchInput" />
+                <button class="search-btn" type="submit">
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            </form>
         </div>
     </div>
 
     <!-- Featured Movies -->
-    <div class="section-header">
-        <h2 class="section-title">🎬 Featured Movies</h2>
-        <p class="section-subtitle">Handpicked selections just for you</p>
-    </div>
-    <div class="movies-grid" id="featuredMovies">
-        @foreach (var movie in Model.Featured)
-        {
-            <div class="movie-card fade-in-card" style="animation-delay: @(Model.Featured.ToList().IndexOf(movie) * 0.1)s">
-                <img src="@movie.MainImageUrl"
-                     class="movie-poster"
-                     alt="@movie.Title"
-                     onerror="this.onerror=null;this.src='@Url.Content("~/images/placeholder.svg")';" />
-
-                <div class="card-overlay">
-                    <button class="play-btn"><i class="fas fa-play"></i></button>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">@movie.Title</h5>
-                    <div class="card-meta">
-                        <span class="badge-custom">Featured</span>
-                        <div class="rating">
-                            <i class="fas fa-star"></i>
-                            @(new Random().Next(35, 50) / 10.0)
+    <div class="container mb-5">
+        <div class="section-header text-center mb-4">
+            <h2 class="section-title">🎬 Featured Movies</h2>
+            <p class="section-subtitle">Handpicked selections just for you</p>
+        </div>
+        
+        <div class="movies-grid" id="featuredMovies">
+            @foreach (var movie in Model.Featured)
+            {
+                <div class="movie-card animate-fade-in-up" data-movie="@movie.Title">
+                    <div class="movie-poster-container">
+                        <img src="@movie.MainImageUrl"
+                             class="movie-poster"
+                             alt="@movie.Title"
+                             onerror="this.onerror=null;this.src='@Url.Content("~/images/placeholder.svg")';" />
+                        <div class="movie-overlay">
+                            <button class="play-button">
+                                <i class="bi bi-play-fill"></i>
+                            </button>
+                        </div>
+                        <div class="movie-badges">
+                            <span class="movie-badge featured">Featured</span>
+                        </div>
+                    </div>
+                    
+                    <div class="movie-content">
+                        <h5 class="movie-title">@movie.Title</h5>
+                        <div class="movie-meta">
+                            <div class="meta-item">
+                                <i class="bi bi-star-fill meta-icon"></i>
+                                <span>@(new Random().Next(35, 50) / 10.0)</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="bi bi-clock meta-icon"></i>
+                                <span>2h 15m</span>
+                            </div>
+                        </div>
+                        <div class="movie-actions">
+                            <a href="@Url.Action("Details", "Movies", new { id = movie.Id })" class="btn-book">Book Now</a>
+                            <a href="@Url.Action("Details", "Movies", new { id = movie.Id })" class="btn-details">Details</a>
                         </div>
                     </div>
                 </div>
-            </div>
-        }
+            }
+        </div>
     </div>
 
     <!-- Now Showing -->
-    <div class="content-section">
-        <div class="section-header">
+    <div class="container mb-5">
+        <div class="section-header text-center mb-4">
             <h3 class="section-title">🎭 Now Showing</h3>
             <p class="section-subtitle">Currently playing at your favorite theaters</p>
         </div>
-        <div class="movies-list">
-            @foreach (var movie in Model.NowShowing)
-            {
-                <div class="movie-list-item" onclick="selectMovie('@movie.Title')">
-                    <div class="movie-info">
-                        <h6 class="movie-title">@movie.Title</h6>
-                        <div class="movie-meta">
-                            <i class="fas fa-clock"></i>
-                            <span>Showtimes: 2:30 PM, 6:00 PM, 9:30 PM</span>
+        
+        <div class="card">
+            <div class="card-body p-0">
+                @foreach (var movie in Model.NowShowing)
+                {
+                    <div class="list-apple-item" onclick="selectMovie('@movie.Title')">
+                        <div class="flex-grow-1">
+                            <h6 class="text-primary fw-semibold mb-1">@movie.Title</h6>
+                            <div class="text-secondary small">
+                                <i class="bi bi-clock me-1"></i>
+                                Showtimes: 2:30 PM, 6:00 PM, 9:30 PM
+                            </div>
                         </div>
+                        <span class="badge badge-success">Now Playing</span>
                     </div>
-                    <span class="status-badge badge-success">Now Playing</span>
-                </div>
-            }
+                }
+            </div>
         </div>
     </div>
 
     <!-- Coming Soon -->
-    <div class="content-section">
-        <div class="section-header">
+    <div class="container mb-5">
+        <div class="section-header text-center mb-4">
             <h3 class="section-title">🚀 Coming Soon</h3>
             <p class="section-subtitle">Get ready for these upcoming blockbusters</p>
         </div>
-        <div class="movies-list">
-            @foreach (var movie in Model.ComingSoon)
-            {
-                <div class="movie-list-item" onclick="selectMovie('@movie.Title')">
-                    <div class="movie-info">
-                        <h6 class="movie-title">@movie.Title</h6>
-                        <div class="movie-meta">
-                            <i class="fas fa-calendar"></i>
+        
+        <div class="card">
+            <div class="card-body p-0">
+                @foreach (var movie in Model.ComingSoon)
+                {
+                    <div class="list-apple-item" onclick="selectMovie('@movie.Title')">
+                        <div class="flex-grow-1">
+                            <h6 class="text-primary fw-semibold mb-1">@movie.Title</h6>
+                            <div class="text-secondary small">
+                                <i class="bi bi-calendar me-1"></i>
+                                Release date coming soon
+                            </div>
                         </div>
+                        <span class="badge badge-warning">Coming Soon</span>
                     </div>
-                    <span class="status-badge badge-info">Coming Soon</span>
-                </div>
-            }
+                }
+            </div>
         </div>
     </div>
 
     <!-- Cinemas -->
-    <div class="content-section">
-        <div class="section-header">
+    <div class="container mb-5">
+        <div class="section-header text-center mb-4">
             <h3 class="section-title">🎪 Our Cinemas</h3>
             <p class="section-subtitle">Premium locations for the ultimate movie experience</p>
         </div>
-        <div class="cinemas-grid">
+        
+        <div class="cinema-grid">
             @foreach (var cinema in Model.Cinemas)
             {
-                <div class="cinema-card" onclick="selectCinema('@cinema.Name')">
-                    <div class="cinema-name">@cinema.Name</div>
+                <div class="cinema-card animate-fade-in-up" onclick="selectCinema('@cinema.Name')">
+                    <div class="cinema-icon">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <h5 class="cinema-name">@cinema.Name</h5>
                     <div class="cinema-location">
-                        <i class="fas fa-map-marker-alt"></i>
+                        <i class="bi bi-geo-alt"></i>
                         <span>@cinema.Country</span>
+                    </div>
+                    <div class="cinema-actions">
+                        <a href="@Url.Action("Details", "Cinemas", new { id = cinema.Id })" class="btn btn-primary">View Details</a>
                     </div>
                 </div>
             }
@@ -631,130 +157,103 @@
     </div>
 </div>
 
+@* Styles are now handled by the unified Apple Keyboard+ Design System *@
+
 <script>
-    // Global variables
-    let searchTimeout;
+document.addEventListener('DOMContentLoaded', function() {
+    setupEventListeners();
+});
 
-    // Initialize on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        initializeAnimations();
-        setupEventListeners();
-    });
-
-    function initializeAnimations() {
-        // Stagger card animations
-        const cards = document.querySelectorAll('.fade-in-card');
-        cards.forEach((card, index) => {
-            setTimeout(() => {
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, index * 100);
-        });
-    }
-
-    function setupEventListeners() {
-        // Enhanced search with debouncing
-        document.getElementById('searchInput').addEventListener('input', function(e) {
+function setupEventListeners() {
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        let searchTimeout;
+        searchInput.addEventListener('input', function(e) {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 performSearch(e.target.value);
             }, 300);
         });
-
-        // Add keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.key === 'k') {
-                e.preventDefault();
-                document.getElementById('searchInput').focus();
-            }
-        });
     }
 
-    function performSearch(searchTerm) {
-        const term = searchTerm.toLowerCase().trim();
-        const movieCards = document.querySelectorAll('.movie-card');
-        const movieListItems = document.querySelectorAll('.movie-list-item');
-        const cinemaCards = document.querySelectorAll('.cinema-card');
-
-        let visibleCount = 0;
-
-        // Search movie cards
-        movieCards.forEach(card => {
-            const title = card.querySelector('.card-title').textContent.toLowerCase();
-            const isVisible = !term || title.includes(term);
-
-            card.style.display = isVisible ? 'block' : 'none';
-            if (isVisible) {
-                visibleCount++;
-                card.style.animation = 'fadeInUp 0.5s ease-out';
-            }
-        });
-
-        // Search movie list items
-        movieListItems.forEach(item => {
-            const title = item.querySelector('.movie-title').textContent.toLowerCase();
-            const isVisible = !term || title.includes(term);
-
-            item.style.display = isVisible ? 'flex' : 'none';
-            if (isVisible) visibleCount++;
-        });
-
-        // Search cinema cards
-        cinemaCards.forEach(card => {
-            const name = card.querySelector('.cinema-name').textContent.toLowerCase();
-            const location = card.querySelector('.cinema-location span').textContent.toLowerCase();
-            const isVisible = !term || name.includes(term) || location.includes(term);
-
-            card.style.display = isVisible ? 'block' : 'none';
-            if (isVisible) visibleCount++;
-        });
-
-        // Show search results feedback
-        if (term) {
-            showNotification(`Found ${visibleCount} results for "${searchTerm}"`, 'info');
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 'k') {
+            e.preventDefault();
+            searchInput?.focus();
         }
-    }
-
-    function selectMovie(movieTitle) {
-        showNotification(`Selected: ${movieTitle}`, 'success');
-        // Add navigation logic here
-        console.log('Navigate to movie:', movieTitle);
-    }
-
-    function selectCinema(cinemaName) {
-        showNotification(`Selected cinema: ${cinemaName}`, 'success');
-        // Add navigation logic here
-        console.log('Navigate to cinema:', cinemaName);
-    }
-
-    function showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        const bgColor = type === 'success' ? 'rgba(46, 204, 113, 0.9)' :
-                        type === 'error' ? 'rgba(231, 76, 60, 0.9)' :
-                        'rgba(79, 172, 254, 0.9)';
-
-        notification.className = 'notification';
-        notification.style.background = bgColor;
-        notification.textContent = message;
-
-        document.body.appendChild(notification);
-
-        setTimeout(() => {
-            notification.style.animation = 'slideInRight 0.3s ease-in reverse';
-            setTimeout(() => notification.remove(), 300);
-        }, 3000);
-    }
-
-    // Enhanced hover effects
-    document.querySelectorAll('.movie-card').forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-8px) scale(1.02)';
-        });
-
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = '';
-        });
     });
-</script>
+}
 
-<!-- Font Awesome -->
+function performSearch(searchTerm) {
+    const term = searchTerm.toLowerCase().trim();
+    const movieCards = document.querySelectorAll('.movie-card');
+    const listItems = document.querySelectorAll('.list-apple-item');
+    const cinemaCards = document.querySelectorAll('.cinema-card');
+
+    let visibleCount = 0;
+
+    // Search movie cards
+    movieCards.forEach(card => {
+        const title = card.dataset.movie?.toLowerCase() || '';
+        const isVisible = !term || title.includes(term);
+        card.closest('.col-lg-4, .col-md-6').style.display = isVisible ? '' : 'none';
+        if (isVisible) visibleCount++;
+    });
+
+    // Search list items
+    listItems.forEach(item => {
+        const title = item.querySelector('h6')?.textContent.toLowerCase() || '';
+        const isVisible = !term || title.includes(term);
+        item.style.display = isVisible ? '' : 'none';
+        if (isVisible) visibleCount++;
+    });
+
+    // Search cinema cards
+    cinemaCards.forEach(card => {
+        const name = card.querySelector('h5')?.textContent.toLowerCase() || '';
+        const location = card.querySelector('span')?.textContent.toLowerCase() || '';
+        const isVisible = !term || name.includes(term) || location.includes(term);
+        card.closest('.col-lg-4, .col-md-6').style.display = isVisible ? '' : 'none';
+        if (isVisible) visibleCount++;
+    });
+
+    // Show search feedback
+    if (term && visibleCount === 0) {
+        showNotification(`No results found for "${searchTerm}"`, 'warning');
+    } else if (term) {
+        showNotification(`Found ${visibleCount} results for "${searchTerm}"`, 'info');
+    }
+}
+
+function selectMovie(movieTitle) {
+    showNotification(`Selected: ${movieTitle}`, 'success');
+    // Add navigation logic here
+    console.log('Navigate to movie:', movieTitle);
+}
+
+function selectCinema(cinemaName) {
+    showNotification(`Selected cinema: ${cinemaName}`, 'success');
+    // Add navigation logic here
+    console.log('Navigate to cinema:', cinemaName);
+}
+
+function showNotification(message, type = 'info') {
+    // Use the global notification system from notification.css
+    const notification = document.createElement('div');
+    notification.className = `notification notification-apple notification-apple-${type}`;
+    
+    const content = document.createElement('div');
+    content.className = 'notification-content';
+    content.innerHTML = `<div class="notification-message">${message}</div>`;
+    
+    notification.appendChild(content);
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.classList.add('hiding');
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+</script>

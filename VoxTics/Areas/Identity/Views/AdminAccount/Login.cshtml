@@ -1,30 +1,78 @@
 ﻿@model VoxTics.Areas.Identity.Models.ViewModels.LoginVM
 @{
-    ViewData["Title"] = "Admin Login";
+    ViewData["Title"] = "Admin Login - VoxTics Cinema";
 }
 
-<h2>Admin Login</h2>
-<p>Email : SuperAdmin@gamil.com</p>
-<p>Password : Admin123$</p>
-<form asp-action="Login" method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="container-fluid d-flex align-items-center justify-content-center min-vh-100 py-5">
+    <div class="row w-100 justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <!-- Apple Keyboard+ Admin Login Card -->
+            <div class="card animate-fade-in-up">
+                <div class="card-header text-center">
+                    <div class="mb-3">
+                        <span class="brand-icon" style="font-size: 3rem;">🛡️</span>
+                    </div>
+                    <h3 class="section-title mb-2">Admin Access</h3>
+                    <p class="text-secondary">Sign in to the VoxTics admin panel</p>
+                </div>
+                
+                <div class="card-body p-4">
+                    <!-- Demo Credentials Alert -->
+                    <div class="alert alert-info mb-4">
+                        <h6 class="alert-heading">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Demo Credentials
+                        </h6>
+                        <p class="mb-1"><strong>Email:</strong> SuperAdmin@gmail.com</p>
+                        <p class="mb-0"><strong>Password:</strong> Admin123$</p>
+                    </div>
 
-    <div class="form-group">
-        <label asp-for="EmailORUserName"></label>
-        <input asp-for="EmailORUserName" class="form-control" />
-        <span asp-validation-for="EmailORUserName" class="text-danger"></span>
+                    <form asp-action="Login" method="post" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-4">
+                            <label asp-for="EmailORUserName" class="form-label">Admin Email or Username</label>
+                            <input asp-for="EmailORUserName" class="form-control" 
+                                   placeholder="Enter admin email or username"
+                                   value="SuperAdmin@gmail.com"
+                                   autocomplete="username" />
+                            <span asp-validation-for="EmailORUserName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Password" class="form-label">Admin Password</label>
+                            <input asp-for="Password" class="form-control" 
+                                   type="password" 
+                                   placeholder="Enter admin password"
+                                   autocomplete="current-password" />
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input asp-for="RememberMe" class="form-check-input" />
+                                <label asp-for="RememberMe" class="form-check-label">Keep me signed in</label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mb-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-shield-lock me-2"></i>
+                                Access Admin Panel
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center">
+                        <a asp-action="Login" asp-area="Identity" asp-controller="Account" 
+                           class="btn btn-outline">
+                            <i class="bi bi-arrow-left me-2"></i>
+                            Back to User Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="form-group">
-        <label asp-for="Password"></label>
-        <input asp-for="Password" type="password" class="form-control" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-
-    <div class="form-check">
-        <input asp-for="RememberMe" class="form-check-input" />
-        <label asp-for="RememberMe" class="form-check-label"></label>
-    </div>
-
-    <button type="submit" class="btn btn-primary mt-3">Login</button>
-</form>
+</div>

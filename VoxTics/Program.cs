@@ -54,8 +54,13 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
-app.UseStatusCodePagesWithReExecute("/Shared/NotFound");
 }
+else
+{
+    app.UseDeveloperExceptionPage();
+}
+
+app.UseStatusCodePagesWithReExecute("/Shared/NotFound");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

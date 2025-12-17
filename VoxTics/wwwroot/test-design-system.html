@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoxTics Design System Test</title>
+    <link rel="stylesheet" href="css/voxtics-design-system.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+</head>
+<body>
+    <div class="container" style="padding: 2rem;">
+        <h1 class="text-center mb-5">VoxTics Apple Keyboard+ Design System Test</h1>
+        
+        <!-- Buttons Test -->
+        <section class="mb-5">
+            <h2>Buttons</h2>
+            <div class="d-flex gap-3 flex-wrap">
+                <button class="btn">Default Button</button>
+                <button class="btn btn-primary">Primary Button</button>
+                <button class="btn btn-secondary">Secondary Button</button>
+                <button class="btn btn-success">Success Button</button>
+                <button class="btn btn-warning">Warning Button</button>
+                <button class="btn btn-danger">Danger Button</button>
+                <button class="btn btn-outline">Outline Button</button>
+            </div>
+        </section>
+
+        <!-- Cards Test -->
+        <section class="mb-5">
+            <h2>Cards</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Regular Card</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>This is a regular card with the Apple Keyboard+ styling.</p>
+                            <button class="btn btn-primary">Action</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card-glass">
+                        <div class="card-header">
+                            <h5>Glass Card</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>This is a glass morphism card with backdrop blur.</p>
+                            <button class="btn btn-secondary">Action</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="movie-card">
+                        <div class="movie-poster-container">
+                            <div style="height: 200px; background: linear-gradient(45deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">
+                                Movie Poster
+                            </div>
+                            <div class="movie-overlay">
+                                <button class="play-button">
+                                    <i class="bi bi-play-fill"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="movie-content">
+                            <h5 class="movie-title">Sample Movie</h5>
+                            <div class="movie-actions">
+                                <a href="#" class="btn-book">Book Now</a>
+                                <a href="#" class="btn-details">Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Form Controls Test -->
+        <section class="mb-5">
+            <h2>Form Controls</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Text Input</label>
+                        <input type="text" class="form-control" placeholder="Enter text...">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Select</label>
+                        <select class="form-control">
+                            <option>Option 1</option>
+                            <option>Option 2</option>
+                            <option>Option 3</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Textarea</label>
+                        <textarea class="form-control" rows="3" placeholder="Enter message..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Alerts Test -->
+        <section class="mb-5">
+            <h2>Alerts</h2>
+            <div class="alert alert-primary">
+                <i class="bi bi-info-circle me-2"></i>
+                This is a primary alert with Apple styling.
+            </div>
+            <div class="alert alert-success">
+                <i class="bi bi-check-circle me-2"></i>
+                This is a success alert.
+            </div>
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                This is a warning alert.
+            </div>
+            <div class="alert alert-danger">
+                <i class="bi bi-x-circle me-2"></i>
+                This is a danger alert.
+            </div>
+        </section>
+
+        <!-- Badges Test -->
+        <section class="mb-5">
+            <h2>Badges</h2>
+            <div class="d-flex gap-2 flex-wrap">
+                <span class="badge">Default</span>
+                <span class="badge badge-primary">Primary</span>
+                <span class="badge badge-success">Success</span>
+                <span class="badge badge-warning">Warning</span>
+                <span class="badge badge-danger">Danger</span>
+            </div>
+        </section>
+
+        <!-- Dark Mode Test -->
+        <section class="mb-5">
+            <h2>Dark Mode Test</h2>
+            <p>The design system automatically adapts to your system's dark/light mode preference.</p>
+            <button class="btn btn-primary" onclick="toggleDarkMode()">Toggle Dark Mode (Test)</button>
+        </section>
+
+        <!-- Loading Test -->
+        <section class="mb-5">
+            <h2>Loading Indicators</h2>
+            <div class="d-flex align-items-center gap-3">
+                <div class="loading"></div>
+                <span>Loading...</span>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        function toggleDarkMode() {
+            document.documentElement.style.colorScheme = 
+                document.documentElement.style.colorScheme === 'dark' ? 'light' : 'dark';
+        }
+
+        // Test notification system
+        setTimeout(() => {
+            const notification = document.createElement('div');
+            notification.className = 'notification notification-success';
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <div class="notification-title">Design System Loaded!</div>
+                    <div class="notification-message">All components are working correctly.</div>
+                </div>
+            `;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }, 1000);
+    </script>
+</body>
+</html>

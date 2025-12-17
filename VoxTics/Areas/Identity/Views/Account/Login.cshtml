@@ -1,48 +1,77 @@
 ﻿@model LoginVM
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Login - VoxTics Cinema";
 }
 
-
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card shadow-sm">
+<div class="container-fluid d-flex align-items-center justify-content-center min-vh-100 py-5">
+    <div class="row w-100 justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <!-- Apple Keyboard+ Login Card -->
+            <div class="card animate-fade-in-up">
+                <div class="card-header text-center">
+                    <div class="mb-3">
+                        <span class="brand-icon" style="font-size: 3rem;">🎬</span>
+                    </div>
+                    <h3 class="section-title mb-2">Welcome Back</h3>
+                    <p class="text-secondary">Sign in to your VoxTics account</p>
+                </div>
+                
                 <div class="card-body p-4">
-                    <h3 class="card-title text-center mb-4">Login to VoxTics</h3>
-
                     <form asp-action="Login" method="post" novalidate>
                         @Html.AntiForgeryToken()
 
-                        <div class="mb-3">
-                            <label asp-for="EmailORUserName" class="form-label"></label>
-                            <input asp-for="EmailORUserName" class="form-control" placeholder="Email or Username" />
-                            <span asp-validation-for="EmailORUserName" class="text-danger"></span>
+                        <div class="mb-4">
+                            <label asp-for="EmailORUserName" class="form-label">Email or Username</label>
+                            <input asp-for="EmailORUserName" class="form-control" 
+                                   placeholder="Enter your email or username" 
+                                   autocomplete="username" />
+                            <span asp-validation-for="EmailORUserName" class="text-danger small"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="Password" class="form-label"></label>
-                            <input asp-for="Password" class="form-control" type="password" placeholder="Password" />
-                            <span asp-validation-for="Password" class="text-danger"></span>
+                        <div class="mb-4">
+                            <label asp-for="Password" class="form-label">Password</label>
+                            <input asp-for="Password" class="form-control" 
+                                   type="password" 
+                                   placeholder="Enter your password"
+                                   autocomplete="current-password" />
+                            <span asp-validation-for="Password" class="text-danger small"></span>
                         </div>
 
-                        <div class="mb-3 form-check">
-                            <input asp-for="RememberMe" class="form-check-input" />
-                            <label asp-for="RememberMe" class="form-check-label"></label>
+                        <div class="mb-4 d-flex justify-content-between align-items-center">
+                            <div class="form-check">
+                                <input asp-for="RememberMe" class="form-check-input" />
+                                <label asp-for="RememberMe" class="form-check-label">Remember me</label>
+                            </div>
+                            <a asp-action="ForgetPassword" asp-area="Identity" class="text-decoration-none">
+                                Forgot password?
+                            </a>
                         </div>
 
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">Login</button>
+                        <div class="d-grid mb-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>
+                                Sign In
+                            </button>
                         </div>
                     </form>
 
-                    <div class="mt-3 text-center">
-                        <a asp-action="ForgetPassword" asp-area="Identity">Forgot your password?</a><br />
-                        <a asp-action="Register" asp-area="Identity">Don't have an account? Register</a>
+                    <div class="text-center">
+                        <p class="text-secondary mb-3">Don't have an account?</p>
+                        <a asp-action="Register" asp-area="Identity" class="btn btn-outline">
+                            <i class="bi bi-person-plus me-2"></i>
+                            Create Account
+                        </a>
                     </div>
-                    <button type="submit" class="btn btn-danger">
-                        <a asp-action="Login" asp-area="Identity" asp-controller="AdminAccount">Login Admin</a><br />
-                    </button>
+                </div>
+                
+                <div class="card-footer text-center">
+                    <div class="d-grid">
+                        <a asp-action="Login" asp-area="Identity" asp-controller="AdminAccount" 
+                           class="btn btn-secondary btn-sm">
+                            <i class="bi bi-shield-lock me-2"></i>
+                            Admin Login
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

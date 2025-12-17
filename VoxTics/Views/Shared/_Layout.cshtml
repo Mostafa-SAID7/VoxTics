@@ -23,9 +23,8 @@
     <link rel="stylesheet" href="~/lib/toastr/toastr.min.css" />
     <link rel="stylesheet" href="~/lib/sweetalert2/sweetalert2.min.css" />
 
-    <!-- Custom Styles -->
-    <link rel="stylesheet" href="~/css/site.css" />
-    <link rel="stylesheet" href="~/css/main/mainlayout.css" />
+    <!-- VoxTics Design System -->
+    <link rel="stylesheet" href="~/css/voxtics-design-system.css" />
 
 
 
@@ -33,24 +32,24 @@
 </head>
 <body>
     <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="loading-overlay d-none">
-        <div class="loading-spinner"></div>
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading"></div>
     </div>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-modern" id="mainNavbar">
+    <!-- Apple Keyboard+ Navbar -->
+    <nav class="navbar" id="mainNavbar">
         <div class="container-fluid">
-            <a class="navbar-brand navbar-brand-modern" asp-area="" asp-controller="Home" asp-action="Index">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
                 <span class="brand-icon">🎬</span> VoxTics
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            <button class="btn mobile-toggle d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+                <i class="bi bi-list"></i>
             </button>
 
-            <div class="collapse navbar-collapse navbar-collapse-modern" id="navbarNav">
+            <div class="collapse navbar-collapse" id="navbarNav">
                 @* Left links *@
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <ul class="navbar-nav">
                     @{
                         var navLinks = new[]
                         {
@@ -65,23 +64,24 @@
                         <li class="nav-item">
                             <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == link.Controller ? "active" : "")"
                                asp-area="" asp-controller="@link.Controller" asp-action="@link.Action">
-                                <i class="bi @link.Icon me-1"></i>@link.Text
+                                <i class="bi @link.Icon"></i>@link.Text
                             </a>
                         </li>
                     }
                 </ul>
 
-                @* Search form *@
-                <form class="d-flex me-3" method="get" asp-controller="Movies" asp-action="Index">
-                    <div class="input-group">
-                        <input type="search" name="search" class="form-control"
+                @* Apple-style Search form *@
+                <div class="search-container me-3">
+                    <form class="search-form" method="get" asp-controller="Movies" asp-action="Index">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="search" name="search" class="search-input form-control-apple"
                                placeholder="Search movies, actors, genres..."
                                value="@Context.Request.Query["search"]" />
-                        <button class="btn btn-outline-secondary" type="submit">
-                            <i class="bi bi-search"></i>
+                        <button class="search-btn" type="submit">
+                            <i class="bi bi-arrow-right"></i>
                         </button>
-                    </div>
-                </form>
+                    </form>
+                </div>
 
                 @* User & Admin links *@
                 <ul class="navbar-nav mb-2 mb-lg-0 align-items-center">
@@ -99,7 +99,7 @@
                             </li>
                         }
 
-                        <li class="nav-item dropdown user-dropdown" >
+                        <li class="nav-item dropdown user-dropdown">
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
                                data-bs-toggle="dropdown" aria-expanded="false">
                                 <div class="user-avatar me-2">@User.Identity.Name?.Substring(0, 1).ToUpper()</div>
@@ -120,7 +120,6 @@
                                     <a class="dropdown-item" asp-area="" asp-controller="Bookings" asp-action="MyBookings">
                                         <i class="bi bi-ticket-perforated me-2"></i>My Bookings
                                     </a>
-
                                 </li>
                                 <li>
                                     <a class="dropdown-item" asp-controller="User" asp-action="Favorites">
@@ -146,8 +145,12 @@
                     }
                     else
                     {
-                        <li class="nav-item"><a class="nav-link" asp-area="Identity" asp-controller="Account" asp-action="Login">Login</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-area="Identity" asp-controller="Account" asp-action="Register">Register</a></li>
+                        <li class="nav-item">
+                            <a class="btn btn-apple me-2" asp-area="Identity" asp-controller="Account" asp-action="Login">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-apple-primary" asp-area="Identity" asp-controller="Account" asp-action="Register">Register</a>
+                        </li>
                     }
                 </ul>
             </div>

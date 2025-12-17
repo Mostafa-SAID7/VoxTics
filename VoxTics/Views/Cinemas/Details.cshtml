@@ -5,9 +5,7 @@
     var images = ViewBag.Images as string[] ?? Array.Empty<string>();
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/main/cinemas/cinema-details.css" />
-}
+@* Styles are now included in the unified design system *@
 
 <div class="cinema-details-container">
     <a href="@Url.Action("Index")" class="back-button">← Back to Cinemas</a>
