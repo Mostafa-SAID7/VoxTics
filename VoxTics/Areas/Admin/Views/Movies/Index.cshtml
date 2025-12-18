@@ -1,16 +1,11 @@
 ﻿@model VoxTics.Helpers.PaginatedList<VoxTics.Areas.Admin.ViewModels.Movie.MovieListItemViewModel>
 
 @{
-    ViewData["Title"] = "Movies";
-    // Friendly helpers (read from ViewData/ViewBag whichever you used)
-    var currentSearch = (ViewData["CurrentSearch"] ?? ViewBag.search ?? string.Empty)?.ToString();
-    var sortColumn = (ViewData["SortColumn"] ?? ViewBag.sortColumn ?? string.Empty)?.ToString();
-    object sortDescObj = ViewData["SortDesc"] ?? ViewBag.sortDescending;
-    bool sortDescending = false;
-    if (sortDescObj != null)
-    {
-        bool.TryParse(sortDescObj.ToString(), out sortDescending);
-    }
+    var currentSearch = ViewBag.CurrentSearch as string ?? "";
+    var sortColumn = ViewBag.SortColumn as string ?? "";
+    var sortDescending = ViewBag.SortDescending is bool desc ? desc : false;
+}
+
 }
 
 @* Styles are now included in the unified design system *@

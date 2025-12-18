@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "name": "Code Quality Analyzer",
+  "description": "Monitors source code files for changes and provides automated code quality analysis including code smells, design patterns, and best practices suggestions",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*.cs",
+      "**/*.js",
+      "**/*.css",
+      "**/*.cshtml"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Analyze the modified code in the following file for potential improvements:\n\nFile: {filePath}\n\nPlease review the code changes and provide suggestions for:\n\n1. **Code Smells**: Identify any code smells such as:\n   - Long methods or classes\n   - Duplicate code\n   - Large parameter lists\n   - Complex conditional expressions\n   - Dead code or unused variables\n\n2. **Design Patterns**: Suggest appropriate design patterns that could improve the code:\n   - Repository pattern improvements\n   - Service layer enhancements\n   - Factory patterns for object creation\n   - Strategy patterns for varying algorithms\n   - Observer patterns for notifications\n\n3. **Best Practices**: Recommend improvements for:\n   - SOLID principles adherence\n   - Clean Architecture compliance\n   - ASP.NET Core MVC best practices\n   - Entity Framework optimization\n   - Security considerations\n   - Performance optimizations\n\n4. **Maintainability**: Suggest changes to improve:\n   - Code readability and clarity\n   - Method and variable naming\n   - Code organization and structure\n   - Documentation and comments\n   - Error handling and logging\n\n5. **Performance**: Identify potential performance issues:\n   - Database query optimization\n   - Async/await usage\n   - Memory management\n   - Caching opportunities\n   - Resource disposal\n\nFocus on actionable suggestions that maintain existing functionality while improving code quality. Consider the VoxTics cinema booking system context and ASP.NET Core MVC architecture."
+  }
+}

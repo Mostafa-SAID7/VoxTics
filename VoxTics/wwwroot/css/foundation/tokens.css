@@ -1,0 +1,146 @@
+/*
+ * Semantic Design Tokens
+ * These tokens provide semantic meaning to design values
+ */
+
+:root {
+    /* Semantic Color Tokens */
+    --color-text-primary: var(--label-primary, var(--color-black));
+    --color-text-secondary: var(--label-secondary, rgba(60, 60, 67, 0.6));
+    --color-text-tertiary: var(--label-tertiary, rgba(60, 60, 67, 0.3));
+    --color-text-inverse: var(--color-white);
+    
+    --color-background-primary: var(--system-background, var(--color-white));
+    --color-background-secondary: var(--system-background-secondary, #F2F2F7);
+    --color-background-tertiary: #FFFFFF;
+    --color-background-inverse: var(--color-black);
+    
+    --color-surface-primary: var(--system-background, var(--color-white));
+    --color-surface-secondary: var(--system-fill, rgba(120, 120, 128, 0.2));
+    --color-surface-tertiary: var(--system-fill-secondary, rgba(120, 120, 128, 0.16));
+    
+    --color-border-primary: var(--separator-opaque, #C6C6C8);
+    --color-border-secondary: var(--separator-non-opaque, rgba(60, 60, 67, 0.13));
+    --color-border-focus: var(--color-primary);
+    
+    /* Interactive State Tokens */
+    --color-interactive-primary: var(--color-primary);
+    --color-interactive-primary-hover: var(--color-primary-light);
+    --color-interactive-primary-active: var(--color-primary-dark);
+    --color-interactive-primary-disabled: rgba(0, 122, 255, 0.3);
+    
+    --color-interactive-secondary: var(--color-text-secondary);
+    --color-interactive-secondary-hover: var(--color-text-primary);
+    --color-interactive-secondary-active: var(--color-primary);
+    
+    /* Status Color Tokens */
+    --color-status-success: var(--color-success);
+    --color-status-success-light: rgba(52, 199, 89, 0.1);
+    --color-status-success-dark: #248A3D;
+    
+    --color-status-warning: var(--color-warning);
+    --color-status-warning-light: rgba(255, 149, 0, 0.1);
+    --color-status-warning-dark: #CC7A00;
+    
+    --color-status-danger: var(--color-danger);
+    --color-status-danger-light: rgba(255, 59, 48, 0.1);
+    --color-status-danger-dark: #CC2E26;
+    
+    --color-status-info: var(--color-primary);
+    --color-status-info-light: rgba(0, 122, 255, 0.1);
+    --color-status-info-dark: var(--color-primary-dark);
+    
+    /* VoxTics Brand Tokens */
+    --color-brand-primary: var(--color-primary);
+    --color-brand-secondary: #667eea;
+    --color-brand-accent: #f093fb;
+    
+    /* Movie-specific Tokens */
+    --color-movie-rating-gold: #FFD700;
+    --color-movie-rating-silver: #C0C0C0;
+    --color-movie-rating-bronze: #CD7F32;
+    --color-movie-genre-action: #FF6B6B;
+    --color-movie-genre-comedy: #4ECDC4;
+    --color-movie-genre-drama: #45B7D1;
+    --color-movie-genre-horror: #96CEB4;
+    --color-movie-genre-romance: #FFEAA7;
+    --color-movie-genre-scifi: #DDA0DD;
+    
+    /* Cinema-specific Tokens */
+    --color-seat-available: var(--color-success);
+    --color-seat-selected: var(--color-primary);
+    --color-seat-occupied: var(--color-text-tertiary);
+    --color-seat-premium: var(--color-warning);
+    --color-seat-disabled: var(--color-border-secondary);
+}
+
+/* Semantic Spacing Tokens */
+:root {
+    /* Component Spacing */
+    --spacing-component-xs: var(--space-1);    /* 4px */
+    --spacing-component-sm: var(--space-2);    /* 8px */
+    --spacing-component-md: var(--space-4);    /* 16px */
+    --spacing-component-lg: var(--space-6);    /* 24px */
+    --spacing-component-xl: var(--space-8);    /* 32px */
+    
+    /* Layout Spacing */
+    --spacing-layout-xs: var(--space-4);       /* 16px */
+    --spacing-layout-sm: var(--space-6);       /* 24px */
+    --spacing-layout-md: var(--space-8);       /* 32px */
+    --spacing-layout-lg: var(--space-12);      /* 48px */
+    --spacing-layout-xl: var(--space-16);      /* 64px */
+    
+    /* Section Spacing */
+    --spacing-section-sm: var(--space-12);     /* 48px */
+    --spacing-section-md: var(--space-16);     /* 64px */
+    --spacing-section-lg: var(--space-24);     /* 96px */
+    --spacing-section-xl: var(--space-32);     /* 128px */
+}
+
+/* Semantic Typography Tokens */
+:root {
+    /* Heading Scales */
+    --font-size-heading-1: var(--text-5xl);    /* 48px */
+    --font-size-heading-2: var(--text-4xl);    /* 36px */
+    --font-size-heading-3: var(--text-3xl);    /* 30px */
+    --font-size-heading-4: var(--text-2xl);    /* 24px */
+    --font-size-heading-5: var(--text-xl);     /* 20px */
+    --font-size-heading-6: var(--text-lg);     /* 18px */
+    
+    /* Body Text Scales */
+    --font-size-body-lg: var(--text-lg);       /* 18px */
+    --font-size-body-md: var(--text-base);     /* 16px */
+    --font-size-body-sm: var(--text-sm);       /* 14px */
+    --font-size-body-xs: var(--text-xs);       /* 12px */
+    
+    /* UI Text Scales */
+    --font-size-ui-lg: var(--text-base);       /* 16px */
+    --font-size-ui-md: var(--text-sm);         /* 14px */
+    --font-size-ui-sm: var(--text-xs);         /* 12px */
+    
+    /* Caption and Label Scales */
+    --font-size-caption: var(--text-xs);       /* 12px */
+    --font-size-label: var(--text-sm);         /* 14px */
+    --font-size-overline: var(--text-xs);      /* 12px */
+}
+
+/* Semantic Border Radius Tokens */
+:root {
+    --radius-button: var(--radius-lg);         /* 12px */
+    --radius-card: var(--radius-2xl);          /* 24px */
+    --radius-input: var(--radius-lg);          /* 12px */
+    --radius-modal: var(--radius-2xl);         /* 24px */
+    --radius-badge: var(--radius-full);        /* 9999px */
+    --radius-avatar: var(--radius-full);       /* 9999px */
+}
+
+/* Semantic Shadow Tokens */
+:root {
+    --shadow-button: var(--shadow-sm);
+    --shadow-button-hover: var(--shadow-md);
+    --shadow-card: var(--shadow-apple-sm);
+    --shadow-card-hover: var(--shadow-apple-lg);
+    --shadow-modal: var(--shadow-2xl);
+    --shadow-dropdown: var(--shadow-lg);
+    --shadow-tooltip: var(--shadow-md);
+}

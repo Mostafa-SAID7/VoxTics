@@ -1,8 +1,9 @@
 ﻿@model VoxTics.Areas.Admin.ViewModels.Category.CategoryCreateEditViewModel
+
 @{
-    var isEdit = Model.Id > 0;
-    ViewData["Title"] = isEdit ? "Edit Category" : "Create Category";
+    var isEdit = Model?.Id > 0;
 }
+
 @* Styles are now included in the unified design system *@
 <div class="category-card card-glass p-4 shadow-lg animated-fade-in">
     <h2 class="mb-4">@ViewData["Title"]</h2>

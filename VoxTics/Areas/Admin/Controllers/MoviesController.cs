@@ -40,6 +40,11 @@ namespace VoxTics.Areas.Admin.Controllers
         {
             const int pageSize = 10;
             var pagedMovies = await _movieService.GetPagedMoviesAsync(page, pageSize, search, sortColumn, sortDescending);
+            
+            ViewBag.CurrentSearch = search;
+            ViewBag.SortColumn = sortColumn;
+            ViewBag.SortDescending = sortDescending;
+            
             return View(pagedMovies);
         }
         #endregion

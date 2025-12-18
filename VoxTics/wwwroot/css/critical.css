@@ -1,0 +1,24 @@
+/* Critical CSS - Above the fold styles */
+:root {
+    --color-primary: #007AFF;
+    --system-background: #FFFFFF;
+    --font-family-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-family-system);
+    background: var(--system-background);
+}
+
+.navbar {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+}

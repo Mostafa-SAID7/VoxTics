@@ -1,0 +1,26 @@
+{
+  "enabled": true,
+  "name": "Documentation Sync",
+  "description": "Monitors C# source files, configuration files, and project files for changes and automatically updates documentation in README.md or /docs folder to keep it synchronized with code changes",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "VoxTics/**/*.cs",
+      "VoxTics/**/*.cshtml",
+      "VoxTics/**/*.json",
+      "VoxTics/**/*.csproj",
+      "VoxTics/**/*.js",
+      "VoxTics/**/*.css",
+      "*.md",
+      "package.json",
+      "tailwind.config.js",
+      "postcss.config.js",
+      "webpack.config.js"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A source file has been modified in the VoxTics cinema booking system. Please analyze the changes and update the documentation accordingly. Focus on:\n\n1. If C# files changed: Update API documentation, architecture notes, or feature descriptions\n2. If configuration files changed: Update setup/deployment instructions\n3. If frontend files changed: Update UI/UX documentation or user guides\n4. If project structure changed: Update the project structure documentation\n\nPlease update either the README.md file or create/update relevant files in a /docs folder if it exists. Ensure the documentation accurately reflects the current state of the codebase and is helpful for developers and users."
+  }
+}

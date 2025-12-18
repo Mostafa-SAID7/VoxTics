@@ -1,0 +1,270 @@
+/*
+ * Base Element Styles
+ * Global styles for HTML elements using design tokens
+ */
+
+/* Root and Body */
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-family-system);
+    font-size: var(--font-size-body-md);
+    line-height: var(--leading-normal);
+    color: var(--theme-text-primary);
+    background-color: var(--theme-background-secondary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Selection Styles */
+::selection {
+    background-color: var(--color-interactive-primary);
+    color: var(--theme-text-inverse);
+}
+
+::-moz-selection {
+    background-color: var(--color-interactive-primary);
+    color: var(--theme-text-inverse);
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--theme-surface-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--theme-border-primary);
+    border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-interactive-primary);
+}
+
+/* Focus Styles */
+:focus {
+    outline: none;
+}
+
+:focus-visible {
+    outline: 2px solid var(--color-interactive-primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+/* Form Elements Base Styles */
+input,
+textarea,
+select {
+    background-color: var(--theme-surface);
+    border: 1px solid var(--theme-border-primary);
+    border-radius: var(--radius-input);
+    color: var(--theme-text-primary);
+    font-family: var(--font-family-system);
+    transition: var(--transition-fast);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--color-interactive-primary);
+    box-shadow: 0 0 0 3px var(--color-status-info-light);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--theme-text-tertiary);
+}
+
+input:disabled,
+textarea:disabled,
+select:disabled {
+    background-color: var(--theme-surface-secondary);
+    color: var(--theme-text-tertiary);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Button Base Styles */
+button {
+    font-family: var(--font-family-system);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    border: none;
+    background: none;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Table Base Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--theme-surface);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+}
+
+th {
+    background-color: var(--theme-surface-secondary);
+    color: var(--theme-text-primary);
+    font-weight: var(--font-weight-semibold);
+    text-align: left;
+    padding: var(--spacing-component-md) var(--spacing-component-lg);
+    border-bottom: 1px solid var(--theme-border-primary);
+}
+
+td {
+    padding: var(--spacing-component-md) var(--spacing-component-lg);
+    border-bottom: 1px solid var(--theme-border-secondary);
+    color: var(--theme-text-primary);
+}
+
+tbody tr:hover {
+    background-color: var(--theme-surface-secondary);
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Image Base Styles */
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+}
+
+/* Figure and Caption */
+figure {
+    margin: var(--spacing-layout-md) 0;
+}
+
+figcaption {
+    font-size: var(--font-size-caption);
+    color: var(--theme-text-secondary);
+    text-align: center;
+    margin-top: var(--spacing-component-sm);
+}
+
+/* Details and Summary */
+details {
+    background-color: var(--theme-surface);
+    border: 1px solid var(--theme-border-secondary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-component-md);
+    margin-bottom: var(--spacing-component-md);
+}
+
+summary {
+    font-weight: var(--font-weight-semibold);
+    color: var(--theme-text-primary);
+    cursor: pointer;
+    padding: var(--spacing-component-sm);
+    margin: calc(-1 * var(--spacing-component-sm));
+    border-radius: var(--radius-md);
+    transition: var(--transition-fast);
+}
+
+summary:hover {
+    background-color: var(--theme-surface-secondary);
+}
+
+details[open] summary {
+    margin-bottom: var(--spacing-component-md);
+}
+
+/* Address */
+address {
+    font-style: normal;
+    color: var(--theme-text-secondary);
+    line-height: var(--leading-relaxed);
+}
+
+/* Abbreviation */
+abbr[title] {
+    text-decoration: underline dotted;
+    cursor: help;
+}
+
+/* Keyboard Input */
+kbd {
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+    font-size: var(--font-size-body-sm);
+    background-color: var(--theme-surface-secondary);
+    color: var(--theme-text-primary);
+    padding: 0.125em 0.375em;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--theme-border-primary);
+    box-shadow: var(--shadow-key);
+}
+
+/* Sample Output */
+samp {
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+    font-size: var(--font-size-body-sm);
+    background-color: var(--theme-surface-secondary);
+    color: var(--theme-text-primary);
+    padding: 0.125em 0.375em;
+    border-radius: var(--radius-sm);
+}
+
+/* Variable */
+var {
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+    font-style: italic;
+    color: var(--color-interactive-primary);
+}
+
+/* Time */
+time {
+    color: var(--theme-text-secondary);
+}
+
+/* Progress and Meter */
+progress,
+meter {
+    width: 100%;
+    height: var(--spacing-component-sm);
+    border-radius: var(--radius-full);
+    border: none;
+    background-color: var(--theme-surface-secondary);
+}
+
+progress::-webkit-progress-bar,
+meter::-webkit-meter-bar {
+    background-color: var(--theme-surface-secondary);
+    border-radius: var(--radius-full);
+}
+
+progress::-webkit-progress-value,
+meter::-webkit-meter-optimum-value {
+    background-color: var(--color-interactive-primary);
+    border-radius: var(--radius-full);
+}
+
+/* Fieldset and Legend */
+fieldset {
+    border: 1px solid var(--theme-border-secondary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-component-lg);
+    margin-bottom: var(--spacing-component-md);
+}
+
+legend {
+    font-weight: var(--font-weight-semibold);
+    color: var(--theme-text-primary);
+    padding: 0 var(--spacing-component-sm);
+}

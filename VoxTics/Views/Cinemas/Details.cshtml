@@ -1,9 +1,6 @@
 ﻿@model VoxTics.Models.ViewModels.Cinema.CinemaDetailsVM
 
-@{
-    ViewData["Title"] = Model.Name;
-    var images = ViewBag.Images as string[] ?? Array.Empty<string>();
-}
+
 
 @* Styles are now included in the unified design system *@
 
@@ -22,6 +19,9 @@
     </div>
 
     <!-- Gallery -->
+    @{
+        var images = ViewBag.Images as IEnumerable<string> ?? Enumerable.Empty<string>();
+    }
     @if (images.Any())
     {
         <div class="cinema-image-gallery">

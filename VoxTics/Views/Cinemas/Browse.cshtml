@@ -1,12 +1,6 @@
 ﻿@model IEnumerable<VoxTics.Models.ViewModels.Cinema.CinemaVM>
 
-@{
-    ViewData["Title"] = "Browse Cinemas";
-    int page = ViewBag.Page ?? 1;
-    int pageSize = ViewBag.PageSize ?? 10;
-    int totalCount = ViewBag.TotalCount ?? Model.Count();
-    int totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-}
+
 
 <h1>Browse Cinemas</h1>
 
@@ -29,6 +23,11 @@
     }
 </div>
 
+@{
+    var totalPages = (int)Math.Ceiling((double)(ViewBag.TotalCount ?? 0) / (ViewBag.PageSize ?? 10));
+    var page = ViewBag.Page ?? 1;
+    var pageSize = ViewBag.PageSize ?? 10;
+}
 @if (totalPages > 1)
 {
     <nav aria-label="Page navigation">

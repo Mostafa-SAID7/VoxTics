@@ -2,9 +2,9 @@
 @using VoxTics.Models.ViewModels.Cinema
 @model VoxTics.Areas.Admin.ViewModels.Cinema.CinemaCreateEditViewModel
 @inject VoxTics.Helpers.ImgsHelper.ImageManager ImageManager
+
 @{
-    var isEdit = Model.Id > 0;
-    ViewData["Title"] = isEdit ? "Edit Cinema" : "Create Cinema";
+    var isEdit = Model?.Id > 0;
 }
 
 <h2>@ViewData["Title"]</h2>

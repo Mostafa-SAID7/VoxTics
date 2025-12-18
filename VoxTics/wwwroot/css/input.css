@@ -1,0 +1,36 @@
+/*
+ * TailwindCSS Entry Point
+ * This file serves as the main entry point for TailwindCSS compilation
+ */
+
+/* Import TailwindCSS base, components, and utilities */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Foundation Layer */
+@import './foundation/variables.css';
+@import './foundation/tokens.css';
+@import './foundation/themes.css';
+
+/* Import Base Layer */
+@import './base/reset.css';
+@import './base/typography.css';
+@import './base/base.css';
+
+/* Import Component Layer */
+@import './components/buttons.css';
+@import './components/forms.css';
+@import './components/cards.css';
+@import './components/navigation.css';
+@import './components/tables.css';
+@import './components/movie-components.css';
+@import './components/admin-components.css';
+
+/* Import Utility Layer */
+@import './utilities/layout.css';
+@import './utilities/spacing.css';
+@import './utilities/responsive.css';
+
+/* Import Critical Styles */
+@import './critical.css';

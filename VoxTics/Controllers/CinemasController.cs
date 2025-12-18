@@ -33,6 +33,30 @@ namespace VoxTics.Controllers
         }
 
         // ---------------------------
+        // GET: /Cinemas/Browse
+        // ---------------------------
+        public async Task<IActionResult> Browse(int page = 1, int pageSize = 10, string? search = null, string? sort = null)
+        {
+            try
+            {
+                var (cinemas, totalCount) = await _cinemaService.GetPagedCinemasAsync(page, pageSize, search, sort);
+                
+                ViewBag.Page = page;
+                ViewBag.PageSize = pageSize;
+                ViewBag.TotalCount = totalCount;
+                ViewBag.Search = search;
+                ViewBag.Sort = sort;
+                
+                return View(cinemas);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[CinemasController.Browse] Error: {ex.Message}");
+                return StatusCode(500, "An error occurred while loading cinemas.");
+            }
+        }
+
+        // ---------------------------
         // GET: /Cinemas/Details/5
         // ---------------------------
         public async Task<IActionResult> Details(int id)

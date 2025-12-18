@@ -285,6 +285,241 @@ FakesAssemblies/
 .ntvs_analysis.dat
 node_modules/
 
+# Frontend Build Tools and Generated Files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
+.grunt
+
+# Bower dependency directory (https://bower.io/)
+bower_components
+
+# node-waf configuration
+.lock-wscript
+
+# Compiled binary addons (https://nodejs.org/api/addons.html)
+build/Release
+
+# Dependency directories
+jspm_packages/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+.env.test
+.env.production
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+public
+
+# Storybook build outputs
+.out
+.storybook-out
+
+# Temporary folders
+tmp/
+temp/
+
+# Webpack build output
+VoxTics/wwwroot/dist/
+VoxTics/wwwroot/css/output.css
+VoxTics/wwwroot/css/purged/
+VoxTics/wwwroot/images/optimized/
+
+# CSS and JS build artifacts
+*.css.map
+*.js.map
+
+# Optimization and Analysis Reports
+optimization-report.json
+OPTIMIZATION_REPORT.md
+build-report.json
+BUILD_REPORT.md
+bundle-report.html
+css-stats.json
+reports/
+
+# MCP Configuration (may contain sensitive data)
+.kiro/settings/mcp.json
+
+# IDE and Editor files
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs
+*.log
+
+# Runtime and temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.orig
+
+# Package manager lock files (keep package-lock.json but ignore others)
+yarn.lock
+pnpm-lock.yaml
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+
+# Jest
+jest_coverage/
+
+# Lighthouse CI
+.lighthouseci/
+
+# Webpack Bundle Analyzer
+webpack-stats.json
+stats.json
+
+# PostCSS
+.postcssrc.js
+
+# Tailwind CSS JIT
+.tailwindcss-cache/
+
+# Sass
+.sass-cache/
+*.css.map
+*.sass.map
+*.scss.map
+
+# StyleLint
+.stylelintcache
+
+# ESLint
+.eslintcache
+
+# Prettier
+.prettierignore
+
+# Husky
+.husky/_/
+
+# Commitizen
+.cz-config.js
+
+# Semantic Release
+.semanticrelease/
+
+# Auto-generated documentation
+docs/api/
+docs/coverage/
+
+# Backup files
+*.backup
+*.bak
+*.orig
+*.rej
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Certificate files
+*.p12
+*.pem
+*.key
+*.crt
+*.cer
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Configuration files with secrets
+appsettings.Production.json
+appsettings.Staging.json
+secrets.json
+connectionstrings.json
+
+# User uploads (if not needed in repo)
+VoxTics/uploads/
+VoxTics/Files/temp/
+
+# Legacy backup directory
+VoxTics/wwwroot/css/legacy-backup/
+
 # Visual Studio 6 build log
 *.plg
 
