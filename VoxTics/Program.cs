@@ -25,7 +25,7 @@ builder.Services.AddScoped<IDBInitializer, DBInitializer>();
 builder.Services.AddDbContext<MovieDbContext>(options =>
     options.UseSqlServer(connectionString, sqlOptions =>
     {
-        sqlOptions.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelay: TimeSpan.FromSeconds(5));
+        sqlOptions.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelay: TimeSpan.FromSeconds(5), errorNumbersToAdd: null);
         sqlOptions.CommandTimeout(30);
     }));
 
