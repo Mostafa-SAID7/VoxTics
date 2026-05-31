@@ -854,3 +854,185 @@ a:hover {
         font-size: var(--text-sm);
     }
 }
+
+/* ===== MOVIES PAGE ===== */
+.movies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--space-6);
+    padding: var(--space-6) var(--space-8);
+}
+
+@media (max-width: 768px) {
+    .movies-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        padding: var(--space-4);
+        gap: var(--space-4);
+    }
+}
+
+.movie-image-container {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 2/3;
+    background: var(--system-fill);
+}
+
+.movie-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-normal);
+    display: block;
+}
+
+.movie-card:hover .movie-image {
+    transform: scale(1.06);
+}
+
+.movie-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+}
+
+.movie-card:hover .movie-overlay {
+    opacity: 1;
+}
+
+.overlay-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: center;
+}
+
+.overlay-btn {
+    padding: var(--space-2) var(--space-5);
+    background: var(--apple-blue);
+    color: #fff;
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+    transition: background var(--transition-fast);
+    white-space: nowrap;
+}
+
+.overlay-btn:hover {
+    background: var(--apple-blue-dark);
+    color: #fff;
+    text-decoration: none;
+}
+
+.sort-controls {
+    display: flex;
+    gap: var(--space-3);
+    padding: 0 var(--space-8) var(--space-4);
+    flex-wrap: wrap;
+}
+
+.sort-btn {
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--separator-opaque);
+    border-radius: var(--radius-full);
+    background: var(--system-background);
+    color: var(--label-secondary);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    transition: var(--transition-fast);
+    cursor: pointer;
+}
+
+.sort-btn:hover,
+.sort-btn.active {
+    background: var(--apple-blue);
+    border-color: var(--apple-blue);
+    color: #fff;
+    text-decoration: none;
+}
+
+/* ===== CINEMAS PAGE ===== */
+.cinema-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--space-8);
+}
+
+.cinemas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-6);
+    margin-top: var(--space-6);
+}
+
+@media (max-width: 768px) {
+    .cinemas-grid {
+        grid-template-columns: 1fr;
+    }
+    .cinema-container {
+        padding: var(--space-4);
+    }
+}
+
+.cinema-card {
+    background: var(--system-background);
+    border: 1px solid var(--separator-opaque);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-normal);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-3);
+}
+
+.cinema-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--apple-blue);
+}
+
+.cinema-stats {
+    align-self: flex-end;
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--apple-blue);
+    background: rgba(0, 122, 255, 0.1);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+}
+
+.cinema-icon {
+    font-size: 3rem;
+    line-height: 1;
+}
+
+.cinema-name {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--label-primary);
+    margin: 0;
+}
+
+.cinema-country {
+    font-size: var(--text-sm);
+    color: var(--label-secondary);
+    margin: 0;
+}
+
+.cinema-actions {
+    display: flex;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+    flex-wrap: wrap;
+    justify-content: center;
+}
