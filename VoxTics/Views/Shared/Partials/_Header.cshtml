@@ -1,0 +1,71 @@
+@* Header Partial *@
+<header class="admin-topbar">
+    <div class="breadcrumb-section">
+        <h1>@ViewData["Title"]</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="#" style="color: var(--text-muted); text-decoration: none;">Admin</a>
+                </li>
+                <li class="breadcrumb-item">
+                    @ViewContext.RouteData.Values["Controller"]
+                </li>
+                @if (ViewContext.RouteData.Values["Action"]?.ToString() != "Index")
+                {
+                    <li class="breadcrumb-item active">
+                        @ViewContext.RouteData.Values["Action"]
+                    </li>
+                }
+            </ol>
+        </nav>
+    </div>
+
+    <div class="topbar-actions">
+        <!-- Search -->
+        <button class="topbar-btn" id="globalSearch" title="Global Search" data-bs-toggle="modal" data-bs-target="#searchModal">
+            <i class="bi bi-search"></i>
+        </button>
+
+        <!-- Notifications -->
+        <div class="dropdown">
+            <button class="topbar-btn position-relative" id="notificationsToggle" data-bs-toggle="dropdown" aria-expanded="false" title="Notifications">
+                <i class="bi bi-bell"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6em;">3<span class="visually-hidden">unread messages</span></span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end p-0" style="width: 320px; max-height: 400px; overflow-y: auto;">
+                <div class="dropdown-header d-flex justify-content-between align-items-center">
+                    <span class="fw-semibold">Notifications</span>
+                    <button class="btn btn-sm btn-link p-0" id="markAllRead">Mark all as read</button>
+                </div>
+                <div class="dropdown-divider m-0"></div>
+                <div id="notificationsList">
+                    <!-- Notification items can be rendered here -->
+                </div>
+                <div class="dropdown-divider m-0"></div>
+                <a href="@Url.Action(\"Index\", \"Notifications\", new { area = \"Admin\" })" class="dropdown-item text-center py-2"><small>View all notifications</small></a>
+            </div>
+        </div>
+
+        <!-- Theme Toggle -->
+        <button class="topbar-btn" id="themeToggle" title="Toggle theme"><i class="bi bi-moon"></i></button>
+
+        <!-- Fullscreen -->
+        <button class="topbar-btn" id="fullscreenToggle" title="Toggle fullscreen"><i class="bi bi-arrows-fullscreen"></i></button>
+
+        <!-- User Menu -->
+        <div class="dropdown user-menu">
+            <div class="user-avatar status-online" data-bs-toggle="dropdown" aria-expanded="false" title="User menu">A</div>
+            <div class="dropdown-menu dropdown-menu-end">
+                <div class="dropdown-header">
+                    <div class="fw-semibold">Admin User</div>
+                    <div class="text-muted small">admin@voxtics.com</div>
+                </div>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="@Url.Action(\"Profile\", \"Account\", new { area = \"Admin\" })"><i class="bi bi-person me-2"></i>Profile</a>
+                <a class="dropdown-item" href="@Url.Action(\"Settings\", \"Account\", new { area = \"Admin\" })"><i class="bi bi-gear me-2"></i>Account Settings</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item text-danger" href="@Url.Action(\"Logout\", \"Account\", new { area = \"Admin\" })"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+            </div>
+        </div>
+    </div>
+</header>
