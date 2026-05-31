@@ -15,7 +15,7 @@
 
 		<!-- Security & Passwords -->
 		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
-		<PackageReference Include="Mapster" Version="7.4.0" />
+		<PackageReference Include="Mapster" Version="10.0.7" />
 
 		<!-- Identity & Authentication -->
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="9.0.9" />
