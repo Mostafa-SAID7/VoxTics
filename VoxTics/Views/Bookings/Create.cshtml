@@ -1,69 +1,237 @@
-﻿@model VoxTics.Models.ViewModels.Booking.BookingCreateVM
+@model VoxTics.Models.ViewModels.Booking.BookingCreateVM
+@using VoxTics.Models.Enums
 
+@{
+    ViewData["Title"] = "Book Tickets – " + Model.MovieTitle;
+    var posterPath = !string.IsNullOrEmpty(Model.MovieMainImage)
+        ? Url.Content("~/uploads/movies/" + Model.MovieMainImage)
+        : Url.Content("~/images/defaults/placeholder.jpg");
+}
 
 <div id="booking-data"
      data-seat-price="@Model.SeatPrice"
      data-discount="@Model.DiscountAmount"
      style="display:none"></div>
 
-<div class="container py-5">
-    <h2 class="mb-4">Book Tickets for @Model.MovieId</h2>
+<div class="booking-page">
 
-    <div class="row">
-        
+    <!-- ── Page Header ─────────────────────────────────────── -->
+    <div class="booking-header">
+        <div class="container">
+            <nav aria-label="breadcrumb" class="booking-breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li class="breadcrumb-item"><a asp-controller="Movies" asp-action="Index">Movies</a></li>
+                    <li class="breadcrumb-item active">Book Tickets</li>
+                </ol>
+            </nav>
+            <h1 class="booking-page-title">
+                <i class="bi bi-ticket-perforated me-2"></i>Book Tickets
+            </h1>
+        </div>
+    </div>
 
-        <!-- Booking Form -->
-        <div class="col-lg-8">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h4 class="card-title mb-4">Select Seats & Payment</h4>
-                    <form asp-action="Create" method="post">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" asp-for="MovieId" />
-                        <input type="hidden" asp-for="CinemaId" />
-                        <input type="hidden" asp-for="ShowtimeId" />
+    <div class="container booking-container">
+        <div class="row g-4">
 
-                        <!-- Seat Selection -->
-                        <div class="mb-4">
-                            <label class="form-label">Select Seats</label>
-                            <div class="d-flex flex-wrap gap-2">
-                                @for (int i = 1; i <= Model.SeatPrice; i++)
+            <!-- ── Left: Movie & Showtime Info ─────────────── -->
+            <div class="col-lg-4">
+                <div class="booking-movie-card">
+                    <div class="booking-movie-poster">
+                        <img src="@posterPath" alt="@Model.MovieTitle" />
+                    </div>
+                    <div class="booking-movie-info">
+                        <h3 class="booking-movie-title">@Model.MovieTitle</h3>
+
+                        <div class="booking-info-row">
+                            <i class="bi bi-building"></i>
+                            <span>@Model.CinemaName</span>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.HallName))
+                        {
+                            <div class="booking-info-row">
+                                <i class="bi bi-layout-split"></i>
+                                <span>@Model.HallName</span>
+                            </div>
+                        }
+                        <div class="booking-info-row">
+                            <i class="bi bi-calendar-event"></i>
+                            <span>@Model.ShowtimeStart.ToString("dddd, MMMM d, yyyy")</span>
+                        </div>
+                        <div class="booking-info-row">
+                            <i class="bi bi-clock"></i>
+                            <span>@Model.ShowtimeStart.ToString("h:mm tt")
+                                @if (Model.ShowtimeDuration > 0)
                                 {
-                                    <div class="form-check">
-                                        <input class="form-check-input seat-checkbox" type="checkbox" value="@i" id="seat@i" name="SeatIds" />
-                                        <label class="form-check-label" for="seat@i">Seat @i</label>
+                                    <text> · @Model.ShowtimeDuration min</text>
+                                }
+                            </span>
+                        </div>
+                        <div class="booking-info-row">
+                            <i class="bi bi-currency-dollar"></i>
+                            <span>@Model.SeatPrice.ToString("C") per seat</span>
+                        </div>
+                        <div class="booking-info-row">
+                            <i class="bi bi-people"></i>
+                            <span>@Model.AvailableSeatsCount seats available</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Card -->
+                <div class="booking-summary-card mt-3">
+                    <h5 class="booking-summary-title">
+                        <i class="bi bi-receipt me-2"></i>Order Summary
+                    </h5>
+                    <div class="booking-summary-row">
+                        <span>Seats Selected</span>
+                        <span id="selectedSeats" class="booking-summary-val">0</span>
+                    </div>
+                    <div class="booking-summary-row">
+                        <span>Subtotal</span>
+                        <span id="totalAmount" class="booking-summary-val">$0.00</span>
+                    </div>
+                    @if (Model.DiscountAmount > 0)
+                    {
+                        <div class="booking-summary-row booking-summary-discount">
+                            <span>Discount</span>
+                            <span id="discountAmount">–@Model.DiscountAmount.ToString("C")</span>
+                        </div>
+                    }
+                    <div class="booking-summary-row booking-summary-final">
+                        <span>Total</span>
+                        <strong id="finalAmount">$0.00</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Right: Seat + Payment Form ──────────────── -->
+            <div class="col-lg-8">
+                <form asp-action="Create" method="post" id="booking-form">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="MovieId" />
+                    <input type="hidden" asp-for="CinemaId" />
+                    <input type="hidden" asp-for="ShowtimeId" />
+                    <input type="hidden" asp-for="SeatPrice" />
+                    <input type="hidden" asp-for="DiscountAmount" />
+                    <input type="hidden" id="hiddenTotalAmount"  name="TotalAmount"  value="0" />
+                    <input type="hidden" id="hiddenFinalAmount"  name="FinalAmount"  value="0" />
+
+                    <!-- Validation summary -->
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="booking-alert booking-alert-danger mb-3">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <div asp-validation-summary="All"></div>
+                        </div>
+                    }
+
+                    <!-- ── Seat Selection ──────────────────── -->
+                    <div class="booking-section">
+                        <h4 class="booking-section-title">
+                            <i class="bi bi-grid-3x3-gap me-2"></i>Select Your Seats
+                        </h4>
+
+                        @if (!Model.AvailableSeats.Any())
+                        {
+                            <div class="booking-no-seats">
+                                <i class="bi bi-exclamation-circle"></i>
+                                <p>No seat data available for this showtime. Please contact the cinema.</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <!-- Screen indicator -->
+                            <div class="seat-screen-bar">
+                                <span><i class="bi bi-tv me-1"></i>SCREEN</span>
+                            </div>
+
+                            <!-- Seat Legend -->
+                            <div class="seat-legend">
+                                <span class="seat-legend-item"><span class="seat-dot seat-dot-available"></span>Available</span>
+                                <span class="seat-legend-item"><span class="seat-dot seat-dot-selected"></span>Selected</span>
+                                <span class="seat-legend-item"><span class="seat-dot seat-dot-taken"></span>Taken</span>
+                            </div>
+
+                            <!-- Seat Grid grouped by Row -->
+                            <div class="seat-grid">
+                                @foreach (var row in Model.AvailableSeats.GroupBy(s => s.Row).OrderBy(g => g.Key))
+                                {
+                                    <div class="seat-row">
+                                        <span class="seat-row-label">@row.Key</span>
+                                        <div class="seat-row-seats">
+                                            @foreach (var seat in row.OrderBy(s => s.NumberInRow))
+                                            {
+                                                var seatClass = seat.IsAvailable ? "seat seat-available" : "seat seat-taken";
+                                                <button type="button"
+                                                        class="@seatClass"
+                                                        data-seat-id="@seat.SeatId"
+                                                        data-seat-number="@seat.SeatNumber"
+                                                        data-seat-type="@seat.SeatType"
+                                                        title="@seat.SeatNumber (@seat.SeatType)"
+                                                        @(seat.IsAvailable ? "" : "disabled")>
+                                                    @seat.NumberInRow
+                                                </button>
+                                            }
+                                        </div>
                                     </div>
                                 }
                             </div>
-                        </div>
 
-                        <!-- Payment Method -->
-                        <div class="mb-4">
-                            <label asp-for="PaymentMethod" class="form-label"></label>
-                            <select asp-for="PaymentMethod" class="form-select">
-                                <option value="">-- Select Payment --</option>
-                                <option value="CreditCard">Credit Card</option>
-                                <option value="PayPal">PayPal</option>
-                                <option value="Cash">Cash</option>
-                            </select>
-                            <span asp-validation-for="PaymentMethod" class="text-danger"></span>
-                        </div>
+                            <!-- Hidden checkbox inputs for selected seats (posted to server) -->
+                            <div id="seat-checkboxes" style="display:none"></div>
 
-                        <!-- Amount Summary -->
-                        <div class="mb-4">
-                            <h5>Summary</h5>
-                            <p>Seats Selected: <span id="selectedSeats">0</span></p>
-                            <p>Total Amount: <span id="totalAmount">@Model.TotalAmount:C</span></p>
-                            <p>Discount: <span id="discountAmount">@Model.DiscountAmount:C</span></p>
-                            <p class="fw-bold">Final Amount: <span id="finalAmount">@Model.FinalAmount:C</span></p>
-                        </div>
+                            <div class="seat-selection-note">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Click seats to select them. Maximum 10 seats per booking.
+                            </div>
+                        }
+                    </div>
 
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg">Confirm Booking</button>
+                    <!-- ── Payment Method ──────────────────── -->
+                    <div class="booking-section">
+                        <h4 class="booking-section-title">
+                            <i class="bi bi-credit-card me-2"></i>Payment Method
+                        </h4>
+                        <div class="payment-methods">
+                            <label class="payment-method-option">
+                                <input type="radio" name="PaymentMethod" value="@((int)PaymentMethod.CreditCard)" class="payment-radio" />
+                                <span class="payment-method-box">
+                                    <i class="bi bi-credit-card-2-front"></i>
+                                    <span>Credit Card</span>
+                                </span>
+                            </label>
+                            <label class="payment-method-option">
+                                <input type="radio" name="PaymentMethod" value="@((int)PaymentMethod.Paypal)" class="payment-radio" />
+                                <span class="payment-method-box">
+                                    <i class="bi bi-paypal"></i>
+                                    <span>PayPal</span>
+                                </span>
+                            </label>
+                            <label class="payment-method-option">
+                                <input type="radio" name="PaymentMethod" value="@((int)PaymentMethod.Cash)" class="payment-radio" />
+                                <span class="payment-method-box">
+                                    <i class="bi bi-cash-coin"></i>
+                                    <span>Cash at Counter</span>
+                                </span>
+                            </label>
                         </div>
-                    </form>
-                </div>
+                        <span asp-validation-for="PaymentMethod" class="text-danger small"></span>
+                    </div>
+
+                    <!-- ── Confirm Button ──────────────────── -->
+                    <div class="booking-submit-wrap">
+                        <button type="submit" class="btn-booking-confirm" id="confirm-booking-btn" disabled>
+                            <i class="bi bi-lock me-2"></i>Confirm Booking
+                        </button>
+                        <p class="booking-submit-note">
+                            <i class="bi bi-shield-check me-1"></i>
+                            Your booking is secured and confirmed instantly.
+                        </p>
+                    </div>
+                </form>
             </div>
+
         </div>
     </div>
 </div>

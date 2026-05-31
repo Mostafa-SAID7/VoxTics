@@ -1,1 +1,221 @@
-﻿
+@model VoxTics.Models.ViewModels.Booking.BookingDetailsVM
+@using VoxTics.Models.Enums
+
+@{
+    ViewData["Title"] = "Booking Confirmation – " + Model.BookingReference;
+    var posterPath = !string.IsNullOrEmpty(Model.MovieMainImage)
+        ? Url.Content("~/uploads/movies/" + Model.MovieMainImage)
+        : Url.Content("~/images/defaults/placeholder.jpg");
+
+    bool isConfirmed = Model.Status == BookingStatus.Confirmed || Model.Status == BookingStatus.Completed;
+    bool isCancelled = Model.Status == BookingStatus.Cancelled;
+}
+
+<div class="booking-confirmation-page">
+
+    <!-- ── Status Banner ──────────────────────────────── -->
+    <div class="booking-status-banner @(isConfirmed ? "booking-status-success" : isCancelled ? "booking-status-cancelled" : "booking-status-pending")">
+        <div class="container d-flex align-items-center gap-3">
+            @if (isConfirmed)
+            {
+                <i class="bi bi-patch-check-fill booking-status-icon"></i>
+                <div>
+                    <div class="booking-status-label">Booking Confirmed</div>
+                    <div class="booking-status-ref">Reference: <strong>@Model.BookingReference</strong></div>
+                </div>
+            }
+            else if (isCancelled)
+            {
+                <i class="bi bi-x-circle-fill booking-status-icon"></i>
+                <div>
+                    <div class="booking-status-label">Booking Cancelled</div>
+                    <div class="booking-status-ref">Reference: <strong>@Model.BookingReference</strong></div>
+                </div>
+            }
+            else
+            {
+                <i class="bi bi-hourglass-split booking-status-icon"></i>
+                <div>
+                    <div class="booking-status-label">Booking Pending</div>
+                    <div class="booking-status-ref">Reference: <strong>@Model.BookingReference</strong></div>
+                </div>
+            }
+            <div class="ms-auto">
+                <a asp-action="MyBookings" class="btn-booking-back">
+                    <i class="bi bi-collection-play me-1"></i>My Bookings
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container booking-confirm-container">
+        <div class="row g-4">
+
+            <!-- ── Left: Movie Poster ──────────────────── -->
+            <div class="col-lg-4">
+                <div class="booking-movie-card">
+                    <div class="booking-movie-poster">
+                        <img src="@posterPath" alt="@Model.MovieTitle" />
+                    </div>
+                    <div class="booking-movie-info">
+                        <h3 class="booking-movie-title">@Model.MovieTitle</h3>
+
+                        <div class="booking-info-row">
+                            <i class="bi bi-building"></i>
+                            <span>@Model.CinemaName</span>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.HallName))
+                        {
+                            <div class="booking-info-row">
+                                <i class="bi bi-layout-split"></i>
+                                <span>@Model.HallName</span>
+                            </div>
+                        }
+                        <div class="booking-info-row">
+                            <i class="bi bi-calendar-event"></i>
+                            <span>@Model.ShowtimeStart.ToString("dddd, MMMM d, yyyy")</span>
+                        </div>
+                        <div class="booking-info-row">
+                            <i class="bi bi-clock"></i>
+                            <span>@Model.ShowtimeStart.ToString("h:mm tt")
+                                @if (Model.ShowtimeDuration > 0)
+                                {
+                                    <text> · @Model.ShowtimeDuration min</text>
+                                }
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="booking-actions mt-3">
+                    @if (isConfirmed && !Model.Status.Equals(BookingStatus.Completed))
+                    {
+                        <form asp-action="Cancel" asp-route-id="@Model.BookingId" method="post"
+                              onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn-booking-cancel w-100">
+                                <i class="bi bi-x-circle me-2"></i>Cancel Booking
+                            </button>
+                        </form>
+                    }
+                    <a asp-controller="Movies" asp-action="Index" class="btn-booking-browse mt-2 w-100 text-center d-block">
+                        <i class="bi bi-film me-2"></i>Browse More Movies
+                    </a>
+                </div>
+            </div>
+
+            <!-- ── Right: Booking Details ──────────────── -->
+            <div class="col-lg-8">
+
+                <!-- Ticket Details -->
+                <div class="booking-detail-card">
+                    <div class="booking-detail-header">
+                        <i class="bi bi-ticket-detailed me-2"></i>Ticket Details
+                    </div>
+                    <div class="booking-detail-body">
+                        <div class="booking-detail-grid">
+                            <div class="booking-detail-item">
+                                <span class="booking-detail-label">Booking Reference</span>
+                                <span class="booking-detail-value booking-ref-code">@Model.BookingReference</span>
+                            </div>
+                            <div class="booking-detail-item">
+                                <span class="booking-detail-label">Booking Date</span>
+                                <span class="booking-detail-value">@Model.BookingDate.ToString("MMMM d, yyyy")</span>
+                            </div>
+                            <div class="booking-detail-item">
+                                <span class="booking-detail-label">Status</span>
+                                <span class="booking-status-badge booking-status-badge-@Model.Status.ToString().ToLower()">
+                                    @Model.Status
+                                </span>
+                            </div>
+                            <div class="booking-detail-item">
+                                <span class="booking-detail-label">Number of Tickets</span>
+                                <span class="booking-detail-value">@Model.NumberOfTickets</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seat List -->
+                @if (Model.Seats.Any())
+                {
+                    <div class="booking-detail-card mt-3">
+                        <div class="booking-detail-header">
+                            <i class="bi bi-grid-3x3-gap me-2"></i>Your Seats
+                        </div>
+                        <div class="booking-detail-body">
+                            <div class="booking-seats-chips">
+                                @foreach (var seat in Model.Seats)
+                                {
+                                    <span class="booking-seat-chip">
+                                        <i class="bi bi-grid-1x2 me-1"></i>@seat.SeatNumber
+                                        <span class="booking-seat-price">@seat.SeatPrice.ToString("C")</span>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Payment Summary -->
+                <div class="booking-detail-card mt-3">
+                    <div class="booking-detail-header">
+                        <i class="bi bi-receipt me-2"></i>Payment Summary
+                    </div>
+                    <div class="booking-detail-body">
+                        <div class="booking-payment-row">
+                            <span>Payment Method</span>
+                            <span>
+                                @switch (Model.PaymentMethod)
+                                {
+                                    case PaymentMethod.CreditCard:
+                                        <i class="bi bi-credit-card me-1"></i>
+                                        <text>Credit Card</text>
+                                        break;
+                                    case PaymentMethod.Paypal:
+                                        <i class="bi bi-paypal me-1"></i>
+                                        <text>PayPal</text>
+                                        break;
+                                    case PaymentMethod.Cash:
+                                        <i class="bi bi-cash-coin me-1"></i>
+                                        <text>Cash at Counter</text>
+                                        break;
+                                    default:
+                                        <text>—</text>
+                                        break;
+                                }
+                            </span>
+                        </div>
+                        <div class="booking-payment-row">
+                            <span>Subtotal</span>
+                            <span>@Model.TotalAmount.ToString("C")</span>
+                        </div>
+                        @if (Model.DiscountAmount > 0)
+                        {
+                            <div class="booking-payment-row booking-payment-discount">
+                                <span>Discount</span>
+                                <span>–@Model.DiscountAmount.ToString("C")</span>
+                            </div>
+                        }
+                        <div class="booking-payment-row booking-payment-total">
+                            <strong>Total Paid</strong>
+                            <strong class="booking-total-price">@Model.FinalAmount.ToString("C")</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Confirmation Note -->
+                @if (isConfirmed)
+                {
+                    <div class="booking-confirm-note mt-3">
+                        <i class="bi bi-envelope-check me-2"></i>
+                        Present your booking reference <strong>@Model.BookingReference</strong> at the counter.
+                        Arrive at least 15 minutes before showtime.
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>

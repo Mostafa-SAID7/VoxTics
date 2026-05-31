@@ -1,10 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace VoxTics.Models.ViewModels.Booking
 {
-    /// <summary>
-    /// Input model for creating a booking.
-    /// </summary>
     public class BookingCreateVM
     {
         [Required]
@@ -33,5 +30,16 @@ namespace VoxTics.Models.ViewModels.Booking
 
         [Required]
         public PaymentMethod PaymentMethod { get; set; }
+
+        // Display-only fields (not posted back as form fields)
+        public string MovieTitle { get; set; } = string.Empty;
+        public string MovieMainImage { get; set; } = string.Empty;
+        public string CinemaName { get; set; } = string.Empty;
+        public string HallName { get; set; } = string.Empty;
+        public DateTime ShowtimeStart { get; set; }
+        public int ShowtimeDuration { get; set; }
+        public int AvailableSeatsCount { get; set; }
+
+        public List<SeatOptionVM> AvailableSeats { get; set; } = new();
     }
 }

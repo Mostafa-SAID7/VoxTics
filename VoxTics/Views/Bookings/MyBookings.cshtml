@@ -1,44 +1,107 @@
-﻿@model IEnumerable<VoxTics.Models.ViewModels.Booking.BookingListVM>
+@model IEnumerable<VoxTics.Models.ViewModels.Booking.BookingListVM>
+@using VoxTics.Models.Enums
 
+@{
+    ViewData["Title"] = "My Bookings";
+}
 
-<div class="container py-5">
-    <h2 class="mb-4">My Bookings</h2>
+<div class="my-bookings-page">
 
-    @if (!Model.Any())
-    {
-        <div class="alert alert-info">
-            You have no bookings yet. <a asp-controller="Movies" asp-action="Index">Browse movies</a> to make a booking.
+    <div class="booking-header">
+        <div class="container">
+            <h1 class="booking-page-title">
+                <i class="bi bi-collection-play me-2"></i>My Bookings
+            </h1>
+            <p class="booking-page-subtitle">Track all your cinema reservations</p>
         </div>
-    }
-    else
-    {
-        <div class="row g-4">
-            @foreach (var booking in Model)
-            {
-                <div class="col-lg-6 col-md-12">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <span class="fw-bold">Booking #@booking.BookingReference</span>
-                            <span class="badge
-                                        @(booking.Status == VoxTics.Models.Enums.BookingStatus.Confirmed ? "bg-success" :
-                                                                    booking.Status == VoxTics.Models.Enums.BookingStatus.Pending ? "bg-warning text-dark" :
-                                                                    "bg-secondary")">
-                        @booking.Status
-                    </span>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">@booking.MovieTitle</h5>
-                    <p class="mb-1"><i class="bi bi-building me-1"></i>@booking.CinemaName</p>
-                    <p class="mb-1"><i class="bi bi-calendar-event me-1"></i>@booking.ShowtimeStart.ToString("MMMM dd, yyyy hh:mm tt")</p>
-                    <p class="mb-1"><i class="bi bi-currency-dollar me-1"></i>Total Final: @booking.FinalAmount:C</p>
-                    <p class="mb-1"><i class="bi bi-credit-card me-1"></i>Payment: @booking.PaymentStatus | Status: @booking.PaymentStatus</p>
-                </div>
-                <div class="card-footer text-end">
-                    <small class="text-muted">Booked on @booking.ShowtimeStart.ToString("MMMM dd, yyyy hh:mm tt")</small>
-                </div>
+    </div>
+
+    <div class="container py-5">
+
+        @if (TempData["Message"] != null)
+        {
+            <div class="booking-alert booking-alert-info mb-4">
+                <i class="bi bi-info-circle me-2"></i>@TempData["Message"]
             </div>
-        </div>
+        }
+
+        @if (!Model.Any())
+        {
+            <div class="booking-empty-state">
+                <i class="bi bi-ticket-perforated"></i>
+                <h4>No bookings yet</h4>
+                <p>Browse our movies and book your first tickets!</p>
+                <a asp-controller="Movies" asp-action="Index" class="btn-booking-confirm" style="display:inline-flex;width:auto;padding:.75rem 2rem;">
+                    <i class="bi bi-film me-2"></i>Browse Movies
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var booking in Model)
+                {
+                    var statusClass = booking.Status switch
+                    {
+                        BookingStatus.Confirmed  => "confirmed",
+                        BookingStatus.Completed  => "completed",
+                        BookingStatus.Cancelled  => "cancelled",
+                        BookingStatus.Pending    => "pending",
+                        _                        => "pending"
+                    };
+
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mybooking-card mybooking-card-@statusClass">
+                            <div class="mybooking-card-header">
+                                <div class="mybooking-ref">
+                                    <i class="bi bi-ticket-perforated me-2"></i>
+                                    @booking.BookingReference
+                                </div>
+                                <span class="mybooking-status-badge mybooking-status-@statusClass">
+                                    @booking.Status
+                                </span>
+                            </div>
+                            <div class="mybooking-card-body">
+                                <h5 class="mybooking-movie-title">@booking.MovieTitle</h5>
+
+                                <div class="mybooking-info-row">
+                                    <i class="bi bi-building"></i>
+                                    <span>@booking.CinemaName</span>
+                                </div>
+                                <div class="mybooking-info-row">
+                                    <i class="bi bi-calendar-event"></i>
+                                    <span>@booking.ShowtimeStart.ToString("MMMM d, yyyy 'at' h:mm tt")</span>
+                                </div>
+                                <div class="mybooking-info-row">
+                                    <i class="bi bi-currency-dollar"></i>
+                                    <span>@booking.FinalAmount.ToString("C")</span>
+                                </div>
+                                <div class="mybooking-info-row">
+                                    <i class="bi bi-credit-card"></i>
+                                    <span>Payment: @booking.PaymentStatus</span>
+                                </div>
+                            </div>
+                            <div class="mybooking-card-footer">
+                                <a asp-action="Details" asp-route-id="@booking.BookingId"
+                                   class="mybooking-detail-btn">
+                                    <i class="bi bi-eye me-1"></i>View Details
+                                </a>
+                                @if (booking.Status == BookingStatus.Confirmed)
+                                {
+                                    <form asp-action="Cancel" asp-route-id="@booking.BookingId" method="post"
+                                          onsubmit="return confirm('Cancel this booking?');"
+                                          style="display:inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="mybooking-cancel-btn">
+                                            <i class="bi bi-x me-1"></i>Cancel
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    </div>
                 }
-        </div>
-    }
+            </div>
+        }
+    </div>
 </div>

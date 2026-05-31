@@ -1,18 +1,18 @@
-﻿using VoxTics.Models.Enums;
+using VoxTics.Models.Enums;
 
 namespace VoxTics.Models.ViewModels.Booking
 {
-    /// <summary>
-    /// Detailed view of a booking for confirmation or history.
-    /// </summary>
     public class BookingDetailsVM
     {
         public int BookingId { get; set; }
         public string BookingReference { get; set; } = string.Empty;
 
         public string MovieTitle { get; set; } = string.Empty;
+        public string MovieMainImage { get; set; } = string.Empty;
         public string CinemaName { get; set; } = string.Empty;
+        public string HallName { get; set; } = string.Empty;
         public DateTime ShowtimeStart { get; set; }
+        public int ShowtimeDuration { get; set; }
 
         public int NumberOfTickets { get; set; }
         public decimal TotalAmount { get; set; }

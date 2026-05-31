@@ -48,8 +48,10 @@ namespace VoxTics.Services.Implementations
         {
             return await _unitOfWork.Showtimes
                 .Query()
-                .Include(s => s.Hall)
                 .Include(s => s.Movie)
+                .Include(s => s.Cinema)
+                .Include(s => s.Hall)
+                    .ThenInclude(h => h.Seats)
                 .FirstOrDefaultAsync(s => s.Id == showtimeId, cancellationToken);
         }
 
