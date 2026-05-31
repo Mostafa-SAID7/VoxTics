@@ -33,3 +33,5 @@ global using VoxTics.Services.Implementations;
 global using VoxTics.Services.Interfaces;
 global using VoxTics.Services.IServices;
 global using VoxTics.Areas.Admin.ViewModels.Movie;
+global using Microsoft.AspNetCore.Http;
+global using Microsoft.Extensions.Logging;

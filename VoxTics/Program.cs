@@ -1,5 +1,6 @@
 using ECommerce516.Utitlity.DBInitializer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Stripe;
 using VoxTics;
 using VoxTics.Helpers.booking;
@@ -24,7 +25,7 @@ builder.Services.AddScoped<IDBInitializer, DBInitializer>();
 builder.Services.AddDbContext<MovieDbContext>(options =>
     options.UseSqlServer(connectionString, sqlOptions =>
     {
-        sqlOptions.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelaySeconds: 5);
+        sqlOptions.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelay: TimeSpan.FromSeconds(5));
         sqlOptions.CommandTimeout(30);
     }));
 
@@ -70,17 +71,6 @@ StripeConfiguration.ApiKey = stripeKey;
 // Add health checks
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<MovieDbContext>();
-
-// Add CORS if needed for API calls
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowLocalhost", builder =>
-    {
-        builder.WithOrigins("https://localhost:7244", "http://localhost:5018")
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
-});
 
 var app = builder.Build();
 
