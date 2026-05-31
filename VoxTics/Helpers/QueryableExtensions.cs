@@ -18,9 +18,9 @@ namespace VoxTics.Helpers
             this IQueryable<T> query,
             int pageIndex,
             int pageSize,
-            string searchString = null,
-            Func<IQueryable<T>, IQueryable<T>> searchFunc = null,
-            string sortColumn = null,
+            string? searchString = null,
+            Func<IQueryable<T>, IQueryable<T>>? searchFunc = null,
+            string? sortColumn = null,
             bool sortDescending = false)
         {
             if (!string.IsNullOrEmpty(searchString) && searchFunc != null)

@@ -10,11 +10,8 @@ namespace VoxTics.Repositories
     /// </summary>
     public class BookingRepository : BaseRepository<Booking>, IBookingRepository
     {
-        private readonly MovieDbContext _context;
-
         public BookingRepository(MovieDbContext context) : base(context)
         {
-            _context = context;
         }
 
         public async Task<IEnumerable<Booking>> GetUserBookingsAsync(

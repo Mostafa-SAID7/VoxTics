@@ -9,7 +9,7 @@
 
 <h2>@ViewData["Title"]</h2>
 
-<form asp-action="@(isEdit ? "Edit" : "Create")" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
+<form asp-action="@(isEdit ? "Edit" : "Create")" asp-route-id="@Model!.Id" method="post" enctype="multipart/form-data">
     <div class="row">
         <div class="col-md-8">
             <div class="mb-3">
@@ -90,7 +90,7 @@
             <label class="form-label">Cinema Image</label>
             <div class="mb-3">
                 <img id="previewImage"
-                     src="@ImageManager.GetImageWebPath(ImageType.Cinema, Model.Name, Model.ImageUrl)"
+                     src="@ImageManager.GetImageWebPath(ImageType.Cinema, Model!.Name, Model!.ImageUrl)"
                      alt="@Model.Name"
                      class="img-thumbnail"
                      style="width:80px; height:80px;" />

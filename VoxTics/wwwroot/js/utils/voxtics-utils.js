@@ -512,6 +512,16 @@
     }
 
     /**
+     * Apply a URL filter parameter and navigate, optionally resetting page
+     */
+    function applyUrlFilter(type, value, resetPage) {
+        const url = new URL(window.location);
+        url.searchParams.set(type, value);
+        if (resetPage) url.searchParams.delete('page');
+        window.location.href = url.toString();
+    }
+
+    /**
      * Social sharing functionality
      */
     function shareOnSocial(platform, url, title = '') {
@@ -659,6 +669,7 @@
         isValidPhone,
         generateId,
         getCSRFToken,
+        applyUrlFilter,
         shareOnSocial,
         sanitizeHtml,
         getResponsiveImageUrl,

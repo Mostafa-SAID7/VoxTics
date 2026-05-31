@@ -18,7 +18,7 @@ namespace VoxTics.Models.ViewModels.Cinema
         public string? Country { get; set; }
         public string? PostalCode { get; set; }
         public string? Website { get; set; }
-        public string DisplayImage { get; set; } 
+        public string DisplayImage { get; set; } = string.Empty;
 
         // --- Related Entities ---
         public IReadOnlyList<HallVM> Halls { get; set; } = new List<HallVM>();

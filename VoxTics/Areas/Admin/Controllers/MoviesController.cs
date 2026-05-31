@@ -112,9 +112,8 @@ namespace VoxTics.Areas.Admin.Controllers
             {
                 ModelState.AddModelError("", ex.Message);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // Log exception in real app
                 ModelState.AddModelError("", "An unexpected error occurred while creating the movie.");
             }
 

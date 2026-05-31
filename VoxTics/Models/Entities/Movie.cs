@@ -64,7 +64,7 @@ namespace VoxTics.Models.Entities
         // Category relationship
         public int CategoryId { get; set; }
         [Required]
-        public Category Category { get; set; }
+        public Category Category { get; set; } = null!;
 
     }
 }

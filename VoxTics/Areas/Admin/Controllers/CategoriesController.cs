@@ -23,8 +23,8 @@ namespace VoxTics.Areas.Admin.Controllers
         public async Task<IActionResult> Index(
             int page = 1,
             int pageSize = 10,
-            string search = null,
-            string sortColumn = null,
+            string? search = null,
+            string? sortColumn = null,
             bool sortDescending = false)
         {
             var categories = await _categoriesService.GetPagedAsync(page, pageSize, search, sortColumn, sortDescending);

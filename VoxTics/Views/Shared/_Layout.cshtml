@@ -83,7 +83,7 @@
 
                 @* User & Admin links *@
                 <ul class="navbar-nav mb-2 mb-lg-0 align-items-center">
-                    @if (User.Identity.IsAuthenticated)
+                    @if (User.Identity?.IsAuthenticated == true)
                     {
                         if (User.IsInRole("Admin"))
                         {

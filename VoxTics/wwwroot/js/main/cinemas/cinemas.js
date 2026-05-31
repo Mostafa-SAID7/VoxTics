@@ -37,9 +37,7 @@
     }
 
     function applyQuickFilter(type, value) {
-        const url = new URL(window.location);
-        url.searchParams.set(type, value);
-        window.location.href = url.toString();
+        VoxTicsUtils.applyUrlFilter(type, value, false);
     }
 
     function applyFilters() {
@@ -147,37 +145,13 @@
     }
 
     function handleCall(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        const phone = e.target.dataset.phone;
-        if (phone) window.location.href = `tel:${phone}`;
+        CinemaShared.handleCall(e);
     }
 
     function handleFavorite(e) {
         e.preventDefault();
         e.stopPropagation();
-        const btn = e.currentTarget;
-        const cinemaId = btn.dataset.cinemaId;
-
-        VoxTicsUtils.showLoading(btn, 'Updating...');
-
-        new VoxTicsUtils.ApiService()
-            .post('/Cinemas/ToggleFavorite', { cinemaId: cinemaId })
-            .then(data => {
-                if (data.success) {
-                    updateFavoriteButton(btn, data.isFavorite);
-                    VoxTicsUtils.notify(data.message, 'success');
-                } else {
-                    VoxTicsUtils.notify(data.message || 'Error updating favorite', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                VoxTicsUtils.notify('Error updating favorite', 'error');
-            })
-            .finally(() => {
-                VoxTicsUtils.hideLoading(btn);
-            });
+        CinemaShared.toggleFavorite(e.currentTarget, updateFavoriteButton);
     }
 
     function updateFavoriteButton(btn, isFavorite) {

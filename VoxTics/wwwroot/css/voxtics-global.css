@@ -717,7 +717,7 @@ a:hover {
 .status-pending     { background-color: #ffc107; }
 .status-cancelled   { background-color: #dc3545; }
 .movie-poster-wrapper { position: relative; overflow: hidden; border-radius: 8px; aspect-ratio: 2/3; }
-.movie-poster { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+.movie-poster-wrapper .movie-poster { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
 .movie-poster-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-size: 2rem; }
 .movie-year { margin-bottom: 0; font-size: 0.875rem; }
 .avatar-sm { width: 32px; height: 32px; }

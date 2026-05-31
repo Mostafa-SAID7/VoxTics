@@ -39,7 +39,7 @@ namespace VoxTics.Areas.Identity.Services
                 Credentials = new NetworkCredential(user, pass)
             };
 
-            var message = new MailMessage(from, email, subject, htmlMessage)
+            var message = new MailMessage(from ?? user ?? string.Empty, email, subject, htmlMessage)
             {
                 IsBodyHtml = true
             };

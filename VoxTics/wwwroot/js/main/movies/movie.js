@@ -41,10 +41,7 @@
     }
 
     function applyQuickFilter(type, value) {
-        const url = new URL(window.location);
-        url.searchParams.set(type, value);
-        url.searchParams.delete('page');
-        window.location.href = url.toString();
+        VoxTicsUtils.applyUrlFilter(type, value, true);
     }
 
     function applyFilters() {

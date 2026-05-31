@@ -16,11 +16,8 @@ namespace VoxTics.Areas.Admin.Repositories
 {
     public class AdminMoviesRepository : BaseRepository<Movie>, IAdminMoviesRepository
     {
-        private readonly MovieDbContext _context;
-
         public AdminMoviesRepository(MovieDbContext context) : base(context)
         {
-            _context = context;
         }
 
         // ✅ Get a movie with related data for editing or details

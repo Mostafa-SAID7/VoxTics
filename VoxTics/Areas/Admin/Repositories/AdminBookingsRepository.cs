@@ -9,11 +9,8 @@ namespace VoxTics.Areas.Admin.Repositories
     /// </summary>
     public class AdminBookingsRepository : BaseRepository<Booking>, IAdminBookingsRepository
     {
-        private readonly MovieDbContext _context;
-
         public AdminBookingsRepository(MovieDbContext context) : base(context)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<(IEnumerable<Booking> Bookings, int TotalCount)> GetPagedBookingsAsync(
@@ -32,7 +29,7 @@ namespace VoxTics.Areas.Admin.Repositories
             {
                 query = query.Where(b =>
                     b.User.Name.Contains(search) ||
-                    b.User.Email.Contains(search) 
+                    b.User.Email!.Contains(search) 
                    );
             }
 

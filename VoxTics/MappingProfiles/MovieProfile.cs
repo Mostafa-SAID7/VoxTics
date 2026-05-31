@@ -34,9 +34,7 @@ namespace VoxTics.MappingProfiles
                            opt => opt.MapFrom(src => src.Showtimes))
            .ForMember(dest => dest.CinemaId,
     opt => opt.MapFrom(src =>
-        src.Showtimes.FirstOrDefault() != null
-            ? src.Showtimes.FirstOrDefault().CinemaId
-            : 0));
+        src.Showtimes == null ? 0 : (src.Showtimes.Any() ? src.Showtimes.First().CinemaId : 0)));
 
             // MovieActor -> ActorVM
             CreateMap<MovieActor, ActorVM>()

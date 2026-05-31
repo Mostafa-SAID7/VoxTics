@@ -29,24 +29,24 @@
 <div class="sort-controls">
     <a asp-action="Index" 
        asp-route-sortColumn="Title" 
-       asp-route-sortDesc="@(ViewData["SortColumn"]?.ToString() == "Title" && ViewData["SortDesc"] != null && (bool)ViewData["SortDesc"] == false ? true : false)"
+       asp-route-sortDesc="@(ViewData["SortColumn"]?.ToString() == "Title" && ViewData["SortDesc"] != null && (bool)(ViewData["SortDesc"] ?? false) == false ? true : false)"
        asp-route-search="@ViewData["CurrentSearch"]"
        class="sort-btn @(ViewData["SortColumn"]?.ToString() == "Title" ? "active" : "")">
-        Sort by Title @(ViewData["SortColumn"]?.ToString() == "Title" ? (ViewData["SortDesc"] != null && (bool)ViewData["SortDesc"] ? "↓" : "↑") : "")
+        Sort by Title @(ViewData["SortColumn"]?.ToString() == "Title" ? (ViewData["SortDesc"] != null && (bool)(ViewData["SortDesc"] ?? false) ? "↓" : "↑") : "")
     </a>
     <a asp-action="Index" 
        asp-route-sortColumn="Price" 
-       asp-route-sortDesc="@(ViewData["SortColumn"]?.ToString() == "Price" && ViewData["SortDesc"] != null && (bool)ViewData["SortDesc"] == false ? true : false)"
+       asp-route-sortDesc="@(ViewData["SortColumn"]?.ToString() == "Price" && ViewData["SortDesc"] != null && (bool)(ViewData["SortDesc"] ?? false) == false ? true : false)"
        asp-route-search="@ViewData["CurrentSearch"]"
        class="sort-btn @(ViewData["SortColumn"]?.ToString() == "Price" ? "active" : "")">
-        Sort by Price @(ViewData["SortColumn"]?.ToString() == "Price" ? (ViewData["SortDesc"] != null && (bool)ViewData["SortDesc"] ? "↓" : "↑") : "")
+        Sort by Price @(ViewData["SortColumn"]?.ToString() == "Price" ? (ViewData["SortDesc"] != null && (bool)(ViewData["SortDesc"] ?? false) ? "↓" : "↑") : "")
     </a>
     <a asp-action="Index" 
        asp-route-sortColumn="Rating" 
-       asp-route-sortDesc="@(ViewData["SortColumn"]?.ToString() == "Rating" && ViewData["SortDesc"] != null && (bool)ViewData["SortDesc"] == false ? true : false)"
+       asp-route-sortDesc="@(ViewData["SortColumn"]?.ToString() == "Rating" && ViewData["SortDesc"] != null && (bool)(ViewData["SortDesc"] ?? false) == false ? true : false)"
        asp-route-search="@ViewData["CurrentSearch"]"
        class="sort-btn @(ViewData["SortColumn"]?.ToString() == "Rating" ? "active" : "")">
-        Sort by Rating @(ViewData["SortColumn"]?.ToString() == "Rating" ? (ViewData["SortDesc"] != null && (bool)ViewData["SortDesc"] ? "↓" : "↑") : "")
+        Sort by Rating @(ViewData["SortColumn"]?.ToString() == "Rating" ? (ViewData["SortDesc"] != null && (bool)(ViewData["SortDesc"] ?? false) ? "↓" : "↑") : "")
     </a>
 </div>
 

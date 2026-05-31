@@ -17,11 +17,8 @@ namespace VoxTics.Repositories
     /// </summary>
     public class CategoriesRepository : BaseRepository<Category>, ICategoriesRepository
     {
-        private readonly MovieDbContext _context;
-
         public CategoriesRepository(MovieDbContext context) : base(context)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<IEnumerable<Category>> GetActiveCategoriesAsync(

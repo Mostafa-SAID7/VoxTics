@@ -126,9 +126,9 @@ namespace VoxTics.Areas.Admin.Repositories
         public async Task<IEnumerable<Movie>> GetPopularMoviesAsync(int count = 5, CancellationToken cancellationToken = default)
         {
             var result = await _context.Movies
-                .Include(m => m.Showtimes)
+                .Include(m => m.Showtimes!)
                 .ThenInclude(st => st.Bookings)
-                .OrderByDescending(m => m.Showtimes.Sum(st => st.Bookings.Count))
+                .OrderByDescending(m => m.Showtimes!.Sum(st => st.Bookings!.Count))
                 .Take(count)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);

@@ -8,7 +8,9 @@
     var area = ViewData["Area"]?.ToString();
     var target = ViewData["Target"]?.ToString() ?? "#cards-container";
 
-    var baseDict = new RouteValueDictionary(Model.RouteValues ?? new Dictionary<string, object>());
+    var baseDict = Model.RouteValues != null
+        ? new RouteValueDictionary((object?)Model.RouteValues)
+        : new RouteValueDictionary();
     if (!string.IsNullOrEmpty(area)) baseDict["area"] = area;
 }
 
