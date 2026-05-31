@@ -1,4 +1,5 @@
 using ECommerce516.Utitlity.DBInitializer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Stripe;
@@ -50,7 +51,7 @@ builder.Services.AddVoxTicsServices(builder.Configuration);
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
-// Configure application cookie with security settings
+// Configure application cookie - use SameSiteMode.None/Lax for proxy compatibility
 builder.Services.ConfigureApplicationCookie(option =>
 {
     option.LoginPath = "/Identity/Account/Login";
@@ -58,8 +59,16 @@ builder.Services.ConfigureApplicationCookie(option =>
     option.ExpireTimeSpan = TimeSpan.FromHours(1);
     option.SlidingExpiration = true;
     option.Cookie.HttpOnly = true;
-    option.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    option.Cookie.SameSite = SameSiteMode.Strict;
+    option.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    option.Cookie.SameSite = SameSiteMode.Lax;
+});
+
+// Configure forwarded headers for Replit proxy
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
 });
 
 // Configure Stripe
@@ -74,6 +83,9 @@ builder.Services.AddHealthChecks()
 
 var app = builder.Build();
 
+// Use forwarded headers before anything else
+app.UseForwardedHeaders();
+
 // Configure the HTTP request pipeline
 if (!app.Environment.IsDevelopment())
 {
@@ -84,17 +96,15 @@ if (!app.Environment.IsDevelopment())
 else
 {
     app.UseDeveloperExceptionPage();
-    app.UseHttpsRedirection();
 }
 
 // Security headers middleware
 app.Use(async (context, next) =>
 {
-    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
-    context.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");
-    context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
-    context.Response.Headers.Add("Referrer-Policy", "strict-origin-when-cross-origin");
-    context.Response.Headers.Add("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
+    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Append("X-XSS-Protection", "1; mode=block");
+    context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
+    context.Response.Headers.Append("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
     await next();
 });
 
