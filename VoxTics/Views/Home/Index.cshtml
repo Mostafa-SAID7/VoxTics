@@ -30,7 +30,7 @@
     <!-- Featured Movies -->
     <div class="container mb-5">
         <div class="section-header text-center mb-4">
-            <h2 class="section-title">🎬 Featured Movies</h2>
+            <h2 class="section-title"><i class="bi bi-camera-reels me-2"></i>Featured Movies</h2>
             <p class="section-subtitle">Handpicked selections just for you</p>
         </div>
         
@@ -78,7 +78,7 @@
     <!-- Now Showing -->
     <div class="container mb-5">
         <div class="section-header text-center mb-4">
-            <h3 class="section-title">🎭 Now Showing</h3>
+            <h3 class="section-title"><i class="bi bi-play-circle-fill me-2"></i>Now Showing</h3>
             <p class="section-subtitle">Currently playing at your favorite theaters</p>
         </div>
         
@@ -104,33 +104,79 @@
     <!-- Coming Soon -->
     <div class="container mb-5">
         <div class="section-header text-center mb-4">
-            <h3 class="section-title">🚀 Coming Soon</h3>
+            <h3 class="section-title"><i class="bi bi-rocket-takeoff-fill me-2"></i>Coming Soon</h3>
             <p class="section-subtitle">Get ready for these upcoming blockbusters</p>
         </div>
-        
-        <div class="card">
-            <div class="card-body p-0">
+
+        @if (Model.ComingSoon.Any())
+        {
+            <div class="coming-soon-grid">
                 @foreach (var movie in Model.ComingSoon)
                 {
-                    <div class="list-apple-item" onclick="selectMovie('@movie.Title')">
-                        <div class="flex-grow-1">
-                            <h6 class="text-primary fw-semibold mb-1">@movie.Title</h6>
-                            <div class="text-secondary small">
-                                <i class="bi bi-calendar me-1"></i>
-                                Release date coming soon
+                    <div class="cs-card animate-fade-in-up" data-movie="@movie.Title">
+                        <div class="cs-poster">
+                            <img src="@movie.MainImageUrl"
+                                 alt="@movie.Title"
+                                 loading="lazy"
+                                 onerror="this.onerror=null;this.src='@Url.Content("~/images/defaults/placeholder.png")';" />
+                            <div class="cs-badge-overlay">
+                                <span class="cs-soon-badge"><i class="bi bi-hourglass-split me-1"></i>Soon</span>
+                            </div>
+                            <div class="cs-hover-overlay">
+                                <a href="@Url.Action("Details", "Movies", new { id = movie.Id })" class="cs-details-btn">
+                                    <i class="bi bi-play-circle-fill me-1"></i>View Details
+                                </a>
                             </div>
                         </div>
-                        <span class="badge badge-warning">Coming Soon</span>
+
+                        <div class="cs-body">
+                            @if (!string.IsNullOrEmpty(movie.CategoryName))
+                            {
+                                <span class="cs-category-tag">@movie.CategoryName</span>
+                            }
+                            <h5 class="cs-title">@movie.Title</h5>
+
+                            @if (movie.ReleaseDate > DateTime.MinValue)
+                            {
+                                <div class="cs-countdown-wrap"
+                                     data-date="@movie.ReleaseDate.ToString("yyyy-MM-ddTHH:mm:ss")">
+                                    <div class="cs-countdown-box">
+                                        <span class="cs-cnt-num">--</span>
+                                        <span class="cs-cnt-unit">days</span>
+                                    </div>
+                                </div>
+                                <div class="cs-date-row">
+                                    <i class="bi bi-calendar3"></i>
+                                    <span>@movie.ReleaseDate.ToString("MMM dd, yyyy")</span>
+                                </div>
+                            }
+
+                            @if (movie.Duration > 0)
+                            {
+                                <div class="cs-date-row">
+                                    <i class="bi bi-clock"></i>
+                                    <span>@movie.Duration mins</span>
+                                </div>
+                            }
+                        </div>
                     </div>
                 }
             </div>
-        </div>
+        }
+        else
+        {
+            <div class="cs-empty-state">
+                <i class="bi bi-film"></i>
+                <h5>Nothing scheduled yet</h5>
+                <p>Check back soon for upcoming releases.</p>
+            </div>
+        }
     </div>
 
     <!-- Cinemas -->
     <div class="container mb-5">
         <div class="section-header text-center mb-4">
-            <h3 class="section-title">🎪 Our Cinemas</h3>
+            <h3 class="section-title"><i class="bi bi-building-fill me-2"></i>Our Cinemas</h3>
             <p class="section-subtitle">Premium locations for the ultimate movie experience</p>
         </div>
         

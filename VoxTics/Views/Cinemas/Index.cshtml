@@ -6,13 +6,13 @@
 
 <div class="cinema-container">
     <div class="page-header">
-        <h1 class="page-title">🎬 Cinemas</h1>
+        <h1 class="page-title"><i class="bi bi-camera-reels me-2"></i>Cinemas</h1>
         <p class="page-subtitle">Discover amazing movie theaters around the world</p>
     </div>
 
     <div class="search-container">
         <div class="search-box">
-            <span class="search-icon">🔍</span>
+            <i class="bi bi-search search-icon"></i>
             <input type="text" class="search-input" placeholder="Search cinemas by name or country..." id="searchInput">
         </div>
     </div>
@@ -22,15 +22,15 @@
         {
             <div class="cinema-card" data-name="@cinema.Name.ToLower()" data-country="@cinema.Country?.ToLower()">
                 <div class="cinema-stats">Premium</div>
-                <div class="cinema-icon">🎭</div>
+                <div class="cinema-icon"><i class="bi bi-building-fill"></i></div>
                 <h3 class="cinema-name">@cinema.Name</h3>
-                <p class="cinema-country">📍 @cinema.Country ?? "Unknown"</p>
+                <p class="cinema-country"><i class="bi bi-geo-alt-fill me-1"></i>@cinema.Country ?? "Unknown"</p>
                 <div class="cinema-actions">
                     <a href="@Url.Action("Details", "Cinemas", new { id = cinema.Id })" class="btn btn-primary">
-                        👁️ View Details
+                        <i class="bi bi-eye me-1"></i>View Details
                     </a>
                     <button class="btn btn-secondary" onclick="toggleFavorite(@cinema.Id)">
-                        ❤️ Favorite
+                        <i class="bi bi-heart-fill me-1"></i>Favorite
                     </button>
                 </div>
             </div>
@@ -38,7 +38,7 @@
     </div>
 
     <div class="no-results" id="noResults" style="display: none;">
-        <p>🎬 No cinemas found matching your search.</p>
+        <p><i class="bi bi-camera-reels me-2"></i>No cinemas found matching your search.</p>
     </div>
 </div>
 

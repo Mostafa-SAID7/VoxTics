@@ -2,7 +2,7 @@
 
 <div class="showtimes-container">
     <div class="page-header">
-        <h1 class="page-title">🎬 Showtimes</h1>
+        <h1 class="page-title"><i class="bi bi-camera-reels me-2"></i>Showtimes</h1>
         <p class="page-subtitle">Find your perfect movie experience</p>
     </div>
 
@@ -46,8 +46,8 @@
         </div>
 
         <div class="view-toggle">
-            <button class="view-btn active" onclick="toggleView('card')">📱 Card View</button>
-            <button class="view-btn" onclick="toggleView('table')">📊 Table View</button>
+            <button class="view-btn active" onclick="toggleView('card')"><i class="bi bi-grid me-2"></i>Card View</button>
+            <button class="view-btn" onclick="toggleView('table')"><i class="bi bi-table me-2"></i>Table View</button>
         </div>
     </div>
 
@@ -74,7 +74,7 @@
                             <div class="movie-info">
                                 <h3 class="movie-title">@show.Movie?.Title ?? "Unknown Movie"</h3>
                                 <div class="hall-info">
-                                    🎭 @show.Hall.Name?? "Unknown Hall"
+                                    <i class="bi bi-grid-3x3-gap me-1"></i>@show.Hall.Name?? "Unknown Hall"
                                 </div>
                             </div>
 
@@ -92,7 +92,7 @@
                             <div class="price-section">
                                 <div class="price">@show.Price.ToString("C")</div>
                                 <a href="@Url.Action("Book", new { id = show.Id })" class="book-btn">
-                                    🎫 Book Now
+                                    <i class="bi bi-ticket-perforated me-1"></i>Book Now
                                 </a>
                             </div>
                         </div>
@@ -105,12 +105,12 @@
                 <table class="enhanced-table">
                     <thead>
                         <tr>
-                            <th>🎬 Movie</th>
-                            <th>🎭 Hall</th>
-                            <th>🕒 Start Time</th>
-                            <th>⏰ End Time</th>
-                            <th>💰 Price</th>
-                            <th>🎫 Action</th>
+                            <th><i class="bi bi-film me-1"></i>Movie</th>
+                            <th><i class="bi bi-grid-3x3-gap me-1"></i>Hall</th>
+                            <th><i class="bi bi-clock me-1"></i>Start Time</th>
+                            <th><i class="bi bi-clock-history me-1"></i>End Time</th>
+                            <th><i class="bi bi-currency-dollar me-1"></i>Price</th>
+                            <th><i class="bi bi-ticket-perforated me-1"></i>Action</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -123,14 +123,14 @@
                                 onclick="selectShowtime('@show.Id')">
                                 <td class="movie-cell">@show.Movie?.Title ?? "Unknown Movie"</td>
                                 <td class="hall-cell">
-                                    🎭 @show.Hall.Name ?? "Unknown Hall"
+                                    <i class="bi bi-grid-3x3-gap me-1"></i>@show.Hall.Name ?? "Unknown Hall"
                                 </td>
                                 <td class="time-cell">@show.StartTime.ToString("yyyy-MM-dd HH:mm")</td>
                                 <td class="time-cell">@show.EndTime.ToString("HH:mm")</td>
                                 <td class="price-cell">@show.Price.ToString("C")</td>
                                 <td>
                                     <a href="@Url.Action("Book", new { id = show.Id })" class="book-btn" onclick="event.stopPropagation()">
-                                        🎫 Book
+                                        <i class="bi bi-ticket-perforated me-1"></i>Book
                                     </a>
                                 </td>
                             </tr>
@@ -178,7 +178,7 @@
         else
         {
             <div class="no-results">
-                <div class="no-results-icon">🎬</div>
+                <div class="no-results-icon"><i class="bi bi-camera-reels"></i></div>
                 <h3>No Showtimes Available</h3>
                 <p>There are currently no showtimes scheduled. Please check back later or contact the cinema for more information.</p>
             </div>

@@ -20,5 +20,10 @@ namespace VoxTics.Models.ViewModels.Movie
         public int CategoryId { get; set; }
         public string CategoryName { get; set; } = string.Empty;
 
+        // Details
+        public DateTime ReleaseDate { get; set; }
+        public int Duration { get; set; }
+        public string Description { get; set; } = string.Empty;
+
     }
 }

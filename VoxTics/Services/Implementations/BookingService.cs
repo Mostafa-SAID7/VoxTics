@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using VoxTics.Data.UoW;
 using VoxTics.Models.Entities;
 using VoxTics.Models.Enums;
@@ -8,10 +8,6 @@ using VoxTics.Services.IServices;
 
 namespace VoxTics.Services
 {
-    /// <summary>
-    /// Booking service implementation for user-side actions.
-    /// Handles listing, details, creation, cancellation, and check-in.
-    /// </summary>
     public class BookingService : IBookingService
     {
         private readonly IUnitOfWork _uow;
@@ -37,27 +33,32 @@ namespace VoxTics.Services
 
         public async Task<BookingDetailsVM> CreateBookingAsync(BookingCreateVM model, string userId)
         {
-            // Build Booking entity
             var booking = new Booking
             {
-                UserId = userId,
-                ShowtimeId = model.ShowtimeId,
+                UserId         = userId,
+                ShowtimeId     = model.ShowtimeId,
                 NumberOfTickets = model.SeatIds.Count,
-                TotalAmount = model.TotalAmount,
+                TotalAmount    = model.TotalAmount,
                 DiscountAmount = model.DiscountAmount,
-                FinalAmount = model.FinalAmount,
-                Status = BookingStatus.Pending,
-                BookingSeats = model.SeatIds.Select(seatId => new BookingSeat
+                FinalAmount    = model.FinalAmount,
+                Status         = BookingStatus.Confirmed,
+                BookingSeats   = model.SeatIds.Select(seatId => new BookingSeat
                 {
-                    SeatId = seatId,
+                    SeatId    = seatId,
                     SeatPrice = model.SeatPrice
                 }).ToList()
             };
 
             await _uow.Bookings.AddAsync(booking);
-            await _uow.CommitAsync(); // parameterless overload
 
-            return _mapper.Map<BookingDetailsVM>(booking);
+            // Decrement available seats on the showtime
+            await _uow.Showtimes.ReserveSeatAsync(model.ShowtimeId, model.SeatIds.Count);
+
+            await _uow.CommitAsync();
+
+            // Re-fetch with full navigation for the confirmation view
+            var saved = await _uow.Bookings.GetBookingDetailsAsync(booking.Id);
+            return _mapper.Map<BookingDetailsVM>(saved ?? booking);
         }
 
         public async Task<bool> CancelBookingAsync(int bookingId, string userId)
@@ -67,8 +68,11 @@ namespace VoxTics.Services
 
             booking.Status = BookingStatus.Cancelled;
             await _uow.Bookings.UpdateAsync(booking);
-            await _uow.CommitAsync();
 
+            // Release the seats back
+            await _uow.Showtimes.ReleaseSeatsAsync(booking.ShowtimeId, booking.NumberOfTickets);
+
+            await _uow.CommitAsync();
             return true;
         }
 
@@ -78,10 +82,9 @@ namespace VoxTics.Services
             if (booking == null || booking.IsCheckedIn) return false;
 
             booking.IsCheckedIn = true;
-            booking.Status = BookingStatus.Completed;
+            booking.Status      = BookingStatus.Completed;
             await _uow.Bookings.UpdateAsync(booking);
             await _uow.CommitAsync();
-
             return true;
         }
     }

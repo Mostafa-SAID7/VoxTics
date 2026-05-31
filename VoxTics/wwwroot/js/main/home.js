@@ -3,6 +3,7 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         initHomeSearch();
+        initComingSoonCountdowns();
     });
 
     function initHomeSearch() {
@@ -74,5 +75,30 @@
     window.selectCinema = function (cinemaName) {
         VoxTicsUtils.notify('Selected cinema: ' + cinemaName, 'success');
     };
+
+    function initComingSoonCountdowns() {
+        document.querySelectorAll('.cs-countdown-wrap[data-date]').forEach(function (wrap) {
+            var dateStr = wrap.getAttribute('data-date');
+            if (!dateStr) return;
+            var target = new Date(dateStr).getTime();
+            var numEl = wrap.querySelector('.cs-cnt-num');
+            var unitEl = wrap.querySelector('.cs-cnt-unit');
+            if (!numEl) return;
+
+            function update() {
+                var now = Date.now();
+                var diff = target - now;
+                if (diff <= 0) {
+                    wrap.innerHTML = '<span class="cs-cnt-today"><i class="bi bi-lightning-charge-fill me-1"></i>Today!</span>';
+                    return;
+                }
+                var days = Math.ceil(diff / 86400000);
+                numEl.textContent = days;
+                if (unitEl) unitEl.textContent = days === 1 ? 'day away' : 'days away';
+            }
+
+            update();
+        });
+    }
 
 })();

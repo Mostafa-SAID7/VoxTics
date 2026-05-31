@@ -13,7 +13,7 @@
             <img src="@Model.DisplayImage" alt="@Model.Name" class="cinema-image" />
             <div class="cinema-overlay">
                 <h1>@Model.Name</h1>
-                <div>📍 @Model.City, @Model.Country</div>
+                <div><i class="bi bi-geo-alt-fill me-1"></i>@Model.City, @Model.Country</div>
             </div>
         </div>
     </div>
@@ -25,7 +25,7 @@
     @if (images.Any())
     {
         <div class="cinema-image-gallery">
-            <h3>📸 Gallery</h3>
+            <h3><i class="bi bi-images me-2"></i>Gallery</h3>
             <div class="gallery-grid">
                 @foreach (var img in images)
                 {
@@ -60,20 +60,20 @@
     <div class="cinema-content">
         <div class="main-content">
             <div class="info-card description-card">
-                <h3>📝 About This Cinema</h3>
+                <h3><i class="bi bi-info-circle me-2"></i>About This Cinema</h3>
                 <p>@Model.Description</p>
             </div>
 
             @if (Model.Halls.Any())
             {
                 <div class="info-card">
-                    <h3>🎭 Halls (@Model.HallCount)</h3>
+                    <h3><i class="bi bi-grid-3x3-gap me-2"></i>Halls (@Model.HallCount)</h3>
                     <div class="halls-grid">
                         @foreach (var hall in Model.Halls)
                         {
                             <div class="hall-card">
                                 <div>@hall.Name</div>
-                                <div>🪑 @hall.SeatCount seats</div>
+                                <div><i class="bi bi-people-fill me-1"></i>@hall.SeatCount seats</div>
                             </div>
                         }
                     </div>
@@ -83,7 +83,7 @@
             @if (Model.Showtimes.Any())
             {
                 <div class="info-card">
-                    <h3>🎬 Upcoming Showtimes (@Model.ShowtimeCount)</h3>
+                    <h3><i class="bi bi-calendar-event me-2"></i>Upcoming Showtimes (@Model.ShowtimeCount)</h3>
                     <ul>
                         @foreach (var s in Model.Showtimes)
                         {
@@ -96,21 +96,21 @@
 
         <div class="sidebar">
             <div class="info-card">
-                <h3>📱 Contact Information</h3>
+                <h3><i class="bi bi-telephone me-2"></i>Contact Information</h3>
                 <p>Email: <a href="mailto:@Model.Email">@Model.Email</a></p>
                 <p>Phone: <a href="tel:@Model.Phone">@Model.Phone</a></p>
                 <p>Website: <a href="@Model.Website" target="_blank">Visit Website</a></p>
             </div>
 
             <div class="info-card">
-                <h3>📍 Address</h3>
+                <h3><i class="bi bi-geo-alt me-2"></i>Address</h3>
                 <p>@Model.Address, @Model.City, @Model.State, @Model.Country, @Model.PostalCode</p>
             </div>
 
             @if (Model.SocialMediaLinks.Any())
             {
                 <div class="info-card">
-                    <h3>🌐 Social Media</h3>
+                    <h3><i class="bi bi-share me-2"></i>Social Media</h3>
                     @foreach (var link in Model.SocialMediaLinks)
                     {
                         <a href="@link.Url" target="_blank">@link.Platform</a>

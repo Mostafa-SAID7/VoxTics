@@ -104,4 +104,25 @@
         notify:         function (msg, type, opts)      { VoxTicsUtils.notify(msg, type, opts); }
     };
 
+    function initPasswordToggles() {
+        document.querySelectorAll('.toggle-password').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var targetId = btn.getAttribute('data-target');
+                var input = document.getElementById(targetId);
+                if (!input) return;
+                var isHidden = input.type === 'password';
+                input.type = isHidden ? 'text' : 'password';
+                var icon = btn.querySelector('i');
+                if (icon) {
+                    icon.classList.toggle('bi-eye', !isHidden);
+                    icon.classList.toggle('bi-eye-slash', isHidden);
+                }
+            });
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        initPasswordToggles();
+    });
+
 })();

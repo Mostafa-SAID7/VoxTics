@@ -9,7 +9,7 @@
     <title>@ViewData["Title"] - VoxTics Cinema</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="VoxTics - Your ultimate movie ticket booking platform" />
-    <meta name="theme-color" content="#667eea" />
+    <meta name="theme-color" content="#C0392B" />
 
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -18,7 +18,7 @@
     
 
     <!-- Libraries -->
-    
+    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/lib/animate.css/animate.min.css" />
     <link rel="stylesheet" href="~/lib/toastr/toastr.min.css" />
     <link rel="stylesheet" href="~/lib/sweetalert2/sweetalert2.css" />
@@ -35,10 +35,10 @@
     </div>
 
     <!-- Apple Keyboard+ Navbar -->
-    <nav class="navbar" id="mainNavbar">
+    <nav class="navbar navbar-expand-lg" id="mainNavbar">
         <div class="container-fluid">
             <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                <span class="brand-icon">🎬</span> VoxTics
+                <i class="bi bi-camera-reels brand-icon"></i> VoxTics
             </a>
             <button class="btn mobile-toggle d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -161,7 +161,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 col-md-6 mb-4">
-                    <h5><span class="brand-icon me-2">🎬</span>VoxTics Cinema</h5>
+                    <h5><i class="bi bi-camera-reels brand-icon me-2"></i>VoxTics Cinema</h5>
                     <p>Your ultimate movie ticket booking platform.</p>
                     <p><i class="bi bi-geo-alt me-2"></i>123 Cinema Street</p>
                     <p><i class="bi bi-envelope me-2"></i><a href="mailto:support@voxtics.com">support@voxtics.com</a></p>

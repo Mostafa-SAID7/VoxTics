@@ -8,7 +8,7 @@
             <div class="card animate-fade-in-up">
                 <div class="card-header text-center">
                     <div class="mb-3">
-                        <span class="brand-icon" style="font-size: 3rem;">🎬</span>
+                        <i class="bi bi-camera-reels brand-icon" style="font-size: 3rem;"></i>
                     </div>
                     <h3 class="section-title mb-2">Welcome Back</h3>
                     <p class="text-secondary">Sign in to your VoxTics account</p>
@@ -28,10 +28,16 @@
 
                         <div class="mb-4">
                             <label asp-for="Password" class="form-label">Password</label>
-                            <input asp-for="Password" class="form-control" 
-                                   type="password" 
-                                   placeholder="Enter your password"
-                                   autocomplete="current-password" />
+                            <div class="input-group password-group">
+                                <input asp-for="Password" class="form-control" 
+                                       type="password" 
+                                       placeholder="Enter your password"
+                                       autocomplete="current-password"
+                                       id="loginPassword" />
+                                <button type="button" class="btn toggle-password" tabindex="-1" data-target="loginPassword" aria-label="Toggle password visibility">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
                             <span asp-validation-for="Password" class="text-danger small"></span>
                         </div>
 

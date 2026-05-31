@@ -60,6 +60,8 @@ namespace VoxTics.Repositories
                 .AsNoTracking()
                 .Include(s => s.Movie)
                 .Include(s => s.Cinema)
+                .Include(s => s.Hall)
+                    .ThenInclude(h => h.Seats)
                 .FirstOrDefaultAsync(s => s.Id == showtimeId, cancellationToken)
                 .ConfigureAwait(false);
 
