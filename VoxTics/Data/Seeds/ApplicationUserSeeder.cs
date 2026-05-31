@@ -21,7 +21,7 @@ namespace VoxTics.Data.Seeds
                     Email = "user1@example.com",
                     NormalizedEmail = "USER1@EXAMPLE.COM",
                     EmailConfirmed = true,
-                    PasswordHash = hasher.HashPassword(null, "Password123!"),
+                    PasswordHash = hasher.HashPassword(null!, "Password123!"),
                     SecurityStamp = string.Empty
                 },
                 new ApplicationUser
@@ -32,7 +32,7 @@ namespace VoxTics.Data.Seeds
                     Email = "user2@example.com",
                     NormalizedEmail = "USER2@EXAMPLE.COM",
                     EmailConfirmed = true,
-                    PasswordHash = hasher.HashPassword(null, "Password123!"),
+                    PasswordHash = hasher.HashPassword(null!, "Password123!"),
                     SecurityStamp = string.Empty
                 },
                 new ApplicationUser
@@ -43,7 +43,7 @@ namespace VoxTics.Data.Seeds
                     Email = "user3@example.com",
                     NormalizedEmail = "USER3@EXAMPLE.COM",
                     EmailConfirmed = true,
-                    PasswordHash = hasher.HashPassword(null, "Password123!"),
+                    PasswordHash = hasher.HashPassword(null!, "Password123!"),
                     SecurityStamp = string.Empty
                 },
                 new ApplicationUser
@@ -54,7 +54,7 @@ namespace VoxTics.Data.Seeds
                     Email = "user4@example.com",
                     NormalizedEmail = "USER4@EXAMPLE.COM",
                     EmailConfirmed = true,
-                    PasswordHash = hasher.HashPassword(null, "Password123!"),
+                    PasswordHash = hasher.HashPassword(null!, "Password123!"),
                     SecurityStamp = string.Empty
                 },
                 new ApplicationUser
@@ -65,7 +65,7 @@ namespace VoxTics.Data.Seeds
                     Email = "user5@example.com",
                     NormalizedEmail = "USER5@EXAMPLE.COM",
                     EmailConfirmed = true,
-                    PasswordHash = hasher.HashPassword(null, "Password123!"),
+                    PasswordHash = hasher.HashPassword(null!, "Password123!"),
                     SecurityStamp = string.Empty
                 }
             };

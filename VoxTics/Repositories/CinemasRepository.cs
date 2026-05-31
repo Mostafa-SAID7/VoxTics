@@ -13,7 +13,7 @@ namespace VoxTics.Repositories
 {
     public class CinemasRepository : BaseRepository<Cinema>, ICinemasRepository
     {
-        private readonly ILogger<CinemasRepository> _logger;
+        private readonly ILogger<CinemasRepository>? _logger;
         private readonly IMemoryCache? _cache;
 
         private const string ActiveCinemasCacheKey = "ActiveCinemas";
@@ -40,9 +40,9 @@ namespace VoxTics.Repositories
         /// </summary>
         public async Task<IEnumerable<Cinema>> GetActiveCinemasAsync(CancellationToken cancellationToken = default)
         {
-            if (_cache != null && _cache.TryGetValue(ActiveCinemasCacheKey, out IEnumerable<Cinema> cachedCinemas))
+            if (_cache != null && _cache.TryGetValue(ActiveCinemasCacheKey, out IEnumerable<Cinema>? cachedCinemas))
             {
-                return cachedCinemas;
+                return cachedCinemas ?? Enumerable.Empty<Cinema>();
             }
 
             try
@@ -58,7 +58,7 @@ namespace VoxTics.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching active cinemas");
+                _logger?.LogError(ex, "Error fetching active cinemas");
                 return Enumerable.Empty<Cinema>();
             }
         }
@@ -101,7 +101,7 @@ namespace VoxTics.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching paged cinemas");
+                _logger?.LogError(ex, "Error fetching paged cinemas");
                 return (Enumerable.Empty<Cinema>(), 0);
             }
         }
@@ -122,7 +122,7 @@ namespace VoxTics.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching cinema details for Id {CinemaId}", id);
+                _logger?.LogError(ex, "Error fetching cinema details for Id {CinemaId}", id);
                 return null;
             }
         }

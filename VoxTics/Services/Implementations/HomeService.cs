@@ -23,9 +23,9 @@ namespace VoxTics.Services.Implementations
             var now = DateTime.UtcNow;
 
             return await _context.Movies
-                .Include(m => m.Showtimes).ThenInclude(s => s.Cinema)
-                .Where(m => m.Showtimes.Any(s => !s.IsCancelled && s.StartTime <= now))
-                .OrderByDescending(m => m.Showtimes.Min(s => s.StartTime))
+                .Include(m => m.Showtimes!).ThenInclude(s => s.Cinema)
+                .Where(m => m.Showtimes!.Any(s => !s.IsCancelled && s.StartTime <= now))
+                .OrderByDescending(m => m.Showtimes!.Min(s => s.StartTime))
                 .ToListAsync();
         }
 
@@ -34,9 +34,9 @@ namespace VoxTics.Services.Implementations
             var now = DateTime.UtcNow;
 
             return await _context.Movies
-                .Include(m => m.Showtimes).ThenInclude(s => s.Cinema)
-                .Where(m => m.Showtimes.Any(s => !s.IsCancelled && s.StartTime > now))
-                .OrderBy(m => m.Showtimes.Min(s => s.StartTime))
+                .Include(m => m.Showtimes!).ThenInclude(s => s.Cinema)
+                .Where(m => m.Showtimes!.Any(s => !s.IsCancelled && s.StartTime > now))
+                .OrderBy(m => m.Showtimes!.Min(s => s.StartTime))
                 .ToListAsync();
         }
 
@@ -53,7 +53,7 @@ namespace VoxTics.Services.Implementations
             return await _context.Movies
                 .Include(m => m.Showtimes)
                 .Include(m => m.MovieImages)
-                .OrderByDescending(m => m.Bookings.Count)
+                .OrderByDescending(m => m.Bookings!.Count)
                 .Take(10)
                 .ToListAsync();
         }

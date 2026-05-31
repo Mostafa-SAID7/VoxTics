@@ -163,7 +163,7 @@ namespace VoxTics.Areas.Identity.Controllers
             }
 
             var result = await _signInManager.PasswordSignInAsync(
-                user.UserName,
+                user.UserName!,
                 loginVM.Password,
                 loginVM.RememberMe,
                 lockoutOnFailure: true);

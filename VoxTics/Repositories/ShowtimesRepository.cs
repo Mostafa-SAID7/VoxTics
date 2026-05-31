@@ -15,11 +15,8 @@ namespace VoxTics.Repositories
     /// </summary>
     public class ShowtimesRepository : BaseRepository<Showtime>, IShowtimesRepository
     {
-        private readonly MovieDbContext _context;
-
         public ShowtimesRepository(MovieDbContext context) : base(context)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<IEnumerable<Showtime>> GetUpcomingShowtimesForMovieAsync(

@@ -1,142 +1,107 @@
-// VoxTics - Main Site JavaScript
-// Global site functionality and utilities
-
-(function() {
+(function () {
     'use strict';
 
-    // Initialize site when DOM is ready
-    document.addEventListener('DOMContentLoaded', function() {
-        initializeGlobalFeatures();
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeTooltips();
+        initializeImageLazyLoading();
+        initPaginationAjax();
+        initLoaderApi();
     });
 
-    function initializeGlobalFeatures() {
-        // Initialize common site features
-        initializeTooltips();
-        initializeModals();
-        initializeScrollToTop();
-        initializeImageLazyLoading();
-    }
-
-    // Bootstrap tooltips initialization
     function initializeTooltips() {
-        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
+        var els = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        els.forEach(function (el) { new bootstrap.Tooltip(el); });
     }
 
-    // Bootstrap modals initialization
-    function initializeModals() {
-        const modalElements = document.querySelectorAll('.modal');
-        modalElements.forEach(function(modalEl) {
-            new bootstrap.Modal(modalEl);
-        });
-    }
-
-    // Scroll to top functionality with throttling
-    function initializeScrollToTop() {
-        const scrollToTopBtn = document.querySelector('.btn-to-top');
-        if (!scrollToTopBtn) return;
-
-        // Use throttle from VoxTicsUtils if available
-        const handleScroll = window.VoxTicsUtils 
-            ? VoxTicsUtils.throttle(function() {
-                if (window.pageYOffset > 300) {
-                    scrollToTopBtn.classList.add('show');
-                } else {
-                    scrollToTopBtn.classList.remove('show');
-                }
-            }, 100)
-            : function() {
-                if (window.pageYOffset > 300) {
-                    scrollToTopBtn.classList.add('show');
-                } else {
-                    scrollToTopBtn.classList.remove('show');
-                }
-            };
-
-        window.addEventListener('scroll', handleScroll);
-
-        scrollToTopBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-    }
-
-    // Lazy loading for images
     function initializeImageLazyLoading() {
-        if ('IntersectionObserver' in window) {
-            const imageObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        img.src = img.dataset.src;
-                        img.classList.remove('lazy');
-                        imageObserver.unobserve(img);
-                    }
-                });
+        if (!('IntersectionObserver' in window)) return;
+        var observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (!entry.isIntersecting) return;
+                var img = entry.target;
+                img.src = img.dataset.src;
+                img.classList.remove('lazy');
+                observer.unobserve(img);
             });
-
-            document.querySelectorAll('img[data-src]').forEach(img => {
-                imageObserver.observe(img);
-            });
-        }
+        });
+        document.querySelectorAll('img[data-src]').forEach(function (img) {
+            observer.observe(img);
+        });
     }
 
-    // Global utility functions - delegate to VoxTicsUtils if available
-    window.VoxTics = {
-        // Show loading spinner
-        showLoading: function(element, text) {
-            if (window.VoxTicsUtils) {
-                VoxTicsUtils.showLoading(element, text);
-            } else if (element) {
-                element.classList.add('loading');
-            }
-        },
+    function initLoaderApi() {
+        var overlay = document.getElementById('loadingOverlay');
+        var global  = document.getElementById('global-loader');
 
-        // Hide loading spinner
-        hideLoading: function(element) {
-            if (window.VoxTicsUtils) {
-                VoxTicsUtils.hideLoading(element);
-            } else if (element) {
-                element.classList.remove('loading');
-            }
-        },
+        window.showLoader = function () {
+            if (overlay) { overlay.classList.remove('d-none'); overlay.classList.add('d-flex'); }
+            if (global)  global.classList.remove('d-none');
+        };
+        window.hideLoader = function () {
+            if (overlay) { overlay.classList.add('d-none'); overlay.classList.remove('d-flex'); }
+            if (global)  global.classList.add('d-none');
+        };
+        window.Loader = { show: window.showLoader, hide: window.hideLoader };
 
-        // Format currency
-        formatCurrency: function(amount, currency, locale) {
-            if (window.VoxTicsUtils) {
-                return VoxTicsUtils.formatCurrency(amount, currency, locale);
-            }
-            return new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: currency || 'USD'
-            }).format(amount);
-        },
-
-        // Format date
-        formatDate: function(date, options, locale) {
-            if (window.VoxTicsUtils) {
-                return VoxTicsUtils.formatDate(date, options, locale);
-            }
-            return new Intl.DateTimeFormat('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            }).format(new Date(date));
-        },
-
-        // Notification
-        notify: function(message, type, options) {
-            if (window.VoxTicsUtils) {
-                VoxTicsUtils.notify(message, type, options);
-            } else {
-                console.log(`NOTIFICATION (${type}): ${message}`);
-            }
+        if (window.jQuery) {
+            $(document).ajaxStart(window.showLoader);
+            $(document).ajaxStop(window.hideLoader);
+            $(document).ajaxError(function () { setTimeout(window.hideLoader, 200); });
         }
+
+        window.fetchWithLoader = function (input, init) {
+            window.showLoader();
+            return fetch(input, init)
+                .then(function (res) { setTimeout(window.hideLoader, 150); return res; })
+                .catch(function (err) { setTimeout(window.hideLoader, 150); throw err; });
+        };
+
+        window.addEventListener('beforeunload', window.showLoader);
+        window.addEventListener('load', window.hideLoader);
+    }
+
+    function initPaginationAjax() {
+        function loadWithAjax(url, target, push) {
+            if (!url || !target) return;
+            window.showLoader();
+            $(target).fadeTo(200, 0.5);
+            $.get(url)
+                .done(function (result) {
+                    $(target).html(result);
+                    $(target).fadeTo(200, 1);
+                    $('html, body').animate({ scrollTop: $(target).offset().top - 100 }, 300);
+                    if (push !== false) history.pushState({ url: url, target: target }, '', url);
+                })
+                .always(function () { window.hideLoader(); });
+        }
+
+        $(document).on('click', '.ajax-page', function (e) {
+            e.preventDefault();
+            loadWithAjax($(this).data('url'), $(this).data('target'));
+        });
+
+        $(document).on('submit', '.ajax-search-form', function (e) {
+            e.preventDefault();
+            var $f = $(this);
+            loadWithAjax($f.attr('action') + '?' + $f.serialize(), $f.data('target') || '#cards-container');
+        });
+
+        $(document).on('change', '.ajax-filter', function () {
+            var $f = $(this).closest('form.ajax-search-form');
+            if ($f.length) $f.trigger('submit');
+        });
+
+        window.addEventListener('popstate', function (e) {
+            if (e.state && e.state.url && e.state.target) loadWithAjax(e.state.url, e.state.target, false);
+        });
+    }
+
+    window.VoxTics = {
+        showLoading:    function (el, text)             { VoxTicsUtils.showLoading(el, text); },
+        hideLoading:    function (el)                   { VoxTicsUtils.hideLoading(el); },
+        formatCurrency: function (amt, cur, loc)        { return VoxTicsUtils.formatCurrency(amt, cur, loc); },
+        formatDate:     function (date, opts, loc)      { return VoxTicsUtils.formatDate(date, opts, loc); },
+        notify:         function (msg, type, opts)      { VoxTicsUtils.notify(msg, type, opts); }
     };
 
 })();

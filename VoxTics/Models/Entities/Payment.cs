@@ -29,12 +29,11 @@ namespace VoxTics.Models.Entities
         [StringLength(200)]
         public string? TransactionId { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public new DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? PaidAt { get; set; }
         public int? CouponId { get; set; }
         [ForeignKey(nameof(CouponId))]
         public virtual Coupon? Coupon { get; set; }
-        public bool IsDeleted { get; set; } = false;
 
         [StringLength(1000)]
         public string? Notes { get; set; }

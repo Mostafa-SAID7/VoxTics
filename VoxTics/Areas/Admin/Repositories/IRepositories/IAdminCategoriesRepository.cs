@@ -9,8 +9,8 @@ namespace VoxTics.Areas.Admin.Repositories.IRepositories
         Task<PaginatedList<CategoryViewModel>> GetPagedAsync(
             int pageIndex,
             int pageSize,
-            string searchString = null,
-            string sortColumn = null,
+            string? searchString = null,
+            string? sortColumn = null,
             bool sortDescending = false,
             CancellationToken cancellationToken = default);
 

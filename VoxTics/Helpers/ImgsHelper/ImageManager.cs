@@ -146,7 +146,7 @@ namespace VoxTics.Helpers.ImgsHelper
         public string[] GetImageFileNames(ImageType type, string entityName)
         {
             var folder = GetFolder(type, entityName);
-            var files = Directory.GetFiles(folder).Select(Path.GetFileName).ToArray();
+            var files = Directory.GetFiles(folder).Select(f => Path.GetFileName(f)!).ToArray();
             return files.Length == 0 ? Array.Empty<string>() : files;
         }
 

@@ -11,8 +11,8 @@ namespace VoxTics.Areas.Admin.Profiles
             // 🔹 Entity -> ListItem VM
             CreateMap<Movie, MovieListItemViewModel>()
                 .ForMember(dest => dest.MainImageUrl, opt => opt.MapFrom(src => src.MainImage))
-                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name))
-                .ForMember(dest => dest.ShowtimeCount, opt => opt.MapFrom(src => src.Showtimes.Count));
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category!.Name))
+                .ForMember(dest => dest.ShowtimeCount, opt => opt.MapFrom(src => src.Showtimes!.Count));
 
             // 🔹 Entity -> Detail VM
             CreateMap<Movie, MovieDetailViewModel>()

@@ -21,7 +21,7 @@
     
     <link rel="stylesheet" href="~/lib/animate.css/animate.min.css" />
     <link rel="stylesheet" href="~/lib/toastr/toastr.min.css" />
-    <link rel="stylesheet" href="~/lib/sweetalert2/sweetalert2.min.css" />
+    <link rel="stylesheet" href="~/lib/sweetalert2/sweetalert2.css" />
 
     <!-- VoxTics Global Styles -->
     <link rel="stylesheet" href="~/css/voxtics-global.css" asp-append-version="true" />
@@ -83,11 +83,8 @@
 
                 @* User & Admin links *@
                 <ul class="navbar-nav mb-2 mb-lg-0 align-items-center">
-                    @if (User.Identity.IsAuthenticated)
+                    @if (User.Identity?.IsAuthenticated == true)
                     {
-                        <a class="nav-link" asp-area="Admin" asp-controller="Home" asp-action="Index">
-                            <i class="bi bi-gear me-1"></i>Admin
-                        </a>
                         if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item me-2">
@@ -214,10 +211,11 @@
     <!-- Scripts -->
     <script src="~/lib/jquery/jquery.min.js"></script>
     <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
-    <script src="~/lib/jquery-validate-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/lib/jquery-validation/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
     <script src="~/lib/toastr/toastr.min.js"></script>
     <script src="~/lib/sweetalert2/sweetalert2.all.min.js"></script>
+    <script src="~/js/utils/voxtics-utils.js"></script>
     <script src="~/js/site.js"></script>
     <script src="~/js/main/main.js"></script>
 

@@ -42,8 +42,8 @@ namespace VoxTics.Services.Implementations
             if (!string.IsNullOrWhiteSpace(search))
             {
                 query = query.Where(m => m.Title.Contains(search) ||
-                                         m.Description.Contains(search) ||
-                                         m.Category.Name.Contains(search));
+                                         m.Description!.Contains(search) ||
+                                         m.Category!.Name.Contains(search));
             }
 
             // Sort

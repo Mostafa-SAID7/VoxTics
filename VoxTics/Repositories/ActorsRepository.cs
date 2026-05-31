@@ -8,11 +8,8 @@ namespace VoxTics.Repositories
 {
     public class ActorsRepository : BaseRepository<Actor>, IActorsRepository
     {
-        private readonly MovieDbContext _context;
-
         public ActorsRepository(MovieDbContext context) : base(context)
         {
-            _context = context;
         }
 
         /// <summary>

@@ -8,7 +8,9 @@
     var area = ViewData["Area"]?.ToString();
     var target = ViewData["Target"]?.ToString() ?? "#cards-container";
 
-    var baseDict = new RouteValueDictionary(Model.RouteValues ?? new Dictionary<string, object>());
+    var baseDict = Model.RouteValues != null
+        ? new RouteValueDictionary((object?)Model.RouteValues)
+        : new RouteValueDictionary();
     if (!string.IsNullOrEmpty(area)) baseDict["area"] = area;
 }
 
@@ -74,47 +76,3 @@
     </nav>
 }
 
-@section Scripts {
-    <script>
-        function loadWithAjax(url, target, push = true) {
-            if (!url || !target) return;
-            window.showLoader();
-            $(target).fadeTo(200, 0.5);
-
-            $.get(url).done(function (result) {
-                $(target).html(result);
-                $(target).fadeTo(200, 1);
-                $("html, body").animate({ scrollTop: $(target).offset().top - 100 }, 300);
-                if (push) history.pushState({ url: url, target: target }, "", url);
-            }).always(function () {
-                window.hideLoader();
-            });
-        }
-
-        $(document).on("click", ".ajax-page", function (e) {
-            e.preventDefault();
-            var url = $(this).data("url");
-            var target = $(this).data("target");
-            loadWithAjax(url, target);
-        });
-
-        $(document).on("submit", ".ajax-search-form", function (e) {
-            e.preventDefault();
-            var $form = $(this);
-            var url = $form.attr("action") + "?" + $form.serialize();
-            var target = $form.data("target") || "#cards-container";
-            loadWithAjax(url, target);
-        });
-
-        $(document).on("change", ".ajax-filter", function () {
-            var $form = $(this).closest("form.ajax-search-form");
-            if ($form.length) $form.trigger("submit");
-        });
-
-        window.addEventListener("popstate", function (event) {
-            if (event.state && event.state.url && event.state.target) {
-                loadWithAjax(event.state.url, event.state.target, false);
-            }
-        });
-    </script>
-}

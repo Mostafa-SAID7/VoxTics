@@ -23,6 +23,6 @@ namespace VoxTics.Models.Entities
 
         public bool IsRead { get; set; } = false;
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public new DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

@@ -77,14 +77,14 @@ namespace VoxTics.Areas.Admin.Services.Implementations
             {
                 Id = movie.Id,
                 Title = movie.Title,
-                Description = movie.Description,
-                Director = movie.Director,
+                Description = movie.Description ?? string.Empty,
+                Director = movie.Director ?? string.Empty,
                 ReleaseDate = movie.ReleaseDate,
                 EndDate = movie.EndDate,
                 Duration = movie.Duration,
                 Price = movie.Price,
                 Rating = movie.Rating,
-                Language = movie.Language,
+                Language = movie.Language ?? string.Empty,
                 Country = movie.Country,
                 MainImageUrl = movie.MainImage,
                 TrailerUrl = movie.TrailerUrl,
@@ -106,14 +106,14 @@ namespace VoxTics.Areas.Admin.Services.Implementations
             {
                 Id = movie.Id,
                 Title = movie.Title,
-                Description = movie.Description,
-                Director = movie.Director,
+                Description = movie.Description ?? string.Empty,
+                Director = movie.Director ?? string.Empty,
                 ReleaseDate = movie.ReleaseDate,
                 EndDate = movie.EndDate,
                 Duration = movie.Duration,
                 Price = movie.Price,
                 Rating = movie.Rating,
-                Language = movie.Language,
+                Language = movie.Language ?? string.Empty,
                 Country = movie.Country,
                 ExistingPosterUrl = movie.MainImage,
                 TrailerUrl = movie.TrailerUrl,
@@ -195,7 +195,7 @@ namespace VoxTics.Areas.Admin.Services.Implementations
             var movie = await _uow.AdminMovies.GetMovieWithDetailsAsync(id);
             if (movie == null) return false;
 
-            bool hasBookings = movie.Showtimes.Any(s => s.Bookings.Any());
+            bool hasBookings = movie.Showtimes!.Any(s => s.Bookings!.Any());
             if (hasBookings)
                 throw new InvalidOperationException("Cannot delete the movie because it has existing bookings.");
 
