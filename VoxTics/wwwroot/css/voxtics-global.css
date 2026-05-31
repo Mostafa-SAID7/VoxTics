@@ -1941,3 +1941,86 @@ select option { background: var(--bg-card); color: var(--text); }
     .search-container:not(.me-3) { padding: var(--space-4); }
 }
 
+
+/* ===== CUSTOM SCROLLBAR ===== */
+::-webkit-scrollbar               { width: 7px; height: 7px; }
+::-webkit-scrollbar-track         { background: var(--bg-base); }
+::-webkit-scrollbar-thumb         {
+    background: var(--bg-elevated);
+    border-radius: 6px;
+    border: 2px solid var(--bg-base);
+    transition: background 0.2s;
+}
+::-webkit-scrollbar-thumb:hover   { background: var(--primary); box-shadow: 0 0 6px rgba(192,57,43,0.5); }
+::-webkit-scrollbar-corner        { background: var(--bg-base); }
+/* Firefox */
+html { scrollbar-width: thin; scrollbar-color: var(--bg-elevated) var(--bg-base); }
+
+/* ===== BRAND ICON (BI icon variant) ===== */
+.brand-icon {
+    color: var(--primary-light);
+    filter: drop-shadow(0 0 6px rgba(255,23,68,0.55));
+    font-size: 1.3rem;
+    vertical-align: middle;
+    display: inline-block;
+    transition: var(--transition-fast);
+}
+.navbar-brand:hover .brand-icon { color: var(--neon-red); filter: drop-shadow(0 0 10px rgba(255,23,68,0.7)); }
+
+/* ===== SECTION-ICON (BI icon inside section title) ===== */
+.section-icon {
+    color: var(--primary-light);
+    font-size: 1.1em;
+    vertical-align: middle;
+    margin-right: 0.4rem;
+}
+
+/* ===== META ICON (BI icon in movie hero meta row) ===== */
+i.meta-icon {
+    font-size: var(--text-sm);
+    color: var(--neon-yellow);
+    flex-shrink: 0;
+}
+i.meta-icon.bi-tag-fill    { color: var(--primary-light); }
+i.meta-icon.bi-calendar3   { color: var(--text-muted); }
+i.meta-icon.bi-clock-fill  { color: var(--neon-cyan); }
+i.meta-icon.bi-star-fill   { color: var(--neon-yellow); }
+
+/* ===== CAST PLACEHOLDER (person icon) ===== */
+.cast-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-elevated);
+    color: var(--text-muted);
+    font-size: 3rem;
+}
+
+/* ===== CINEMA ICON (BI icon variant — building icon) ===== */
+.cinema-icon i {
+    font-size: 2.8rem;
+    color: var(--primary-light);
+    transition: var(--transition-normal);
+    display: block;
+}
+.cinema-card:hover .cinema-icon i {
+    color: var(--neon-red);
+    filter: drop-shadow(0 0 10px rgba(255,23,68,0.55));
+}
+
+/* ===== EMPTY ICON (BI icon variant) ===== */
+.empty-icon i {
+    font-size: 4rem;
+    color: var(--primary-dark);
+    opacity: 0.6;
+}
+
+/* ===== NO-RESULTS ICON (BI icon variant) ===== */
+.no-results-icon i {
+    font-size: 4rem;
+    color: var(--primary-dark);
+    opacity: 0.5;
+}
+

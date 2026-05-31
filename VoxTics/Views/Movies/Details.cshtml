@@ -21,25 +21,25 @@
                     @if (Model.Category != null)
                     {
                         <div class="meta-item">
-                            <span class="meta-icon">🎭</span>
+                            <i class="meta-icon bi bi-tag-fill"></i>
                             <span>@Model.Category.Name</span>
                         </div>
                     }
 
                     <div class="meta-item">
-                        <span class="meta-icon">📅</span>
+                        <i class="meta-icon bi bi-calendar3"></i>
                         <span>@Model.ReleaseDate.Year</span>
                     </div>
 
                     <div class="meta-item">
-                        <span class="meta-icon">⏱️</span>
+                        <i class="meta-icon bi bi-clock-fill"></i>
                         <span>@Model.Duration mins</span>
                     </div>
 
                     @if (Model.Rating.HasValue)
                     {
                         <div class="meta-item">
-                            <span class="meta-icon">⭐</span>
+                            <i class="meta-icon bi bi-star-fill"></i>
                             <span>@Model.Rating.Value.ToString("0.0")</span>
                         </div>
                     }
@@ -52,7 +52,7 @@
                        asp-controller="Bookings"
                        asp-action="Create"
                        asp-route-movieId="@Model.Id">
-                        🎫 Book Now
+                        <i class="bi bi-ticket-perforated-fill me-2"></i>Book Now
                     </a>
                     <a class="btn-hero btn-back" asp-action="Index">
                         ← Back to Movies
@@ -69,8 +69,7 @@
         <section class="content-section">
             <div class="section-header">
                 <h2 class="section-title">
-                    <span class="section-icon">📋</span>
-                    Movie Information
+                    <i class="section-icon bi bi-list-ul me-2"></i>Movie Information
                 </h2>
             </div>
             <div class="section-content">
@@ -120,8 +119,7 @@
             <section class="content-section">
                 <div class="section-header">
                     <h2 class="section-title">
-                        <span class="section-icon">🖼️</span>
-                        Gallery
+                        <i class="section-icon bi bi-images me-2"></i>Gallery
                     </h2>
                 </div>
                 <div class="section-content">
@@ -133,7 +131,7 @@
                                      alt="@(img.AltText ?? Model.Title)"
                                      loading="lazy" />
                                 <div class="gallery-overlay">
-                                    <div class="gallery-zoom">🔍</div>
+                                    <div class="gallery-zoom"><i class="bi bi-zoom-in"></i></div>
                                 </div>
                             </div>
                         }
@@ -148,8 +146,7 @@
             <section class="content-section">
                 <div class="section-header">
                     <h2 class="section-title">
-                        <span class="section-icon">👥</span>
-                        Cast
+                        <i class="section-icon bi bi-people-fill me-2"></i>Cast
                     </h2>
                 </div>
                 <div class="section-content">
@@ -166,7 +163,7 @@
                                     }
                                     else
                                     {
-                                        <div class="cast-placeholder">👤</div>
+                                        <div class="cast-placeholder"><i class="bi bi-person-circle"></i></div>
                                     }
                                 </div>
                                 <div class="cast-info">
@@ -185,8 +182,7 @@
             <section class="content-section">
                 <div class="section-header">
                     <h2 class="section-title">
-                        <span class="section-icon">🕐</span>
-                        Showtimes
+                        <i class="section-icon bi bi-clock me-2"></i>Showtimes
                     </h2>
                 </div>
                 <div class="section-content">
@@ -212,7 +208,7 @@
        asp-action="Create"
        asp-route-movieId="@Model.Id"
        title="Book Tickets">
-        🎫
+        <i class="bi bi-ticket-perforated-fill"></i>
     </a>
 
 </div>
@@ -221,4 +217,4 @@
 
 @section Scripts {
     <script src="~/js/main/movies/moviedetails.js"></script>
-}   
+}
