@@ -106,16 +106,5 @@
 
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        function previewFile(input) {
-            const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('previewImage').src = e.target.result;
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-    </script>
+    <script src="~/js/admin/cinemas/cinema-form.js" asp-append-version="true"></script>
 }

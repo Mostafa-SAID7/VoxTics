@@ -1,6 +1,11 @@
 ﻿@model VoxTics.Models.ViewModels.Booking.BookingCreateVM
 
 
+<div id="booking-data"
+     data-seat-price="@Model.SeatPrice"
+     data-discount="@Model.DiscountAmount"
+     style="display:none"></div>
+
 <div class="container py-5">
     <h2 class="mb-4">Book Tickets for @Model.MovieId</h2>
 
@@ -64,23 +69,5 @@
 </div>
 
 @section Scripts {
-    <script>
-        $(document).ready(function () {
-            const seatPrice = @Model.SeatPrice;
-            const discount = @Model.DiscountAmount || 0;
-
-            function updateSummary() {
-                const selectedSeats = $('.seat-checkbox:checked').length;
-                const total = selectedSeats * seatPrice;
-                const final = total - discount;
-
-                $('#selectedSeats').text(selectedSeats);
-                $('#totalAmount').text(total.toLocaleString('en-US', { style: 'currency', currency: 'USD' }));
-                $('#finalAmount').text(final.toLocaleString('en-US', { style: 'currency', currency: 'USD' }));
-            }
-
-            $('.seat-checkbox').on('change', updateSummary);
-            updateSummary();
-        });
-    </script>
+    <script src="~/js/main/bookings/booking-create.js" asp-append-version="true"></script>
 }

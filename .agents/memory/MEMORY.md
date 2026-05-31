@@ -1,0 +1,2 @@
+- [VoxTics JS/CSS architecture](voxtics-architecture.md) — all styles in voxtics-global.css, JS in wwwroot/js/, views use only @section Scripts with external src references except the Layout TempData block.
+- [VoxTics section-in-partial bug](voxtics-partial-sections.md) — @section Scripts/Styles in partial views (.cshtml) are silently ignored by ASP.NET Core; pagination/loader JS was moved to site.js instead.
