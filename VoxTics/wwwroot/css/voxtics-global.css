@@ -2740,3 +2740,48 @@ i.meta-icon.bi-star-fill   { color: var(--neon-yellow); }
     .stats-cards         { padding: 0 0.75rem 1.5rem; gap: 0.75rem; }
     .cinema-content      { padding: 0 0.75rem; }
 }
+
+/* ================================================================
+   PASSWORD TOGGLE BUTTON
+   ================================================================ */
+.password-group {
+    position: relative;
+    display: flex;
+}
+.password-group .form-control {
+    border-right: none !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    flex: 1;
+}
+.password-group .form-control:focus {
+    border-right: none !important;
+    z-index: 1;
+}
+.toggle-password {
+    background: var(--bg-elevated) !important;
+    border: 1px solid var(--border) !important;
+    border-left: none !important;
+    border-top-right-radius: var(--radius-lg) !important;
+    border-bottom-right-radius: var(--radius-lg) !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    color: var(--text-dim) !important;
+    padding: 0 0.85rem !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+    cursor: pointer;
+    font-size: 1rem;
+    min-width: 2.6rem;
+    flex-shrink: 0;
+}
+.toggle-password:hover {
+    background: var(--bg-card) !important;
+    color: var(--primary-light) !important;
+    border-color: var(--primary-dark) !important;
+}
+.password-group:focus-within .toggle-password {
+    border-color: var(--primary-dark) !important;
+}

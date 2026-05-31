@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.Logging;
 using VoxTics.Areas.Identity.Models.Entities;
 using VoxTics.Areas.Identity.Models.ViewModels;
 using VoxTics.Repositories.IRepositories;
@@ -18,17 +19,20 @@ namespace VoxTics.Areas.Identity.Controllers
         private readonly IEmailSender _emailSender;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IBaseRepository<UserOTP> _userOTP;
+        private readonly ILogger<AccountController> _logger;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             IEmailSender emailSender,
             SignInManager<ApplicationUser> signInManager,
-            IBaseRepository<UserOTP> userOTP)
+            IBaseRepository<UserOTP> userOTP,
+            ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _emailSender = emailSender;
             _signInManager = signInManager;
             _userOTP = userOTP;
+            _logger = logger;
         }
 
         #region Register
@@ -59,6 +63,7 @@ namespace VoxTics.Areas.Identity.Controllers
                 UserName = registerVM.Name,
                 Name = registerVM.Name,
                 Email = registerVM.Email,
+                EmailConfirmed = true,
             };
 
             var result = await _userManager.CreateAsync(applicationUser, registerVM.Password);
@@ -73,16 +78,22 @@ namespace VoxTics.Areas.Identity.Controllers
                 return View(registerVM);
             }
 
-            // Generate email confirmation token and send email
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(applicationUser);
-            var link = Url.Action(nameof(ConfirmEmail), "Account",
-                new { area = SD.IdentityArea, userId = applicationUser.Id, token = token }, Request.Scheme);
+            try
+            {
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(applicationUser);
+                var link = Url.Action(nameof(ConfirmEmail), "Account",
+                    new { area = SD.IdentityArea, userId = applicationUser.Id, token = token }, Request.Scheme);
 
-            await _emailSender.SendEmailAsync(applicationUser.Email,
-                "Confirm Your Account!",
-                $"<h1>Confirm Your Account By Clicking <a href='{link}'>here</a></h1>");
+                await _emailSender.SendEmailAsync(applicationUser.Email,
+                    "Welcome to VoxTics!",
+                    $"<h1>Welcome! Your account has been created. <a href='{link}'>Click here</a> to verify your email.</h1>");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Welcome email could not be sent to {Email} — continuing without it.", applicationUser.Email);
+            }
 
-            TempData["success-notification"] = "Add User successfully, Please Confirm Your Account";
+            TempData["success-notification"] = "Account created successfully! You can now log in.";
             return RedirectToAction("Login");
         }
         #endregion

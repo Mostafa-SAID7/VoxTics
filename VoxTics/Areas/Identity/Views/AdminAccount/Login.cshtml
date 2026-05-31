@@ -40,10 +40,16 @@
 
                         <div class="mb-4">
                             <label asp-for="Password" class="form-label">Admin Password</label>
-                            <input asp-for="Password" class="form-control" 
-                                   type="password" 
-                                   placeholder="Enter admin password"
-                                   autocomplete="current-password" />
+                            <div class="input-group password-group">
+                                <input asp-for="Password" class="form-control" 
+                                       type="password" 
+                                       placeholder="Enter admin password"
+                                       autocomplete="current-password"
+                                       id="adminPassword" />
+                                <button type="button" class="btn toggle-password" tabindex="-1" data-target="adminPassword" aria-label="Toggle password visibility">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
                             <span asp-validation-for="Password" class="text-danger small"></span>
                         </div>
 
@@ -74,3 +80,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
