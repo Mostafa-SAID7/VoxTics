@@ -1,0 +1,21 @@
+# VoxTics Code Owners
+
+# Default owners for everything
+* @voxtics-team
+
+# Backend
+/VoxTics/Areas/ @voxtics-team
+/VoxTics/Controllers/ @voxtics-team
+/VoxTics/Data/ @voxtics-team
+/VoxTics/Models/ @voxtics-team
+/VoxTics/Services/ @voxtics-team
+/VoxTics/Repositories/ @voxtics-team
+
+# Frontend/Views
+/VoxTics/Views/ @voxtics-team
+/VoxTics/wwwroot/css/ @voxtics-team
+/VoxTics/wwwroot/js/ @voxtics-team
+
+# Configuration
+*.json @voxtics-team
+*.sln @voxtics-team

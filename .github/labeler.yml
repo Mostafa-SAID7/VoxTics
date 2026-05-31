@@ -1,0 +1,76 @@
+# Labeler configuration for VoxTics
+
+# Backend changes
+backend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "VoxTics/Areas/**"
+          - "VoxTics/Controllers/**"
+          - "VoxTics/Data/**"
+          - "VoxTics/Models/**"
+          - "VoxTics/Services/**"
+          - "VoxTics/Repositories/**"
+          - "VoxTics/Program.cs"
+          - "*.csproj"
+
+# Frontend changes
+frontend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "VoxTics/Views/**"
+          - "VoxTics/wwwroot/**"
+
+# CSS/Styling changes
+css:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "VoxTics/wwwroot/css/**"
+          - "tailwind.config.js"
+
+# JavaScript changes
+javascript:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "VoxTics/wwwroot/js/**"
+          - "package.json"
+          - "package-lock.json"
+
+# Documentation changes
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "docs/**"
+          - "README.md"
+          - ".github/**"
+
+# Configuration changes
+configuration:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "appsettings*.json"
+          - ".editorconfig"
+          - ".gitignore"
+          - "*.config"
+
+# Dependencies
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "package*.json"
+          - "*.csproj"
+          - ".github/dependabot.yml"
+
+# Bug fixes
+bug:
+  - title-matches:
+      - pattern: '(?i)\b(bug|fix|issue)\b'
+
+# Features
+feature:
+  - title-matches:
+      - pattern: '(?i)\b(feature|add|new)\b'
+
+# Chores
+chore:
+  - title-matches:
+      - pattern: '(?i)\b(chore|refactor|cleanup)\b'
