@@ -9,24 +9,33 @@ var builder = WebApplication.CreateBuilder(args);
 // Load configuration
 var configuration = builder.Configuration;
 
+// Add services to the container
 builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>)); 
 builder.Services.AddScoped<IAdminMoviesRepository, AdminMoviesRepository>();     
 builder.Services.AddScoped<IAdminMovieService, AdminMovieService>();            
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();                           
 builder.Services.AddAutoMapper(typeof(AdminMovieProfile));
 
-// Database context
+// Database context with connection string from environment or config
+var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") 
+    ?? configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddScoped<IDBInitializer, DBInitializer>();
-
 builder.Services.AddDbContext<MovieDbContext>(options =>
-    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(connectionString, sqlOptions =>
+    {
+        sqlOptions.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelaySeconds: 5);
+        sqlOptions.CommandTimeout(30);
+    }));
 
-// ASP.NET Core Identity
+// ASP.NET Core Identity with enhanced security
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = false;
     options.Password.RequiredLength = 3;
     options.User.RequireUniqueEmail = false;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    options.Lockout.MaxFailedAccessAttempts = 5;
 })
 .AddEntityFrameworkStores<MovieDbContext>()
 .AddDefaultTokenProviders();
@@ -39,39 +48,91 @@ builder.Services.AddRazorPages();
 builder.Services.AddVoxTicsServices(builder.Configuration);
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
+
+// Configure application cookie with security settings
 builder.Services.ConfigureApplicationCookie(option =>
 {
     option.LoginPath = "/Identity/Account/Login";
     option.AccessDeniedPath = "/Shared/AccessDenied";
+    option.ExpireTimeSpan = TimeSpan.FromHours(1);
+    option.SlidingExpiration = true;
+    option.Cookie.HttpOnly = true;
+    option.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    option.Cookie.SameSite = SameSiteMode.Strict;
 });
 
+// Configure Stripe
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
-StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+var stripeKey = Environment.GetEnvironmentVariable("STRIPE_SECRET_KEY") 
+    ?? builder.Configuration["Stripe:SecretKey"];
+StripeConfiguration.ApiKey = stripeKey;
+
+// Add health checks
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<MovieDbContext>();
+
+// Add CORS if needed for API calls
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost", builder =>
+    {
+        builder.WithOrigins("https://localhost:7244", "http://localhost:5018")
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
 
 var app = builder.Build();
 
+// Configure the HTTP request pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
+    app.UseHttpsRedirection();
 }
 else
 {
     app.UseDeveloperExceptionPage();
+    app.UseHttpsRedirection();
 }
 
-app.UseStatusCodePagesWithReExecute("/Shared/NotFound");
+// Security headers middleware
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");
+    context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
+    context.Response.Headers.Add("Referrer-Policy", "strict-origin-when-cross-origin");
+    context.Response.Headers.Add("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
+    await next();
+});
 
-app.UseHttpsRedirection();
+app.UseStatusCodePagesWithReExecute("/Shared/NotFound");
 app.UseStaticFiles();
 
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-var scope = app.Services.CreateScope();
-var service = scope.ServiceProvider.GetService<IDBInitializer>();
-service.Initialize();
+// Health check endpoint
+app.MapHealthChecks("/health");
+
+// Initialize database
+try
+{
+    var scope = app.Services.CreateScope();
+    var service = scope.ServiceProvider.GetService<IDBInitializer>();
+    service?.Initialize();
+}
+catch (Exception ex)
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex, "An error occurred while initializing the database.");
+    if (!app.Environment.IsDevelopment())
+        throw;
+}
+
 // Area routing
 app.MapControllerRoute(
     name: "areas",
