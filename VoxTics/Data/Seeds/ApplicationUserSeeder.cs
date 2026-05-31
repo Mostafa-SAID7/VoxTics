@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using VoxTics.Areas.Identity.Models.Entities;
 using System.Collections.Generic;
@@ -13,6 +13,17 @@ namespace VoxTics.Data.Seeds
 
             var users = new List<ApplicationUser>
             {
+                new ApplicationUser
+                {
+                    Id = "admin",
+                    UserName = "admin@voxtics.com",
+                    NormalizedUserName = "ADMIN@VOXTICS.COM",
+                    Email = "admin@voxtics.com",
+                    NormalizedEmail = "ADMIN@VOXTICS.COM",
+                    EmailConfirmed = true,
+                    PasswordHash = hasher.HashPassword(null!, "AdminPass123!"),
+                    SecurityStamp = string.Empty
+                },
                 new ApplicationUser
                 {
                     Id = "user1",

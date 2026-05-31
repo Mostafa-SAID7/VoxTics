@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using VoxTics.Areas.Identity.Models.Entities;
 using VoxTics.Models.Entities;
 using VoxTics.Models.Enums;
@@ -24,6 +24,8 @@ namespace VoxTics.Data.Seeds
             PaymentSeeder.Seed(modelBuilder);
             CouponSeeder.Seed(modelBuilder);
             WatchlistSeeder.Seed(modelBuilder);
+            ApplicationRoleSeeder.Seed(modelBuilder);
+            ApplicationUserRoleSeeder.Seed(modelBuilder);
         }
     }
 

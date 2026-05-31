@@ -1,0 +1,13 @@
+@* Admin Top Bar Partial *@
+<header class="admin-topbar">
+    @await Html.PartialAsync("Partials/_Header")
+    <div class="topbar-actions d-flex align-items-center">
+        <input type="text" id="globalSearch" class="form-control me-2" placeholder="Search..." />
+        <select id="sortSelect" class="form-select me-2">
+            <option value="date_desc">Newest</option>
+            <option value="date_asc">Oldest</option>
+            <!-- Add more options as needed -->
+        </select>
+        <nav class="pagination" id="adminPagination"></nav>
+    </div>
+</header>
