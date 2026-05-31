@@ -46,8 +46,20 @@ namespace VoxTics.Controllers
                 {
                     Id = m.Id,
                     Title = m.Title,
-                    MainImageUrl = m.MovieImages?.FirstOrDefault()?.AltText ?? "/images/defaults/placeholder.png",
-                  
+                    MainImageUrl = !string.IsNullOrEmpty(m.MainImage)
+                        ? $"/uploads/movies/{m.Id}/{m.MainImage}"
+                        : (m.MovieImages?.FirstOrDefault(i => i.IsMain)?.ImageUrl
+                           ?? m.MovieImages?.FirstOrDefault()?.ImageUrl
+                           ?? "/images/defaults/placeholder.png"),
+                    CategoryName = m.Category?.Name ?? string.Empty,
+                    Rating = m.Rating,
+                    Duration = m.Duration,
+                    Description = m.Description ?? string.Empty,
+                    ReleaseDate = m.Showtimes!
+                        .Where(s => !s.IsCancelled && s.StartTime > DateTime.UtcNow)
+                        .OrderBy(s => s.StartTime)
+                        .Select(s => s.StartTime)
+                        .FirstOrDefault(),
                 }).ToList() ?? new List<MovieVM>(),
 
                 Featured = featured?.Select(m => new MovieVM

@@ -35,8 +35,11 @@ namespace VoxTics.Services.Implementations
 
             return await _context.Movies
                 .Include(m => m.Showtimes!).ThenInclude(s => s.Cinema)
+                .Include(m => m.MovieImages)
+                .Include(m => m.Category)
                 .Where(m => m.Showtimes!.Any(s => !s.IsCancelled && s.StartTime > now))
                 .OrderBy(m => m.Showtimes!.Min(s => s.StartTime))
+                .Take(10)
                 .ToListAsync();
         }
 
