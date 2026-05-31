@@ -10,8 +10,8 @@
 
 	<ItemGroup>
 		<!-- Mapping & DI -->
-		<PackageReference Include="AutoMapper" Version="12.0.0" />
-		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
+		<PackageReference Include="AutoMapper" Version="12.0.1" />
+		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
 
 		<!-- Security & Passwords -->
 		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
