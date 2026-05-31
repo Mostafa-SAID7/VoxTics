@@ -458,6 +458,7 @@
     </div>
 </div>
 
+@section Styles {
 <style>
     .card-hover {
         transition: all 0.3s ease;
@@ -638,7 +639,17 @@
     .fade-in-up {
         animation: fadeInUp 0.5s ease-out;
     }
+
+    .no-animations * {
+        animation-duration: 0s !important;
+        transition-duration: 0s !important;
+    }
+
+    .alert {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
 </style>
+}
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1018,15 +1029,4 @@
             });
         }
     </script>
-
-    <style>
-        .no-animations * {
-            animation-duration: 0s !important;
-            transition-duration: 0s !important;
-        }
-
-        .alert {
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-    </style>
 }
